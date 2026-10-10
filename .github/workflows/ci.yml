@@ -1,0 +1,94 @@
+name: Integracao Continua e Validacao de Borda (CI)
+
+"on":
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Testes Automatizados (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout do Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configuracao do Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Instalacao de Dependencias do Sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+
+      - name: Instalacao do piDots em Modo Editavel
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -e .
+
+      - name: Auditoria de Regra de Estilo (Zero Emojis)
+        run: |
+          python3 -c "
+          import os, re, sys
+          emoji_pattern = re.compile(r'[\U00010000-\U0010ffff]', flags=re.UNICODE)
+          errors = 0
+          for root, dirs, files in os.walk('.'):
+              if any(ignored in root for ignored in ['.git', '.venv', '__pycache__', 'workspaces', 'data']):
+                  continue
+              for f in files:
+                  if f.endswith(('.py', '.md', '.toml', '.yml', '.yaml', '.html', '.txt')):
+                      path = os.path.join(root, f)
+                      with open(path, 'r', encoding='utf-8', errors='ignore') as fp:
+                          text = fp.read()
+                      matches = emoji_pattern.findall(text)
+                      if matches:
+                          print(f'ERRO: Emoji detectado em {path}: {matches}')
+                          errors += 1
+          if errors > 0:
+              sys.exit(1)
+          print('Conformidade de estilo validada: zero emojis detectados no repositorio.')
+          "
+
+      - name: Inicializacao de Estruturas Locais
+        run: |
+          pidots init
+
+      - name: Execucao das Suites de Testes de Regressao
+        run: |
+          python scripts/test_phase1.py
+          python scripts/test_phase2.py
+          python scripts/test_phase3.py
+          python scripts/test_phase4.py
+          python scripts/test_phase5.py
+
+      - name: Execucao do Teste de Concorrencia e Estresse de Borda
+        run: |
+          python scripts/stress_test.py
+
+      - name: Validacao da Interface CLI do piDots
+        run: |
+          pidots --version
+          pidots status
+
+  docker-build:
+    name: Validacao de Build da Imagem Docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configuracao do Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build da Imagem Docker do piDots
+        run: |
+          docker build -t pidots:ci .

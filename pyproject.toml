@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pidots"
+version = "0.1.0"
+description = "Always-On AI Coworkers persistentes e otimizados para Raspberry Pi 4B (ARM64) e Edge Computing"
+readme = "MANUAL_OPERACIONAL.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "lyon christopher" }
+]
+keywords = [
+    "ai-agent",
+    "edge-computing",
+    "raspberry-pi",
+    "arm64",
+    "coworker",
+    "sqlite-wal",
+    "hitl",
+    "ag-ui"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Operating System :: POSIX :: Linux",
+]
+
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "aiosqlite>=0.20.0",
+    "httpx>=0.28.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "trafilatura>=1.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.4.0",
+]
+
+[project.scripts]
+pidots = "pidots.cli:cli_entrypoint"
+pidots-server = "pidots.cli:run_server"
+
+[project.urls]
+Homepage = "https://github.com/lyon-christopher/piDots"
+Repository = "https://github.com/lyon-christopher/piDots"
+Issues = "https://github.com/lyon-christopher/piDots/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pidots*"]
+exclude = ["scripts*", "workspaces*", "data*", "tests*"]
+
+[tool.setuptools.package-data]
+pidots = ["*.html", "*.json"]

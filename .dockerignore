@@ -1,0 +1,58 @@
+# ==============================================================================
+# piDots // .dockerignore Padrão Ouro (Edge / ARM64 / Raspberry Pi 4B)
+# ==============================================================================
+
+# 1. Controle de Versão
+.git/
+.gitignore
+.gitattributes
+
+# 2. Segredos e Ambientes de Desenvolvimento
+.env
+.env.*
+!.env.example
+
+# 3. Ambientes Virtuais Host (Prevenção de Colisão Binária ARM64)
+.venv/
+venv/
+env/
+
+# 4. Dados Persistentes do Host (Montados via Volume Docker no docker-compose)
+data/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# 5. Sandboxes de Agentes (Montados via Volume Docker)
+workspaces/
+
+# 6. Caches Python e Bytecodes
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# 7. Testes e Cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+tests/
+scripts/
+
+# 8. Documentação Interna e Relatórios Extensos
+MANUAL_OPERACIONAL.md
+relatorio_*.html
+*.md
+!README.md
+
+# 9. Logs e Diretórios Efêmeros
+*.log
+scratch/
+tmp/
+
+# 10. Metadados de Sistema Operacional e IDEs
+.DS_Store
+.idea/
+.vscode/

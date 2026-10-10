@@ -1,0 +1,104 @@
+# ==============================================================================
+# piDots // .gitignore Padrão Ouro (Edge / Python 3.13 / Docker / SQLite WAL)
+# ==============================================================================
+
+# 1. Segredos, Credenciais e Variáveis de Ambiente Locais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+
+# 2. Dados Operacionais e SQLite WAL (Proteção de Mídia Flash e Privacidade)
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.backup.db
+data/*_backup_*.db
+data/*.sqlite
+data/*.sqlite3
+data/*.bak
+*.db
+*.db-wal
+*.db-shm
+
+# Preserva a pasta data estruturalmente no Git mantendo apenas o marcador .gitkeep
+!data/.gitkeep
+
+# 3. Workspaces e Sandboxes Autônomos dos Agentes
+workspaces/*
+!workspaces/.gitkeep
+
+# 4. Ambientes Virtuais e Gerenciadores de Pacote
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 5. Compilação Python e Caches de Runtime
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 6. Testes, Cobertura e Métricas
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.nox/
+.tox/
+.hypothesis/
+nosetests.xml
+coverage.xml
+*.cover
+
+# 7. Logs, Processos e Arquivos Temporários
+*.log
+logs/
+log/
+*.pid
+*.seed
+scratch/
+tmp/
+temp/
+
+# 8. Metadados de Sistema Operacional e Editores
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Tt]humbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

@@ -1,0 +1,172 @@
+"""
+Gerenciador de Spaces (Biblioteca de Artefatos) com Versionamento Incremental e Diffs.
+"""
+
+import os
+import io
+import uuid
+import zipfile
+import difflib
+import logging
+from typing import Any
+from datetime import datetime
+
+from .db import get_db
+from .vector_store import VectorStore
+from ..tools.file_ops import FileManager
+from ..config import settings
+
+logger = logging.getLogger("pidots.storage.spaces")
+
+
+class SpacesManager:
+    """Orquestra o ciclo de vida, versionamento e exportação de documentos em Spaces."""
+
+    @classmethod
+    async def save_document(
+        cls,
+        dot_id: str,
+        filename: str,
+        content: str,
+        title: str | None = None
+    ) -> dict[str, Any]:
+        """
+        Salva ou atualiza um documento no Space.
+        Calcula diff contra versão anterior e indexa na memória vetorial.
+        """
+        doc_title = title or filename
+        diff_summary = ""
+
+        async with get_db() as db:
+            # Verifica se já existe documento com mesmo filename para o Dot
+            cursor = await db.execute(
+                "SELECT id, content, version FROM spaces WHERE dot_id = ? AND filename = ?",
+                (dot_id, filename)
+            )
+            existing = await cursor.fetchone()
+
+            if existing:
+                space_id = existing["id"]
+                old_content = existing["content"]
+                new_version = existing["version"] + 1
+
+                # Calcula diff unificado linha a linha
+                diff_lines = list(difflib.unified_diff(
+                    old_content.splitlines(keepends=True),
+                    content.splitlines(keepends=True),
+                    fromfile=f"{filename} (v{existing['version']})",
+                    tofile=f"{filename} (v{new_version})"
+                ))
+                diff_summary = "".join(diff_lines) if diff_lines else "Sem alterações textuais."
+
+                # Atualiza documento principal
+                now = datetime.utcnow().isoformat()
+                await db.execute(
+                    """
+                    UPDATE spaces
+                    SET content = ?, version = ?, title = ?, updated_at = ?
+                    WHERE id = ?
+                    """,
+                    (content, new_version, doc_title, now, space_id)
+                )
+
+                # Salva nova revisão no histórico
+                rev_id = str(uuid.uuid4())
+                await db.execute(
+                    """
+                    INSERT INTO space_revisions (id, space_id, version, diff_summary, content)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (rev_id, space_id, new_version, diff_summary, content)
+                )
+            else:
+                # Documento novo (Versão 1)
+                space_id = str(uuid.uuid4())
+                new_version = 1
+                diff_summary = "Criação inicial do documento (Versão 1)."
+
+                await db.execute(
+                    """
+                    INSERT INTO spaces (id, dot_id, filename, title, content, version)
+                    VALUES (?, ?, ?, ?, ?, 1)
+                    """,
+                    (space_id, dot_id, filename, doc_title, content)
+                )
+
+                rev_id = str(uuid.uuid4())
+                await db.execute(
+                    """
+                    INSERT INTO space_revisions (id, space_id, version, diff_summary, content)
+                    VALUES (?, ?, 1, ?, ?)
+                    """,
+                    (rev_id, space_id, diff_summary, content)
+                )
+
+            await db.commit()
+
+        # Grava também fisicamente no workspace do Dot
+        await FileManager.write_file(dot_id=dot_id, filename=filename, content=content)
+
+        # Indexa na memória semântica vetorial
+        await VectorStore.index_document(space_id=space_id, content=content)
+
+        return {
+            "space_id": space_id,
+            "dot_id": dot_id,
+            "filename": filename,
+            "version": new_version,
+            "diff_summary": diff_summary,
+            "status": "success"
+        }
+
+    @classmethod
+    async def get_document(cls, space_id: str) -> dict[str, Any] | None:
+        """Obtém documento completo por ID."""
+        async with get_db() as db:
+            cursor = await db.execute("SELECT * FROM spaces WHERE id = ?", (space_id,))
+            row = await cursor.fetchone()
+            return dict(row) if row else None
+
+    @classmethod
+    async def list_documents(cls, dot_id: str | None = None) -> list[dict[str, Any]]:
+        """Lista todos os documentos versionados em Spaces."""
+        async with get_db() as db:
+            if dot_id:
+                cursor = await db.execute(
+                    "SELECT id, dot_id, filename, title, version, mime_type, updated_at FROM spaces WHERE dot_id = ? ORDER BY updated_at DESC",
+                    (dot_id,)
+                )
+            else:
+                cursor = await db.execute(
+                    "SELECT id, dot_id, filename, title, version, mime_type, updated_at FROM spaces ORDER BY updated_at DESC"
+                )
+            rows = await cursor.fetchall()
+            return [dict(r) for r in rows]
+
+    @classmethod
+    async def get_revisions(cls, space_id: str) -> list[dict[str, Any]]:
+        """Retorna histórico de revisões com diffs de um documento."""
+        async with get_db() as db:
+            cursor = await db.execute(
+                "SELECT id, space_id, version, diff_summary, created_at FROM space_revisions WHERE space_id = ? ORDER BY version DESC",
+                (space_id,)
+            )
+            rows = await cursor.fetchall()
+            return [dict(r) for r in rows]
+
+    @classmethod
+    async def export_workspace_zip(cls, dot_id: str) -> bytes:
+        """Compacta todos os arquivos do workspace do Dot em um arquivo ZIP em memória."""
+        workspace_dir = os.path.join(settings.workspaces_root, dot_id)
+        zip_buffer = io.BytesIO()
+
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_f:
+            if os.path.exists(workspace_dir):
+                for root, _, files in os.walk(workspace_dir):
+                    for file in files:
+                        full_path = os.path.join(root, file)
+                        rel_path = os.path.relpath(full_path, workspace_dir)
+                        zip_f.write(full_path, arcname=rel_path)
+
+        zip_buffer.seek(0)
+        return zip_buffer.getvalue()

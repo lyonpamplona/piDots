@@ -1,0 +1,52 @@
+# ==============================================================================
+# piDots Core - Docker Compose para Raspberry Pi 4B (ARM64)
+# Calibrado para baixo consumo de memória, rotação de logs e proteção do MicroSD
+# ==============================================================================
+
+x-logging-edge: &edge-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
+services:
+  pidots-core:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pidots-core
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - AI_BASE_URL=${AI_BASE_URL:-https://api.verboo.ai/v1}
+      - AI_API_KEY=${AI_API_KEY:-demo_key}
+      - AI_MODEL=${AI_MODEL:-qwen3.8-27b}
+      - AI_MAX_RETRIES=${AI_MAX_RETRIES:-3}
+      - AI_TIMEOUT_SECONDS=${AI_TIMEOUT_SECONDS:-60.0}
+      - HOST=0.0.0.0
+      - PORT=8000
+      - SQLITE_DB_PATH=/app/data/pidots.db
+      - WORKSPACES_ROOT=/app/workspaces
+      - MAX_ITERATIONS_PER_GOAL=${MAX_ITERATIONS_PER_GOAL:-8}
+      - ENABLE_THERMAL_THROTTLE=${ENABLE_THERMAL_THROTTLE:-true}
+      - THERMAL_LIMIT_CELSIUS=${THERMAL_LIMIT_CELSIUS:-72.0}
+    volumes:
+      # Armazenamento de dados persistentes do SQLite WAL
+      - ./data:/app/data
+      # Espaço de trabalho dos Dots
+      - ./workspaces:/app/workspaces
+      # Sincronização de código
+      - ./pidots:/app/pidots
+      # Proteção do MicroSD: /tmp em memória volátil (tmpfs)
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    logging: *edge-logging
+    deploy:
+      resources:
+        limits:
+          cpus: '1.2'
+          memory: 256M
+        reservations:
+          cpus: '0.2'
+          memory: 64M
