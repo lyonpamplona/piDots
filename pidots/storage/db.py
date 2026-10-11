@@ -213,6 +213,8 @@ CREATE TABLE IF NOT EXISTS scheduled_tasks (
     last_run_at TIMESTAMP,
     last_status TEXT DEFAULT 'IDLE',
     last_result_summary TEXT,
+    consecutive_failures INTEGER DEFAULT 0,
+    backoff_until TIMESTAMP,
     is_active INTEGER DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
@@ -254,7 +256,7 @@ CREATE INDEX IF NOT EXISTS idx_hitl_status ON hitl_approvals(status);
 CREATE INDEX IF NOT EXISTS idx_participants_thread ON thread_participants(thread_id);
 CREATE INDEX IF NOT EXISTS idx_handoffs_thread ON agent_handoffs(thread_id, status);
 CREATE INDEX IF NOT EXISTS idx_milestones_goal ON milestones(goal_id, order_index);
-CREATE INDEX IF NOT EXISTS idx_tasks_due ON scheduled_tasks(is_active, next_run_at);
+CREATE INDEX IF NOT EXISTS idx_tasks_due ON scheduled_tasks(is_active, next_run_at, backoff_until);
 CREATE INDEX IF NOT EXISTS idx_channel_msgs ON channel_messages(channel_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_channel_members ON channel_members(channel_id);
 """
@@ -293,6 +295,14 @@ async def _apply_schema_migrations(db: aiosqlite.Connection) -> None:
         await db.execute("ALTER TABLE messages ADD COLUMN visibility TEXT DEFAULT 'public';")
     if "parent_message_id" not in msg_cols:
         await db.execute("ALTER TABLE messages ADD COLUMN parent_message_id TEXT;")
+
+    # 4. Tabela scheduled_tasks: colunas para resiliência e circuit breaker
+    cursor = await db.execute("PRAGMA table_info(scheduled_tasks);")
+    tasks_cols = {row["name"] for row in await cursor.fetchall()}
+    if "consecutive_failures" not in tasks_cols:
+        await db.execute("ALTER TABLE scheduled_tasks ADD COLUMN consecutive_failures INTEGER DEFAULT 0;")
+    if "backoff_until" not in tasks_cols:
+        await db.execute("ALTER TABLE scheduled_tasks ADD COLUMN backoff_until TIMESTAMP;")
 
     await db.commit()
 

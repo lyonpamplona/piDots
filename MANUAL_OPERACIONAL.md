@@ -156,13 +156,15 @@ curl -X POST http://localhost:8000/api/tasks \
   }'
 ```
 
-### 6.3 Monitoramento de Status Operacional e Exclusao Mutua
+### 6.3 Monitoramento de Status Operacional e Circuit Breaker
 Os status registrados na tabela `scheduled_tasks` sao:
 - `IDLE`: Tarefa registrada aguardando o proximo horario de disparo (`next_run_at`).
 - `RUNNING`: Ciclo em execucao ativa pelo `DotAgent` com trava em memoria (`_running_tasks`). Se o ciclo demorar mais de 15 segundos, novas varreduras ignoram o disparo repetido ate a conclusao da execucao.
-- `SILENT`: A tarefa foi concluida com sucesso e emitiu `HEARTBEAT_OK`. Nenhuma notificacao externa foi disparada.
-- `COMPLETED`: A tarefa detectou uma condicao relevante e gerou um relatorio textual ou alerta.
-- `FAILED`: Ocorreu uma excecao durante o ciclo cognitivo. O erro e registrado em `last_result_summary`.
+- `SILENT`: A tarefa foi concluida com sucesso e emitiu `HEARTBEAT_OK`. Nenhuma notificacao externa foi disparada e o contador de falhas e zerado (`consecutive_failures = 0`).
+- `COMPLETED`: A tarefa detectou uma condicao relevante e gerou um relatorio textual ou alerta. O contador de falhas e zerado.
+- `FAILED`: Ocorreu uma excecao durante o ciclo cognitivo. O erro tecnico real e registrado em `last_result_summary`, `consecutive_failures` e incrementado e um retardo exponencial (`backoff_until`) entre 30s e 3600s e aplicado.
+- `CIRCUIT_OPEN`: O Circuit Breaker abriu na 5ª falha consecutiva. A tarefa e desativada (`is_active = 0`) para proteger a CPU ARM64 e conectividade do host contra sobrecarga continuada.
+- `AUTH_REQUIRED`: Pausa preventiva de 10 minutos acionada pelo Sanity Check quando a `AI_API_KEY` for vazia ou contiver texto placeholder, evitando chamadas de rede inuteis ao provedor.
 
 ---
 
@@ -257,6 +259,9 @@ python3 scripts/test_phase7_scheduler.py
 
 # 3. Validar gateway de mensageria, canais tematicos e trava anti-recursao
 python3 scripts/test_phase8_messaging.py
+
+# 4. Validar resiliencia integral (Fases 1 a 4: tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
+python3 scripts/test_resilience_phases.py
 ```
 Todos os scripts reportam o consumo real de memoria RSS (mantendo-se < 100 MB de RAM) e asseguram a integridade do banco SQLite WAL.
 
@@ -332,19 +337,81 @@ O piDots implementa proteções ativas contra esse fenômeno:
   docker compose logs pidots-core
   ```
 
-### 13.2 Provedor de IA retornando erros 503 ou 429
-- O piDots já possui Circuit Breaker automático com até 3 retentativas e jitter exponencial.
-- Verifique a saúde da conexão externa via:
-  ```bash
-  curl -s http://localhost:8000/health
-  ```
-- Caso necessário, altere o modelo ou provedor a quente através da rota `POST /api/settings/ai`.
+### 13.2 Diagnostico e Tratamento de Falhas de Provedor de IA
+O piDots categoriza falhas cognitivas em duas excecoes tipadas com comportamentos deterministicos:
 
-### 13.3 O Console PWA não atualiza dados
+#### A. Falhas Irrecuperaveis de Autenticacao (ProviderAuthError - HTTP 401/403)
+- **Sintoma:** O agente interrompe o ciclo imediatamente com short-circuit sem desperdicar tentativas de retry.
+- **Log do Sistema:** `Falha de autenticação com provedor de IA: HTTP 401: Unauthorized...`
+- **Fita Interna:** O agente grava na tabela `messages` do SQLite WAL uma mensagem com `visibility: 'internal'` e prefixo `[FALHA DE AUTENTICAÇÃO]`.
+- **Inspecao Forense via SQLite:**
+  ```bash
+  sqlite3 /mnt/storage/piDots/data/pidots.db \
+    "SELECT id, thread_id, content, created_at FROM messages WHERE visibility = 'internal' AND content LIKE '%[FALHA%' ORDER BY created_at DESC LIMIT 5;"
+  ```
+- **Acao Corretiva:** Atualize a chave de API via hot-reload sem reiniciar o contêiner:
+  ```bash
+  curl -X POST http://localhost:8000/api/settings/ai \
+    -H "Content-Type: application/json" \
+    -d '{"api_key": "SUA_CHAVE_VALIDA_AQUI"}'
+  ```
+
+#### B. Falhas Temporarias de Rede ou Gateway (ProviderTransientError - HTTP 503/429/502/504)
+- **Sintoma:** O provedor aplica retentativas assincronas com backoff exponencial e jitter (`[1.0, 2.0, 4.0]s`).
+- **Log do Sistema:** `Falha temporária de rede (ConnectError). Aguardando...`
+- **Esgotamento:** Caso todas as tentativas falhem, o status `failed` e propagado para os consumidores e a falha e gravada com `[FALHA DE INFERÊNCIA]`.
+
+### 13.3 Diagnostico e Rearme do Circuit Breaker em Tarefas Proativas
+Quando uma tarefa proativa agendada falha sucessivamente, o `EdgeScheduler` protege o hardware e a rede contra tempestades de requisicao.
+
+#### Inspecionar Status de Tarefas Agendadas
+Via API REST:
+```bash
+curl -s http://localhost:8000/api/tasks | jq '.[] | {task_name, last_status, consecutive_failures, backoff_until, is_active}'
+```
+Ou diretamente no banco SQLite WAL:
+```bash
+sqlite3 /mnt/storage/piDots/data/pidots.db \
+  "SELECT id, task_name, last_status, consecutive_failures, backoff_until, is_active FROM scheduled_tasks;"
+```
+
+#### Estados de Protecao:
+1. **`AUTH_REQUIRED` (Sanity Check de Chave Vazia/Placeholder):**
+   - Ocorre quando `AI_API_KEY` nao foi definida ou mantem valores padrao (`sua_chave_aqui`, `placeholder`).
+   - A tarefa pausa por 10 minutos. Para corrigir, configure uma chave valida no `.env` ou via `POST /api/settings/ai`.
+2. **`CIRCUIT_OPEN` (5 Falhas Consecutivas):**
+   - Ocorre quando a tarefa atingiu 5 falhas consecutivas (`consecutive_failures = 5`). O escalonador desarma a tarefa (`is_active = 0`).
+
+#### Procedimento de Rearme Manual da Tarefa:
+Apos corrigir a conectividade ou a credencial, rearme o circuito e reative a tarefa executando:
+```bash
+sqlite3 /mnt/storage/piDots/data/pidots.db \
+  "UPDATE scheduled_tasks SET is_active = 1, consecutive_failures = 0, backoff_until = NULL, last_status = 'IDLE' WHERE id = 'ID_DA_TAREFA';"
+```
+
+### 13.4 Diagnostico de Subtarefas e Handoffs Falhos no MultiBotOrchestrator
+Quando uma subtarefa delegada a um worker falha na inferencia:
+- O registro em `agent_handoffs` recebe `status = 'FAILED'` e o detalhe do erro em `result_summary`.
+- Uma fita de carbono interna e registrada na conversa do supervisor (`[FALHA NA SUBTAREFA DE @dot]`).
+- O supervisor recebe `{'success': False, 'error': ...}` e pode replanejar ou avisar o usuario.
+
+#### Inspecionar Handoffs Falhos no SQLite:
+```bash
+sqlite3 /mnt/storage/piDots/data/pidots.db \
+  "SELECT id, thread_id, source_dot_id, target_dot_id, status, result_summary, created_at FROM agent_handoffs WHERE status = 'FAILED' ORDER BY created_at DESC LIMIT 5;"
+```
+
+### 13.5 Resposta de Falha Operacional no Gateway de Mensageria
+Caso ocorra uma interrupcao no provedor durante o recebimento de mensagens de Telegram, WhatsApp ou Webhook:
+- O `MessagingGateway` intercepta a falha e despacha aviso com o prefixo `[FALHA OPERACIONAL]`:
+  `[FALHA OPERACIONAL]: O agente encontrou uma falha de conexão com o provedor de IA e não pôde concluir o processamento da solicitação.`
+- O canal nao e corrompido e o interlocutor externo recebe feedback transparente imediato.
+
+### 13.6 O Console PWA não atualiza dados
 - No navegador, execute a limpeza do cache de Service Worker (`Application > Service Workers > Unregister`) ou force o recarregamento com `Ctrl + Shift + R`.
 - Verifique se o backend está respondendo normalmente em `http://localhost:8000/health`.
 
-### 13.4 Verificação de Cabeçalhos de Segurança HTTP
+### 13.7 Verificação de Cabeçalhos de Segurança HTTP
 Para auditar se os cabeçalhos defensivos de borda estão ativos no servidor FastAPI:
 ```bash
 curl -s -D - http://localhost:8000/health | grep -iE "(x-content-type-options|x-frame-options|referrer-policy)"
@@ -356,7 +423,7 @@ x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 ```
 
-### 13.5 Exportação e Backup de Workspaces em ZIP
+### 13.8 Exportação e Backup de Workspaces em ZIP
 Para baixar o workspace completo e artefatos de um Dot via linha de comando (com fallback e agregação da tabela `spaces`):
 ```bash
 curl -s http://localhost:8000/api/workspaces/dot-dev-core/export.zip -o workspace_dot-dev-core.zip

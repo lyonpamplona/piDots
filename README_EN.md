@@ -92,11 +92,13 @@ piDots provides in-process multi-agent collaboration optimized for edge resource
   - `auditor`: System telemetry, integrity verification, and compliance checks.
 - **Dynamic Tool Pruning:** Agents load only the tool definitions allowed in `allowed_tools_json`, slashing prompt token overhead by up to 75% and preventing tool hallucination.
 
-### 2. Proactive Automations: Dot Heartbeat Pattern
+### 2. Proactive Automations: Dot Heartbeat Pattern and Circuit Breaker
 The `pidots/core/scheduler.py` module introduces an in-process background scheduler driven by `croniter` without requiring Celery or Redis:
 - **Cron Tasks:** Schedules are stored and tracked in SQLite WAL table `scheduled_tasks`.
 - **Operational Silence Directive (HEARTBEAT_OK):** During routine inspections, if system telemetry and log checks indicate normal operational conditions, the agent responds strictly with `HEARTBEAT_OK`. The scheduler registers the run as `SILENT` and sleeps without issuing unnecessary external alerts.
 - **In-Process Mutual Exclusion Concurrency:** Memory-backed lock set (`_running_tasks`) that prevents duplicate or cascading triggers when LLM reasoning cycles exceed the periodic 15-second heartbeat sweep interval.
+- **Circuit Breaker with Exponential Backoff:** Proactive tasks experiencing consecutive failures back off progressively from 30s up to 3,600s (`min(3600, 30 * 2^(n-1))`). Upon the 5th consecutive failure, the circuit trips (`CIRCUIT_OPEN`), deactivating the task (`is_active = 0`) to preserve ARM64 CPU cycles and network sockets.
+- **Preventive Credential Sanity Check (AUTH_REQUIRED):** Proactive tasks check for missing or placeholder credentials (`AI_API_KEY`), pausing execution with an `AUTH_REQUIRED` status and a 10-minute protective backoff before triggering pointless remote API calls.
 
 ### 3. Unified Messaging Gateway and Team Channels
 The `pidots/core/messaging_gateway.py` module exposes stateless HTTP endpoints for external messaging platforms:
@@ -107,6 +109,17 @@ The `pidots/core/messaging_gateway.py` module exposes stateless HTTP endpoints f
   1. Strict recursion counter (`hop_count <= 3`).
   2. Bots only answer other bots when explicitly mentioned via `@dot_id`.
   3. Silent `NO_ACTION` directive when an agent has no actionable contribution.
+- **Graceful Operational Failure Handling:** When upstream inference fails, the gateway catches the event and dispatches an informative `[FALHA OPERACIONAL]` notice to the remote user without degrading communication channel integrity.
+
+### 4. Cognitive Resilience Architecture and Typed Exception Handling
+The core piDots engine enforces an end-to-end resilient execution loop:
+- **Typed Provider Exceptions:** The `OpenAIUniversalProvider` client strictly differentiates `ProviderAuthError` (HTTP 401/403 with immediate short-circuiting and no wasteful retries) from `ProviderTransientError` (HTTP 503/429/timeout with exponential backoff and jitter).
+- **Standardized AG-UI v1.0 Protocol Contract:** The `DotAgent.run_thread` lifecycle emits a terminal `run:finished` event with `status: "failed"`, providing structured `error`, `error_type` (`auth_error` or `transient_error`), and `final_response: ""`.
+- **Internal Carbon Diagnostic Tape:** Root-cause errors are persisted to SQLite WAL `messages` with `internal` visibility (`[FALHA DE INFERENCIA]` or `[FALHA DE AUTENTICACAO]`), ensuring complete forensic auditability without polluting human-facing feeds.
+- **Integrated Resilience across Three Consumer Subsystems:**
+  - *EdgeScheduler:* Accurately persists `FAILED` status with actual technical error summaries in SQLite, eliminating false-positive completions.
+  - *MessagingGateway:* Returns structured, user-friendly error notices (`[FALHA OPERACIONAL]`) across external chat bridges.
+  - *MultiBotOrchestrator:* Marks subtasks in `agent_handoffs` as `FAILED`, writes internal diagnostic alerts to parent threads, and provides structured feedback `{'success': False, 'error': ...}` allowing supervisory replanning.
 
 ---
 
@@ -373,6 +386,9 @@ python3 scripts/test_phase7_scheduler.py
 
 # Messaging gateway, webhooks, and team channels suite
 python3 scripts/test_phase8_messaging.py
+
+# End-to-end resilience suite (Phases 1-4: typed exceptions, AG-UI v1.0, 3 consumers, Circuit Breaker)
+python3 scripts/test_resilience_phases.py
 
 # Full edge load and concurrency stress test
 python3 scripts/stress_test.py

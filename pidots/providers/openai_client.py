@@ -14,6 +14,16 @@ from ..config import settings
 logger = logging.getLogger("pidots.provider")
 
 
+class ProviderAuthError(RuntimeError):
+    """Erro irrecuperável de autenticação ou credencial no provedor de IA (HTTP 401/403)."""
+    pass
+
+
+class ProviderTransientError(RuntimeError):
+    """Falha temporária ou esgotamento de retentativas no provedor de IA (HTTP 503/429/timeout)."""
+    pass
+
+
 class OpenAIUniversalProvider:
     """
     Cliente de inferência leve e assíncrono para qualquer API OpenAI-compatível.
@@ -90,7 +100,16 @@ class OpenAIUniversalProvider:
                 if response.status_code == 200:
                     return response.json()
 
-                # Códigos passíveis de retry (503 Service Unavailable, 429 Rate Limit, 502 Bad Gateway)
+                # Falhas irrecuperáveis de autenticação / credencial (401 Unauthorized, 403 Forbidden)
+                if response.status_code in (401, 403):
+                    err_msg = (
+                        f"Autenticação recusada pelo provedor (HTTP {response.status_code}): "
+                        f"verifique AI_API_KEY e AI_BASE_URL. Resposta: {response.text[:200]}"
+                    )
+                    logger.error("%s", err_msg)
+                    raise ProviderAuthError(err_msg)
+
+                # Códigos passíveis de retry (503 Service Unavailable, 429 Rate Limit, 502 Bad Gateway, 504 Gateway Timeout)
                 if response.status_code in (503, 429, 502, 504):
                     jitter = random.uniform(0.1, 0.5)
                     wait_time = delays[min(attempt, len(delays) - 1)] + jitter
@@ -101,17 +120,17 @@ class OpenAIUniversalProvider:
                     await asyncio.sleep(wait_time)
                     continue
 
-                # Outros erros HTTP (400, 401, 404, etc.)
+                # Demais erros HTTP inesperados (400, 404, etc.)
                 logger.error("Erro retornado pelo provedor: HTTP %d - %s", response.status_code, response.text[:200])
                 response.raise_for_status()
 
             except (httpx.ConnectError, httpx.ReadTimeout, httpx.RemoteProtocolError) as net_err:
                 if attempt == self.max_retries - 1:
                     logger.error("Esgotadas as tentativas de conexão com %s: %s", endpoint, str(net_err))
-                    raise
+                    raise ProviderTransientError(f"Falha de conexão com {endpoint}: {str(net_err)}") from net_err
                 jitter = random.uniform(0.2, 0.6)
                 wait_time = delays[min(attempt, len(delays) - 1)] + jitter
                 logger.warning("Falha temporária de rede (%s). Aguardando %.2fs...", type(net_err).__name__, wait_time)
                 await asyncio.sleep(wait_time)
 
-        raise RuntimeError(f"Falha de inferência com {endpoint} após {self.max_retries} tentativas com backoff.")
+        raise ProviderTransientError(f"Falha de inferência com {endpoint} após {self.max_retries} tentativas com backoff.")

@@ -7,10 +7,11 @@ Implementa o padrão Dot Heartbeat com diretriz de silêncio HEARTBEAT_OK.
 import asyncio
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Any
 from croniter import croniter
 
+from ..config import settings
 from ..storage.db import get_db
 from ..providers.openai_client import OpenAIUniversalProvider
 from .agent import DotAgent
@@ -92,18 +93,21 @@ class EdgeScheduler:
 
     @classmethod
     async def get_due_tasks(cls) -> list[dict[str, Any]]:
-        """Recupera tarefas ativas cuja data de execução seja menor ou igual ao horário atual e que não estejam em execução."""
+        """Recupera tarefas ativas cuja data de execução seja devida, respeitando janelas de backoff e exclusão mútua."""
         now_iso = datetime.now(timezone.utc).isoformat()
         async with get_db() as db:
             cursor = await db.execute(
                 """
                 SELECT id, dot_id, task_name, cron_expr, action_prompt,
-                       target_channel_type, target_channel_id, next_run_at
+                       target_channel_type, target_channel_id, next_run_at,
+                       consecutive_failures, backoff_until
                 FROM scheduled_tasks
-                WHERE is_active = 1 AND next_run_at <= ?
+                WHERE is_active = 1
+                  AND next_run_at <= ?
+                  AND (backoff_until IS NULL OR backoff_until <= ?)
                 ORDER BY next_run_at ASC
                 """,
-                (now_iso,)
+                (now_iso, now_iso)
             )
             rows = await cursor.fetchall()
             return [dict(row) for row in rows if row["id"] not in cls._running_tasks]
@@ -116,28 +120,101 @@ class EdgeScheduler:
         status: str,
         summary: str
     ) -> None:
-        """Atualiza o resultado da execução e recalcula a próxima data de disparo."""
+        """Atualiza o resultado da execução, calcula backoff exponencial se houver falhas e recalcula a próxima data de disparo."""
         now = datetime.now(timezone.utc)
         next_run = cls.calculate_next_run(cron_expr, now)
 
         async with get_db() as db:
-            await db.execute(
-                """
-                UPDATE scheduled_tasks
-                SET last_run_at = ?,
-                    next_run_at = ?,
-                    last_status = ?,
-                    last_result_summary = ?
-                WHERE id = ?
-                """,
-                (
-                    now.isoformat(),
-                    next_run.isoformat(),
-                    status,
-                    summary[:500],
-                    task_id
-                )
+            cursor = await db.execute(
+                "SELECT consecutive_failures FROM scheduled_tasks WHERE id = ?",
+                (task_id,)
             )
+            row = await cursor.fetchone()
+            current_failures = (row["consecutive_failures"] or 0) if row else 0
+
+            if status == "FAILED":
+                new_failures = current_failures + 1
+                # Backoff exponencial: 30s, 60s, 120s, 240s, 480s (máximo 1h)
+                backoff_delay = min(3600, 30 * (2 ** (new_failures - 1)))
+                backoff_until = (now + timedelta(seconds=backoff_delay)).isoformat()
+
+                if new_failures >= 5:
+                    new_status = "CIRCUIT_OPEN"
+                    is_active = 0
+                    logger.warning(
+                        "Circuit breaker ativado para a tarefa proativa '%s'. Desativando após %d falhas consecutivas.",
+                        task_id, new_failures
+                    )
+                else:
+                    new_status = status
+                    is_active = 1
+
+                await db.execute(
+                    """
+                    UPDATE scheduled_tasks
+                    SET last_run_at = ?,
+                        next_run_at = ?,
+                        last_status = ?,
+                        last_result_summary = ?,
+                        consecutive_failures = ?,
+                        backoff_until = ?,
+                        is_active = ?
+                    WHERE id = ?
+                    """,
+                    (
+                        now.isoformat(),
+                        next_run.isoformat(),
+                        new_status,
+                        summary[:500],
+                        new_failures,
+                        backoff_until,
+                        is_active,
+                        task_id
+                    )
+                )
+            elif status == "AUTH_REQUIRED":
+                # Backoff fixo de 10 minutos para dar tempo ao operador configurar a chave sem poluir o loop
+                backoff_until = (now + timedelta(minutes=10)).isoformat()
+                await db.execute(
+                    """
+                    UPDATE scheduled_tasks
+                    SET last_run_at = ?,
+                        next_run_at = ?,
+                        last_status = ?,
+                        last_result_summary = ?,
+                        backoff_until = ?
+                    WHERE id = ?
+                    """,
+                    (
+                        now.isoformat(),
+                        next_run.isoformat(),
+                        status,
+                        summary[:500],
+                        backoff_until,
+                        task_id
+                    )
+                )
+            else:
+                # Sucesso ou silêncio operacional: reseta falhas e zera backoff
+                await db.execute(
+                    """
+                    UPDATE scheduled_tasks
+                    SET last_run_at = ?,
+                        next_run_at = ?,
+                        last_status = ?,
+                        last_result_summary = ?,
+                        consecutive_failures = 0,
+                        backoff_until = NULL
+                    WHERE id = ?
+                    """,
+                    (
+                        now.isoformat(),
+                        next_run.isoformat(),
+                        status,
+                        summary[:500],
+                        task_id
+                    )
+                )
             await db.commit()
 
 
@@ -153,6 +230,20 @@ async def execute_proactive_task(
 
     if EdgeScheduler.is_running(task_id):
         logger.debug("Tarefa proativa '%s' já em execução. Ignorando disparo duplicado.", task_id)
+        return
+
+    # Sanity check preventivo apenas se for provedor real remoto com chave placeholder
+    if isinstance(ai_provider, OpenAIUniversalProvider) and ai_provider.api_key in ("", "sua_chave_aqui", "placeholder"):
+        logger.warning(
+            "Tarefa proativa '%s' pausada: AI_API_KEY não configurada ou com valor placeholder. Configure sua chave no .env.",
+            task["task_name"]
+        )
+        await EdgeScheduler.mark_task_finished(
+            task_id=task_id,
+            cron_expr=cron_expr,
+            status="AUTH_REQUIRED",
+            summary="Pausada preventivamente: AI_API_KEY com valor placeholder ou vazia."
+        )
         return
 
     EdgeScheduler.mark_running(task_id)
@@ -176,6 +267,8 @@ async def execute_proactive_task(
     agent = DotAgent(dot_id=dot_id, provider=ai_provider)
     final_response = ""
     status = "COMPLETED"
+    finish_status = "completed"
+    error_msg = ""
 
     try:
         # Diretriz de silêncio para conter ruído e poupar tokens de notificação
@@ -188,15 +281,23 @@ async def execute_proactive_task(
 
         async for event in agent.run_thread(thread_id=proactive_thread_id, user_message=heartbeat_instruction):
             if event["event"] == "run:finished":
-                final_response = event.get("data", {}).get("final_response", "")
+                event_data = event.get("data", {})
+                finish_status = event_data.get("status", "completed")
+                final_response = event_data.get("final_response", "")
+                error_msg = event_data.get("error", "")
 
-        # Avaliação de silêncio
-        if "HEARTBEAT_OK" in final_response.strip():
+        # Avaliação de resultado
+        if finish_status == "failed":
+            status = "FAILED"
+            summary = f"Falha no ciclo do agente: {error_msg}" if error_msg else "Falha na inferência do agente."
+            logger.warning("Tarefa proativa '%s' falhou no ciclo cognitivo: %s", task["task_name"], summary)
+        elif "HEARTBEAT_OK" in final_response.strip():
             status = "SILENT"
             summary = "Condição operacional normal. Nenhuma notificação emitida."
             logger.info("Tarefa proativa '%s' concluída com status SILENT (HEARTBEAT_OK).", task["task_name"])
         else:
-            summary = final_response[:400]
+            status = "COMPLETED"
+            summary = final_response[:400] if final_response else "Execução concluída sem texto."
             logger.info("Tarefa proativa '%s' detectou evento e emitiu conclusão.", task["task_name"])
 
             # Despacho externo se canal configurado

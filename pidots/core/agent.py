@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 
 from ..config import settings
 from ..storage.db import get_db
-from ..providers.openai_client import OpenAIUniversalProvider
+from ..providers.openai_client import OpenAIUniversalProvider, ProviderAuthError, ProviderTransientError
 from ..tools.registry import registry as default_tool_registry, ToolRegistry
 from .hitl import HITLManager
 from .state import AGUIEvent
@@ -60,7 +60,12 @@ class DotAgent:
         if not dot_info:
             yield {
                 "event": "run:finished",
-                "data": {"run_id": run_id, "error": f"Dot '{self.dot_id}' não encontrado.", "status": "error"}
+                "data": {
+                    "run_id": run_id,
+                    "status": "failed",
+                    "final_response": "",
+                    "error": f"Dot '{self.dot_id}' não encontrado."
+                }
             }
             return
 
@@ -96,15 +101,66 @@ class DotAgent:
                     tools=tool_defs if tool_defs else None,
                     model=dot_info["model"]
                 )
-            except Exception as e:
-                logger.error("Erro na chamada de inferência: %s", str(e), exc_info=True)
+            except ProviderAuthError as auth_err:
+                err_msg = str(auth_err)
+                logger.error("Falha de autenticação com provedor de IA: %s", err_msg)
+                
+                # Persiste mensagem interna de diagnóstico no SQLite WAL
+                diag_msg_id = str(uuid.uuid4())
+                async with get_db() as db:
+                    await db.execute(
+                        """
+                        INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                        VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
+                        """,
+                        (diag_msg_id, thread_id, f"[FALHA DE AUTENTICAÇÃO]: {err_msg}", self.dot_id, err_msg)
+                    )
+                    await db.commit()
+
                 yield {
                     "event": "thought:delta",
-                    "data": {"run_id": run_id, "error": f"Falha de conexão com provedor: {str(e)}"}
+                    "data": {"run_id": run_id, "error": err_msg}
                 }
                 yield {
                     "event": "run:finished",
-                    "data": {"run_id": run_id, "status": "failed", "error": str(e)}
+                    "data": {
+                        "run_id": run_id,
+                        "status": "failed",
+                        "final_response": "",
+                        "error": err_msg,
+                        "error_type": "auth_error"
+                    }
+                }
+                return
+            except Exception as e:
+                err_msg = str(e)
+                logger.error("Erro na chamada de inferência: %s", err_msg)
+                
+                # Persiste mensagem interna de diagnóstico no SQLite WAL
+                diag_msg_id = str(uuid.uuid4())
+                async with get_db() as db:
+                    await db.execute(
+                        """
+                        INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                        VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
+                        """,
+                        (diag_msg_id, thread_id, f"[FALHA DE INFERÊNCIA]: {err_msg}", self.dot_id, err_msg)
+                    )
+                    await db.commit()
+
+                yield {
+                    "event": "thought:delta",
+                    "data": {"run_id": run_id, "error": f"Falha de conexão com provedor: {err_msg}"}
+                }
+                yield {
+                    "event": "run:finished",
+                    "data": {
+                        "run_id": run_id,
+                        "status": "failed",
+                        "final_response": "",
+                        "error": err_msg,
+                        "error_type": "transient_error"
+                    }
                 }
                 return
 
@@ -222,7 +278,8 @@ class DotAgent:
                 "status": "completed",
                 "iterations": iteration,
                 "duration_seconds": round((datetime.now(timezone.utc) - start_time).total_seconds(), 2),
-                "final_response": final_response_text
+                "final_response": final_response_text,
+                "error": None
             }
         }
 

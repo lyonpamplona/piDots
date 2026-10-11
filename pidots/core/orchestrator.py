@@ -179,13 +179,51 @@ class MultiBotOrchestrator:
             await db.commit()
 
         try:
+            worker_status = "completed"
+            worker_error = ""
+
             async for event in worker_agent.run_thread(
                 thread_id=isolated_thread_id,
                 user_message=internal_prompt
             ):
                 if event["event"] == "run:finished":
-                    # Recupera última mensagem do assistente gerada
-                    pass
+                    event_data = event.get("data", {})
+                    worker_status = event_data.get("status", "completed")
+                    worker_error = event_data.get("error", "")
+
+            # Se o worker falhou na execução ou inferência
+            if worker_status == "failed":
+                err_desc = worker_error or "Falha desconhecida na execução da subtarefa"
+                async with get_db() as db:
+                    await db.execute(
+                        """
+                        UPDATE agent_handoffs
+                        SET status = 'FAILED',
+                            result_summary = ?,
+                            completed_at = CURRENT_TIMESTAMP
+                        WHERE id = ?
+                        """,
+                        (err_desc[:500], handoff_id)
+                    )
+                    await db.commit()
+
+                # Registra o alerta de falha como fita de carbono na thread principal
+                await cls.record_message(
+                    thread_id=thread_id,
+                    actor_id=target_dot_id,
+                    actor_type="dot",
+                    target_dot_id=source_dot_id,
+                    visibility="internal",
+                    role="assistant",
+                    content=f"[FALHA NA SUBTAREFA DE @{target_dot_id}]:\n{err_desc}"
+                )
+
+                return {
+                    "success": False,
+                    "worker_dot_id": target_dot_id,
+                    "handoff_id": handoff_id,
+                    "error": err_desc
+                }
 
             async with get_db() as db:
                 cursor = await db.execute(

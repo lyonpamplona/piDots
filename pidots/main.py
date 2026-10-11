@@ -90,6 +90,16 @@ async def lifespan(app: FastAPI):
     app.state.http_client = httpx.AsyncClient(limits=limits, timeout=timeout)
     app.state.ai_provider = OpenAIUniversalProvider(http_client=app.state.http_client)
 
+    # Sanity check preventivo de credenciais de inferência no arranque do nó Edge
+    if settings.ai_api_key in ("", "sua_chave_aqui", "placeholder"):
+        logger.warning(
+            "AVISO DE CONFIGURAÇÃO EDGE: AI_API_KEY não configurada ou com valor placeholder ('%s'). "
+            "Chamadas cognitivas que dependem do provedor remoto entrarão em modo protegido até que uma chave válida seja configurada no .env.",
+            settings.ai_api_key
+        )
+    else:
+        logger.info("Credencial de inferência carregada com sucesso para o modelo: %s", settings.ai_model)
+
     # Inicia rotina periódica de proteção contra inchaço do MicroSD (a cada 15 min)
     checkpoint_task = asyncio.create_task(periodic_wal_checkpoint(interval_seconds=900))
 

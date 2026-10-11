@@ -85,13 +85,23 @@ class MessagingGateway:
 
         agent = DotAgent(dot_id=dot_id, provider=ai_provider)
         final_response_text = ""
+        run_status = "completed"
+        error_msg = ""
 
         async for event in agent.run_thread(thread_id=thread_id, user_message=msg.text):
             if event["event"] == "run:finished":
-                final_response_text = event.get("data", {}).get("final_response", "")
+                event_data = event.get("data", {})
+                run_status = event_data.get("status", "completed")
+                final_response_text = event_data.get("final_response", "")
+                error_msg = event_data.get("error", "")
 
-        if not final_response_text:
-            final_response_text = "Comando recebido e processado com sucesso pelo agente."
+        if run_status == "failed":
+            final_response_text = (
+                f"[FALHA OPERACIONAL]: O agente encontrou uma falha de conexão com o provedor de IA e "
+                f"não pôde concluir o processamento da solicitação. Detalhes: {error_msg}"
+            )
+        elif not final_response_text:
+            final_response_text = "Comando processado pelo agente (sem saída textual gerada)."
 
         # Despacho da resposta de volta
         await cls.dispatch_outgoing_message(
@@ -288,13 +298,16 @@ class ChannelOrchestrator:
 
         agent = DotAgent(dot_id=dot_id, provider=ai_provider)
         final_answer = ""
+        run_status = "completed"
 
         try:
             async for event in agent.run_thread(thread_id=channel_thread_id, user_message=prompt_with_context):
                 if event["event"] == "run:finished":
-                    final_answer = event.get("data", {}).get("final_response", "")
+                    event_data = event.get("data", {})
+                    run_status = event_data.get("status", "completed")
+                    final_answer = event_data.get("final_response", "")
 
-            if final_answer and "NO_ACTION" not in final_answer.strip():
+            if run_status == "completed" and final_answer and "NO_ACTION" not in final_answer.strip():
                 await cls.post_message_to_channel(
                     channel_id=channel_id,
                     author_type="dot",

@@ -173,14 +173,17 @@ PRAGMA temp_store = MEMORY;
 O modulo gerencia dialogos multi-ator em um unico processo assincrono:
 - **ThreadRouter:** Analisa mensagens com expressao regular (`@([a-zA-Z0-9_\-]+)`), valida se os agentes existem no SQLite WAL e define o destinatario principal e participantes citados.
 - **MultiBotOrchestrator.delegate_subtask():** Executa o padrao Supervisor-Worker. O supervisor invoca o worker em uma thread isolada (`subtask-{handoff_id}`), mantendo o historico principal despoluido. O resultado e sintetizado e registrado na conversa pai como fita de carbono (`visibility: 'internal'`).
+- **Tratamento Resiliente de Falhas em Subtarefas:** Caso o worker encontre falha na execucao ou inferencia (status `failed` no evento `run:finished`), o orchestrator intercepta o erro, atualiza a tabela `agent_handoffs` para `FAILED` com sumario tecnico, grava mensagem interna de diagnostico na thread pai (`[FALHA NA SUBTAREFA DE @dot]`) e devolve feedback estruturado (`{'success': False, 'worker_dot_id': ..., 'handoff_id': ..., 'error': ...}`), habilitando o supervisor a reavaliar sua estrategia cognitivamente.
 - **MultiBotOrchestrator.handoff_lead():** Realiza a transferencia formal de comando de uma thread para outro Dot especialista quando o dominio da tarefa exigir, atualizando o campo `dot_id` da thread e gerando registro na tabela `agent_handoffs`.
 
 ### 5.2 pidots/core/scheduler.py (Dot Heartbeat e Agendamento Proativo)
 Elimina a necessidade de filas externas (Celery/RabbitMQ) atraves de um loop in-process leve:
 - **EdgeScheduler:** Valida sintaxe croniter e calcula `next_run_at` em UTC no SQLite WAL.
-- **heartbeat_worker_loop():** Loop perpetuo (`asyncio.create_task`) disparado no lifespan do FastAPI, varrendo tarefas devidas a cada 15 segundos.
+- **heartbeat_worker_loop():** Loop perpetuo (`asyncio.create_task`) disparado no lifespan do FastAPI, varrendo tarefas devidas a cada 15 segundos considerando `next_run_at` e a trava `backoff_until`.
 - **Diretriz de Silencio Operacional (HEARTBEAT_OK):** Injeta no prompt de acao a instrucao estrita para responder `HEARTBEAT_OK` caso as condicoes checadas estejam normais. Quando detectado, o status e marcado como `SILENT`, sem despachar notificacoes externas ou gerar lixo no historico.
 - **Trava de Exclusao Mutua In-Process:** Conjunto em memoria (`_running_tasks: set[str]`) que registra as tarefas em execucao ativa. Caso um ciclo de raciocinio com o LLM consuma mais de 15 segundos, as varreduras subsequentes ignoram tarefas ja em andamento, impedindo disparos duplicados em cascata e exaustao de memoria RAM.
+- **Circuit Breaker e Backoff Exponencial:** Ao detectar falha no ciclo cognitivo (`status == 'FAILED'`), o scheduler incrementa `consecutive_failures` e aplica retardo progressivo (`min(3600, 30 * 2^(n-1))`) persistido em `backoff_until`. Na 5ª falha consecutiva, o circuito abre (`CIRCUIT_OPEN`), desativando a tarefa (`is_active = 0`) para preservar a integridade do nó Edge. Em execucoes com sucesso (`COMPLETED` ou `SILENT`), o contador e zerado.
+- **Sanity Check Preventivo de Credenciais (AUTH_REQUIRED):** Caso `AI_API_KEY` esteja vazia ou contenha chaves placeholder, a tarefa e imediatamente pausada com status `AUTH_REQUIRED` e backoff de 10 minutos, sem emitir chamadas de rede inuteis ao gateway remoto.
 
 ### 5.3 pidots/core/messaging_gateway.py (Gateway de Mensageria e Salas Tematicas)
 Centraliza a entrada de mensagens de plataformas terceiras:
@@ -189,6 +192,7 @@ Centraliza a entrada de mensagens de plataformas terceiras:
 - **Integracao Nativa com Evolution API:** Consome `evolution_api_url` e `evolution_api_key` validados pelo Pydantic, despachando mensagens de volta via endpoint `/message/sendText` com indicador de digitacao (`composing`) e delay humanizado sem bloquear a thread principal.
 - **ChannelOrchestrator:** Orquestra salas tematicas colaborativas (`channels`).
 - **Trava Anti-Recursao de Mensageria:** Bloqueia ciclos infinitos entre bots aplicando um teto estrito de saltos (`hop_count <= 3`), exigencia de mencao explicita entre bots para resposta e diretriz `NO_ACTION` para abster-se silenciosamente quando nao houver agregacao de valor.
+- **Resposta Operacional Clara em Falhas:** Se o ciclo de raciocinio falhar por indisponibilidade ou erro de credencial no provedor, o gateway captura o status terminal e envia resposta transparente (`[FALHA OPERACIONAL]: O agente encontrou uma falha de conexão...`) ao interlocutor no Telegram, WhatsApp ou webhook, garantindo que o canal permaneca integro.
 
 ### 5.4 pidots/storage/spaces_manager.py (Exportacao Resiliente de Workspaces)
 Gerencia a persistencia de documentos, historico de revisoes e exportacao compactada:
@@ -212,7 +216,7 @@ O esquema do piDots foi enriquecido com 9 novas tabelas relacionais em modo Writ
 | `goals` | Metas persistentes do agente para conter dispersao (goal drift) | `id`, `dot_id`, `thread_id`, `title`, `description`, `status`, `priority` |
 | `milestones` | Marcos sequenciais verificaveis associados a cada meta | `id`, `goal_id`, `order_index`, `title`, `acceptance_criteria`, `status`, `evidence_summary` |
 | `episodic_memories` | Memoria episodica de medio prazo com sumarizacao estruturada | `id`, `dot_id`, `thread_id`, `summary`, `key_decisions`, `modified_artifacts` |
-| `scheduled_tasks` | Registro de tarefas proativas cron executadas pelo Heartbeat | `id`, `dot_id`, `task_name`, `cron_expr`, `action_prompt`, `next_run_at`, `last_status`, `is_active` |
+| `scheduled_tasks` | Registro de tarefas proativas cron executadas pelo Heartbeat | `id`, `dot_id`, `task_name`, `cron_expr`, `action_prompt`, `next_run_at`, `last_status`, `consecutive_failures`, `backoff_until`, `is_active` |
 | `channels` | Salas tematicas de equipe para colaboracao multi-bot e humana | `id`, `name`, `description`, `created_at` |
 | `channel_messages` | Mensagens trocadas nas salas tematicas com rastreio de saltos | `id`, `channel_id`, `author_type`, `author_id`, `content`, `hop_count` |
 | `channel_members` | Membros inscritos em cada sala tematica (Dots ou Usuarios) | `channel_id`, `member_type`, `member_id`, `joined_at` |
@@ -223,7 +227,7 @@ Para manter a latencia de consulta inferior a 5ms em hardware ARM64:
 CREATE INDEX IF NOT EXISTS idx_participants_thread ON thread_participants(thread_id);
 CREATE INDEX IF NOT EXISTS idx_handoffs_thread ON agent_handoffs(thread_id, status);
 CREATE INDEX IF NOT EXISTS idx_milestones_goal ON milestones(goal_id, order_index);
-CREATE INDEX IF NOT EXISTS idx_tasks_due ON scheduled_tasks(is_active, next_run_at);
+CREATE INDEX IF NOT EXISTS idx_tasks_due ON scheduled_tasks(is_active, next_run_at, backoff_until);
 CREATE INDEX IF NOT EXISTS idx_channel_msgs ON channel_messages(channel_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_channel_members ON channel_members(channel_id);
 ```
@@ -305,3 +309,97 @@ Para proteger a estacao de trabalho de borda exposta na rede local ou via tuneis
 1. **`X-Content-Type-Options: nosniff`:** Impede que navegadores realizem inferencia de tipos MIME em artefatos, respostas textuais ou scripts servidos, eliminando vetores de exploracao de conteudo estatico malicioso.
 2. **`X-Frame-Options: SAMEORIGIN`:** Impede que dominios de terceiros incorporem o console operacional SPA, o guia ou a landing page dentro de frames externos, neutralizando ataques de clickjacking.
 3. **`Referrer-Policy: strict-origin-when-cross-origin`:** Garante que dados de contexto, caminhos internos de rotas ou parametros de query nao vazem para servicos externos ao navegar a partir da aplicacao.
+
+---
+
+## 14. Arquitetura de Resiliencia Cognitiva, Circuit Breaker e Contratos AG-UI v1.0
+
+A operacao autonoma continua 24/7 em hardware de borda (Raspberry Pi 4B) impoe que falhas de rede, oscilacoes de latencia, limites de taxa ou credenciais invalidas no provedor remoto de LLM sejam tratadas de forma deterministica, sem travar o loop de eventos, sem corromper o estado do banco e sem gerar falsos positivos operacionais.
+
+### 14.1 Hierarquia de Excecoes Tipadas e Short-Circuit
+
+O modulo `pidots/providers/openai_client.py` define uma taxonomia clara para diferenciar falhas recuperaveis de irrecuperaveis:
+
+```mermaid
+flowchart TD
+    Req["Requisicao HTTP via httpx"] --> CodeCheck{"Avaliacao do HTTP Status"}
+    
+    CodeCheck -->|HTTP 200| OK["Sucesso (Payload JSON)"]
+    CodeCheck -->|HTTP 401 / 403| AuthErr["ProviderAuthError\n(Short-circuit imediato)"]
+    CodeCheck -->|HTTP 502 / 503 / 504 / 429| RetryCheck{"attempt < max_retries?"}
+    CodeCheck -->|ConnectError / ReadTimeout| RetryCheck
+    
+    RetryCheck -->|Sim| Backoff["Calculo Delay + Jitter\n(asyncio.sleep)"] --> Req
+    RetryCheck -->|Nao| TransErr["ProviderTransientError\n(Esgotamento de tentativas)"]
+```
+
+1. **`ProviderAuthError` (Irrecuperavel):** Disparado em respostas HTTP 401 (Unauthorized) ou HTTP 403 (Forbidden). Aplica **short-circuit imediato**, abortando o ciclo ReAct sem realizar retentativas inuteis que sobrecarregariam a CPU e consumiriam banda de rede.
+2. **`ProviderTransientError` (Recuperavel com Backoff):** Disparado em erros transitorios HTTP 503 (Service Unavailable), HTTP 429 (Rate Limit), HTTP 502/504 ou falhas de conexao/timeout de rede (`ConnectError`, `ReadTimeout`). Realiza retentativas controladas com backoff exponencial e jitter pseudo-aleatorio (`delays = [1.0, 2.0, 4.0] + random.uniform(0.1, 0.5)`). Caso as tentativas se esgotem, levanta `ProviderTransientError`.
+
+### 14.2 Padronizacao do Contrato AG-UI v1.0 e Fita de Carbono Interna
+
+Durante a execucao de `DotAgent.run_thread()`, o ciclo ReAct assegura que falhas de inferencia emitam eventos estruturados e mensagens de rastreabilidade:
+
+1. **Emissao Padronizada de `run:finished`:**
+   Ao capturar `ProviderAuthError` ou `ProviderTransientError`, o gerador assincrono emite:
+   ```json
+   {
+     "event": "run:finished",
+     "data": {
+       "run_id": "uuid-da-execucao",
+       "status": "failed",
+       "final_response": "",
+       "error": "Descricao tecnica da falha",
+       "error_type": "auth_error"
+     }
+   }
+   ```
+2. **Fita Interna de Diagnostico (Carbon Tape):**
+   Antes de emitir o encerramento da thread, o agente insere uma mensagem de diagnostico no SQLite WAL com o campo `visibility = 'internal'`:
+   - Conteudo: `[FALHA DE AUTENTICAÇÃO]: ...` ou `[FALHA DE INFERÊNCIA]: ...`.
+   - Isso permite auditoria forense completa via painel administrativo ou CLI sem expor detalhes internos tecnicos no feed principal do usuario.
+
+### 14.3 Resiliencia dos Tres Consumidores Arquiteturais
+
+Os tres componentes que orquestram a execucao do `DotAgent` consomem o evento `run:finished` com tratamento defensivo especializado:
+
+| Consumidor | Modulo | Comportamento em Falha (`status == 'failed'`) | Impacto Arquitetural |
+| :--- | :--- | :--- | :--- |
+| **EdgeScheduler** | `pidots/core/scheduler.py` | Marca `last_status = 'FAILED'`, persiste sumario real do erro em `last_result_summary` e aciona o calculo de backoff. | Elimina falsos positivos de `COMPLETED` em tarefas cron. |
+| **MessagingGateway** | `pidots/core/messaging_gateway.py` | Detecta falha e despacha aviso amigavel `[FALHA OPERACIONAL]: O agente encontrou uma falha de conexao...` para o Telegram, WhatsApp ou webhook. | Evita silencio operacional ou mensagens vazias enviadas aos canais externos. |
+| **MultiBotOrchestrator** | `pidots/core/orchestrator.py` | Atualiza o registro em `agent_handoffs` para `status = 'FAILED'`, emite alerta interno `[FALHA NA SUBTAREFA DE @dot]` na thread principal e retorna `{'success': False, 'error': ...}`. | Notifica o supervisor programaticamente, permitindo replanejamento sem travar a thread. |
+
+### 14.4 Maquina de Estados do Circuit Breaker em Tarefas Proativas
+
+Para impedir tempestades de reconexao (*retry storms*) em falhas continuas de infraestrutura ou chaves expiradas, o escalonador `EdgeScheduler` implementa um Circuit Breaker com as seguintes regras de transicao:
+
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE: Tarefa agendada
+    IDLE --> RUNNING: Horario atingido (next_run_at <= now AND backoff_until <= now)
+    
+    RUNNING --> SILENT: Execucao OK com HEARTBEAT_OK (consecutive_failures = 0)
+    RUNNING --> COMPLETED: Execucao OK com relatorio (consecutive_failures = 0)
+    
+    RUNNING --> FAILED: Erro cognitivo / inferencia (consecutive_failures < 5)
+    FAILED --> IDLE: Backoff exponencial calculado (30s a 3600s)
+    
+    RUNNING --> CIRCUIT_OPEN: 5a falha consecutiva (consecutive_failures >= 5)
+    CIRCUIT_OPEN --> [*]: Tarefa desativada (is_active = 0)
+    
+    RUNNING --> AUTH_REQUIRED: Chave vazia ou placeholder
+    AUTH_REQUIRED --> IDLE: Backoff protetivo de 10 minutos
+```
+
+1. **Calculo do Backoff Exponencial:**
+   Em cada falha consecutiva, o retardo de backoff e calculado deterministica e progressivamente atraves de `min(3600, 30 * 2^(n-1))`:
+   - Falha 1: 30 segundos
+   - Falha 2: 60 segundos
+   - Falha 3: 120 segundos
+   - Falha 4: 240 segundos
+   - O campo `backoff_until` e atualizado no SQLite WAL, impedindo execucoes antes do prazo.
+2. **Abertura do Circuito (`CIRCUIT_OPEN`):**
+   Na 5ª falha consecutiva, o circuito abre. O registro recebe `last_status = 'CIRCUIT_OPEN'` e `is_active = 0`. A tarefa e desativada de forma segura ate intervencao manual do operador.
+3. **Sanity Check Preventivo de Chaves (`AUTH_REQUIRED`):**
+   Antes de instanciar o agente, o scheduler verifica se a credencial do provedor e uma string vazia ou placeholder (`sua_chave_aqui`, `placeholder`). Se detectada, a tarefa recebe `last_status = 'AUTH_REQUIRED'`, `backoff_until = now + 10min` e nao realiza nenhuma chamada externa, poupando energia e recursos de rede do Raspberry Pi.
+

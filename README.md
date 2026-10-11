@@ -92,11 +92,13 @@ O piDots transcende o chat isolado permitindo cooperacao multi-agente in-process
   - `auditor`: Inspecao de integridade, telemetria e conformidade.
 - **Dynamic Tool Pruning:** Cada Dot carrega apenas as ferramentas permitidas em `allowed_tools_json`, reduzindo em ate 75% o consumo de tokens de contexto e eliminando alucinacoes.
 
-### 2. Automacoes Proativas: Padrao Dot Heartbeat
+### 2. Automacoes Proativas: Padrao Dot Heartbeat e Circuit Breaker
 O modulo `pidots/core/scheduler.py` implementa um scheduler in-process perpetuo baseado em `croniter`, sem necessidade de Redis ou Celery:
 - **Rotinas Cron:** Agendamentos persistidos na tabela `scheduled_tasks` do SQLite WAL.
 - **Diretriz de Silencio Operacional (HEARTBEAT_OK):** Ao executar checagens rotineiras, se o agente constatar integridade do sistema, responde estritamente `HEARTBEAT_OK`. O scheduler registra o estado como `SILENT` e hiberna sem gerar notificacoes inuteis ou poluir o banco de dados.
 - **Controle de Exclusao Mutua in-process:** Trava em memoria (`_running_tasks`) que previne reentrancia e disparos em cascata da mesma tarefa quando o ciclo de raciocinio do LLM ultrapassa o intervalo periodico de varredura (15s).
+- **Circuit Breaker com Backoff Exponencial:** Tarefas proativas com falhas recorrentes aplicam retardo progressivo de 30s ate 3.600s (`min(3600, 30 * 2^(n-1))`). Na 5ª falha consecutiva, o circuito abre (`CIRCUIT_OPEN`), desativando a tarefa (`is_active = 0`) para preservar ciclos de CPU ARM64 e conectividade.
+- **Sanity Check Preventivo de Inicializacao (AUTH_REQUIRED):** Caso a chave de API esteja vazia ou configurada com valores placeholder, tarefas proativas sao pausadas em `AUTH_REQUIRED` com backoff protetivo de 10 minutos, poupando requisicoes externas inuteis.
 
 ### 3. Gateway de Mensageria Unificada e Canais Tematicos
 O modulo `pidots/core/messaging_gateway.py` centraliza comunicacoes externas via webhooks HTTP stateless:
@@ -107,6 +109,17 @@ O modulo `pidots/core/messaging_gateway.py` centraliza comunicacoes externas via
   1. Contador de saltos estrito (`hop_count <= 3`).
   2. Bots so respondem a outros bots se houver mencao explicita `@dot_id`.
   3. Resposta silenciosa `NO_ACTION` quando o agente nao tem contribuicao relevante a acrescentar.
+- **Retorno Operacional Amigavel em Falhas:** Em caso de indisponibilidade do provedor, o gateway captura a interrupcao e devolve aviso estruturado `[FALHA OPERACIONAL]` ao interlocutor externo sem degradar o canal.
+
+### 4. Arquitetura de Resiliencia Cognitiva e Tratamento Tipado de Falhas
+O motor central do piDots implementa um protocolo unificado de resiliencia de ponta a ponta:
+- **Excecoes Tipadas de Provedor:** O cliente `OpenAIUniversalProvider` distingue `ProviderAuthError` (HTTP 401/403 com short-circuit imediato sem retentativas inuteis) de `ProviderTransientError` (HTTP 503/429/timeout com politicas de retry e jitter).
+- **Contrato AG-UI v1.0 Padronizado:** O ciclo `DotAgent.run_thread` emite o evento terminal `run:finished` com status `'failed'`, populando `error`, `error_type` (`auth_error` ou `transient_error`) e `final_response: ""`.
+- **Fita Interna de Diagnostico:** Erros criticos sao gravados na tabela `messages` do SQLite WAL com visibilidade `internal` (`[FALHA DE INFERENCIA]` ou `[FALHA DE AUTENTICACAO]`), garantindo rastreabilidade forense sem poluir o feed do usuario.
+- **Resiliencia Integrada dos Tres Consumidores:**
+  - *EdgeScheduler:* Registra o status `FAILED` com sumario tecnico real no SQLite, eliminando falsos positivos de sucesso.
+  - *MessagingGateway:* Devolve retorno amigavel claro para canais externos (`[FALHA OPERACIONAL]`).
+  - *MultiBotOrchestrator:* Marca a subtarefa em `agent_handoffs` como `FAILED`, registra alerta interno na thread pai e retorna feedback estruturado `{'success': False, 'error': ...}` para permitir replanejamento pelo supervisor.
 
 ---
 
@@ -373,6 +386,9 @@ python3 scripts/test_phase7_scheduler.py
 
 # Teste do gateway de mensageria, webhooks e canais colaborativos
 python3 scripts/test_phase8_messaging.py
+
+# Teste de resiliencia integral (Fases 1 a 4: tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
+python3 scripts/test_resilience_phases.py
 
 # Teste de carga e concorrencia sob estresse (Edge Stress Test)
 python3 scripts/stress_test.py
