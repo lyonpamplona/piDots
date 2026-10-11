@@ -18,8 +18,9 @@ CONCURRENCY = 10
 
 def get_db_file_sizes():
     """Retorna o tamanho do banco e do arquivo WAL em KB."""
-    db_path = Path("/mnt/storage/piDots/data/pidots.db")
-    wal_path = Path("/mnt/storage/piDots/data/pidots.db-wal")
+    root = Path(__file__).resolve().parent.parent
+    db_path = root / "data" / "pidots.db"
+    wal_path = root / "data" / "pidots.db-wal"
     db_size = db_path.stat().st_size / 1024 if db_path.exists() else 0
     wal_size = wal_path.stat().st_size / 1024 if wal_path.exists() else 0
     return db_size, wal_size

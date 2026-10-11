@@ -9,7 +9,7 @@ import uuid
 import shlex
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 from pathlib import Path
 
@@ -38,7 +38,7 @@ class TerminalSandbox:
         workspace_dir = os.path.join(settings.workspaces_root, dot_id)
         os.makedirs(workspace_dir, exist_ok=True)
 
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         execution_method = "subprocess"
 
         # Ambiente sanitizado (remove variáveis confidenciais como chaves de API)
@@ -90,6 +90,7 @@ class TerminalSandbox:
                 logger.debug("bwrap indisponível ou sem permissão de namespace (%s). Usando Subprocess Sandbox.", str(bwrap_err))
 
         # Fallback resiliente: Subprocess Sandbox com diretório restrito e timeout
+        proc = None
         try:
             proc = await asyncio.create_subprocess_shell(
                 command,
@@ -136,7 +137,7 @@ class TerminalSandbox:
         start_time: datetime
     ) -> dict[str, Any]:
         """Trunca a saída para teto seguro e persiste auditoria no SQLite."""
-        duration_ms = int((datetime.utcnow() - start_time).total_seconds() * 1000)
+        duration_ms = int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000)
         stdout_str = stdout_b[:MAX_OUTPUT_BYTES].decode("utf-8", errors="replace")
         stderr_str = stderr_b[:MAX_OUTPUT_BYTES].decode("utf-8", errors="replace")
 

@@ -4,7 +4,12 @@ Modelos de dados Pydantic e especificação de eventos do protocolo AG-UI para o
 
 from typing import Literal, Any
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
+
+
+def now_utc() -> datetime:
+    """Retorna timestamp UTC ciente de fuso horário sem usar utcnow depreciado."""
+    return datetime.now(timezone.utc)
 
 
 class DotModel(BaseModel):
@@ -16,7 +21,7 @@ class DotModel(BaseModel):
     model: str
     workspace_path: str
     is_active: bool = True
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=now_utc)
 
 
 class ThreadModel(BaseModel):
@@ -25,7 +30,7 @@ class ThreadModel(BaseModel):
     dot_id: str
     title: str
     status: Literal["idle", "thinking", "awaiting_hitl", "completed", "error"] = "idle"
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=now_utc)
 
 
 class MessageModel(BaseModel):
@@ -36,7 +41,7 @@ class MessageModel(BaseModel):
     content: str
     thought_log: str | None = None
     tool_calls_json: str | None = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=now_utc)
 
 
 class SpaceDocumentModel(BaseModel):
@@ -48,7 +53,7 @@ class SpaceDocumentModel(BaseModel):
     content: str
     version: int = 1
     mime_type: str = "text/markdown"
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=now_utc)
 
 
 class HITLApprovalModel(BaseModel):
@@ -61,7 +66,7 @@ class HITLApprovalModel(BaseModel):
     risk_level: Literal["MEDIUM", "HIGH", "CRITICAL"] = "HIGH"
     status: Literal["PENDING", "APPROVED", "REJECTED"] = "PENDING"
     reviewer_notes: str | None = None
-    requested_at: datetime = Field(default_factory=datetime.utcnow)
+    requested_at: datetime = Field(default_factory=now_utc)
     resolved_at: datetime | None = None
 
 
@@ -78,4 +83,4 @@ class AGUIEvent(BaseModel):
         "state:sync"
     ]
     data: dict[str, Any]
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=now_utc)

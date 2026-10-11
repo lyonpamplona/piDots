@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pidots"
 version = "0.1.0"
 description = "Always-On AI Coworkers persistentes e otimizados para Raspberry Pi 4B (ARM64) e Edge Computing"
-readme = "MANUAL_OPERACIONAL.md"
+readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [
@@ -42,6 +42,7 @@ dependencies = [
     "pydantic>=2.10.0",
     "pydantic-settings>=2.7.0",
     "trafilatura>=1.12.0",
+    "croniter>=6.0.0",
 ]
 
 [project.optional-dependencies]

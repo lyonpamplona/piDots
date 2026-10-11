@@ -9,7 +9,7 @@ import tempfile
 import logging
 from typing import Any
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ..config import settings
 from ..storage.db import get_db
@@ -56,7 +56,7 @@ class FileManager:
             return {"error": str(e)}
 
     @classmethod
-    async def write_file(cls, dot_id: str, filename: str, content: str) -> dict[str, Any]:
+    async def write_file(cls, dot_id: str, filename: str, content: str, sync_space: bool = False) -> dict[str, Any]:
         """Grava um arquivo atomicamente (escreve em temporário e renomeia)."""
         try:
             target_path = cls._get_safe_path(dot_id, filename)
@@ -71,26 +71,35 @@ class FileManager:
             # Substitui atomicamente o arquivo final
             os.replace(tmp_path, target_path)
 
-            # Sincroniza também na tabela Spaces do SQLite WAL para versionamento
-            space_id = str(uuid.uuid4())
-            try:
-                async with get_db() as db:
-                    await db.execute(
-                        """
-                        INSERT INTO spaces (id, dot_id, filename, title, content)
-                        VALUES (?, ?, ?, ?, ?)
-                        """,
-                        (space_id, dot_id, filename, filename, content)
-                    )
-                    await db.commit()
-            except Exception as db_err:
-                logger.warning("Não foi possível registrar histórico em spaces: %s", str(db_err))
+            # Sincroniza de forma idempotente na tabela Spaces somente se solicitado e sem duplicar
+            if sync_space:
+                try:
+                    async with get_db() as db:
+                        cursor = await db.execute("SELECT id FROM spaces WHERE dot_id = ? AND filename = ?", (dot_id, filename))
+                        existing = await cursor.fetchone()
+                        if existing:
+                            await db.execute(
+                                "UPDATE spaces SET content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                                (content, existing["id"])
+                            )
+                        else:
+                            space_id = str(uuid.uuid4())
+                            await db.execute(
+                                """
+                                INSERT INTO spaces (id, dot_id, filename, title, content)
+                                VALUES (?, ?, ?, ?, ?)
+                                """,
+                                (space_id, dot_id, filename, filename, content)
+                            )
+                        await db.commit()
+                except Exception as db_err:
+                    logger.warning("Não foi possível sincronizar histórico em spaces: %s", str(db_err))
 
             return {
                 "filename": filename,
                 "status": "success",
                 "bytes_written": len(content.encode("utf-8")),
-                "timestamp": datetime.utcnow().isoformat() + "Z"
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
         except Exception as e:
             return {"error": str(e)}

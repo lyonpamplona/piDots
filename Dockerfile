@@ -33,6 +33,8 @@ RUN useradd -u 1000 -m -s /bin/bash pidots && \
 COPY --chown=pidots:pidots pidots/ /app/pidots/
 COPY --chown=pidots:pidots pidots_spa_prototype.html /app/pidots_spa_prototype.html
 COPY --chown=pidots:pidots relatorio_estudo_pidots.html /app/relatorio_estudo_pidots.html
+COPY --chown=pidots:pidots pidots_apresentacao_pixel_paper.html /app/pidots_apresentacao_pixel_paper.html
+COPY --chown=pidots:pidots pidots_guia.html /app/pidots_guia.html
 
 USER pidots
 

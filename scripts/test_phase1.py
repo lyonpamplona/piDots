@@ -38,7 +38,7 @@ async def main():
                 "Senior Systems & Python Engineer",
                 "Você é o Dot Developer, especialista em código limpo e arquitetura edge.",
                 settings.ai_model,
-                "/mnt/storage/piDots/workspaces/dot-dev-core"
+                str(Path(settings.workspaces_root) / "dot-dev-core")
             )
         )
         await db.commit()
@@ -60,7 +60,7 @@ async def main():
     print(f"      Solicitação HITL registrada com ID: {req_id}")
 
     # Resolução da solicitação (Aprovação simulada)
-    resolved = await HITLManager.resolve_approval(req_id, True, "Aprovado pelo operador lyon christopher.")
+    resolved = await HITLManager.resolve_approval(req_id, True, "Aprovado pelo operador de governança.")
     print(f"      Solicitação HITL resolvida com sucesso: {resolved}")
 
     # 4. Teste de Inicialização do Provedor OpenAI-Compatível

@@ -7,7 +7,7 @@ Inclui terminal isolado (Bubblewrap/Subprocess), extrator web semântico e geren
 import json
 import logging
 from typing import Callable, Any, Awaitable
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 
 from .terminal import TerminalSandbox
@@ -41,16 +41,33 @@ class ToolRegistry:
             return list(self._tools.values())
         return [self._tools[name] for name in tool_names if name in self._tools]
 
-    async def execute_tool(self, name: str, arguments: dict[str, Any], dot_id: str = "default") -> dict[str, Any]:
-        """Executa o handler de uma ferramenta registrada injetando dot_id se aplicável."""
+    async def execute_tool(
+        self,
+        name: str,
+        arguments: dict[str, Any],
+        dot_id: str = "default",
+        thread_id: str | None = None,
+        provider: Any = None
+    ) -> dict[str, Any]:
+        """Executa o handler de uma ferramenta registrada injetando dot_id, thread_id e provider se aplicável."""
         if name not in self._handlers:
             return {"error": f"Ferramenta '{name}' não encontrada no registro."}
         try:
             handler = self._handlers[name]
-            # Se a ferramenta aceitar dot_id em seus parâmetros e não tiver sido passado, injeta
+            # Injeta argumentos contextuais conforme a ferramenta
             if name in ("execute_shell_command", "workspace_read_file", "workspace_write_file", "workspace_list_files"):
                 if "dot_id" not in arguments:
                     arguments["dot_id"] = dot_id
+            elif name == "delegate_task":
+                arguments["source_dot_id"] = dot_id
+                if "thread_id" not in arguments and thread_id:
+                    arguments["thread_id"] = thread_id
+                if "provider" not in arguments and provider:
+                    arguments["provider"] = provider
+            elif name == "handoff_to_dot":
+                arguments["source_dot_id"] = dot_id
+                if "thread_id" not in arguments and thread_id:
+                    arguments["thread_id"] = thread_id
             return await handler(**arguments)
         except Exception as e:
             logger.error("Erro ao executar ferramenta %s: %s", name, str(e), exc_info=True)
@@ -210,6 +227,64 @@ class ToolRegistry:
             handler=self._tool_edge_telemetry
         )
 
+        # 8. Delegação de Subtarefa Inter-Agente (Supervisor-Worker)
+        self.register(
+            name="delegate_task",
+            schema={
+                "type": "function",
+                "function": {
+                    "name": "delegate_task",
+                    "description": "Delega uma subtarefa técnica para outro Dot especialista (ex: dot-coder, dot-auditor) em contexto isolado e aguarda a conclusão sintetizada.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "target_dot_id": {
+                                "type": "string",
+                                "description": "ID do Dot especialista destinatário que executará a subtarefa."
+                            },
+                            "task_goal": {
+                                "type": "string",
+                                "description": "Descrição clara do objetivo e da entrega esperada da subtarefa."
+                            },
+                            "context_snippet": {
+                                "type": "string",
+                                "description": "Trecho opcional de código, comandos ou contexto necessário para a execução."
+                            }
+                        },
+                        "required": ["target_dot_id", "task_goal"]
+                    }
+                }
+            },
+            handler=self._tool_delegate_task
+        )
+
+        # 9. Transferência de Liderança (Handoff)
+        self.register(
+            name="handoff_to_dot",
+            schema={
+                "type": "function",
+                "function": {
+                    "name": "handoff_to_dot",
+                    "description": "Transfere formalmente a liderança da conversa para outro Dot especialista quando o objetivo ultrapassar sua área de domínio.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "target_dot_id": {
+                                "type": "string",
+                                "description": "ID do Dot que assumirá o comando da thread."
+                            },
+                            "reason": {
+                                "type": "string",
+                                "description": "Justificativa operacional e técnica para a transferência de titularidade."
+                            }
+                        },
+                        "required": ["target_dot_id", "reason"]
+                    }
+                }
+            },
+            handler=self._tool_handoff_to_dot
+        )
+
     # Implementações dos Handlers
     async def _tool_execute_shell(self, command: str, timeout_seconds: float = 30.0, dot_id: str = "default") -> dict[str, Any]:
         return await TerminalSandbox.execute(dot_id=dot_id, command=command, timeout_seconds=timeout_seconds)
@@ -221,13 +296,13 @@ class ToolRegistry:
         return await FileManager.read_file(dot_id=dot_id, filename=filename)
 
     async def _tool_write_workspace_file(self, filename: str, content: str, dot_id: str = "default") -> dict[str, Any]:
-        return await FileManager.write_file(dot_id=dot_id, filename=filename, content=content)
+        return await FileManager.write_file(dot_id=dot_id, filename=filename, content=content, sync_space=True)
 
     async def _tool_list_workspace_files(self, subdirectory: str = "", dot_id: str = "default") -> dict[str, Any]:
         return await FileManager.list_files(dot_id=dot_id, subdirectory=subdirectory)
 
     async def _tool_current_time(self) -> dict[str, Any]:
-        return {"current_time": datetime.utcnow().isoformat() + "Z"}
+        return {"current_time": datetime.now(timezone.utc).isoformat()}
 
     async def _tool_edge_telemetry(self) -> dict[str, Any]:
         temp = 45.0
@@ -239,6 +314,48 @@ class ToolRegistry:
             except Exception:
                 pass
         return {"soc_temperature_celsius": temp, "arch": "aarch64", "device": "Raspberry Pi 4B"}
+
+    @staticmethod
+    def _get_orchestrator():
+        """Importador sob demanda para desacoplar dependências circulares em tempo de import."""
+        from ..core.orchestrator import MultiBotOrchestrator
+        return MultiBotOrchestrator
+
+    async def _tool_delegate_task(
+        self,
+        target_dot_id: str,
+        task_goal: str,
+        context_snippet: str | None = None,
+        source_dot_id: str = "default",
+        thread_id: str | None = None,
+        provider: Any = None
+    ) -> dict[str, Any]:
+        orchestrator = self._get_orchestrator()
+        t_id = thread_id or "default-thread"
+        return await orchestrator.delegate_subtask(
+            thread_id=t_id,
+            source_dot_id=source_dot_id,
+            target_dot_id=target_dot_id,
+            task_goal=task_goal,
+            context_snippet=context_snippet,
+            provider=provider
+        )
+
+    async def _tool_handoff_to_dot(
+        self,
+        target_dot_id: str,
+        reason: str,
+        source_dot_id: str = "default",
+        thread_id: str | None = None
+    ) -> dict[str, Any]:
+        orchestrator = self._get_orchestrator()
+        t_id = thread_id or "default-thread"
+        return await orchestrator.handoff_lead(
+            thread_id=t_id,
+            source_dot_id=source_dot_id,
+            target_dot_id=target_dot_id,
+            reason=reason
+        )
 
 
 registry = ToolRegistry()

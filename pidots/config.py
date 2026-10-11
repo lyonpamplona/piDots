@@ -16,8 +16,9 @@ def _resolve_default_db_path() -> str:
     env_val = os.getenv("SQLITE_DB_PATH")
     if env_val:
         return env_val
-    if os.path.exists("/mnt/storage/piDots/data"):
-        return "/mnt/storage/piDots/data/pidots.db"
+    root = Path(__file__).resolve().parent.parent
+    if (root / "data").exists():
+        return str(root / "data" / "pidots.db")
     return str(Path.cwd() / "data" / "pidots.db")
 
 
@@ -26,8 +27,9 @@ def _resolve_default_workspaces_root() -> str:
     env_val = os.getenv("WORKSPACES_ROOT")
     if env_val:
         return env_val
-    if os.path.exists("/mnt/storage/piDots/workspaces"):
-        return "/mnt/storage/piDots/workspaces"
+    root = Path(__file__).resolve().parent.parent
+    if (root / "workspaces").exists():
+        return str(root / "workspaces")
     return str(Path.cwd() / "workspaces")
 
 
@@ -40,11 +42,11 @@ class Settings(BaseSettings):
 
     # Provedor de IA (OpenAI SDK Compatible)
     ai_base_url: str = Field(
-        default="https://api.verboo.ai/v1",
-        description="Endpoint base da API OpenAI-compatível (ex: Verboo, OpenAI, Groq, OpenRouter)"
+        default="https://api.openai.com/v1",
+        description="Endpoint base da API OpenAI-compatível (ex: OpenAI, OpenRouter, Groq, DeepSeek ou gateway local)"
     )
     ai_api_key: str = Field(
-        default="demo_key",
+        default="",
         description="Chave de autenticação Bearer para a API de IA"
     )
     ai_model: str = Field(
@@ -103,6 +105,16 @@ class Settings(BaseSettings):
         description="ID do chat do Telegram para recebimento de alertas HITL"
     )
 
+    # Gateway de Mensageria e WhatsApp (Evolution API)
+    evolution_api_url: str = Field(
+        default="http://host.docker.internal:8080",
+        description="URL base da Evolution API para mensageria WhatsApp"
+    )
+    evolution_api_key: str = Field(
+        default="",
+        description="Chave de autenticação (apikey) para a Evolution API"
+    )
+
     def ensure_directories(self) -> None:
         """Garante que os diretórios necessários existam no disco."""
         db_dir = Path(self.sqlite_db_path).parent
@@ -133,7 +145,9 @@ class Settings(BaseSettings):
         self,
         webhook_url: str | None = None,
         telegram_token: str | None = None,
-        telegram_chat_id: str | None = None
+        telegram_chat_id: str | None = None,
+        evolution_url: str | None = None,
+        evolution_key: str | None = None
     ) -> None:
         """Atualiza os canais de notificação em memória dinamicamente."""
         if webhook_url is not None:
@@ -142,6 +156,10 @@ class Settings(BaseSettings):
             self.telegram_bot_token = telegram_token if telegram_token.strip() else None
         if telegram_chat_id is not None:
             self.telegram_chat_id = telegram_chat_id if telegram_chat_id.strip() else None
+        if evolution_url is not None:
+            self.evolution_api_url = evolution_url.strip()
+        if evolution_key is not None:
+            self.evolution_api_key = evolution_key.strip()
 
 
 settings = Settings()

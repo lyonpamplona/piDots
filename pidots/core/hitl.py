@@ -7,7 +7,7 @@ import re
 import uuid
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 from ..storage.db import get_db
 
@@ -101,7 +101,7 @@ class HITLManager:
     async def resolve_approval(approval_id: str, approved: bool, notes: str | None = None) -> bool:
         """Resolve uma solicitação HITL, aprovando-a ou rejeitando-a."""
         new_status = "APPROVED" if approved else "REJECTED"
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         async with get_db() as db:
             cursor = await db.execute(
                 """

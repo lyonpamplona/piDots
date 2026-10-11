@@ -7,7 +7,7 @@ Permite notificar o operador via Webhook HTTP e Telegram Bot para aprovação no
 import httpx
 import logging
 from typing import Any
-from datetime import datetime
+from datetime import datetime, timezone
 from ..config import settings
 
 logger = logging.getLogger("pidots.notifier")
@@ -46,7 +46,7 @@ class HITLNotifier:
                     "action_type": action_type,
                     "payload": payload,
                     "risk_level": risk_level,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "resolve_endpoint": f"/api/hitl/{approval_id}/resolve"
                 }
 
@@ -105,3 +105,27 @@ class HITLNotifier:
                 results["errors"].append(err_msg)
 
         return results
+
+    @classmethod
+    async def notify_hitl_request(
+        cls,
+        approval_id: str,
+        dot_id: str,
+        action_type: str,
+        payload: str,
+        risk_level: str = "HIGH",
+        http_client: httpx.AsyncClient | None = None
+    ) -> dict[str, Any]:
+        """Alias de compatibilidade retrocompatível para notify_approval_requested."""
+        return await cls.notify_approval_requested(
+            approval_id=approval_id,
+            dot_id=dot_id,
+            action_type=action_type,
+            payload=payload,
+            risk_level=risk_level,
+            http_client=http_client
+        )
+
+
+# Alias de compatibilidade retroativa para módulos legados
+Notifier = HITLNotifier

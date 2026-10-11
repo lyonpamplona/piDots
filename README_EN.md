@@ -42,33 +42,71 @@ The platform provides persistent agents tailored for technical workflows (DevOps
 
 ## Architecture and Core Modules
 
-piDots follows a clean modular architecture designed for minimal computational overhead:
+piDots follows a clean modular monolith architecture designed for minimal computational overhead:
 
 ```
 pidots/
-├── api/            # REST routes, SSE streaming endpoints, and static file serving (SPA PWA)
-├── cli.py          # Native terminal command-line interface
-├── config.py       # Centralized configuration and environment variable resolution
+├── __init__.py
+├── cli.py               # Native terminal command-line interface
+├── config.py            # Centralized configuration and environment variable resolution
+├── main.py              # FastAPI entrypoint, REST endpoints, AG-UI SSE streaming, and SPA console
 ├── core/
-│   ├── agent.py    # Asynchronous ReAct execution engine with token streaming
-│   └── hitl.py     # Human-in-the-Loop governance engine with retention queue
-├── main.py         # FastAPI entrypoint with asynchronous lifespan management
-├── memory/
-│   └── vector_store.py # Ultra-lightweight CRC32 KNN vector store and semantic search
-├── models/
-│   └── schemas.py  # Pydantic v2 schemas with strict typing and validation
+│   ├── __init__.py
+│   ├── agent.py         # Asynchronous ReAct execution engine with Dynamic Tool Pruning
+│   ├── hitl.py          # Human-in-the-Loop governance engine with retention queue
+│   ├── messaging_gateway.py # Unified messaging gateway and collaborative channel bus
+│   ├── notifier.py      # HTTP notifier and remote webhook dispatching
+│   ├── orchestrator.py  # Multi-Bot orchestrator (Supervisor, Handoff, @dot mentions)
+│   ├── scheduler.py     # Proactive Dot Heartbeat engine powered by croniter
+│   └── state.py         # AG-UI protocol event definitions and session state tracking
 ├── providers/
-│   └── openai_client.py # Universal OpenAI-compatible client with SSE streaming
+│   ├── __init__.py
+│   └── openai_client.py # Universal OpenAI-compatible inference client with retries
 ├── storage/
-│   ├── database.py       # SQLite layer with WAL mode, busy_timeout, and edge PRAGMAs
-│   └── spaces_manager.py # Isolated workspace manager for each Dot
+│   ├── __init__.py
+│   ├── db.py            # SQLite WAL layer tuned for microSD and idempotent migrations
+│   ├── spaces_manager.py # Isolated dot workspaces, document versioning, and unified diffs
+│   └── vector_store.py  # On-disk KNN vector store with CRC32 n-gram hashing
 └── tools/
-    ├── base.py       # Central asynchronous tool registry
-    ├── bash.py       # Bubblewrap-sandboxed command executor with timeouts
-    ├── file_ops.py   # Secure file reading, writing, and patching operations
-    ├── memory.py     # Agent long-term memory retrieval and persistence tools
-    └── web_reader.py # Semantic web content extractor powered by Trafilatura
+    ├── __init__.py
+    ├── file_ops.py      # Atomic file reading, writing, and workspace listing
+    ├── registry.py      # Centralized tool registry supporting Dynamic Tool Pruning
+    ├── terminal.py      # Bubblewrap-isolated and secure subprocess shell executor
+    └── web_reader.py    # Lightweight async web reader powered by Trafilatura
 ```
+
+---
+
+## Advanced Edge Capabilities
+
+### 1. Multi-Bot Orchestration and Cognitive Archetypes
+piDots provides in-process multi-agent collaboration optimized for edge resources:
+- **Dynamic Mentions (@dot):** The `ThreadRouter` parses `@dot_name` mentions, resolves interlocutors against SQLite, and enrolls them into `thread_participants`.
+- **Supervisor-Worker Topology:** A supervisor plans and delegates subtasks using the `delegate_task` tool, executing workers in isolated threads and consolidating summaries into the parent conversation.
+- **Leadership Handoff:** The `handoff_to_dot` tool formally reassigns thread leadership to a domain specialist, persisting audit trails in `agent_handoffs`.
+- **Carbon-Copy Internal Messages:** Inter-bot exchanges are marked with `visibility: 'internal'`, keeping technical dialogues accessible for auditing without cluttering user feeds.
+- **Cognitive Archetypes:**
+  - `supervisor`: Workflow coordinator, planning, and goal tracking.
+  - `grok`: Analytical-convergent specialist for code auditing, terminal operations, and root-cause debugging.
+  - `muse`: Creative-divergent specialist for system architecture, concept synthesis, and documentation.
+  - `auditor`: System telemetry, integrity verification, and compliance checks.
+- **Dynamic Tool Pruning:** Agents load only the tool definitions allowed in `allowed_tools_json`, slashing prompt token overhead by up to 75% and preventing tool hallucination.
+
+### 2. Proactive Automations: Dot Heartbeat Pattern
+The `pidots/core/scheduler.py` module introduces an in-process background scheduler driven by `croniter` without requiring Celery or Redis:
+- **Cron Tasks:** Schedules are stored and tracked in SQLite WAL table `scheduled_tasks`.
+- **Operational Silence Directive (HEARTBEAT_OK):** During routine inspections, if system telemetry and log checks indicate normal operational conditions, the agent responds strictly with `HEARTBEAT_OK`. The scheduler registers the run as `SILENT` and sleeps without issuing unnecessary external alerts.
+- **In-Process Mutual Exclusion Concurrency:** Memory-backed lock set (`_running_tasks`) that prevents duplicate or cascading triggers when LLM reasoning cycles exceed the periodic 15-second heartbeat sweep interval.
+
+### 3. Unified Messaging Gateway and Team Channels
+The `pidots/core/messaging_gateway.py` module exposes stateless HTTP endpoints for external messaging platforms:
+- **Native Platform Adapters:** Dedicated webhooks for Telegram (`/api/webhooks/telegram/{dot_id}`), WhatsApp via Evolution API with apikey authentication (`/api/webhooks/whatsapp/{dot_id}`), and Generic Webhooks (`/api/webhooks/incoming/{dot_id}`).
+- **Native Evolution API Integration:** First-class `EVOLUTION_API_URL` and `EVOLUTION_API_KEY` configuration with hot-reload and async HTTPx dispatching.
+- **Collaborative Channels (#channels):** Multi-agent discussion rooms tracked in the `channels` table.
+- **Strict Anti-Recursion Safeguard:** To eliminate infinite conversation loops between bots:
+  1. Strict recursion counter (`hop_count <= 3`).
+  2. Bots only answer other bots when explicitly mentioned via `@dot_id`.
+  3. Silent `NO_ACTION` directive when an agent has no actionable contribution.
 
 ---
 
@@ -99,11 +137,18 @@ cd pidots
 cp .env.example .env
 nano .env
 ```
-Fill in your API key and target language model:
+Fill in your API key, target language model, and optional alert endpoints:
 ```dotenv
-OPENAI_API_KEY=your-api-key-here
-OPENAI_BASE_URL=https://api.openai.com/v1
-OPENAI_MODEL=gpt-4o-mini
+AI_API_KEY=your-api-key-here
+AI_BASE_URL=https://api.openai.com/v1
+AI_MODEL=qwen3.8-27b
+
+# Optional: Remote HITL Alerts & Messaging
+WEBHOOK_NOTIFICATION_URL=https://your-endpoint.com/webhook
+TELEGRAM_BOT_TOKEN=your-bot-token
+TELEGRAM_CHAT_ID=your-chat-id
+EVOLUTION_API_URL=http://host.docker.internal:8080
+EVOLUTION_API_KEY=your-evolution-apikey
 ```
 
 3. Start the service with Docker Compose:
@@ -178,50 +223,62 @@ piDots can be imported directly into other Python applications or agent CLIs:
 
 ```python
 import asyncio
+from pathlib import Path
 from pidots.config import settings
 from pidots.core.agent import DotAgent
-from pidots.models.schemas import DotCreate
 from pidots.providers.openai_client import OpenAIUniversalProvider
-from pidots.storage.database import Database
+from pidots.storage.db import init_edge_database, get_db
 from pidots.storage.spaces_manager import SpacesManager
-from pidots.tools.base import ToolRegistry
 
 async def main():
-    # Initialize optimized SQLite WAL database
-    db = Database(settings.DATABASE_PATH)
-    await db.initialize()
+    # 1. Initialize edge-optimized SQLite WAL database schemas
+    await init_edge_database()
 
-    # Initialize workspace manager and inference provider
-    spaces = SpacesManager(settings.WORKSPACES_ROOT)
+    dot_id = "dev-assistant"
+    workspace_path = str(Path(settings.workspaces_root) / dot_id)
+
+    # 2. Register the Dot in the SQLite database if it does not already exist
+    async with get_db() as db:
+        await db.execute(
+            """INSERT OR IGNORE INTO dots (id, name, role, system_prompt, model, workspace_path)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (
+                dot_id,
+                "DevOps Assistant",
+                "Edge Operator",
+                "You are an operational assistant on resource-constrained hardware.",
+                settings.ai_model,
+                workspace_path
+            )
+        )
+        await db.commit()
+
+    # 3. Initialize universal AI provider (OpenAI-compatible)
     provider = OpenAIUniversalProvider(
-        api_key=settings.OPENAI_API_KEY,
-        base_url=settings.OPENAI_BASE_URL,
-        model=settings.OPENAI_MODEL,
+        api_key=settings.ai_api_key,
+        base_url=settings.ai_base_url,
+        default_model=settings.ai_model,
     )
-    tools = ToolRegistry()
 
-    # Define the coworker specification
-    dot_spec = DotCreate(
-        name="DevOps-Agent",
-        description="Autonomous automation and auditing agent",
-        system_prompt="You are an expert infrastructure and security engineer.",
-        allowed_tools=["read_file", "write_file", "execute_bash", "fetch_web_page"]
-    )
-    dot = await db.create_dot(dot_spec)
-
-    # Instantiate and execute reasoning turn
+    # 4. Instantiate the autonomous coworker agent (Dot)
     agent = DotAgent(
-        dot=dot,
-        db=db,
+        dot_id=dot_id,
         provider=provider,
-        tools=tools,
-        spaces_manager=spaces
     )
 
-    result = await agent.run_turn("Inspect workspace files and compile a summary report.")
-    print("Agent Response:", result.response)
+    # 5. Save versioned document in Spaces with diffs and KNN vector indexing
+    doc = await SpacesManager.save_document(
+        dot_id=agent.dot_id,
+        filename="status_relatorio.txt",
+        content="Operational summary report generated via piDots official SDK.",
+        title="Status Report"
+    )
+    print(f"Versioned document saved in Spaces: {doc['filename']} (v{doc['version']})")
 
-    await db.close()
+    # 6. Execute reasoning turn with AG-UI streaming events
+    async for event in agent.run_thread(thread_id="main-thread", user_message="Service health check"):
+        if event["event"] == "message:chunk":
+            print(event["data"].get("delta", ""), end="", flush=True)
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -231,21 +288,58 @@ if __name__ == "__main__":
 
 ## REST API and Real-Time Streaming
 
-The application provides endpoints for external integration with Server-Sent Events (SSE) streaming:
+The application exposes endpoints for external integration with Server-Sent Events (SSE) streaming support:
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/` | Responsive dark-mode PWA/SPA dashboard |
-| `GET` | `/health` | Healthcheck and live RAM/CPU telemetry |
-| `GET` | `/api/system/status` | Comprehensive system, database, and workspace metrics |
-| `GET` | `/api/dots` | List all registered AI Coworkers |
-| `POST` | `/api/dots` | Create and configure a new AI Coworker |
-| `POST` | `/api/dots/{id}/chat` | Send message with synchronous execution |
-| `GET` | `/api/dots/{id}/chat/stream` | Real-time token-by-token SSE streaming channel |
-| `GET` | `/api/hitl/pending` | List actions awaiting human approval |
-| `POST` | `/api/hitl/{id}/approve` | Approve a pending command for execution |
-| `POST` | `/api/hitl/{id}/reject` | Reject a pending command in governance |
-| `GET` | `/api/spaces/{id}/files` | Securely list files inside the agent workspace |
+| `GET` | `/` | Official SPA/PWA operational console in Pixel Paper UI (Dark Noir and Blueprint) |
+| `GET` | `/apresentacao` | Official landing page in Pixel Paper UI |
+| `GET` | `/guia` | Step-by-step interactive operator guide |
+| `GET` | `/relatorio` | Engineering feasibility and benchmark technical report |
+| `GET` | `/health` | Hardware telemetry (SoC temperature, RAM, SQLite WAL status) |
+| `GET` | `/manifest.json` | Progressive Web App manifest for desktop and mobile installation |
+| `GET` | `/icon.svg` | Official vector SVG icon with 24-hour cache headers |
+| `GET` | `/api/dots` | List all registered AI Coworkers with archetypes and status |
+| `POST` | `/api/threads` | Create a durable conversation thread |
+| `GET` | `/api/threads/{id}/messages` | Message history with multi-actor metadata and visibility scope |
+| `POST` | `/api/threads/{id}/runs` | Execute autonomous agent loop with AG-UI SSE streaming |
+| `GET` | `/api/hitl/pending` | List pending Human-in-the-Loop approval requests |
+| `POST` | `/api/hitl/{id}/resolve` | Formally approve or reject a retained command |
+| `POST` | `/api/hitl/webhook-callback` | Remote webhook callback for asynchronous HITL resolution |
+| `GET` | `/api/spaces` | List versioned documents stored in Spaces |
+| `POST` | `/api/spaces` | Save or update a document with incremental versioning and diffs |
+| `GET` | `/api/spaces/{id}` | Retrieve full contents of a Spaces document |
+| `GET` | `/api/spaces/{id}/revisions` | Revision history with unified diff calculation |
+| `POST` | `/api/spaces/search` | Fast KNN semantic vector search in edge memory (CRC32) |
+| `GET` | `/api/spaces/{id}/download` | Download document contents in plain text |
+| `GET` | `/api/workspaces/{dot_id}/export.zip` | Export entire Dot workspace as a ZIP archive (with Spaces fallback) |
+| `GET` | `/api/tasks` | List proactive scheduled tasks (Dot Heartbeats) |
+| `POST` | `/api/tasks` | Register a new proactive task with a cron expression |
+| `GET` | `/api/channels` | List collaborative team channels with message counts |
+| `POST` | `/api/channels` | Create a new team channel |
+| `GET` | `/api/channels/{id}/messages` | Retrieve recent messages from a channel with limit parameter |
+| `POST` | `/api/channels/{id}/messages` | Post a message to a channel and trigger multi-bot collaboration |
+| `POST` | `/api/channels/{id}/members` | Add a member (Dot or user) to a channel |
+| `POST` | `/api/webhooks/incoming/{dot_id}` | Universal incoming webhook for scripts and external APIs |
+| `POST` | `/api/webhooks/telegram/{dot_id}` | Incoming webhook handler for official Telegram Bot API |
+| `POST` | `/api/webhooks/whatsapp/{dot_id}` | Incoming webhook handler for Evolution API / Baileys (WhatsApp) |
+| `GET` | `/api/settings` | Operational system settings, notification channels, Evolution API status, and active model |
+| `POST` | `/api/settings/ai` | Hot-reload AI provider parameters without restarting container |
+| `POST` | `/api/settings/notifications` | Hot-reload notification endpoints (Webhook, Telegram, and Evolution API) |
+
+> [!NOTE]
+> **HTTP Defensive Security Headers:** All HTTP responses from the FastAPI edge server automatically include security hardening headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`), shielding embedded kiosks and remote HTTPS tunnels (Cloudflared) against MIME sniffing and clickjacking attacks.
+
+---
+
+### Web SPA Operational Console and Pixel Paper UI Design System
+piDots includes a native dark-mode SPA/PWA interface served directly on the root path (`http://localhost:8000/`), engineered under the **Pixel Paper UI** design system:
+- **Pixel Paper UI Aesthetics:** Tactical visual style inspired by technical teletypes, library catalog cards, and graph paper with high density and zero emojis.
+- **Official Vector Logo:** piDots identity branding served via `/icon.svg` with interconnected nodes in green (#10b981) and cyan (#38bdf8).
+- **26 Technical SVG Icons System:** Consistent iconography (`stroke-width: 2`, `stroke-linecap: round`) across telemetry, workspace tabs, sidebar sections, and action triggers.
+- **Diff Viewer and Versioning:** Side-by-side inspection of file modifications persisted in SQLite WAL with analog status stamps.
+- **Interactive HITL Governance:** Forensic approval and veto cards for commands with audit trail logging and state stamps.
+- **AG-UI Reasoning Streaming:** Progressive token-by-token display of agent thoughts and tool calls.
 
 ---
 
@@ -264,14 +358,23 @@ To protect host integrity, command execution is sandboxed using native Linux Bub
 The repository includes automated test suites and stress benchmarks to validate concurrent resilience on edge hardware:
 
 ```bash
-# Run all regression test suites
+# Infrastructure and sandboxing test suites
 python3 scripts/test_phase1.py
 python3 scripts/test_phase2.py
 python3 scripts/test_phase3.py
 python3 scripts/test_phase4.py
 python3 scripts/test_phase5.py
 
-# Run edge concurrency stress test
+# Multi-Bot orchestration and Dynamic Tool Pruning suite
+python3 scripts/test_phase6_multibot.py
+
+# Proactive Dot Heartbeat scheduler suite (croniter & HEARTBEAT_OK)
+python3 scripts/test_phase7_scheduler.py
+
+# Messaging gateway, webhooks, and team channels suite
+python3 scripts/test_phase8_messaging.py
+
+# Full edge load and concurrency stress test
 python3 scripts/stress_test.py
 ```
 
@@ -284,18 +387,44 @@ python3 scripts/stress_test.py
 ├── .dockerignore
 ├── .env.example
 ├── .gitignore
-├── ARCHITECTURE.md          # In-depth architectural and I/O specifications
-├── docker-compose.yml       # Official Docker Compose orchestration
-├── Dockerfile               # Lean image based on python:3.13-slim
-├── LICENSE                  # MIT License
-├── MANUAL_OPERACIONAL.md    # Operational administration guide
-├── pidots/                  # Core application package source code
-├── pidots_spa_prototype.html# Single Page Application PWA frontend
-├── pyproject.toml           # PEP 517/518/621 packaging specification
-├── README.md                # Primary documentation (Brazilian Portuguese)
-├── README_EN.md             # Mirrored documentation (American English)
-├── requirements.txt         # Strict dependency pinning
-└── scripts/                 # Automated test suites and stress benchmarks
+├── ARCHITECTURE.md                  # In-depth architectural and I/O specifications
+├── CONTRIBUTING.md                  # Technical contribution guidelines
+├── docker-compose.yml               # Official Docker Compose orchestration
+├── Dockerfile                       # Lean image based on python:3.13-slim
+├── LICENSE                          # MIT License
+├── MANUAL_OPERACIONAL.md            # Operational administration guide
+├── pidots/                          # Core application package source code
+│   ├── config.py                    # Pydantic configuration and environment variables
+│   ├── main.py                      # FastAPI server, REST endpoints, and SSE streaming
+│   ├── core/                        # ReAct loop, multi-bot, scheduler, and messaging
+│   │   ├── agent.py                 # Autonomous agent reasoning with Dynamic Tool Pruning
+│   │   ├── hitl.py                  # High-risk command interception and review
+│   │   ├── messaging_gateway.py     # Unified messaging gateway and collaborative channel bus
+│   │   ├── notifier.py              # Outbound notifications and webhooks
+│   │   ├── orchestrator.py          # Multi-Bot orchestrator and subtask delegation
+│   │   ├── scheduler.py             # Proactive Dot Heartbeat scheduler via croniter
+│   │   └── state.py                 # Session state and context manager
+│   ├── providers/                   # Language model adapters (LLM/SLM)
+│   │   └── openai_client.py         # Universal OpenAI-compatible gateway provider
+│   ├── storage/                     # SQLite WAL persistence and vector search
+│   │   ├── db.py                    # Connection lifecycle and schema management
+│   │   ├── spaces_manager.py        # File versioning and unified diffs
+│   │   └── vector_store.py          # CRC32-accelerated KNN vector search engine
+│   └── tools/                       # Executable agent tools
+│       ├── file_ops.py              # Atomic read and write operations
+│       ├── registry.py              # Centralized tool registry
+│       ├── terminal.py              # Process execution with Bubblewrap (bwrap) sandbox
+│       └── web_reader.py            # Lightweight web extraction via trafilatura
+├── pidots_apresentacao_pixel_paper.html # Official high-conversion presentation page
+├── pidots_guia.html                 # Step-by-step interactive operational guide
+├── pidots_spa_prototype.html        # Official SPA/PWA operational console
+├── pyproject.toml                   # PEP 517/518/621 packaging specification
+├── README.md                        # Primary documentation (Brazilian Portuguese)
+├── README_EN.md                     # Mirrored documentation (American English)
+├── relatorio_estudo_pidots.html     # Technical feasibility and engineering study report
+├── requirements.txt                 # Strict dependency pinning
+├── SECURITY.md                      # Security policy and vulnerability reporting
+└── scripts/                         # Automated test suites and stress benchmarks
 ```
 
 ---

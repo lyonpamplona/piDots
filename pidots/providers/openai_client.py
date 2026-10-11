@@ -1,6 +1,6 @@
 """
 Cliente HTTP Universal compatível com a API e SDK da OpenAI.
-Funciona com qualquer provedor (OpenAI, Verboo, OpenRouter, Groq, DeepSeek, LiteLLM, llama-server).
+Funciona com qualquer provedor compatível (OpenAI, OpenRouter, Groq, DeepSeek, LiteLLM, llama-server local).
 Implementa Circuit Breaker com Backoff Exponencial e Jitter contra erros 503, 429 e quedas de rede.
 """
 
@@ -32,15 +32,23 @@ class OpenAIUniversalProvider:
         self.max_retries = settings.ai_max_retries
         self.timeout = settings.ai_timeout_seconds
         self._external_client = http_client
+        self._internal_client: httpx.AsyncClient | None = None
 
     async def _get_client(self) -> httpx.AsyncClient:
         if self._external_client:
             return self._external_client
-        # Cliente fallback local caso não seja injetado via Lifespan
-        return httpx.AsyncClient(
-            timeout=httpx.Timeout(self.timeout, connect=5.0),
-            limits=httpx.Limits(max_keepalive_connections=5, max_connections=15)
-        )
+        # Cliente fallback local reutilizável caso não seja injetado via Lifespan
+        if self._internal_client is None or self._internal_client.is_closed:
+            self._internal_client = httpx.AsyncClient(
+                timeout=httpx.Timeout(self.timeout, connect=5.0),
+                limits=httpx.Limits(max_keepalive_connections=5, max_connections=15)
+            )
+        return self._internal_client
+
+    async def aclose(self) -> None:
+        """Encerra com segurança o cliente interno caso tenha sido criado."""
+        if self._internal_client and not self._internal_client.is_closed:
+            await self._internal_client.aclose()
 
     async def chat_completion(
         self,

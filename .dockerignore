@@ -44,6 +44,7 @@ scripts/
 # 8. Documentação Interna e Relatórios Extensos
 MANUAL_OPERACIONAL.md
 relatorio_*.html
+!relatorio_estudo_pidots.html
 *.md
 !README.md
 

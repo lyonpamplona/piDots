@@ -936,9 +936,9 @@
                         <line x1="585" y1="110" x2="645" y2="110" stroke="#f59e0b" stroke-width="2"/>
                         <text x="592" y="102" fill="#f59e0b" font-family="monospace" font-size="9">HTTPS</text>
 
-                        <!-- Box Verboo Gateway -->
+                        <!-- Box AI Gateway -->
                         <rect x="645" y="65" width="220" height="90" rx="6" fill="url(#gradCore)" stroke="#f59e0b" stroke-width="1.5"/>
-                        <text x="660" y="95" fill="#f59e0b" font-family="monospace" font-size="12" font-weight="bold">VERBOO qwen3.8-27b</text>
+                        <text x="660" y="95" fill="#f59e0b" font-family="monospace" font-size="12" font-weight="bold">AI GATEWAY qwen3.8-27b</text>
                         <text x="660" y="118" fill="#94a3b8" font-family="sans-serif" font-size="11">Inference Gateway Externo</text>
                         <text x="660" y="138" fill="#a855f7" font-family="monospace" font-size="10">Circuit Breaker c/ Jitter (503 Shield)</text>
 
@@ -964,11 +964,11 @@
             <section class="report-section" id="sec-modelos-hibridos">
                 <div class="section-header">
                     <span class="section-number">PASSO 05</span>
-                    <h2 class="section-title">Estratégia de Inteligência: Gateway Verboo com Resiliência a 503</h2>
+                    <h2 class="section-title">Estratégia de Inteligência: Gateway OpenAI-Compatível com Resiliência a 503</h2>
                 </div>
                 <p class="text-block">
                     Conforme as diretrizes inegociáveis do usuário, o provedor e modelo mantêm-se exatamente como configurados: 
-                    <strong>Verboo qwen3.8-27b</strong>. Esta decisão é tecnicamente perfeita para o Raspberry Pi 4B por três motivos:
+                    <strong>Universal Gateway qwen3.8-27b</strong>. Esta decisão é tecnicamente perfeita para o Raspberry Pi 4B por três motivos:
                 </p>
                 <div class="metric-grid">
                     <div class="metric-card">
@@ -1254,8 +1254,8 @@ bwrap \
                             <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         </div>
                         <div class="check-content">
-                            <div class="check-title">Fase 2: Cliente Verboo Resiliente e Loop Assíncrono</div>
-                            Implementação do cliente HTTP assíncrono com circuit breaker e backoff exponencial com jitter para o modelo Verboo qwen3.8-27b, e máquina de estados da thread com teto de iterações.
+                            <div class="check-title">Fase 2: Cliente AI Gateway Resiliente e Loop Assíncrono</div>
+                            Implementação do cliente HTTP assíncrono com circuit breaker e backoff exponencial com jitter para o modelo qwen3.8-27b, e máquina de estados da thread com teto de iterações.
                         </div>
                     </div>
                     <div class="check-item">
@@ -1331,7 +1331,7 @@ bwrap \
                                     <td>Estabilidade Cognitiva e Conexão LLM</td>
                                     <td>20%</td>
                                     <td><span class="accent-green">97 / 100</span></td>
-                                    <td>Modelo Verboo qwen3.8-27b preservado com circuit breaker e blindagem contra falhas 503.</td>
+                                    <td>Modelo qwen3.8-27b preservado com circuit breaker e blindagem contra falhas 503.</td>
                                 </tr>
                                 <tr>
                                     <td>Segurança e Governança HITL</td>
@@ -1353,7 +1353,7 @@ bwrap \
                         <div class="callout-title" style="color: var(--accent-emerald);">Veredito Técnico do Auditor: Aprovado para Concepção</div>
                         <div class="callout-body">
                             A Skill operacional <code class="inline-code">opendots-pidots</code> foi gerada com sucesso em 
-                            <code class="inline-code">/home/developer/.gemini/config/skills/opendots-pidots/SKILL.md</code>. 
+                            <code class="inline-code">skills/opendots-pidots/SKILL.md</code>. 
                             O projeto <strong>piDots</strong> não apenas é viável, como estabelece uma solução de referência para execução de agentes autônomos 
                             persistentes em hardware restrito e dispositivos IoT/Edge.
                         </div>
@@ -1402,9 +1402,9 @@ bwrap \
                     <span class="nav-step-badge">04</span>
                     <span>Arquitetura piDots Edge</span>
                 </a>
-                <a href="#sec-modelos-hibridos" class="nav-item-link" data-title="Modelos Verboo qwen3.8-27b Circuit Breaker 503 Resiliencia">
+                <a href="#sec-modelos-hibridos" class="nav-item-link" data-title="Modelos AI Gateway qwen3.8-27b Circuit Breaker 503 Resiliencia">
                     <span class="nav-step-badge">05</span>
-                    <span>Inteligência Verboo & 503</span>
+                    <span>Inteligência Gateway & 503</span>
                 </a>
                 <a href="#sec-otimizacoes-extremas" class="nav-item-link" data-title="Otimizacoes Extremas Memoria RAM CPU Economia">
                     <span class="nav-step-badge">06</span>

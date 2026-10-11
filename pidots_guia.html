@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>piDots // Guia Operacional Didático (Pixel Paper UI)</title>
+    <meta name="description" content="Guia operacional oficial e didático do piDots: conceitos, ciclo ReAct, arsenal de ferramentas, governança HITL, configuração e deploy em Raspberry Pi 4B sob o design system Pixel Paper UI.">
+    
+    <!-- Favicon Oficial em SVG Vetorial (Zero Emojis) -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#07090c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Tipografia Oficial Pixel Paper UI: Silkscreen, VT323 e JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        /* =====================================================================
+           PIXEL PAPER UI - DESIGN SYSTEM OFICIAL DO PIDOTS
+           Diretrizes: Zero emojis, largura total, menu lateral direito retratil,
+           busca instantanea, estilo passo a passo com exemplos e dicas.
+           Autor: lyon christopher (2026)
+           ===================================================================== */
+        :root {
+            --px: 2px; /* Unidade escalar de chanfro pixelado */
+
+            /* Tipografia Hibrida */
+            --font-pixel: 'Silkscreen', monospace;
+            --font-display: 'VT323', monospace;
+            --font-mono: 'JetBrains Mono', Consolas, monospace;
+
+            /* Paleta Dark Paper Noir (Padrao Oficial) */
+            --paper-base: #07090c;
+            --paper-sheet: #0b0e12;
+            --paper-surface: #11161d;
+            --paper-surface-elevated: #182029;
+            --paper-surface-recessed: #040608;
+
+            /* Tintas Tecnicas e Fosforo Retro */
+            --ink-main: #f1f5f9;
+            --ink-secondary: #94a3b8;
+            --ink-muted: #64748b;
+            --ink-carbon: #2b394a;
+
+            --phosphor-green: #33ff66;
+            --phosphor-green-muted: #15803d;
+            --thermal-amber: #ffb830;
+            --thermal-amber-muted: #b45309;
+            --blueprint-cyan: #38bdf8;
+            --stamp-danger: #ef4444;
+
+            /* Bordas e Contornos de Pixel Art */
+            --border-subtle: #1c2633;
+            --border-default: #283340;
+            --border-strong: #3d5168;
+            --border-accent: #38bdf8;
+
+            /* Sombras Solidas Duras (Zero Blur) */
+            --shadow-sm: 2px 2px 0px #000000;
+            --shadow-md: 4px 4px 0px #000000;
+            --shadow-lg: 6px 6px 0px #000000;
+
+            /* Grade Milimetrada Procedural */
+            --grid-color-fine: rgba(56, 189, 248, 0.04);
+            --grid-color-major: rgba(56, 189, 248, 0.09);
+
+            --drawer-width: 360px;
+            --header-height: 54px;
+        }
+
+        /* Tema Claro Opcional: Blueprint Tecnico de Prancheta */
+        [data-theme="blueprint"] {
+            --paper-base: #e9ecef;
+            --paper-sheet: #f6f8fa;
+            --paper-surface: #ffffff;
+            --paper-surface-elevated: #f1f4f8;
+            --paper-surface-recessed: #e2e8f0;
+
+            --ink-main: #0f172a;
+            --ink-secondary: #334155;
+            --ink-muted: #64748b;
+            --ink-carbon: #cbd5e1;
+
+            --phosphor-green: #15803d;
+            --thermal-amber: #b45309;
+            --blueprint-cyan: #0284c7;
+            --stamp-danger: #b91c1c;
+
+            --border-subtle: #cbd5e1;
+            --border-default: #94a3b8;
+            --border-strong: #475569;
+            --border-accent: #0284c7;
+
+            --shadow-sm: 2px 2px 0px #0f172a;
+            --shadow-md: 4px 4px 0px #0f172a;
+            --shadow-lg: 6px 6px 0px #0f172a;
+
+            --grid-color-fine: rgba(2, 132, 199, 0.06);
+            --grid-color-major: rgba(2, 132, 199, 0.15);
+        }
+
+        /* Resets Universais */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            image-rendering: pixelated;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--paper-base);
+            background-image:
+                linear-gradient(to right, var(--grid-color-fine) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color-fine) 1px, transparent 1px),
+                linear-gradient(to right, var(--grid-color-major) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color-major) 1px, transparent 1px);
+            background-size: 8px 8px, 8px 8px, 40px 40px, 40px 40px;
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Barra de Rolagem Pixel Art */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+            background: var(--paper-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-default);
+            border: 1px solid var(--border-strong);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--blueprint-cyan);
+        }
+
+        /* Icones SVG Vetoriais */
+        .ui-icon {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2;
+            stroke: currentColor;
+            fill: none;
+            stroke-linecap: square;
+            stroke-linejoin: miter;
+            flex-shrink: 0;
+            shape-rendering: crispEdges;
+        }
+
+        /* ---------------------------------------------------------------------
+           CABECALHO FIXO / TOP BAR (PIXEL PAPER UI)
+           --------------------------------------------------------------------- */
+        header.guide-header {
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            background: var(--paper-surface);
+            border-bottom: 2px solid var(--border-default);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand-unit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--ink-main);
+        }
+
+        .brand-badge {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--phosphor-green);
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            padding: 3px 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .brand-title {
+            font-family: var(--font-pixel);
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            color: var(--ink-main);
+        }
+
+        /* Campo de Busca de Teletipo */
+        .header-search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .pixel-search-input {
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 6px 10px 6px 30px;
+            width: 280px;
+            outline: none;
+            box-shadow: inset 1px 1px 0px #000000;
+            transition: all 0.05s steps(1);
+        }
+
+        .pixel-search-input:focus {
+            border-color: var(--blueprint-cyan);
+            background: var(--paper-sheet);
+            box-shadow: inset 2px 2px 0px #000000, 0 0 0 1px var(--blueprint-cyan);
+            width: 340px;
+        }
+
+        .search-icon-pos {
+            position: absolute;
+            left: 10px;
+            color: var(--ink-muted);
+            pointer-events: none;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ---------------------------------------------------------------------
+           BOTOES PIXEL ART (.pixel-btn)
+           --------------------------------------------------------------------- */
+        .pixel-btn {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            text-decoration: none;
+            color: var(--ink-main);
+            background: var(--paper-surface);
+            border: 1px solid var(--border-default);
+            box-shadow: var(--shadow-sm);
+            padding: 6px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
+            white-space: nowrap;
+        }
+
+        .pixel-btn:hover {
+            border-color: var(--border-strong);
+            background: var(--paper-surface-elevated);
+            transform: translate(-1px, -1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .pixel-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: none;
+        }
+
+        .pixel-btn.btn-cyan {
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+        }
+        .pixel-btn.btn-cyan:hover {
+            background: var(--blueprint-cyan);
+            color: #07090c;
+        }
+
+        .pixel-btn.btn-green {
+            border-color: var(--phosphor-green);
+            color: var(--phosphor-green);
+        }
+        .pixel-btn.btn-green:hover {
+            background: var(--phosphor-green);
+            color: #07090c;
+        }
+
+        .pixel-btn.btn-amber {
+            border-color: var(--thermal-amber);
+            color: var(--thermal-amber);
+        }
+
+        .pixel-btn.btn-danger {
+            border-color: var(--stamp-danger);
+            color: var(--stamp-danger);
+        }
+
+        /* ---------------------------------------------------------------------
+           ESTRUTURA DE LARGURA TOTAL (SEM CENTRALIZACAO ARTIFICIAL)
+           --------------------------------------------------------------------- */
+        .guide-shell {
+            width: 100%;
+            display: flex;
+            position: relative;
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        main.guide-viewport {
+            width: 100%;
+            padding: 24px 32px 80px 32px;
+            box-sizing: border-box;
+            transition: margin-right 0.2s steps(1);
+        }
+
+        body.drawer-open main.guide-viewport {
+            margin-right: var(--drawer-width);
+        }
+
+        /* ---------------------------------------------------------------------
+           CARIMBOS OFICIAIS (PIXEL STAMPS)
+           --------------------------------------------------------------------- */
+        .pixel-stamp {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            padding: 4px 8px;
+            border: 2px dashed var(--border-default);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            user-select: none;
+        }
+
+        .stamp-approved {
+            border-color: var(--phosphor-green);
+            color: var(--phosphor-green);
+            background: rgba(51, 255, 102, 0.04);
+            transform: rotate(-1deg);
+        }
+
+        .stamp-notice {
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+            background: rgba(56, 189, 248, 0.04);
+            transform: rotate(1deg);
+        }
+
+        .stamp-critical {
+            border-color: var(--stamp-danger);
+            color: var(--stamp-danger);
+            background: rgba(239, 68, 68, 0.04);
+            transform: rotate(-2deg);
+        }
+
+        .stamp-amber {
+            border-color: var(--thermal-amber);
+            color: var(--thermal-amber);
+            background: rgba(255, 184, 48, 0.04);
+        }
+
+        /* ---------------------------------------------------------------------
+           BANNER HERO / FICHA CATALOGRAFICA DE ABERTURA
+           --------------------------------------------------------------------- */
+        .guide-catalog-hero {
+            background: var(--paper-surface);
+            border: 2px solid var(--border-default);
+            box-shadow: var(--shadow-md);
+            padding: 28px 32px;
+            margin-bottom: 32px;
+            position: relative;
+            clip-path: polygon(
+                0 var(--px), var(--px) var(--px), var(--px) 0,
+                calc(100% - var(--px)) 0, calc(100% - var(--px)) var(--px), 100% var(--px),
+                100% calc(100% - var(--px)), calc(100% - var(--px)) calc(100% - var(--px)), calc(100% - var(--px)) 100%,
+                var(--px) 100%, var(--px) calc(100% - var(--px)), 0 calc(100% - var(--px))
+            );
+        }
+
+        .catalog-meta-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--ink-carbon);
+            margin-bottom: 16px;
+        }
+
+        .catalog-tag-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .catalog-title {
+            font-family: var(--font-pixel);
+            font-size: 20px;
+            line-height: 1.3;
+            letter-spacing: 0.04em;
+            color: var(--ink-main);
+            margin-bottom: 10px;
+        }
+
+        .catalog-lead {
+            font-size: 13px;
+            color: var(--ink-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .catalog-grid-telemetry {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            padding: 14px;
+        }
+
+        .catalog-telemetry-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .catalog-telemetry-label {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .catalog-telemetry-val {
+            font-family: var(--font-display);
+            font-size: 20px;
+            color: var(--phosphor-green);
+            line-height: 1;
+        }
+
+        /* ---------------------------------------------------------------------
+           MODULOS PASSO A PASSO (FORMULARIOS TECNICOS / FICHAS CATALOGRAFICAS)
+           --------------------------------------------------------------------- */
+        .step-module {
+            background: var(--paper-surface);
+            border: 2px solid var(--border-default);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 32px;
+            scroll-margin-top: calc(var(--header-height) + 16px);
+            transition: border-color 0.1s steps(1);
+        }
+
+        .step-module:hover {
+            border-color: var(--border-strong);
+        }
+
+        .step-module-header {
+            background: var(--paper-sheet);
+            border-bottom: 1px solid var(--border-default);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .step-header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-index-badge {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: #07090c;
+            background: var(--blueprint-cyan);
+            padding: 4px 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-heading {
+            font-family: var(--font-pixel);
+            font-size: 13px;
+            color: var(--ink-main);
+            letter-spacing: 0.05em;
+        }
+
+        .step-content-body {
+            padding: 24px;
+        }
+
+        .step-paragraph {
+            font-size: 13px;
+            color: var(--ink-secondary);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        /* Linhas de Picote Mecanico de Papel Termico */
+        .slip-perforation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            user-select: none;
+        }
+
+        .perforation-line {
+            flex: 1;
+            height: 1px;
+            border-top: 1px dashed var(--ink-carbon);
+        }
+
+        .perforation-label {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        /* Grades de Cartoes Tecnicos 1-bit */
+        .pixel-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin: 18px 0;
+        }
+
+        .pixel-card {
+            background: var(--paper-sheet);
+            border: 1px solid var(--border-default);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .pixel-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--ink-carbon);
+        }
+
+        .pixel-card-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-main);
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pixel-card-body {
+            font-size: 12px;
+            color: var(--ink-muted);
+            line-height: 1.5;
+        }
+
+        /* ---------------------------------------------------------------------
+           CAIXAS DIDATICAS DE ALERTA TECNICO (DICAS, AVISOS, NOTAS)
+           --------------------------------------------------------------------- */
+        .pixel-callout {
+            margin: 20px 0;
+            padding: 16px 20px;
+            border: 1px solid var(--border-default);
+            background: var(--paper-sheet);
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pixel-callout.tip {
+            border-left: 4px solid var(--phosphor-green);
+        }
+        .pixel-callout.warning {
+            border-left: 4px solid var(--thermal-amber);
+        }
+        .pixel-callout.danger {
+            border-left: 4px solid var(--stamp-danger);
+        }
+        .pixel-callout.info {
+            border-left: 4px solid var(--blueprint-cyan);
+        }
+
+        .pixel-callout-header {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .pixel-callout.tip .pixel-callout-header { color: var(--phosphor-green); }
+        .pixel-callout.warning .pixel-callout-header { color: var(--thermal-amber); }
+        .pixel-callout.danger .pixel-callout-header { color: var(--stamp-danger); }
+        .pixel-callout.info .pixel-callout-header { color: var(--blueprint-cyan); }
+
+        .pixel-callout-text {
+            font-size: 12px;
+            color: var(--ink-secondary);
+            line-height: 1.6;
+        }
+
+        /* ---------------------------------------------------------------------
+           TABELAS DE DADOS TECNICOS (CHAPA RETRO)
+           --------------------------------------------------------------------- */
+        .table-paper-container {
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid var(--border-default);
+            background: var(--paper-sheet);
+            box-shadow: var(--shadow-sm);
+        }
+
+        table.pixel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        table.pixel-table th {
+            background: var(--paper-surface-recessed);
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        table.pixel-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--ink-secondary);
+        }
+
+        table.pixel-table tr:hover td {
+            background: var(--paper-surface-elevated);
+            color: var(--ink-main);
+        }
+
+        /* ---------------------------------------------------------------------
+           BLOCOS DE CODIGO E PROMPTS DE TELETIPO
+           --------------------------------------------------------------------- */
+        .code-paper-box {
+            margin: 20px 0;
+            border: 1px solid var(--border-default);
+            background: var(--paper-surface-recessed);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .code-paper-top {
+            background: var(--paper-surface);
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+            letter-spacing: 0.1em;
+        }
+
+        pre.code-paper-content {
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--ink-main);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        code.inline-pixel {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            color: var(--blueprint-cyan);
+            padding: 1px 5px;
+        }
+
+        /* ---------------------------------------------------------------------
+           ARENA INTERATIVA DE HITL (SIMULADOR DE RISCO)
+           --------------------------------------------------------------------- */
+        .hitl-arena-box {
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-default);
+            box-shadow: var(--shadow-md);
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .hitl-arena-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--ink-carbon);
+        }
+
+        .hitl-arena-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hitl-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .hitl-input-field {
+            flex: 1;
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 8px 12px;
+            outline: none;
+            box-shadow: inset 1px 1px 0px #000000;
+        }
+
+        .hitl-input-field:focus {
+            border-color: var(--blueprint-cyan);
+        }
+
+        .hitl-output-receipt {
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        /* ---------------------------------------------------------------------
+           RODAPE DOS PASSOS (NAVEGACAO LINEAR)
+           --------------------------------------------------------------------- */
+        .step-module-footer {
+            background: var(--paper-sheet);
+            border-top: 1px solid var(--border-default);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .step-counter-tag {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+        }
+
+        /* ---------------------------------------------------------------------
+           MENU LATERAL DIREITO RETRATIL (DRAWER TECNICO)
+           --------------------------------------------------------------------- */
+        aside.retractable-drawer {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            width: var(--drawer-width);
+            height: calc(100vh - var(--header-height));
+            background: var(--paper-sheet);
+            border-left: 2px solid var(--border-default);
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.2s steps(1);
+            z-index: 95;
+            box-shadow: -4px 0 0px #000000;
+        }
+
+        aside.retractable-drawer.is-open {
+            transform: translateX(0);
+        }
+
+        .drawer-top-bar {
+            padding: 12px 16px;
+            background: var(--paper-surface);
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .drawer-top-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--blueprint-cyan);
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .drawer-search-wrapper {
+            padding: 10px 14px;
+            background: var(--paper-surface-recessed);
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .drawer-list-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            list-style: none;
+        }
+
+        .drawer-item {
+            margin-bottom: 6px;
+        }
+
+        .drawer-link {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 10px;
+            border: 1px solid transparent;
+            color: var(--ink-secondary);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            line-height: 1.4;
+            text-decoration: none;
+            transition: all 0.05s steps(1);
+        }
+
+        .drawer-link:hover {
+            background: var(--paper-surface-elevated);
+            border-color: var(--border-default);
+            color: var(--ink-main);
+            transform: translate(-1px, -1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .drawer-link.active {
+            background: var(--paper-surface);
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+            font-weight: 700;
+        }
+
+        .drawer-step-idx {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            padding: 2px 4px;
+            color: var(--ink-muted);
+            flex-shrink: 0;
+        }
+        .drawer-link.active .drawer-step-idx {
+            background: var(--blueprint-cyan);
+            color: #07090c;
+            border-color: var(--blueprint-cyan);
+        }
+
+        .drawer-bottom-bar {
+            padding: 10px 16px;
+            background: var(--paper-surface);
+            border-top: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+        }
+
+        .drawer-backdrop {
+            display: none;
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            width: 100vw;
+            height: calc(100vh - var(--header-height));
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 92;
+        }
+
+        /* ---------------------------------------------------------------------
+           RODAPE GERAL (PIXEL PAPER UI)
+           --------------------------------------------------------------------- */
+        footer.guide-paper-footer {
+            width: 100%;
+            border-top: 2px solid var(--border-default);
+            background: var(--paper-surface);
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-legal-unit {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+            line-height: 1.6;
+        }
+
+        .footer-link-cluster {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Botao Flutuante Voltar ao Topo */
+        .btn-pixel-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--paper-surface);
+            border: 1px solid var(--border-default);
+            box-shadow: var(--shadow-sm);
+            color: var(--blueprint-cyan);
+            width: 36px;
+            height: 36px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 85;
+            transition: all 0.05s steps(1);
+        }
+        .btn-pixel-top:hover {
+            border-color: var(--blueprint-cyan);
+            background: var(--paper-surface-elevated);
+            transform: translate(-1px, -1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Responsividade Mobile */
+        @media (max-width: 900px) {
+            header.guide-header {
+                padding: 0 12px;
+            }
+            .header-search-box {
+                display: none;
+            }
+            main.guide-viewport {
+                padding: 16px 14px 60px 14px;
+                margin-right: 0 !important;
+            }
+            .guide-catalog-hero {
+                padding: 20px 16px;
+            }
+            .catalog-title {
+                font-size: 15px;
+            }
+            .step-content-body {
+                padding: 16px;
+            }
+            aside.retractable-drawer {
+                width: 100%;
+            }
+            .drawer-backdrop.is-active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECALHO FIXO TECNICO (PIXEL PAPER UI) -->
+    <header class="guide-header">
+        <a href="/" class="brand-unit" aria-label="Voltar para Console piDots">
+            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" class="ui-icon" style="width: 24px; height: 24px;">
+                <rect width="28" height="28" rx="4" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
+                <circle cx="8.5" cy="14" r="3.5" fill="#33ff66"/>
+                <circle cx="19.5" cy="14" r="3.5" fill="#38bdf8"/>
+                <path d="M12 14h4" stroke="#f1f5f9" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="brand-badge">PIDOTS // 2026</span>
+            <span class="brand-title">MANUAL OPERACIONAL // GUIA</span>
+        </a>
+
+        <!-- Campo de Busca Rapida no Cabecalho -->
+        <div class="header-search-box">
+            <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (EX: HITL, SPACES, DOCKER)..." autocomplete="off">
+        </div>
+
+        <div class="header-actions">
+            <!-- Alternador de Tema Dark Noir vs Blueprint -->
+            <button class="pixel-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
+                <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <span>[TEMA]</span>
+            </button>
+
+            <!-- Botao do Menu Drawer Retratil a Direita -->
+            <button id="toggleDrawerBtn" class="pixel-btn btn-cyan" title="Abrir Indice de Navegacao Passo a Passo">
+                <svg class="ui-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <span>[INDICE GUIA]</span>
+            </button>
+
+            <a href="/" class="pixel-btn btn-green" title="Abrir Console Operacional Oficial">
+                <svg class="ui-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                <span>[CONSOLE SPA]</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- SHELL PRINCIPAL EM LARGURA TOTAL -->
+    <div class="guide-shell">
+
+        <!-- CONTEUDO DO GUIA (VIEWPORT TOTAL) -->
+        <main class="guide-viewport" id="mainContent">
+
+            <!-- FICHA CATALOGRAFICA HERO / BOAS-VINDAS -->
+            <section class="guide-catalog-hero">
+                <div class="catalog-meta-strip">
+                    <div class="catalog-tag-group">
+                        <span class="pixel-stamp stamp-approved">SISTEMA MULTI-BOT OPERACIONAL</span>
+                        <span class="pixel-stamp stamp-notice">EDICAO 2026 // EDGE SOVEREIGN</span>
+                        <span class="brand-badge">HARDWARE: RASPBERRY PI 4B (ARM64)</span>
+                    </div>
+                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted);">DOC# PIDOTS-MANUAL-V3</span>
+                </div>
+
+                <h1 class="catalog-title">MANUAL DE OPERACAO E GUIA DIDATICO DO PIDOTS</h1>
+                <p class="catalog-lead">
+                    Aprenda a operar o piDots de ponta a ponta: entenda a orquestracao multi-bot local, conheca os quatro novos arquetipos cognitivos, domine a delegacao de tarefas via Fitas de Carbono, configure o Heartbeat com a diretriz de silencio HEARTBEAT_OK, conecte mensageria externa via Telegram e WhatsApp, reduza em mais de 75% o consumo de tokens com Tool Pruning e mantenha seu cartao MicroSD 100% preservado.
+                </p>
+
+                <div class="catalog-grid-telemetry">
+                    <div class="catalog-telemetry-item">
+                        <span class="catalog-telemetry-label">CONSUMO RAM EDGE</span>
+                        <span class="catalog-telemetry-val">52 MB / 384 MB</span>
+                    </div>
+                    <div class="catalog-telemetry-item">
+                        <span class="catalog-telemetry-label">ARQUETIPOS NATIVOS</span>
+                        <span class="catalog-telemetry-val">4 ESPECIALISTAS</span>
+                    </div>
+                    <div class="catalog-telemetry-item">
+                        <span class="catalog-telemetry-label">TRAVA DE RECURSAO</span>
+                        <span class="catalog-telemetry-val">HOP_COUNT &lt;= 3</span>
+                    </div>
+                    <div class="catalog-telemetry-item">
+                        <span class="catalog-telemetry-label">MOTOR RELACIONAL</span>
+                        <span class="catalog-telemetry-val">SQLITE WAL</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 01: O QUE E O PIDOTS E OS NOVOS ARQUETIPOS COGNITIVOS
+                 ================================================================= -->
+            <section class="step-module" id="passo-1">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 01</span>
+                        <h2 class="step-heading">O QUE E O PIDOTS E OS NOVOS ARQUETIPOS COGNITIVOS</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-notice">CONCEITO &amp; IDENTIDADE</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        O <strong>piDots</strong> nao e um chatbot convencional baseado em janelas efemeras de navegador. Ele e um <strong>ecossistema soberano de AI Coworkers autonomos e persistentes</strong>, projetado especificamente para operar em hardware restrito (como o Raspberry Pi 4B de 4GB com arquitetura ARM64). Cada acao do sistema e gravada de forma duravel no SQLite em modo Write-Ahead Logging (WAL), o que garante que nenhuma memoria de projeto, raciocinio ou arquivo seja perdido mesmo em caso de reinicializacao ou queda de energia.
+                    </p>
+                    <p class="step-paragraph">
+                        Em vez de sobrecarregar um unico agente generico com instrucoes conflitantes, o piDots divide a carga cognitiva em <strong>quatro arquetipos especializados</strong>. Cada Dot possui identidade, carimbo visual exclusivo, prompt de sistema calibrado e um conjunto restrito de permissoes operacionais:
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">
+                                    <span class="brand-badge" style="color: var(--blueprint-cyan); border-color: var(--blueprint-cyan);">[SPV]</span>
+                                    SUPERVISOR GERAL
+                                </span>
+                                <span class="pixel-stamp stamp-notice" style="font-size: 6px; padding: 2px 4px;">ORQUESTRADOR</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Identificador:</strong> <code>dot-supervisor</code> | <strong>Arquetipo:</strong> <code>general</code><br>
+                                <strong>Missao:</strong> Atua como lider da sessao. Recebe as ordens complexas do operador humano, decompoe metas macro em planos de acao executaveis, delega subtarefas tecnicas aos especialistas e compoe a sintese final executiva.<br>
+                                <strong>Ferramentas Autorizadas:</strong> <code>delegate_task</code>, <code>handoff_to_dot</code>, <code>get_current_time</code>.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">
+                                    <span class="brand-badge" style="color: var(--phosphor-green); border-color: var(--phosphor-green);">[CDR]</span>
+                                    GROK / CODER
+                                </span>
+                                <span class="pixel-stamp stamp-approved" style="font-size: 6px; padding: 2px 4px;">DESENVOLVEDOR</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Identificador:</strong> <code>dot-coder</code> | <strong>Arquetipo:</strong> <code>grok</code><br>
+                                <strong>Missao:</strong> Especialista cirurgico em codigo-fonte, automacao Linux, depuracao de erros e leitura de baixo nivel do hardware. Cria scripts, executa testes em sandbox e analisa logs tecnicos.<br>
+                                <strong>Ferramentas Autorizadas:</strong> <code>execute_shell_command</code>, <code>workspace_read_file</code>, <code>workspace_write_file</code>, <code>workspace_list_files</code>, <code>get_edge_telemetry</code>.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">
+                                    <span class="brand-badge" style="color: var(--thermal-amber); border-color: var(--thermal-amber);">[MUS]</span>
+                                    MUSE / CRIATIVO
+                                </span>
+                                <span class="pixel-stamp stamp-amber" style="font-size: 6px; padding: 2px 4px;">DOCUMENTADOR</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Identificador:</strong> <code>dot-muse</code> | <strong>Arquetipo:</strong> <code>muse</code><br>
+                                <strong>Missao:</strong> Responsavel por redacao tecnica didatica, design de especificacoes, pesquisa de referencias na web e versionamento de documentos no repositorio Spaces sem gastar RAM com navegadores pesados.<br>
+                                <strong>Ferramentas Autorizadas:</strong> <code>read_web_page</code>, <code>workspace_read_file</code>, <code>workspace_write_file</code>, <code>workspace_list_files</code>.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">
+                                    <span class="brand-badge" style="color: var(--stamp-danger); border-color: var(--stamp-danger);">[AUD]</span>
+                                    AUDITOR FORENSE
+                                </span>
+                                <span class="pixel-stamp stamp-critical" style="font-size: 6px; padding: 2px 4px;">SEGURANCA &amp; HITL</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Identificador:</strong> <code>dot-auditor</code> | <strong>Arquetipo:</strong> <code>auditor</code><br>
+                                <strong>Missao:</strong> Inspetor forense e cao de guarda da integridade. Avalia o risco operacional de comandos bash, audita o historico de execucoes na tabela <code>tool_runs</code> e valida a conformidade com as regras Human-in-the-Loop.<br>
+                                <strong>Ferramentas Autorizadas:</strong> <code>workspace_read_file</code>, <code>workspace_list_files</code>, <code>get_edge_telemetry</code>, <code>get_current_time</code>.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">COMPARATIVO DE ARQUITETURA COGNITIVA</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <div class="table-paper-container">
+                        <table class="pixel-table">
+                            <thead>
+                                <tr>
+                                    <th>ARQUETIPO</th>
+                                    <th>CARIMBO</th>
+                                    <th>FOCO OPERACIONAL</th>
+                                    <th>ISOLAMENTO DE WORKSPACE</th>
+                                    <th>TETO DE TOKENS POR TURNO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Supervisor</strong></td>
+                                    <td><code>[SPV]</code></td>
+                                    <td>Planejamento macro, delegacao de tarefas e consolidacao executiva.</td>
+                                    <td><code>workspaces/dot-supervisor/</code></td>
+                                    <td>Baixo (Prompt enxuto, apenas 3 ferramentas).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Grok / Coder</strong></td>
+                                    <td><code>[CDR]</code></td>
+                                    <td>Scripts Python/Bash, testes automatizados e compilacao em sandbox.</td>
+                                    <td><code>workspaces/dot-coder/</code></td>
+                                    <td>Medio (Prompt tecnico focado em codigo puro).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Muse / Criativo</strong></td>
+                                    <td><code>[MUS]</code></td>
+                                    <td>Extracao web Trafilatura, manuais didaticos e artefatos Spaces.</td>
+                                    <td><code>workspaces/dot-muse/</code></td>
+                                    <td>Medio (Prompt semantico voltado a didatica).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Auditor</strong></td>
+                                    <td><code>[AUD]</code></td>
+                                    <td>Classificacao de risco previa, conformidade HITL e trilhas forenses.</td>
+                                    <td><code>workspaces/dot-auditor/</code></td>
+                                    <td>Minimo (Leitura estrita sem comandos destrutivos).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pixel-callout tip">
+                        <div class="pixel-callout-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            VANTAGEM DA ESPECIALIZACAO NO RASPBERRY PI 4B
+                        </div>
+                        <div class="pixel-callout-text">
+                            Dividir a agencia entre multiplos arquetipos reduz a alucinacao cruzada do modelo. O Supervisor nunca perde tempo tentando adivinhar sintaxes do shell, enquanto o Coder foca exclusivamente no codigo sem dispersar atencao com redacoes longas.
+                        </div>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <span class="step-counter-tag">PASSO 01 DE 06 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-2')">
+                        <span>AVANCAR: CHAT MULTI-BOT &amp; FITAS DE CARBONO</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 02: CHAT MULTI-BOT COLABORATIVO NO EDGE
+                 ================================================================= -->
+            <section class="step-module" id="passo-2">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 02</span>
+                        <h2 class="step-heading">CHAT MULTI-BOT COLABORATIVO E FITAS DE CARBONO</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-notice">INTERACAO INTER-AGENTE</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        O piDots permite que multiplos agentes compartilhem a mesma conversa ou trabalhem nos bastidores de forma orquestrada. Este modelo colaborativo apoia-se em quatro pilares deterministicos:
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">1. MENCOES DINAMICAS (@DOT)</span>
+                                <span class="brand-badge">ThreadRouter</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Ao incluir <code>@dot-coder</code> ou <code>@dot-supervisor</code> na sua mensagem, o mecanismo <code>ThreadRouter</code> extrai a mencao via regex deterministica, verifica a existencia do agente no banco e redireciona o turno de execucao diretamente para o especialista citado, registrando-o na tabela <code>thread_participants</code>.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">2. DELEGACAO LIMPA (DELEGATE_TASK)</span>
+                                <span class="brand-badge">SUBTAREFA ISOLADA</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Quando o Supervisor precisa de um script ou teste, ele chama a ferramenta <code>delegate_task</code>. O piDots cria uma sub-thread isolada (<code>subtask-XXXX</code>), roda o especialista em segundo plano e retorna somente a sintese final ao Supervisor, sem poluir o historico principal com centenas de linhas transitorias.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">3. TRANSFERENCIA DE COMANDO (HANDOFF)</span>
+                                <span class="brand-badge">HANDOFF_TO_DOT</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Quando a natureza da conversa muda definitivamente (por exemplo, apos o planejamento geral o foco passa a ser refatoracao intensiva de codigo), o Supervisor executa <code>handoff_to_dot</code>. A titularidade da thread e transferida no banco e o novo Dot assume a lideranca oficial das respostas.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">4. FITAS DE CARBONO EXPANSIVEIS</span>
+                                <span class="brand-badge">[+] CADERNO DE RACIOCINIO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Toda iteracao de pensamento (Thought) e mensagens internas de delegacao (<code>visibility='internal'</code>) sao formatadas como Fitas de Carbono. No console, aparecem colapsadas por padrao sob o titulo <code>[+] CADERNO DE RACIOCINIO</code>, permitindo inspecao cirurgica com um simples clique.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">EXEMPLO DIDATICO // DELEGACAO INTER-AGENTE</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <div class="code-paper-box">
+                        <div class="code-paper-top">
+                            <span>PAYLOAD DA FERRAMENTA: delegate_task (CHAMADA PELO SUPERVISOR)</span>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                        </div>
+                        <pre class="code-paper-content">{
+  "target_dot_id": "dot-coder",
+  "task_goal": "Escrever e testar o script telemetria.py que le a temperatura do SoC e grava em CSV",
+  "context_snippet": "Hardware: Raspberry Pi 4B. Arquivo termico em /sys/class/thermal/thermal_zone0/temp."
+}</pre>
+                    </div>
+
+                    <div class="pixel-callout info">
+                        <div class="pixel-callout-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            O QUE ACONTECE NO BANCO DURANTE UM HANDOFF?
+                        </div>
+                        <div class="pixel-callout-text">
+                            Durante um <code>handoff_to_dot</code>, o piDots executa uma transacao atomica no SQLite: atualiza o campo <code>threads.dot_id</code> para o novo lider, insere um registro na tabela <code>agent_handoffs</code> com o motivo detalhado e grava uma mensagem do sistema com a nota publica <code>[TRANSFERENCIA DE COMANDO]</code>.
+                        </div>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-1')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">PASSO 02 DE 06 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-3')">
+                        <span>AVANCAR: DOT HEARTBEAT &amp; SILENCIO</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 03: AUTONOMIA PROATIVA (DOT HEARTBEAT)
+                 ================================================================= -->
+            <section class="step-module" id="passo-3">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 03</span>
+                        <h2 class="step-heading">AUTONOMIA PROATIVA, DOT HEARTBEAT E HEARTBEAT_OK</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-notice">ROTINAS ALWAYS-ON</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        Enquanto a maioria dos sistemas de IA permanece inerte esperando que um ser humano digite algo, o piDots conta com um motor de <strong>Autonomia Proativa continua (Dot Heartbeat)</strong>. O servico de agendamento em segundo plano (<code>EdgeScheduler</code>) executa verificacoes rotineiras de integridade, telemetria e tarefas operacionais mesmo com todos os operadores desconectados.
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">MOTOR DE CRON LEVE (CRONITER)</span>
+                                <span class="brand-badge">ZERO OVERHEAD</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                O agendador roda dentro do mesmo processo assincrono do FastAPI. A biblioteca <code>croniter</code> calcula com exatidao matematica o proximo instante de disparo no fuso horario UTC (ex: <code>*/10 * * * *</code> para a cada 10 minutos). As tarefas ficam persistidas na tabela <code>scheduled_tasks</code>.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">DIRETRIZ DE SILENCIO HEARTBEAT_OK</span>
+                                <span class="brand-badge">POUPANCA DE TOKENS</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Toda rotina proativa injeta a diretriz: <em>"Se o sistema estiver em normalidade, responda estritamente 'HEARTBEAT_OK'"</em>. Quando o agente detecta normalidade, a tarefa recebe o status <code>SILENT</code> e nenhuma notificacao externa e gerada, mantendo seus canais limpos e sem spam.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">POR QUE O SILENCIO E CRUCIAL NO EDGE?</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <div class="pixel-callout tip">
+                        <div class="pixel-callout-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            COMO A REGRA HEARTBEAT_OK POUPA SUA COTA
+                        </div>
+                        <div class="pixel-callout-text">
+                            Se um agente checa o servidor a cada 5 minutos e sempre envia um relatorio completo ("Tudo normal, memoria em 42%, temperatura ok..."), ele consumira tokens preciosos de saida e enchera seu Telegram com 288 mensagens diarias inuteis. Com o <code>HEARTBEAT_OK</code>, a resposta tem apenas 12 caracteres, nao emite notificacoes e gera alerta apenas quando ha uma falha ou anomalia real.
+                        </div>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">COMO AGENDAR TAREFAS VIA API (POST /api/tasks)</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <p class="step-paragraph">
+                        Voce pode criar tarefas proativas enviando uma requisicao HTTP para o endpoint <code>POST /api/tasks</code>. Veja o comando de exemplo completo:
+                    </p>
+
+                    <div class="code-paper-box">
+                        <div class="code-paper-top">
+                            <span>EXEMPLO CURL // AGENDAMENTO PROATIVO DE MONITORAMENTO TERMICO</span>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                        </div>
+                        <pre class="code-paper-content">curl -X POST http://127.0.0.1:8000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dot_id": "dot-coder",
+    "task_name": "Inspecao Termica e Memoria SBC",
+    "cron_expr": "*/15 * * * *",
+    "action_prompt": "Consulte a telemetria do Raspberry Pi com get_edge_telemetry. Se a temperatura estiver abaixo de 70 graus Celsius e memoria livre acima de 200MB, responda exatamente HEARTBEAT_OK. Caso contrario, emita o relatorio de alerta.",
+    "target_channel_type": "telegram",
+    "target_channel_id": "123456789"
+  }'</pre>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-2')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">PASSO 03 DE 06 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-4')">
+                        <span>AVANCAR: GATEWAY DE MENSAGERIA &amp; SALAS</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 04: GATEWAY DE MENSAGERIA UNIFICADA E SALAS TEMATICAS
+                 ================================================================= -->
+            <section class="step-module" id="passo-4">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 04</span>
+                        <h2 class="step-heading">GATEWAY DE MENSAGERIA UNIFICADA E SALAS TEMATICAS</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-notice">CANAIS EXTERNOS &amp; RECURSAO</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        O piDots opera alem da interface web local: ele integra um <strong>Gateway de Mensageria Unificada</strong> capaz de receber ordens e emitir relatorios via Telegram, WhatsApp (Evolution API) e webhooks genericos HTTP com normalizacao canonica dos dados.
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">WEBHOOK TELEGRAM DIRETO</span>
+                                <span class="brand-badge">POST /api/webhooks/telegram/{dot_id}</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Conecta-se diretamente aos webhooks oficiais do Telegram Bot API. Converte o chat em uma thread persistente, processa a mensagem pelo ciclo ReAct do Dot e despacha a resposta com markdown formatado via chamada HTTP <code>sendMessage</code>.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">WHATSAPP VIA EVOLUTION API</span>
+                                <span class="brand-badge">POST /api/webhooks/whatsapp/{dot_id}</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Integracao com instancias do Evolution API. Suporta simulacao de digitacao em tempo real (<code>presence: 'composing'</code>) e responde com precisao para numeros individuais ou grupos autorizados.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">WEBHOOKS HTTP GENERICOS</span>
+                                <span class="brand-badge">POST /api/webhooks/incoming/{dot_id}</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Permite que alertas de monitoramento (como Grafana, n8n, GitHub Actions ou scripts bash externos) disparem tarefas no piDots com suporte opcional a autenticacao por assinatura HMAC-SHA256.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">SALAS TEMATICAS (#CANAIS)</span>
+                                <span class="brand-badge">POST /api/channels/{id}/messages</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Espacos tematicos como <code>#devops</code> e <code>#pesquisa</code> onde operadores humanos e multiplos Dots colaboram. As mensagens sao sincronizadas e despachadas para os Dots membros da sala.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">TRAVA DE RECURSAO // PREVENCAO DE LOOPS INFINITOS</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <div class="pixel-callout warning">
+                        <div class="pixel-callout-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            COMO FUNCIONA O CONTROLE DE SALTOS (HOP_COUNT &lt;= 3)
+                        </div>
+                        <div class="pixel-callout-text">
+                            Quando bots interagem em uma sala compartilhada, existe o risco inerente de conversa infinita (um bot responde ao outro indefinidamente ate esgotar a cota de tokens). O piDots resolve isso com duas regras estritas:<br>
+                            1. <strong>Mencao Obrigatoria entre Bots:</strong> Um bot so responde a outro bot se for explicitamente citado pelo nome (ex: <code>@dot-coder</code>). Se nao houver mencao, ele ignora a mensagem.<br>
+                            2. <strong>Teto Rigido de Saltos:</strong> Cada resposta carrega um contador incremental <code>hop_count</code>. Se <code>hop_count &gt; 3</code>, o <code>ChannelOrchestrator</code> barra imediatamente novas replicacoes e encerra a cadeia no log com aviso preventivo.
+                        </div>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">EXEMPLO DE ENVIO PARA SALA TEMATICA</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <div class="code-paper-box">
+                        <div class="code-paper-top">
+                            <span>POST /api/channels/devops/messages // DISPARANDO AGENTES NA SALA</span>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                        </div>
+                        <pre class="code-paper-content">curl -X POST http://127.0.0.1:8000/api/channels/devops/messages \
+  -H "Content-Type: application/json" \
+  -d '{
+    "author_type": "user",
+    "author_id": "operador_lyon",
+    "content": "Atencao @dot-coder: favor inspecionar uso de disco do Raspberry Pi e avisar @dot-supervisor."
+  }'</pre>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-3')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">PASSO 04 DE 06 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-5')">
+                        <span>AVANCAR: ARSENAL DE TOOLS &amp; TOOL PRUNING</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 05: ARSENAL DE FERRAMENTAS E PODA DINAMICA
+                 ================================================================= -->
+            <section class="step-module" id="passo-5">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 05</span>
+                        <h2 class="step-heading">ARSENAL DE FERRAMENTAS E PODA DINAMICA (TOOL PRUNING)</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-approved">EFICIENCIA EXTREMA</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        Em arquiteturas corporativas tradicionais de agentes, e comum enviar a especificacao JSON completa de todas as dezenas de ferramentas do sistema a cada chamada ao modelo de IA. No hardware de borda, essa pratica acarreta um desperdicio inaceitavel de tokens, aumenta o tempo de resposta e satura o contexto de raciocinio.
+                    </p>
+                    <p class="step-paragraph">
+                        O piDots implementa a tecnica de <strong>Poda Dinamica de Ferramentas (Dynamic Tool Pruning)</strong>: o <code>DotAgent</code> inspeciona a coluna <code>allowed_tools_json</code> do agente ativo e solicita ao <code>ToolRegistry</code> exclusivamente as ferramentas autorizadas para aquele perfil.
+                    </p>
+
+                    <div class="table-paper-container">
+                        <table class="pixel-table">
+                            <thead>
+                                <tr>
+                                    <th>ARQUETIPO</th>
+                                    <th>FERRAMENTAS AUTORIZADAS</th>
+                                    <th>TOKENS DE SCHEMA POR TURNO</th>
+                                    <th>ECONOMIA OBSERVADA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>dot-supervisor</strong></td>
+                                    <td><code>delegate_task</code>, <code>handoff_to_dot</code>, <code>get_current_time</code></td>
+                                    <td>~ 420 tokens</td>
+                                    <td><span class="pixel-stamp stamp-approved" style="font-size: 7px;">-78.5% TOKENS</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>dot-coder</strong></td>
+                                    <td><code>execute_shell_command</code>, <code>workspace_*</code>, <code>get_edge_telemetry</code></td>
+                                    <td>~ 780 tokens</td>
+                                    <td><span class="pixel-stamp stamp-approved" style="font-size: 7px;">-60.0% TOKENS</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>dot-muse</strong></td>
+                                    <td><code>read_web_page</code>, <code>workspace_read_file</code>, <code>workspace_write_file</code></td>
+                                    <td>~ 590 tokens</td>
+                                    <td><span class="pixel-stamp stamp-approved" style="font-size: 7px;">-69.7% TOKENS</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>dot-auditor</strong></td>
+                                    <td><code>workspace_read_file</code>, <code>workspace_list_files</code>, <code>get_edge_telemetry</code></td>
+                                    <td>~ 480 tokens</td>
+                                    <td><span class="pixel-stamp stamp-approved" style="font-size: 7px;">-75.4% TOKENS</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">CATALOGO COMPLETO DO ARSENAL NATIVO</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">execute_shell_command</span>
+                                <span class="brand-badge">BWRAP / SUBPROCESS</span>
+                            </div>
+                            <p class="pixel-card-body">Executa comandos Linux isolados com timeout estrito de 30s e controle de memoria.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">delegate_task</span>
+                                <span class="brand-badge">ORQUESTRADOR</span>
+                            </div>
+                            <p class="pixel-card-body">Delega subtarefa tecnica para outro Dot especialista em sub-thread isolada.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">handoff_to_dot</span>
+                                <span class="brand-badge">HANDOFF LEAD</span>
+                            </div>
+                            <p class="pixel-card-body">Transfere formalmente a lideranca da thread atual para outro agente especialista.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">workspace_read_file / write_file</span>
+                                <span class="brand-badge">ATOMIC POSIX</span>
+                            </div>
+                            <p class="pixel-card-body">Leitura e escrita atomica segura de arquivos no disco flash com prevencao de corrupcao.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">read_web_page</span>
+                                <span class="brand-badge">TRAFILATURA</span>
+                            </div>
+                            <p class="pixel-card-body">Extrator web semantico leve. Converte artigos e paginas em Markdown puro sem rodar Chromium.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">get_edge_telemetry</span>
+                                <span class="brand-badge">BROADCOM BCM2711</span>
+                            </div>
+                            <p class="pixel-card-body">Consulta direta a temperatura do SoC, memoria RAM RSS e espaco em disco sem bibliotecas pesadas.</p>
+                        </article>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">SEGURANCA FORENSE E SIMULADOR HITL</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <!-- SIMULADOR INTERATIVO HITL (PIXEL PAPER UI) -->
+                    <div class="hitl-arena-box">
+                        <div class="hitl-arena-top">
+                            <span class="hitl-arena-title">
+                                <svg class="ui-icon" style="color: var(--blueprint-cyan);" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                SIMULADOR DO CLASSIFICADOR HITL
+                            </span>
+                            <span class="brand-badge">MOTOR DE ANALISE EM TEMPO REAL</span>
+                        </div>
+
+                        <div class="hitl-input-group">
+                            <input type="text" id="hitlTestInput" class="hitl-input-field" value="rm -rf /var/log &amp;&amp; sudo reboot" placeholder="DIGITE UM COMANDO BASH PARA CLASSIFICAR O RISCO...">
+                            <button class="pixel-btn btn-cyan" onclick="analisarComandoHITL()">[CLASSIFICAR ORDEM]</button>
+                        </div>
+
+                        <div id="hitlResultReceipt" class="hitl-output-receipt">
+                            <div>
+                                <span style="color: var(--ink-muted); font-size: 10px;">COMANDO INSPECIONADO:</span>
+                                <code id="hitlCmdDisplay" class="inline-pixel">rm -rf /var/log &amp;&amp; sudo reboot</code>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span id="hitlRiskBadge" class="pixel-stamp stamp-critical">CRITICAL (CRITICO)</span>
+                                <span id="hitlReqBadge" class="pixel-stamp stamp-critical">BLOQUEADO ATE APROVACAO</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-4')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">PASSO 05 DE 06 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-6')">
+                        <span>AVANCAR: OPERACIONAL &amp; PRESERVACAO FLASH</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 06: PASSO A PASSO OPERACIONAL, ENDPOINTS REST E PRESERVACAO
+                 ================================================================= -->
+            <section class="step-module" id="passo-6">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 06</span>
+                        <h2 class="step-heading">PASSO A PASSO OPERACIONAL, ENDPOINTS REST E PRESERVACAO DO MICROSD</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-approved">GUIA DE PRODUCAO 24/7</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        A implantacao e o gerenciamento do piDots sao extremamente simples. Ele pode ser executado diretamente pelo Docker Compose ou pelo ambiente virtual Python local:
+                    </p>
+
+                    <div class="code-paper-box">
+                        <div class="code-paper-top">
+                            <span>ARQUIVO DE CONFIGURACAO: .env</span>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                        </div>
+                        <pre class="code-paper-content"># Gateway OpenAI Universal (compativel com qualquer provedor)
+AI_BASE_URL=https://api.openai.com/v1
+AI_API_KEY=sua_chave_de_api_aqui
+AI_MODEL=qwen3.8-27b
+AI_MAX_RETRIES=3
+AI_TIMEOUT_SECONDS=60.0
+
+# Parametros de Servidor e Persistencia Edge
+HOST=0.0.0.0
+PORT=8000
+SQLITE_DB_PATH=/app/data/pidots.db
+WORKSPACES_ROOT=/app/workspaces
+
+# Seguranca e Canais de Alerta Remoto
+ENABLE_THERMAL_THROTTLE=true
+THERMAL_LIMIT_CELSIUS=72.0
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=</pre>
+                    </div>
+
+                    <div class="code-paper-box">
+                        <div class="code-paper-top">
+                            <span>COMANDOS DE DEPLOY E GERENCIAMENTO BASH</span>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                        </div>
+                        <pre class="code-paper-content"># 1. Iniciar os servicos em segundo plano
+docker compose up -d
+
+# 2. Consultar status e telemetria instantanea
+curl -s http://127.0.0.1:8000/health | jq .
+
+# 3. Listar todos os Dots ativos com arquetipos
+curl -s http://127.0.0.1:8000/api/dots | jq .
+
+# 4. Listar tarefas proativas agendadas
+curl -s http://127.0.0.1:8000/api/tasks | jq .
+
+# 5. Listar salas tematicas de equipe
+curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">DIRETRIZES DE PRESERVACAO DA MEMORIA FLASH MICROSD</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">1. SQLITE WAL + SYNCHRONOUS NORMAL</span>
+                                <span class="brand-badge">PRAGMA</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Elimina o fsync a cada transacao. As gravacoes ocorrem de forma sequencial append-only no arquivo <code>.db-wal</code>, minimizando ciclos de reescrita nas celulas flash do cartao.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">2. TEMP_STORE EM RAM (MEMORY)</span>
+                                <span class="brand-badge">CACHE VOLATIL</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Tabelas temporarias, ordenacoes e joins intermediarios residem estritamente na memoria volatil do Raspberry Pi, evitando IO inutil em disco.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">3. CHECKPOINT PASSIVE PERIODICO</span>
+                                <span class="brand-badge">CADA 15 MINUTOS</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Uma rotina assincrona em background executa checkpoints PASSIVE do WAL, consolidando paginas sem travar leituras nem sobrecarregar o controlador flash.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">4. ESCRITAS ATOMICAS POSIX</span>
+                                <span class="brand-badge">ATOMIC RENAME</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Documentos em Spaces sao gravados primeiro em arquivos temporarios e depois substituidos via rename atomico, prevenindo arquivos corrompidos em quedas de energia.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="pixel-callout info">
+                        <div class="pixel-callout-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            ACESSO REMOTO SEGURO COM CLOUDFLARE TUNNEL
+                        </div>
+                        <div class="pixel-callout-text">
+                            Para acessar o console SPA e receber webhooks fora da sua rede local sem abrir portas no roteador, execute o <code>cloudflared tunnel</code> no Raspberry Pi direcionando para a porta <code>8000</code>. Suas comunicacoes serao blindadas com TLS de ponta a ponta.
+                        </div>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-5')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">CONCLUSAO DO GUIA (06 DE 06)</span>
+                    <a href="/" class="pixel-btn btn-green">
+                        <span>ABRIR CONSOLE OPERACIONAL SPA</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </a>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- BACKDROP PARA DISPOSITIVOS MOVEIS -->
+        <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+
+        <!-- MENU LATERAL DIREITO RETRATIL (DRAWER TECNICO) -->
+        <aside class="retractable-drawer" id="retractableDrawer">
+            <div class="drawer-top-bar">
+                <span class="drawer-top-title">
+                    <svg class="ui-icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    INDICE DO GUIA
+                </span>
+                <button class="pixel-btn" onclick="closeDrawer()">[FECHAR X]</button>
+            </div>
+
+            <!-- Campo de Busca no Drawer -->
+            <div class="drawer-search-wrapper">
+                <input type="text" id="drawerSearchInput" class="pixel-search-input" style="width: 100%;" placeholder="FILTRAR PASSOS DO GUIA...">
+            </div>
+
+            <ul class="drawer-list-scroll" id="drawerListScroll">
+                <li class="drawer-item" data-keywords="arquetipos supervisor grok coder muse auditor conceitos edge react persistencia">
+                    <a href="#passo-1" class="drawer-link active" onclick="handleDrawerNav(event, 'passo-1')">
+                        <span class="drawer-step-idx">01</span>
+                        <span>O Que É o piDots &amp; Novos Arquétipos</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="multi-bot mencao delegate handoff fitas carbono raciocinio inter-agente">
+                    <a href="#passo-2" class="drawer-link" onclick="handleDrawerNav(event, 'passo-2')">
+                        <span class="drawer-step-idx">02</span>
+                        <span>Chat Multi-Bot &amp; Fitas de Carbono</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="heartbeat proativo cron croniter heartbeat_ok tarefas tasks agendamento">
+                    <a href="#passo-3" class="drawer-link" onclick="handleDrawerNav(event, 'passo-3')">
+                        <span class="drawer-step-idx">03</span>
+                        <span>Dot Heartbeat &amp; Diretriz HEARTBEAT_OK</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="gateway mensageria telegram whatsapp evolution webhooks salas hop_count devops">
+                    <a href="#passo-4" class="drawer-link" onclick="handleDrawerNav(event, 'passo-4')">
+                        <span class="drawer-step-idx">04</span>
+                        <span>Gateway Unificado &amp; Salas Temáticas</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="ferramentas tools pruning poda dinamica tokens economia sandbox bash hitl">
+                    <a href="#passo-5" class="drawer-link" onclick="handleDrawerNav(event, 'passo-5')">
+                        <span class="drawer-step-idx">05</span>
+                        <span>Arsenal de Ferramentas &amp; Tool Pruning</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="operacional deploy docker env curl endpoints microsd flash wal preservacao">
+                    <a href="#passo-6" class="drawer-link" onclick="handleDrawerNav(event, 'passo-6')">
+                        <span class="drawer-step-idx">06</span>
+                        <span>Passo a Passo Operacional &amp; MicroSD</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="drawer-bottom-bar">
+                <span>PIDOTS // PIXEL PAPER UI</span>
+                <span>6 PASSOS DISPONIVEIS</span>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- BOTAO FLUTUANTE DE VOLTAR AO TOPO -->
+    <button id="btnBackToTop" class="btn-pixel-top" title="Voltar ao Topo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </button>
+
+    <!-- RODAPE OFICIAL PIXEL PAPER UI -->
+    <footer class="guide-paper-footer">
+        <div class="footer-legal-unit">
+            <div>PIDOTS CORE // RASPBERRY PI 4B (4GB ARM64)</div>
+            <div>DESENVOLVIDO POR LYON CHRISTOPHER (2026) // ZERO EMOJIS // DESIGN SYSTEM PIXEL PAPER UI</div>
+        </div>
+        <div class="footer-link-cluster">
+            <a href="/" class="pixel-btn">[CONSOLE SPA]</a>
+            <a href="/apresentacao" class="pixel-btn btn-cyan">[APRESENTACAO]</a>
+            <a href="/health" target="_blank" class="pixel-btn btn-green">[TELEMETRIA JSON]</a>
+        </div>
+    </footer>
+
+    <script>
+        /* =====================================================================
+           SCRIPTS OPERACIONAIS: DRAWER RETRATIL, BUSCA DINAMICA,
+           ALTERNADOR DE TEMA E SIMULADOR HITL
+           ===================================================================== */
+        const drawer = document.getElementById('retractableDrawer');
+        const drawerBackdrop = document.getElementById('drawerBackdrop');
+        const toggleDrawerBtn = document.getElementById('toggleDrawerBtn');
+        const globalSearch = document.getElementById('globalSearchInput');
+        const drawerSearch = document.getElementById('drawerSearchInput');
+        const btnBackToTop = document.getElementById('btnBackToTop');
+        const drawerLinks = document.querySelectorAll('.drawer-link');
+        const stepModules = document.querySelectorAll('.step-module');
+
+        // 1. Controle do Drawer Retratil a Direita
+        function openDrawer() {
+            drawer.classList.add('is-open');
+            drawerBackdrop.classList.add('is-active');
+            document.body.classList.add('drawer-open');
+            drawerSearch.focus();
+        }
+
+        function closeDrawer() {
+            drawer.classList.remove('is-open');
+            drawerBackdrop.classList.remove('is-active');
+            document.body.classList.remove('drawer-open');
+        }
+
+        toggleDrawerBtn.addEventListener('click', () => {
+            if (drawer.classList.contains('is-open')) {
+                closeDrawer();
+            } else {
+                openDrawer();
+            }
+        });
+
+        // Fechar ao teclar Esc
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && drawer.classList.contains('is-open')) {
+                closeDrawer();
+            }
+        });
+
+        // 2. Navegacao Suave para Passos
+        function scrollToStep(stepId) {
+            const target = document.getElementById(stepId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function handleDrawerNav(e, stepId) {
+            e.preventDefault();
+            scrollToStep(stepId);
+            if (window.innerWidth < 900) {
+                closeDrawer();
+            }
+        }
+
+        // Destaque Ativo via Intersection Observer
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    drawerLinks.forEach(link => {
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('active');
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.2 });
+
+        stepModules.forEach(step => navObserver.observe(step));
+
+        // 3. Botao de Voltar ao Topo
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                btnBackToTop.style.display = 'flex';
+            } else {
+                btnBackToTop.style.display = 'none';
+            }
+        });
+
+        // 4. Mecanismo de Busca Dinamica
+        function filtrarGuia(query) {
+            const q = query.trim().toLowerCase();
+            const items = document.querySelectorAll('.drawer-item');
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                const keywords = item.getAttribute('data-keywords') || '';
+                if (!q || text.includes(q) || keywords.includes(q)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            if (q.length > 2) {
+                stepModules.forEach(s => {
+                    const content = s.innerText.toLowerCase();
+                    if (content.includes(q)) {
+                        s.style.borderColor = 'var(--blueprint-cyan)';
+                    } else {
+                        s.style.borderColor = 'var(--border-default)';
+                    }
+                });
+            } else {
+                stepModules.forEach(s => s.style.borderColor = 'var(--border-default)');
+            }
+        }
+
+        globalSearch.addEventListener('input', (e) => {
+            filtrarGuia(e.target.value);
+            if (!drawer.classList.contains('is-open') && window.innerWidth >= 900) {
+                openDrawer();
+            }
+        });
+
+        drawerSearch.addEventListener('input', (e) => {
+            filtrarGuia(e.target.value);
+        });
+
+        // 5. Copia de Comandos com Feedback Visual Pixel Art
+        function copiarTextoPixel(btn) {
+            const box = btn.closest('.code-paper-box');
+            const code = box.querySelector('.code-paper-content').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const original = btn.innerHTML;
+                btn.innerHTML = '[COPIADO COM SUCESSO!]';
+                btn.classList.add('btn-green');
+                setTimeout(() => {
+                    btn.innerHTML = original;
+                    btn.classList.remove('btn-green');
+                }, 2200);
+            });
+        }
+
+        // 6. Simulador Interativo do Analisador HITL
+        function analisarComandoHITL() {
+            const cmd = document.getElementById('hitlTestInput').value.trim();
+            const cmdDisplay = document.getElementById('hitlCmdDisplay');
+            const riskBadge = document.getElementById('hitlRiskBadge');
+            const reqBadge = document.getElementById('hitlReqBadge');
+
+            cmdDisplay.innerText = cmd || '(vazio)';
+            const lower = cmd.toLowerCase();
+
+            const criticos = [
+                'rm -rf', 'reboot', 'shutdown', 'mkfs', 'dd ', ':(){ :|:& };:',
+                'chmod 777 /', 'chown', '> /dev/sda', 'kill -9 1'
+            ];
+            const medios = ['pip install', 'npm install', 'git pull', 'systemctl', 'docker stop'];
+
+            let ehCritico = criticos.some(c => lower.includes(c));
+            let ehMedio = medios.some(m => lower.includes(m));
+
+            if (ehCritico) {
+                riskBadge.className = 'pixel-stamp stamp-critical';
+                riskBadge.innerText = 'CRITICAL (CRITICO)';
+                reqBadge.className = 'pixel-stamp stamp-critical';
+                reqBadge.innerText = 'BLOQUEADO ATE APROVACAO';
+            } else if (ehMedio) {
+                riskBadge.className = 'pixel-stamp stamp-amber';
+                riskBadge.innerText = 'MEDIUM (MEDIO)';
+                reqBadge.className = 'pixel-stamp stamp-notice';
+                reqBadge.innerText = 'REGISTRADO EM AUDITORIA';
+            } else {
+                riskBadge.className = 'pixel-stamp stamp-approved';
+                riskBadge.innerText = 'LOW (BAIXO RISCO)';
+                reqBadge.className = 'pixel-stamp stamp-approved';
+                reqBadge.innerText = 'EXECUCAO IMEDIATA';
+            }
+        }
+
+        // 7. Alternador de Tema Dark Noir vs Blueprint Tecnico
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'blueprint' ? 'noir' : 'blueprint';
+            
+            if (next === 'blueprint') {
+                document.documentElement.setAttribute('data-theme', 'blueprint');
+                localStorage.setItem('pidots-theme', 'blueprint');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('pidots-theme', 'noir');
+            }
+        }
+
+        // Carregar tema salvo
+        (function initSavedTheme() {
+            const saved = localStorage.getItem('pidots-theme');
+            if (saved === 'blueprint') {
+                document.documentElement.setAttribute('data-theme', 'blueprint');
+            }
+        })();
+    </script>
+</body>
+</html>

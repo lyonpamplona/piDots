@@ -9,7 +9,7 @@ import zipfile
 import difflib
 import logging
 from typing import Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .db import get_db
 from .vector_store import VectorStore
@@ -60,7 +60,7 @@ class SpacesManager:
                 diff_summary = "".join(diff_lines) if diff_lines else "Sem alterações textuais."
 
                 # Atualiza documento principal
-                now = datetime.utcnow().isoformat()
+                now = datetime.now(timezone.utc).isoformat()
                 await db.execute(
                     """
                     UPDATE spaces
@@ -104,8 +104,8 @@ class SpacesManager:
 
             await db.commit()
 
-        # Grava também fisicamente no workspace do Dot
-        await FileManager.write_file(dot_id=dot_id, filename=filename, content=content)
+        # Grava também fisicamente no workspace do Dot (sem duplicar entrada na tabela spaces)
+        await FileManager.write_file(dot_id=dot_id, filename=filename, content=content, sync_space=False)
 
         # Indexa na memória semântica vetorial
         await VectorStore.index_document(space_id=space_id, content=content)
@@ -156,9 +156,14 @@ class SpacesManager:
 
     @classmethod
     async def export_workspace_zip(cls, dot_id: str) -> bytes:
-        """Compacta todos os arquivos do workspace do Dot em um arquivo ZIP em memória."""
+        """
+        Compacta todos os arquivos do workspace do Dot em um arquivo ZIP em memória.
+        Inclui fallback para recuperar documentos versionados da tabela spaces caso o disco local
+        ainda não tenha sido sincronizado ou contenha arquivos apenas no banco.
+        """
         workspace_dir = os.path.join(settings.workspaces_root, dot_id)
         zip_buffer = io.BytesIO()
+        written_files = set()
 
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_f:
             if os.path.exists(workspace_dir):
@@ -167,6 +172,21 @@ class SpacesManager:
                         full_path = os.path.join(root, file)
                         rel_path = os.path.relpath(full_path, workspace_dir)
                         zip_f.write(full_path, arcname=rel_path)
+                        written_files.add(rel_path)
+
+            # Complemento resiliente: inclui documentos de Spaces que não estejam no disco
+            async with get_db() as db:
+                cursor = await db.execute(
+                    "SELECT filename, content FROM spaces WHERE dot_id = ?",
+                    (dot_id,)
+                )
+                space_rows = await cursor.fetchall()
+                for row in space_rows:
+                    fname = row["filename"]
+                    if fname not in written_files:
+                        content_bytes = row["content"].encode("utf-8")
+                        zip_f.writestr(fname, content_bytes)
+                        written_files.add(fname)
 
         zip_buffer.seek(0)
         return zip_buffer.getvalue()

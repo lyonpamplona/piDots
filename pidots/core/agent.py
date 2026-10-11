@@ -7,7 +7,7 @@ import json
 import uuid
 import logging
 from typing import AsyncGenerator, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ..config import settings
 from ..storage.db import get_db
@@ -43,7 +43,7 @@ class DotAgent:
         Emite eventos AG-UI via streaming assíncrono.
         """
         run_id = str(uuid.uuid4())
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
 
         yield {
             "event": "run:started",
@@ -64,7 +64,16 @@ class DotAgent:
             }
             return
 
-        tool_defs = self.tools.get_tool_definitions()
+        # Poda Dinâmica de Ferramentas (Dynamic Tool Pruning)
+        allowed_tools_raw = dot_info.get("allowed_tools_json")
+        allowed_tools = None
+        if allowed_tools_raw:
+            try:
+                allowed_tools = json.loads(allowed_tools_raw) if isinstance(allowed_tools_raw, str) else allowed_tools_raw
+            except Exception:
+                allowed_tools = None
+
+        tool_defs = self.tools.get_tool_definitions(allowed_tools if allowed_tools else None)
         iteration = 0
         final_response_text = ""
 
@@ -158,9 +167,15 @@ class DotAgent:
                         "data": {"run_id": run_id, "call_id": call_id, "name": fn_name, "arguments": args}
                     }
 
-                    t_start = datetime.utcnow()
-                    tool_result = await self.tools.execute_tool(fn_name, args, dot_id=self.dot_id)
-                    t_duration = int((datetime.utcnow() - t_start).total_seconds() * 1000)
+                    t_start = datetime.now(timezone.utc)
+                    tool_result = await self.tools.execute_tool(
+                        fn_name,
+                        args,
+                        dot_id=self.dot_id,
+                        thread_id=thread_id,
+                        provider=self.provider
+                    )
+                    t_duration = int((datetime.now(timezone.utc) - t_start).total_seconds() * 1000)
 
                     yield {
                         "event": "tool:result",
@@ -193,10 +208,10 @@ class DotAgent:
             async with get_db() as db:
                 await db.execute(
                     """
-                    INSERT INTO messages (id, thread_id, role, content)
-                    VALUES (?, ?, 'assistant', ?)
+                    INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
+                    VALUES (?, ?, 'assistant', ?, ?, 'dot', 'public')
                     """,
-                    (msg_id, thread_id, final_response_text)
+                    (msg_id, thread_id, final_response_text, self.dot_id)
                 )
                 await db.commit()
 
@@ -206,7 +221,8 @@ class DotAgent:
                 "run_id": run_id,
                 "status": "completed",
                 "iterations": iteration,
-                "duration_seconds": round((datetime.utcnow() - start_time).total_seconds(), 2)
+                "duration_seconds": round((datetime.now(timezone.utc) - start_time).total_seconds(), 2),
+                "final_response": final_response_text
             }
         }
 
@@ -215,7 +231,7 @@ class DotAgent:
         thread_id: str,
         user_message: str | None
     ) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
-        """Carrega persona do Dot e mensagens anteriores."""
+        """Carrega persona do Dot e mensagens anteriores com suporte a multi-ator."""
         async with get_db() as db:
             # Obtém Dot
             cursor = await db.execute("SELECT * FROM dots WHERE id = ?", (self.dot_id,))
@@ -229,22 +245,24 @@ class DotAgent:
                 u_msg_id = str(uuid.uuid4())
                 await db.execute(
                     """
-                    INSERT INTO messages (id, thread_id, role, content)
-                    VALUES (?, ?, 'user', ?)
+                    INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
+                    VALUES (?, ?, 'user', ?, 'user', 'user', 'public')
                     """,
                     (u_msg_id, thread_id, user_message)
                 )
                 await db.commit()
 
-            # Obtém histórico da thread (máximo 15 mensagens recentes para manter janela enxuta no edge)
+            # Obtém histórico da thread (filtrando mensagens públicas ou direcionadas a este Dot)
             cursor = await db.execute(
                 """
-                SELECT role, content FROM messages
-                WHERE thread_id = ?
-                ORDER BY created_at ASC
-                LIMIT 15
+                SELECT role, content, actor_id, actor_type FROM (
+                    SELECT role, content, actor_id, actor_type, created_at FROM messages
+                    WHERE thread_id = ? AND (visibility = 'public' OR target_dot_id = ? OR actor_id = ?)
+                    ORDER BY created_at DESC
+                    LIMIT 15
+                ) ORDER BY created_at ASC
                 """,
-                (thread_id,)
+                (thread_id, self.dot_id, self.dot_id)
             )
             rows = await cursor.fetchall()
 
@@ -252,6 +270,10 @@ class DotAgent:
             {"role": "system", "content": dot_info["system_prompt"]}
         ]
         for r in rows:
-            messages.append({"role": r["role"], "content": r["content"]})
+            entry: dict[str, Any] = {"role": r["role"], "content": r["content"]}
+            actor = r["actor_id"] if "actor_id" in r.keys() else None
+            if actor:
+                entry["name"] = actor.replace("-", "_")[:64]
+            messages.append(entry)
 
         return dot_info, messages
