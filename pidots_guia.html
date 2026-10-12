@@ -3208,7 +3208,302 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">CONCLUSAO DO GUIA (12 DE 12)</span>
+                    <span class="step-counter-tag">PASSO 12 DE 13</span>
+                    <button class="pixel-btn btn-green" onclick="scrollToStep('passo-13')">
+                        <span>PROXIMO PASSO</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =====================================================================
+                 PASSO 13: PROTOCOLO DE SLASH COMMANDS & INTERFACE DE COMANDO
+                 ===================================================================== -->
+            <section class="step-module" id="passo-13">
+                <header class="step-module-header">
+                    <span class="step-badge">PASSO 13 // CONTROLE OPERACIONAL DE ALTA VELOCIDADE</span>
+                    <h2 class="step-heading">CATALOGO COMPLETO DE SLASH COMMANDS (/), PARSER LEXICO E RECIBOS TATIS</h2>
+                    <p class="step-summary">
+                        O piDots incorpora uma central unificada de comandos iniciados por barra (<code>/</code>), permitindo operacao cirurgica de baixa latencia sem consumo de tokens de LLM para tarefas locais. O subsistema conta com menu flutuante de autocompletar em Vanilla JS (< 10KB), navegacao completa por teclado, tolerancia a falhas via Levenshtein e emissao de recibos tatis na bobina de teletipo com teto circular de 150 nos DOM.
+                    </p>
+                </header>
+
+                <div class="step-module-body">
+                    <div class="callout-box">
+                        <div class="callout-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <span>PRINCIPIO DE EXECUCAO LOCAL // ZERO CONSUMO DE TOKENS</span>
+                        </div>
+                        <p>
+                            Diferente de mensagens convencionais enviadas a agentes cognitivos, os Slash Commands locais (como <code>/clear</code>, <code>/theme</code>, <code>/telemetry</code> e <code>/help</code>) sao interceptados no cliente e executados em menos de 16 milissegundos. Nenhuma chamada externa de inferencia e disparada, preservando a largura de banda, a memoria RAM do Raspberry Pi 4B e o consumo de cota da API.
+                        </p>
+                    </div>
+
+                    <!-- TABELA DE SISTEMA & UI -->
+                    <h3 class="step-subheading">[01] SISTEMA &amp; UI (10 COMANDOS)</h3>
+                    <div class="table-responsive">
+                        <table class="pixel-table">
+                            <thead>
+                                <tr>
+                                    <th>COMANDO</th>
+                                    <th>SINTAXE</th>
+                                    <th>ESCOPO</th>
+                                    <th>DESCRICAO OPERACIONAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>/help</code></td>
+                                    <td><code>/help [filtro]</code></td>
+                                    <td>Cliente (DOM)</td>
+                                    <td>Exibe catalogo tabular filtrado de comandos com sintaxe e atalhos.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/clear</code></td>
+                                    <td><code>/clear [chat|terminal|canvas|all]</code></td>
+                                    <td>Cliente (DOM)</td>
+                                    <td>Limpa cirurgicamente a bobina de teletipo, sandbox ou canvas mantendo sessao.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/theme</code></td>
+                                    <td><code>/theme [noir|blueprint|toggle]</code></td>
+                                    <td>Cliente (CSS)</td>
+                                    <td>Comuta a quente entre as paletas Dark Noir (fosforo) e Blueprint (ciano).</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/lang</code></td>
+                                    <td><code>/lang [pt|en]</code></td>
+                                    <td>Cliente (i18n)</td>
+                                    <td>Comuta instantaneamente o idioma de exibicao via micro-motor PiDotsI18n.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/info</code></td>
+                                    <td><code>/info</code></td>
+                                    <td>REST (/health)</td>
+                                    <td>Dossie tecnico do no: arquitetura Cortex-A72, uvloop, SQLite WAL e modelo ativo.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/status</code></td>
+                                    <td><code>/status</code></td>
+                                    <td>REST (/dots)</td>
+                                    <td>Panorama consolidado de coworkers instalados, coworker em foco e integridade.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/telemetry</code></td>
+                                    <td><code>/telemetry</code></td>
+                                    <td>REST (/triggers)</td>
+                                    <td>Sensores fisicos em barras ASCII 1-bit: Temperatura SoC, RAM, Disco e Load Avg.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/pwa</code></td>
+                                    <td><code>/pwa [status|update|cache-clear]</code></td>
+                                    <td>Cliente (SW)</td>
+                                    <td>Inspeciona modo standalone do PWA, atualiza Service Worker e limpa cache.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/onboarding</code></td>
+                                    <td><code>/onboarding</code></td>
+                                    <td>Cliente (UX)</td>
+                                    <td>Dispara tour guiado interativo de 5 etapas para novos operadores do console.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/changelog</code></td>
+                                    <td><code>/changelog [versao]</code></td>
+                                    <td>REST (/changelog)</td>
+                                    <td>Consulta e exibe notas da versao SemVer ativa nas 4 categorias oficiais.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- TABELA DE AGENTES & MULTI-BOT -->
+                    <h3 class="step-subheading" style="margin-top: 24px;">[02] AGENTES &amp; MULTI-BOT (6 COMANDOS)</h3>
+                    <div class="table-responsive">
+                        <table class="pixel-table">
+                            <thead>
+                                <tr>
+                                    <th>COMANDO</th>
+                                    <th>SINTAXE</th>
+                                    <th>ESCOPO</th>
+                                    <th>DESCRICAO OPERACIONAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>/dots</code></td>
+                                    <td><code>/dots [filtro]</code></td>
+                                    <td>REST (/api/dots)</td>
+                                    <td>Lista coworkers cadastrados no no, arquetipos, status ativo/idle e sandbox.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/handoff</code></td>
+                                    <td><code>/handoff &lt;dot_id&gt; [contexto]</code></td>
+                                    <td>Cliente / REST</td>
+                                    <td>Transfere o foco da missao para outro coworker com slip de transicao registrado.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/council</code></td>
+                                    <td><code>/council [tema]</code></td>
+                                    <td>Local / Core</td>
+                                    <td>Deliberacao tripartite: perspectivas Pragmatica, Inovadora e Auditor de Borda.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/delegate</code></td>
+                                    <td><code>/delegate &lt;dot_id&gt; &lt;tarefa&gt;</code></td>
+                                    <td>REST (/api/tasks)</td>
+                                    <td>Cria e enfileira subtarefa assincrona em segundo plano para o coworker alvo.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/archetype</code></td>
+                                    <td><code>/archetype [dot_id]</code></td>
+                                    <td>REST (/api/dots)</td>
+                                    <td>Exibe perfil completo, modelo vinculado, restricoes bwrap e diretrizes HITL.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/tools</code></td>
+                                    <td><code>/tools [dot_id]</code></td>
+                                    <td>Local / Core</td>
+                                    <td>Catalogo de 23 ferramentas registradas e ferramentas ativas pos-Tool Pruning.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- TABELA DE MEMORIA, TAREFAS, GOVERNANCA E DADOS -->
+                    <h3 class="step-subheading" style="margin-top: 24px;">[03] MEMORIA, TAREFAS, GOVERNANCA E EXPORTACAO (14 COMANDOS)</h3>
+                    <div class="table-responsive">
+                        <table class="pixel-table">
+                            <thead>
+                                <tr>
+                                    <th>COMANDO</th>
+                                    <th>SINTAXE</th>
+                                    <th>CATEGORIA</th>
+                                    <th>DESCRICAO OPERACIONAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>/memory</code></td>
+                                    <td><code>/memory [query]</code></td>
+                                    <td>Memoria</td>
+                                    <td>Inspeciona historico volatel da sessao, teto de 150 nos e estimativa de tokens.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/archival</code></td>
+                                    <td><code>/archival &lt;busca&gt;</code></td>
+                                    <td>Memoria</td>
+                                    <td>Busca semantica vetorial KNN na base arquival persistente no SQLite WAL.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/shared</code></td>
+                                    <td><code>/shared [key]</code></td>
+                                    <td>Memoria</td>
+                                    <td>Inspeciona chaves do Espaco Compartilhado (Shared Space) sincronizadas no cluster.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/spaces</code></td>
+                                    <td><code>/spaces [nome]</code></td>
+                                    <td>Memoria</td>
+                                    <td>Lista documentos salvos no Space do coworker ou abre arquivo no Live Canvas.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/diff</code></td>
+                                    <td><code>/diff [artefato]</code></td>
+                                    <td>Memoria</td>
+                                    <td>Comuta o modo de inspecao visual de diferencas e historico de revisoes.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/tasks</code></td>
+                                    <td><code>/tasks [status]</code></td>
+                                    <td>Tarefas</td>
+                                    <td>Lista missoes registradas, dot responsavel, agendamento e ultimo status.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/cron</code></td>
+                                    <td><code>/cron [listar|status]</code></td>
+                                    <td>Tarefas</td>
+                                    <td>Inspeciona rotinas periodicas registradas no EdgeScheduler do uvloop.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/run-task</code></td>
+                                    <td><code>/run-task &lt;task_id&gt;</code></td>
+                                    <td>Tarefas</td>
+                                    <td>Despacha ordem de execucao manual imediata para uma tarefa agendada.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/hitl</code></td>
+                                    <td><code>/hitl [status|logs|clear]</code></td>
+                                    <td>Governanca</td>
+                                    <td>Inspeciona acoes retidas no guardrail Deny-by-Default ou homologa acoes via CLI.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/triggers</code></td>
+                                    <td><code>/triggers [status|check]</code></td>
+                                    <td>Governanca</td>
+                                    <td>Avalia sensores fisicos contra limiares de teto termico, RAM e Flash/MicroSD.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/maintenance</code></td>
+                                    <td><code>/maintenance [status|run]</code></td>
+                                    <td>Governanca</td>
+                                    <td>Executa sob demanda a triade: WAL Checkpoint TRUNCATE, poda e VACUUM INTO.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/backup</code></td>
+                                    <td><code>/backup [download|status]</code></td>
+                                    <td>Governanca</td>
+                                    <td>Inspeciona politica de snapshots ACID rotativos de 7 dias ou baixa dump do banco.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/export</code></td>
+                                    <td><code>/export [chat|canvas|markdown]</code></td>
+                                    <td>Dados</td>
+                                    <td>Gera download no navegador da bobina de teletipo ou do artefato ativo em Markdown.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/pack</code></td>
+                                    <td><code>/pack [dot_id]</code></td>
+                                    <td>Dados</td>
+                                    <td>Gera e baixa pacote portatil estruturado DotPack v1.0 para distribuicao de agentes.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- CAIXA DE TERMINAL / DEMONSTRACAO -->
+                    <div class="terminal-card" style="margin-top: 24px;">
+                        <div class="terminal-card-header">
+                            <span class="terminal-title">EXEMPLO DE INTERACAO VIA TELETIPO (SLIP RECEIPTS)</span>
+                            <span class="terminal-tag">SESSAO INTERATIVA</span>
+                        </div>
+                        <pre class="terminal-pre"><code># 1. Obter telemetria fisica com barras ASCII 1-bit:
+/telemetry
+
+# Retorno emitido no teletipo:
+[CMD] SISTEMA // SLASH EXECUTION   2026-10-12T14:00:00Z   SEQ# 0004
+/TELEMETRY // SENSORES DE HARDWARE DE BORDA              [NORMAL]
+------------------------------------------------------------------
+TEMPERATURA SoC BCM2711 : 48.2 °C [||||||..............] (TETO: 72.0 °C)
+USO DE MEMORIA RAM     : 1450MB / 3800MB [|||||||............] (Livre: 61.8%)
+USO DE CARTAO FLASH/SD  : [|||||||.............] (Folga: 19.4GB / 65.2%)
+CARGA DA CPU (LOAD AVG) : 0.40, 0.35, 0.25
+Throttle Automatico     : DESATIVADO (NORMAL)
+==================== PICOTE // DESTACAR ==========================
+
+# 2. Executar a triade de preservacao de hardware noturna:
+/maintenance run
+
+# 3. Exportar historico completo do teletipo em Markdown:
+/export chat</code></pre>
+                    </div>
+                </div>
+
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-12')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">CONCLUSAO DO GUIA (13 DE 13)</span>
                     <a href="/app" class="pixel-btn btn-green">
                         <span>ABRIR CONSOLE OPERACIONAL SPA</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -3310,11 +3605,17 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                         <span>Micro-Motor i18n &amp; Dicionarios JSON</span>
                     </a>
                 </li>
+                <li class="drawer-item" data-keywords="slash commands barra popover autocomplete catalogo 30 comandos teletipo slips levenshtein export pack hitl telemetry">
+                    <a href="#passo-13" class="drawer-link" onclick="handleDrawerNav(event, 'passo-13')">
+                        <span class="drawer-step-idx">13</span>
+                        <span>Slash Commands &amp; Protocolo de Borda</span>
+                    </a>
+                </li>
             </ul>
 
             <div class="drawer-bottom-bar">
                 <span>PIDOTS // PIXEL PAPER UI</span>
-                <span>12 PASSOS DISPONIVEIS</span>
+                <span>13 PASSOS DISPONIVEIS</span>
             </div>
         </aside>
 
@@ -3329,14 +3630,14 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
         <div class="omnisearch-header">
             <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input type="text" id="omnisearchInput" class="omnisearch-input" placeholder="DIGITE TERMO DE BUSCA (EX: HITL, SPACES, DOCKER, WAL)..." autocomplete="off">
-            <span class="omnisearch-counter" id="omnisearchCounter">12 PASSOS</span>
+            <span class="omnisearch-counter" id="omnisearchCounter">13 PASSOS</span>
             <button class="pixel-btn" onclick="fecharOmnisearch()" style="padding: 3px 6px;">[ESC]</button>
         </div>
         <div class="omnisearch-hint-bar">
             <span>[SETAS ↑ / ↓] NAVEGAR</span>
             <span>[ENTER] ABRIR</span>
             <span>[ESC] FECHAR</span>
-            <span id="omnisearchTotalMatches" style="color: var(--phosphor-green);">11 SECOES INDEXADAS</span>
+            <span id="omnisearchTotalMatches" style="color: var(--phosphor-green);">13 SECOES INDEXADAS</span>
         </div>
         <div class="omnisearch-results-list" id="omnisearchResults">
             <!-- Itens gerados dinamicamente via JavaScript -->
@@ -3694,6 +3995,13 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                 title: 'Micro-Motor de Internacionalização (i18n) & Dicionários JSON de Borda',
                 keywords: 'internacionalizacao i18n bilingue portugues ingles pt en locale traducao dicionario data-i18n client-side static pidots-i18n',
                 desc: 'Alternancia instantanea PT/EN sem frameworks pesados, dicionarios atomicos JSON com cache estatico e seguranca estrita via textContent.'
+            },
+            {
+                id: 'passo-13',
+                step: 'PASSO 13',
+                title: 'Protocolo de Slash Commands (/) & Interface de Borda de Alta Velocidade',
+                keywords: 'slash commands barra popover autocomplete catalogo 30 comandos teletipo slips levenshtein export pack hitl telemetry clear theme',
+                desc: 'Catalogo unificado de 30 comandos em 6 categorias, execucao no cliente em < 16ms, popover em Vanilla JS, recibos tatis e integracao total de borda.'
             }
         ];
 
@@ -3945,6 +4253,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                     lastKeyTime = now;
                     setTimeout(() => { pendingPrefix = false; }, 1000);
                 }
+            });
         })();
 
         // Integracao PWA & Service Worker no Guia Operacional Didatico

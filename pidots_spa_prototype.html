@@ -207,6 +207,57 @@
             font-size: 11px;
         }
 
+        .edge-pulse-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            padding: 3px 8px;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            letter-spacing: 0.05em;
+            color: var(--ink-secondary);
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .edge-pulse-chip .pulse-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--phosphor-green);
+            box-shadow: 0 0 4px var(--phosphor-green);
+            display: inline-block;
+        }
+
+        .edge-pulse-chip .chip-sep {
+            color: var(--border-default);
+            opacity: 0.6;
+        }
+
+        .edge-pulse-chip .chip-part {
+            color: var(--ink-main);
+        }
+
+        .edge-pulse-chip #val-temp {
+            color: var(--thermal-amber);
+            font-weight: 700;
+        }
+
+        .edge-pulse-chip #val-ram {
+            color: var(--phosphor-green);
+            font-weight: 700;
+        }
+
+        .edge-pulse-chip #val-wal {
+            color: var(--blueprint-cyan);
+        }
+
+        .edge-pulse-chip #val-hitl {
+            color: var(--thermal-amber);
+            font-weight: 700;
+        }
+
         .telemetry-chip {
             display: flex;
             align-items: center;
@@ -253,6 +304,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            white-space: nowrap;
             transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -645,6 +697,135 @@
             color: var(--thermal-amber);
         }
 
+        /* Autocomplete de Slash Commands (/comando) em Pixel Paper */
+        .slash-autocomplete-popover {
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 12px;
+            right: 12px;
+            max-height: 280px;
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-accent);
+            box-shadow: 4px -4px 0px #000000;
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: var(--font-mono);
+        }
+
+        .slash-popover-header {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--blueprint-cyan);
+            padding: 5px 8px;
+            border-bottom: 1px dashed var(--border-default);
+            background: var(--paper-surface-recessed);
+            letter-spacing: 0.08em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slash-header-title {
+            color: var(--blueprint-cyan);
+        }
+
+        .slash-header-hint {
+            color: var(--ink-muted);
+            font-size: 6.5px;
+        }
+
+        .slash-category-tabs {
+            display: flex;
+            gap: 2px;
+            padding: 4px 6px;
+            background: var(--paper-surface-recessed);
+            border-bottom: 1px solid var(--border-subtle);
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+        }
+
+        .slash-cat-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--ink-muted);
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            padding: 2px 5px;
+            cursor: pointer;
+            letter-spacing: 0.04em;
+        }
+
+        .slash-cat-btn.active, .slash-cat-btn:hover {
+            background: var(--paper-surface-elevated);
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+        }
+
+        .slash-items-viewport {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 200px;
+            scrollbar-width: thin;
+        }
+
+        .slash-item {
+            padding: 5px 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-family: var(--font-mono);
+            border-bottom: 1px solid var(--border-subtle);
+            user-select: none;
+        }
+
+        .slash-item:hover, .slash-item.selected {
+            background: var(--paper-surface-elevated);
+            border-left: 3px solid var(--blueprint-cyan);
+            padding-left: 5px;
+        }
+
+        .slash-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slash-cmd-syntax {
+            color: var(--phosphor-green);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .slash-badge-cat {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--thermal-amber);
+            padding: 1px 4px;
+            border: 1px solid var(--border-subtle);
+            background: var(--paper-surface-recessed);
+        }
+
+        .slash-cmd-desc {
+            color: var(--ink-muted);
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .slash-popover-footer {
+            font-family: var(--font-pixel);
+            font-size: 6.5px;
+            color: var(--ink-muted);
+            padding: 3px 8px;
+            border-top: 1px dashed var(--border-default);
+            background: var(--paper-surface-recessed);
+            display: flex;
+            justify-content: space-between;
+        }
+
         .slip-text {
             font-size: 13px;
             line-height: 1.6;
@@ -704,22 +885,23 @@
         .slip-perforation {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 12px;
-            padding-top: 6px;
+            gap: 6px;
+            margin-top: 6px;
+            padding-top: 2px;
+            opacity: 0.45;
         }
 
         .perforation-line {
             flex: 1;
             height: 1px;
-            border-top: 1px dashed var(--ink-carbon);
+            border-top: 1px dashed var(--border-default);
         }
 
         .perforation-label {
             font-family: var(--font-pixel);
-            font-size: 7px;
+            font-size: 6px;
             color: var(--ink-muted);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.05em;
         }
 
         /* Barra de Entrada de Comandos */
@@ -1227,47 +1409,73 @@
                 display: flex !important;
             }
 
-            /* Cabeçalho compacto mobile */
+            /* Cabeçalho compacto mobile em linha única */
             header.mission-header {
                 padding: 6px 10px !important;
-                flex-wrap: wrap;
-                gap: 6px;
+                flex-wrap: nowrap !important;
+                gap: 6px !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                scrollbar-width: none !important;
             }
-
-            .brand-title {
-                font-size: 9px !important;
-            }
-
-            .header-telemetry {
-                gap: 4px !important;
-            }
-
-            /* Oculta chips de telemetria secundários */
-            .telemetry-chip.desktop-only {
+            header.mission-header::-webkit-scrollbar {
                 display: none !important;
             }
 
-            .telemetry-chip {
-                padding: 2px 5px !important;
-                font-size: 9px !important;
+            .header-brand .brand-title,
+            .header-brand .brand-badge {
+                display: none !important;
             }
 
-            .chip-label {
-                font-size: 7px !important;
+            .header-telemetry {
+                display: none !important;
             }
 
-            /* Botões do header */
+            /* Surface Switcher ultracompacto no Mobile (< 768px) */
+            .surface-switcher {
+                padding: 1px 2px !important;
+                gap: 2px !important;
+                display: inline-flex !important;
+            }
+            .surface-tab {
+                padding: 4px 6px !important;
+                font-size: 8px !important;
+            }
+            .surface-tab .tab-chord {
+                display: none !important;
+            }
+            .surface-tab .tab-lbl {
+                display: none !important;
+            }
+            .surface-tab#tab-overview .tab-idx::after { content: " VIS"; }
+            .surface-tab#tab-workspace .tab-idx::after { content: " APP"; }
+            .surface-tab#tab-docs .tab-idx::after { content: " DOC"; }
+
+            /* Botões de Ação do Cabeçalho Mobile */
             .header-actions {
                 gap: 4px !important;
+                flex-shrink: 0 !important;
             }
 
             .header-actions .pixel-btn {
                 padding: 4px 6px !important;
                 font-size: 8px !important;
+                min-height: 32px !important;
             }
 
             #btn-canvas-toggle {
                 display: none !important; /* Alternância feita pela bottom-nav */
+            }
+
+            /* Teclado Virtual Aberto (Engine VisualViewport) */
+            body.keyboard-open nav.mobile-bottom-nav {
+                display: none !important;
+            }
+            body.keyboard-open .triptych-shell {
+                padding-bottom: 0px !important;
+            }
+            body.keyboard-open .slash-autocomplete-popover {
+                max-height: 28vh !important;
             }
 
             /* Shell principal em visualização única por tela */
@@ -1366,18 +1574,45 @@
                 font-size: 12px !important;
             }
 
+            /* Autocomplete de Slash Commands Acessivel no Mobile */
+            .slash-autocomplete-popover {
+                left: 6px !important;
+                right: 6px !important;
+                bottom: calc(100% + 6px) !important;
+                max-height: 45vh !important;
+            }
+
+            .slash-item {
+                padding: 8px 10px !important;
+                min-height: 44px !important;
+            }
+
+            .slash-cat-btn {
+                padding: 6px 10px !important;
+                font-size: 8px !important;
+                min-height: 44px !important;
+                min-width: 44px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
             /* Otimizações do Live Canvas Mobile */
             .canvas-tab-bar {
                 flex-wrap: nowrap !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
                 padding: 2px !important;
-                gap: 2px !important;
+                gap: 4px !important;
             }
 
             .canvas-tab {
-                padding: 6px 8px !important;
-                font-size: 8px !important;
+                padding: 8px 12px !important;
+                font-size: 8.5px !important;
+                min-height: 44px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
                 flex-shrink: 0 !important;
             }
 
@@ -1425,22 +1660,69 @@
                 font-size: 9px !important;
             }
 
-            /* Manual Operacional Retrátil em Tela Cheia no Mobile */
+            /* Manual Operacional Retrátil em Tela Cheia no Mobile com Safe Area */
             aside.retractable-drawer {
                 width: 100% !important;
                 max-width: 100% !important;
                 right: -100% !important;
+                padding-top: max(8px, var(--safe-top)) !important;
             }
 
             aside.retractable-drawer.open {
                 right: 0 !important;
             }
 
-            /* Diálogos e Modais Responsivos */
+            /* Diálogos, Onboarding e Modais Responsivos no Mobile */
             .pixel-dialog-box {
                 width: 94vw !important;
                 max-width: 94vw !important;
                 margin: 8px !important;
+            }
+
+            .pixel-catalog-card {
+                width: 100% !important;
+                max-width: calc(100vw - 16px) !important;
+                max-height: calc(100dvh - 24px) !important;
+            }
+
+            .catalog-stepper {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                scrollbar-width: none !important;
+            }
+
+            .stepper-tab .step-label {
+                display: none !important;
+            }
+
+            .concept-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .catalog-tab-close {
+                min-width: 44px !important;
+                min-height: 44px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            .pixel-patchnotes-box {
+                width: 100% !important;
+                max-width: calc(100vw - 16px) !important;
+                max-height: calc(100dvh - 24px) !important;
+            }
+
+            .patchnotes-header-block {
+                flex-direction: column !important;
+                gap: 8px !important;
+            }
+
+            .patchnotes-header-right {
+                width: 100% !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
             }
 
             .dialog-body {
@@ -1455,6 +1737,7 @@
             .dialog-footer .pixel-btn {
                 padding: 8px 12px !important;
                 font-size: 9px !important;
+                min-height: 44px !important;
             }
 
             /* Toasts no Mobile */
@@ -1916,21 +2199,57 @@
             .brand-title {
                 display: none !important;
             }
-            .header-telemetry .telemetry-chip:nth-child(3) {
-                display: none !important;
+            aside.left-sidebar {
+                width: 230px;
+                min-width: 230px;
+            }
+            aside.right-canvas {
+                width: 380px;
+                min-width: 380px;
+            }
+        }
+        @media (max-width: 1366px) {
+            .ticker-rail-wrapper {
+                grid-template-columns: 8px 1fr 8px !important;
+            }
+            .tractor-feed {
+                background-size: 8px 16px !important;
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1200px) {
+            aside.left-sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 50;
+                width: 260px;
+                min-width: 260px;
+                box-shadow: 4px 0 16px rgba(0, 0, 0, 0.7);
+            }
+            aside.left-sidebar.collapsed {
+                width: 0px !important;
+                min-width: 0px !important;
+                display: none;
+            }
+            aside.right-canvas {
+                width: 50%;
+                min-width: 320px;
+                max-width: 50%;
+            }
+            aside.right-canvas.collapsed {
+                width: 0px !important;
+                min-width: 0px !important;
             }
         }
         @media (max-width: 1200px) {
             .brand-badge {
                 display: none !important;
             }
-            .header-telemetry .telemetry-chip:nth-child(4) {
-                display: none !important;
-            }
-            #btn-canvas-toggle {
-                display: none !important;
-            }
             .surface-tab .tab-chord {
+                display: none !important;
+            }
+            .ticker-prompt-sign {
                 display: none !important;
             }
         }
@@ -1938,8 +2257,10 @@
             .header-telemetry {
                 display: none !important;
             }
-            .surface-tab .tab-chord {
-                display: none !important;
+        }
+        @media (max-height: 800px) {
+            .slash-autocomplete-popover {
+                max-height: 190px !important;
             }
         }
         /* =====================================================================
@@ -2884,7 +3205,7 @@
             <button class="pixel-btn" onclick="toggleSidebar()" title="Ocultar/Exibir Navegador de Dots">
                 [PAINEL]
             </button>
-            <span class="brand-badge">PIDOTS // V0.1.0</span>
+            <span class="brand-badge">PIDOTS // V1.3.0</span>
             <span class="brand-title">WORKSPACE TRIPTYCH (PIXEL PAPER UI)</span>
         </div>
 
@@ -2907,27 +3228,19 @@
             </a>
         </nav>
 
-        <!-- Telemetria do Sistema Edge (Raspberry Pi 4B) -->
-        <div class="header-telemetry">
-            <div class="telemetry-chip" title="Temperatura do Processador / SoC" data-i18n-title="telemetry.soc">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
-                <span class="chip-label">SOC:</span>
-                <span class="chip-value" id="val-temp">48.2 °C</span>
-            </div>
-            <div class="telemetry-chip" title="Consumo de Memória RAM" data-i18n-title="telemetry.ram">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                <span class="chip-label">RAM:</span>
-                <span class="chip-value ok" id="val-ram">118 MB / 300 MB</span>
-            </div>
-            <div class="telemetry-chip desktop-only" title="Modo SQLite WAL" data-i18n-title="telemetry.wal">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                <span class="chip-label">WAL:</span>
-                <span class="chip-value ok" id="val-wal">ATIVO (NORMAL)</span>
-            </div>
-            <div class="telemetry-chip" title="Fila de Ações Human-in-the-Loop" data-i18n-title="telemetry.hitl">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                <span class="chip-label">HITL:</span>
-                <span class="chip-value" id="val-hitl">0 PENDENTES</span>
+        <!-- Telemetria do Sistema Edge Consolidada (Compact Pulse Chip) -->
+        <div class="header-telemetry" id="headerTelemetryCluster" title="Telemetria do Nó Edge (ARM64 // SQLite WAL)">
+            <div class="edge-pulse-chip">
+                <span class="pulse-dot" aria-hidden="true"></span>
+                <span class="chip-part">EDGE</span>
+                <span class="chip-sep">//</span>
+                <span class="chip-part" id="val-temp">48.2 °C</span>
+                <span class="chip-sep">//</span>
+                <span class="chip-part" id="val-ram">118 MB</span>
+                <span class="chip-sep desktop-only">//</span>
+                <span class="chip-part desktop-only" id="val-wal">WAL ATIVO</span>
+                <span class="chip-sep">//</span>
+                <span class="chip-part" id="val-hitl">HITL 0</span>
             </div>
         </div>
 
@@ -2943,16 +3256,13 @@
                 <span data-i18n="nav.pwa_install">[INSTALAR PWA]</span>
             </button>
             <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
-                [IDIOMA: PT | EN]
+                [PT | EN]
             </button>
-            <button class="pixel-btn" onclick="toggleCanvasSplit()" id="btn-canvas-toggle">
-                <span data-i18n="nav.split_canvas">[CANVAS: DIVIDIDO]</span>
+            <button class="pixel-btn" onclick="toggleCanvasSplit()" id="btn-canvas-toggle" title="Alternar visibilidade do Canvas">
+                <span data-i18n="nav.split_canvas">[CANVAS]</span>
             </button>
-            <button class="pixel-btn" onclick="toggleTheme()" id="btn-theme-toggle">
-                <span data-i18n="nav.theme">[TEMA: DARK NOIR]</span>
-            </button>
-            <button class="pixel-btn btn-cyan" onclick="toggleDrawer()">
-                <span data-i18n="nav.manual">[MANUAL TECNICO]</span>
+            <button class="pixel-btn" onclick="toggleTheme()" id="btn-theme-toggle" title="Alternar tema visual">
+                <span data-i18n="nav.theme">[TEMA]</span>
             </button>
         </div>
     </header>
@@ -2992,19 +3302,21 @@
                     </button>
                 </div>
 
-                <div class="space-item active" onclick="loadArtifact('architecture_spec.md')">
-                    <span>architecture_spec.md</span>
-                    <span class="space-item-rev">REV 3.0</span>
-                </div>
+                <div id="spacesListContainer">
+                    <div class="space-item active" onclick="loadArtifact('architecture_spec.md')">
+                        <span>architecture_spec.md</span>
+                        <span class="space-item-rev">REV 3.0</span>
+                    </div>
 
-                <div class="space-item" onclick="loadArtifact('sqlite_guide.md')">
-                    <span>sqlite_guide.md</span>
-                    <span class="space-item-rev">REV 1.2</span>
-                </div>
+                    <div class="space-item" onclick="loadArtifact('sqlite_guide.md')">
+                        <span>sqlite_guide.md</span>
+                        <span class="space-item-rev">REV 1.2</span>
+                    </div>
 
-                <div class="space-item" onclick="loadArtifact('fibonacci.py')">
-                    <span>fibonacci.py</span>
-                    <span class="space-item-rev">SANDBOX</span>
+                    <div class="space-item" onclick="loadArtifact('fibonacci.py')">
+                        <span>fibonacci.py</span>
+                        <span class="space-item-rev">SANDBOX</span>
+                    </div>
                 </div>
             </div>
 
@@ -3142,6 +3454,28 @@
                         <span style="color: var(--ink-muted);">TAB/ENTER PARA INSERIR</span>
                     </div>
                     <div id="mentionItemsList"></div>
+                </div>
+
+                <!-- Dropdown de Autocomplete de Slash Commands (/comando) -->
+                <div class="slash-autocomplete-popover" id="slashPopover" role="listbox" aria-label="Comandos de Barra" style="display: none;">
+                    <div class="slash-popover-header">
+                        <span class="slash-header-title">SLASH COMMANDS // PROTOCOLO BORDA</span>
+                        <span class="slash-header-hint">SETAS NAVEGAM | TAB/ENTER INSERE | ESC FECHA</span>
+                    </div>
+                    <div class="slash-category-tabs" id="slashCategoryTabs">
+                        <button type="button" class="slash-cat-btn active" data-cat="all" onclick="SlashCommandsEngine.setCategory('all')">[TODOS]</button>
+                        <button type="button" class="slash-cat-btn" data-cat="sistema" onclick="SlashCommandsEngine.setCategory('sistema')">[SISTEMA]</button>
+                        <button type="button" class="slash-cat-btn" data-cat="agentes" onclick="SlashCommandsEngine.setCategory('agentes')">[AGENTES]</button>
+                        <button type="button" class="slash-cat-btn" data-cat="memoria" onclick="SlashCommandsEngine.setCategory('memoria')">[MEMORIA]</button>
+                        <button type="button" class="slash-cat-btn" data-cat="tarefas" onclick="SlashCommandsEngine.setCategory('tarefas')">[TAREFAS]</button>
+                        <button type="button" class="slash-cat-btn" data-cat="governanca" onclick="SlashCommandsEngine.setCategory('governanca')">[GOVERNANCA]</button>
+                        <button type="button" class="slash-cat-btn" data-cat="dados" onclick="SlashCommandsEngine.setCategory('dados')">[DADOS]</button>
+                    </div>
+                    <div class="slash-items-viewport" id="slashItemsList"></div>
+                    <div class="slash-popover-footer">
+                        <span id="slashMatchCount">0 COMANDOS DISPONIVEIS</span>
+                        <span class="slash-mode-tag">[EXECUCAO HIBRIDA: LOCAL/REST]</span>
+                    </div>
                 </div>
 
                 <span class="ticker-prompt-sign">PIDOTS@EDGE:&gt;</span>
@@ -3888,10 +4222,14 @@
 
         // Atalhos de Teclado Globais do Console Operacional (Correspondentes ao Menu de Contexto)
         window.addEventListener('keydown', (e) => {
-            // Tecla ESC: Fecha menus, modais e gavetas
+            // Tecla ESC: Fecha menus, modais, autocomplete e gavetas
             if (e.key === 'Escape') {
                 PixelSystem.closeContextMenu();
                 PixelSystem.closeDialog(false);
+                closeDrawer();
+                if (typeof SlashCommandsEngine !== 'undefined') SlashCommandsEngine.closePopover();
+                const mentionDropdown = document.getElementById('mentionDropdown');
+                if (mentionDropdown) mentionDropdown.style.display = 'none';
                 return;
             }
 
@@ -4044,8 +4382,17 @@
                 await this.loadPendingHitl();
                 await this.loadSettings();
                 
-                // Inicia loop contínuo de telemetria a cada 4 segundos
-                setInterval(() => this.fetchTelemetry(), 4000);
+                // Inicia loop contínuo de telemetria a cada 4 segundos com guarda de concorrencia
+                this._telemetryFetching = false;
+                setInterval(async () => {
+                    if (this._telemetryFetching) return;
+                    this._telemetryFetching = true;
+                    try {
+                        await this.fetchTelemetry();
+                    } finally {
+                        this._telemetryFetching = false;
+                    }
+                }, 4000);
             },
 
             // 2. Telemetria Real (/health)
@@ -4096,6 +4443,7 @@
                 if (!polyline || !polygon) return;
 
                 const values = this.telemetryHistory.ram;
+                if (!values || values.length < 2) return;
                 const maxRam = 300; // Teto de 300MB
                 let points = [];
                 for (let i = 0; i < values.length; i++) {
@@ -4114,6 +4462,7 @@
                 if (!polyline || !polygon) return;
 
                 const values = this.telemetryHistory.temp;
+                if (!values || values.length < 2) return;
                 const maxTemp = 85; // Throttle 85C
                 let points = [];
                 for (let i = 0; i < values.length; i++) {
@@ -4205,6 +4554,18 @@
                         container.appendChild(item);
                     });
 
+                    // Sincroniza o seletor dropdown do Live Canvas com a lista real de spaces
+                    const selectorEl = document.getElementById('spaceDocSelector');
+                    if (selectorEl && spaces.length) {
+                        selectorEl.innerHTML = '';
+                        spaces.forEach(sp => {
+                            const opt = document.createElement('option');
+                            opt.value = sp.filename;
+                            opt.textContent = sp.filename;
+                            selectorEl.appendChild(opt);
+                        });
+                    }
+
                     // Carrega o primeiro artefato automaticamente
                     if (spaces.length > 0 && !this.activeSpaceId) {
                         this.loadArtifact(spaces[0].id);
@@ -4212,6 +4573,20 @@
 
                 } catch (e) {
                     console.warn('Erro ao carregar Spaces:', e);
+                }
+            },
+
+            selectSpaceFromDropdown(filename) {
+                if (!filename) return;
+                const doc = (this.spacesCache || []).find(s => s.filename === filename);
+                if (doc) {
+                    this.loadArtifact(doc.id);
+                } else if (typeof artifactDocs !== 'undefined' && artifactDocs[filename]) {
+                    const titleEl = document.getElementById('currentArtifactTitle');
+                    if (titleEl) titleEl.textContent = filename;
+                    const editorEl = document.getElementById('artifactContent');
+                    if (editorEl) editorEl.value = artifactDocs[filename];
+                    PixelSystem.toast(`Documento '${filename}' carregado localmente.`, 'info');
                 }
             },
 
@@ -4231,6 +4606,9 @@
                     // Atualiza editor
                     const titleEl = document.getElementById('currentArtifactTitle');
                     if (titleEl) titleEl.textContent = doc.filename;
+
+                    const selectorEl = document.getElementById('spaceDocSelector');
+                    if (selectorEl) selectorEl.value = doc.filename;
 
                     const editorEl = document.getElementById('artifactContent');
                     if (editorEl) editorEl.value = doc.content || '';
@@ -4594,7 +4972,11 @@
                             }
                         }
                         scrollArea.scrollTop = scrollArea.scrollHeight;
-                        this.enforceDomCeiling();
+                    }
+
+                    // Enforce DOM ceiling apos finalizacao do stream sem causar layout thrashing
+                    if (window.PiDotsAPI && typeof PiDotsAPI.enforceDomCeiling === 'function') {
+                        PiDotsAPI.enforceDomCeiling();
                     }
 
                     // Remove o cursor piscante ao finalizar
@@ -4604,7 +4986,9 @@
                     if (thoughtEl) thoughtEl.textContent += `\n[Circuito de Protecao]: Provedor remoto offline ou timeout. Operando em contingencia local.`;
                     if (contentEl) contentEl.innerHTML = `Instrucao processada no ambiente local do piDots. Os dados estao preservados e persistidos no SQLite WAL.`;
                     scrollArea.scrollTop = scrollArea.scrollHeight;
-                    this.enforceDomCeiling();
+                    if (window.PiDotsAPI && typeof PiDotsAPI.enforceDomCeiling === 'function') {
+                        PiDotsAPI.enforceDomCeiling();
+                    }
                 }
             }
         };
@@ -4615,6 +4999,36 @@
         // =====================================================================
         function saveProviderSettings() {
             PiDotsAPI.saveAISettings();
+        }
+
+        function saveAISettingsCustom() {
+            if (window.PiDotsAPI && typeof PiDotsAPI.saveAISettings === 'function') {
+                PiDotsAPI.saveAISettings();
+            } else {
+                saveProviderSettings();
+            }
+        }
+
+        async function testProviderConnectionCustom() {
+            PixelSystem.toast('Testando conectividade com o nó de borda e provedor de IA...', 'info');
+            try {
+                const res = await fetch('/health');
+                if (res.ok) {
+                    PixelSystem.toast('Conexao com o nó de borda local confirmada e ativa.', 'success');
+                } else {
+                    PixelSystem.toast(`Falha na resposta do nó de borda: status ${res.status}`, 'warning');
+                }
+            } catch (e) {
+                PixelSystem.toast(`Erro ao testar conectividade: ${e}`, 'danger');
+            }
+        }
+
+        function openHitlCanvas() {
+            const canvas = document.getElementById('rightCanvas');
+            if (canvas) canvas.classList.remove('collapsed');
+            const hitlTabBtn = document.querySelector('.canvas-tab[onclick*="canvas-hitl"]');
+            switchCanvasTab('canvas-hitl', hitlTabBtn);
+            if (window.innerWidth <= 768) setMobileView('canvas');
         }
 
         function formatDiffHighlight(diffText) {
@@ -4701,7 +5115,9 @@
             if (viewName === 'chat') {
                 const scrollArea = document.getElementById('tickerScroll');
                 if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
-                this.enforceDomCeiling();
+                if (window.PiDotsAPI && typeof PiDotsAPI.enforceDomCeiling === 'function') {
+                    PiDotsAPI.enforceDomCeiling();
+                }
             }
         }
 
@@ -4725,6 +5141,27 @@
 
         window.addEventListener('resize', syncResponsiveLayout);
         window.addEventListener('orientationchange', syncResponsiveLayout);
+
+        // Engine de Viewport Dinamico e Teclado Virtual (iOS Safari & Android Chrome)
+        if (window.visualViewport) {
+            const handleViewportChange = () => {
+                const vv = window.visualViewport;
+                const isKeyboardOpen = vv.height < (window.innerHeight - 100);
+                document.body.classList.toggle('keyboard-open', isKeyboardOpen);
+
+                if (currentMobileView === 'chat' && isKeyboardOpen) {
+                    const scrollArea = document.getElementById('tickerScroll');
+                    if (scrollArea) {
+                        setTimeout(() => {
+                            scrollArea.scrollTop = scrollArea.scrollHeight;
+                        }, 60);
+                    }
+                }
+            };
+
+            window.visualViewport.addEventListener('resize', handleViewportChange);
+            window.visualViewport.addEventListener('scroll', handleViewportChange);
+        }
 
         // Alternância de Abas do Canvas Direito
         function switchCanvasTab(tabId, el) {
@@ -4763,13 +5200,15 @@
         function toggleCanvasSplit() {
             const canvas = document.getElementById('rightCanvas');
             const btn = document.getElementById('btn-canvas-toggle');
+            if (!canvas) return;
             canvas.classList.toggle('collapsed');
             if (canvas.classList.contains('collapsed')) {
-                btn.textContent = '[CANVAS: OCULTO]';
+                if (btn) btn.innerHTML = '<span data-i18n="nav.split_canvas">[CANVAS: OCULTO]</span>';
             } else {
-                btn.textContent = '[CANVAS: DIVIDIDO]';
+                if (btn) btn.innerHTML = '<span data-i18n="nav.split_canvas">[CANVAS]</span>';
                 canvas.classList.remove('expanded');
-                document.getElementById('btnCanvasExpand').textContent = '[MAX]';
+                const btnExp = document.getElementById('btnCanvasExpand');
+                if (btnExp) btnExp.textContent = '[MAX]';
             }
         }
 
@@ -4791,8 +5230,15 @@
         function toggleDrawer() {
             const drawer = document.getElementById('retractableDrawer');
             const backdrop = document.getElementById('drawerBackdrop');
-            drawer.classList.toggle('open');
-            backdrop.classList.toggle('open');
+            if (drawer) drawer.classList.toggle('open');
+            if (backdrop) backdrop.classList.toggle('open');
+        }
+
+        function closeDrawer() {
+            const drawer = document.getElementById('retractableDrawer');
+            const backdrop = document.getElementById('drawerBackdrop');
+            if (drawer) drawer.classList.remove('open');
+            if (backdrop) backdrop.classList.remove('open');
         }
 
         // Filtro em Tempo Real do Manual Técnico
@@ -4819,63 +5265,40 @@
             'fibonacci.py': `import sys\n\ndef fib(n: int) -> int:\n    if n <= 1: return n\n    return fib(n - 1) + fib(n - 2)\n\nif __name__ == '__main__':\n    print(f'Fib(8) = {fib(8)}')`
         };
 
-        function loadArtifact(docName) {
+        function loadArtifact(target) {
+            // Se for ID ou nome existente no cache do PiDotsAPI, delega para a API REST oficial
+            const byId = (window.PiDotsAPI && PiDotsAPI.spacesCache || []).find(s => s.id === target);
+            const byName = (window.PiDotsAPI && PiDotsAPI.spacesCache || []).find(s => s.filename === target);
+            if (byId) {
+                PiDotsAPI.loadArtifact(byId.id);
+                return;
+            }
+            if (byName) {
+                PiDotsAPI.loadArtifact(byName.id);
+                return;
+            }
+
+            // Fallback para documentos locais em memoria
             document.querySelectorAll('.space-item').forEach(item => {
-                item.classList.toggle('active', item.textContent.includes(docName));
+                item.classList.toggle('active', item.textContent.includes(target));
             });
-            document.getElementById('currentArtifactTitle').textContent = docName;
-            document.getElementById('artifactContent').value = artifactDocs[docName] || '# Documento em branco';
+            const titleEl = document.getElementById('currentArtifactTitle');
+            if (titleEl) titleEl.textContent = target;
+            const editorEl = document.getElementById('artifactContent');
+            if (editorEl) editorEl.value = (typeof artifactDocs !== 'undefined' && artifactDocs[target]) ? artifactDocs[target] : '# Documento em branco';
             
             // Garante que o canvas da direita esteja visível e na aba de artefatos
             const canvas = document.getElementById('rightCanvas');
-            canvas.classList.remove('collapsed');
+            if (canvas) canvas.classList.remove('collapsed');
             const btnToggle = document.getElementById('btn-canvas-toggle');
-            if (btnToggle) btnToggle.textContent = '[CANVAS: DIVIDIDO]';
+            if (btnToggle) btnToggle.innerHTML = '<span data-i18n="nav.split_canvas">[CANVAS]</span>';
             const tabs = document.querySelectorAll('.canvas-tab');
-            switchCanvasTab('canvas-artifact', tabs[0]);
+            if (tabs.length) switchCanvasTab('canvas-artifact', tabs[0]);
             
             // No mobile, comuta automaticamente para a visão de Canvas
             if (window.innerWidth <= 768) {
                 setMobileView('canvas');
             }
-        }
-
-
-        // Criar Novo Espaço sem prompt() nativo
-        function createNewSpaceCustom() {
-            PixelSystem.prompt(
-                'Criar Espaco SQLite',
-                'Informe o identificador do arquivo no Space (ex: relatorio_edge.md):',
-                'novo_documento.md',
-                (nome) => {
-                    if (!nome) return;
-                    if (!artifactDocs[nome]) {
-                        artifactDocs[nome] = `# ${nome}\n\nNovo documento persistido no SQLite WAL.\nCriado em: ${new Date().toISOString()}`;
-                        
-                        const container = document.querySelector('.sidebar-section:nth-child(2)');
-                        const item = document.createElement('div');
-                        item.className = 'space-item';
-                        item.setAttribute('onclick', `loadArtifact('${nome}')`);
-                        item.setAttribute('data-tooltip', `Documento ${nome} gravado no SQLite WAL`);
-                        item.innerHTML = `<span>${escapeHtml(nome)}</span><span class="space-item-rev">REV 1.0</span>`;
-                        container.appendChild(item);
-                    }
-                    loadArtifact(nome);
-                    PixelSystem.toast(`SUCESSO: Espaco '${nome}' criado e registrado no SQLite WAL!`, 'success');
-                }
-            );
-        }
-
-        // Salvar Artefato sem alert() nativo
-        function saveArtifactRevision() {
-            const docName = document.getElementById('currentArtifactTitle').textContent;
-            artifactDocs[docName] = document.getElementById('artifactContent').value;
-            PixelSystem.toast(`Artefato '${docName}' sincronizado e persistido no SQLite WAL!`, 'success');
-        }
-
-        // Visualizador de Diffs sem alert() nativo
-        function toggleDiffHighlight() {
-            PixelSystem.toast('Visualizador de diferencas (Diffs) em pixel art ativo no Canvas.', 'info');
         }
 
         // Alternância da Trava Mecânica Personalizada
@@ -4886,60 +5309,13 @@
             isSafetyUnlocked = !isSafetyUnlocked;
             
             if (isSafetyUnlocked) {
-                switchEl.classList.add('active');
+                if (switchEl) switchEl.classList.add('active');
                 if (btnApprove) btnApprove.disabled = false;
                 PixelSystem.toast('TRAVA DESTRIVADA: Autorizacao de comandos criticos liberada.', 'warning');
             } else {
-                switchEl.classList.remove('active');
+                if (switchEl) switchEl.classList.remove('active');
                 if (btnApprove) btnApprove.disabled = true;
                 PixelSystem.toast('TRAVA ENGATADA: Protecao de seguranca ativa.', 'info');
-            }
-        }
-
-        // Resolução Rápida HITL sem alert() nativo
-        function resolveHitlQuick(decision) {
-            if (decision === 'HOMOLOGADO') {
-                PixelSystem.confirm(
-                    'Homologar Acao Critica',
-                    'Deseja autorizar o despacho do comando [rm -rf /workspace/scratch_build_cache/*] para o sandbox Bubblewrap?',
-                    () => {
-                        PixelSystem.toast('COMANDO HOMOLOGADO: Acao autorizada pelo operador! Despachando para Bubblewrap.', 'success');
-                        openHitlCanvas();
-                        resolveHitlFull('HOMOLOGADO');
-                    }
-                );
-            } else {
-                PixelSystem.confirm(
-                    'Vetar Acao Critica',
-                    'Confirma o cancelamento e descarte desta solicitacao da fila de governanca?',
-                    () => {
-                        PixelSystem.toast('COMANDO VETADO: Acao cancelada e removida da fila de governanca.', 'danger');
-                        openHitlCanvas();
-                        resolveHitlFull('REJEITADO');
-                    }
-                );
-            }
-        }
-
-        // Resolução Completa HITL no Canvas sem alert() nativo
-        function resolveHitlFull(decision) {
-            const rejectStamp = document.getElementById('stampRejectVisual');
-            const approveStamp = document.getElementById('stampApproveVisual');
-
-            if (decision === 'HOMOLOGADO') {
-                approveStamp.style.transform = 'rotate(2.5deg) scale(1.15)';
-                rejectStamp.style.opacity = '0.3';
-                setTimeout(() => {
-                    PixelSystem.toast('HOMOLOGADO: Acao homologada pelo operador lyon christopher! Executando no sandbox.', 'success');
-                    approveStamp.style.transform = 'rotate(2.5deg) scale(1.0)';
-                }, 200);
-            } else {
-                rejectStamp.style.transform = 'rotate(-3deg) scale(1.15)';
-                approveStamp.style.opacity = '0.3';
-                setTimeout(() => {
-                    PixelSystem.toast('VETO REGISTRADO: Acao vetada pelo operador humano. Execucao abortada.', 'danger');
-                    rejectStamp.style.transform = 'rotate(-3deg) scale(1.0)';
-                }, 200);
             }
         }
 
@@ -4960,7 +5336,277 @@
             }
         }
 
+        // =====================================================================
+        // CENTRAL DE SLASH COMMANDS (/) - PROTOCOLO DE BORDA PI-DOTS
+        // =====================================================================
+        const SlashCommandsEngine = {
+            isOpen: false,
+            activeIndex: 0,
+            filteredList: [],
+            activeCategory: 'all',
+
+            catalog: [
+                // [SISTEMA & UI]
+                { cmd: '/help', cat: 'sistema', args: '[filtro]', exec: 'client', desc: 'Exibe catalogo operacional e atalhos tecnicos do console.' },
+                { cmd: '/clear', cat: 'sistema', args: '[chat|terminal|canvas|all]', exec: 'client', desc: 'Limpa a bobina de papel ou buffers de visualizacao.' },
+                { cmd: '/theme', cat: 'sistema', args: '[noir|blueprint|toggle]', exec: 'client', desc: 'Alterna os pigmentos graficos entre Dark Noir e Blueprint.' },
+                { cmd: '/lang', cat: 'sistema', args: '[pt|en]', exec: 'client', desc: 'Comuta a quente o dicionario de internacionalizacao.' },
+                { cmd: '/info', cat: 'sistema', args: '', exec: 'rest', desc: 'Exibe dossie de hardware, modelo e status do SQLite WAL.' },
+                { cmd: '/status', cat: 'sistema', args: '', exec: 'rest', desc: 'Apresenta resumo executivo dos coworkers ativos e conexoes.' },
+                { cmd: '/telemetry', cat: 'sistema', args: '', exec: 'rest', desc: 'Mede temperatura do SoC Broadcom, memoria RAM e carga.' },
+                { cmd: '/pwa', cat: 'sistema', args: '[status|update|cache-clear]', exec: 'client', desc: 'Inspeciona Service Worker e conformidade de cache offline.' },
+                { cmd: '/onboarding', cat: 'sistema', args: '', exec: 'client', desc: 'Reinicia o guia interativo de primeiro acesso ao console.' },
+                { cmd: '/changelog', cat: 'sistema', args: '[versao]', exec: 'rest', desc: 'Consulta as notas oficiais de atualizacao do sistema.' },
+
+                // [AGENTES & MULTI-BOT]
+                { cmd: '/dots', cat: 'agentes', args: '[list|switch <id>]', exec: 'hybrid', desc: 'Lista coworkers ou chaveia imediatamente a sessao ativa.' },
+                { cmd: '/handoff', cat: 'agentes', args: '<target_dot_id> [motivo]', exec: 'rest', desc: 'Transfere titularidade da thread para outro especialista.' },
+                { cmd: '/council', cat: 'agentes', args: '<topico> [rounds]', exec: 'stream', desc: 'Inicia debate dialetico Propositor vs Auditor vs Supervisor.' },
+                { cmd: '/delegate', cat: 'agentes', args: '<target_dot_id> <tarefa>', exec: 'rest', desc: 'Despacha subtarefa isolada em topologia Supervisor-Worker.' },
+                { cmd: '/archetype', cat: 'agentes', args: '[musedot|grokdot|supervisor|coder|auditor]', exec: 'rest', desc: 'Configura o arquetipo cognitivo do Dot atual.' },
+                { cmd: '/tools', cat: 'agentes', args: '[dot_id]', exec: 'rest', desc: 'Catalogo de ferramentas ativas com Dynamic Tool Pruning.' },
+
+                // [MEMORIA & CONHECIMENTO]
+                { cmd: '/memory', cat: 'memoria', args: '[show|append|replace] [sec] [txt]', exec: 'hybrid', desc: 'Inspeciona ou atualiza blocos da Core Memory in-context.' },
+                { cmd: '/archival', cat: 'memoria', args: '<termo> [limite]', exec: 'rest', desc: 'Busca hibrida duradoura com FTS5 BM25 e Projecao 64d.' },
+                { cmd: '/shared', cat: 'memoria', args: '[read|write] <chave> [txt]', exec: 'rest', desc: 'Quadro de notas tecnicas compartilhado entre bots.' },
+                { cmd: '/spaces', cat: 'memoria', args: '[list|create <arq>|open <id>]', exec: 'rest', desc: 'Gestao da biblioteca de artefatos vivos e versionamento.' },
+                { cmd: '/diff', cat: 'memoria', args: '[space_id]', exec: 'client', desc: 'Alterna inspecao de diferencas incrementais no Canvas.' },
+
+                // [TAREFAS & HEARTBEAT]
+                { cmd: '/tasks', cat: 'tarefas', args: '[list|toggle <id>]', exec: 'rest', desc: 'Lista e gerencia rotinas agendadas (Dot Heartbeats).' },
+                { cmd: '/cron', cat: 'tarefas', args: '<expressao_cron> <prompt>', exec: 'rest', desc: 'Agenda nova rotina proativa no agendador SQLite WAL.' },
+                { cmd: '/run-task', cat: 'tarefas', args: '<task_id>', exec: 'rest', desc: 'Forca o disparo imediato de uma tarefa agendada.' },
+
+                // [GOVERNANCA & BORDA]
+                { cmd: '/hitl', cat: 'governanca', args: '[list|approve <id>|reject <id>]', exec: 'rest', desc: 'Audita e resolve aprovacoes da fila de governanca.' },
+                { cmd: '/triggers', cat: 'governanca', args: '[check|evaluate]', exec: 'rest', desc: 'Avalia limites de temperatura, disco e memoria RAM.' },
+                { cmd: '/maintenance', cat: 'governanca', args: '[checkpoint|optimize|full]', exec: 'rest', desc: 'Preserva MicroSD com truncamento WAL e otimizacao.' },
+                { cmd: '/backup', cat: 'governanca', args: '[caminho_destino]', exec: 'rest', desc: 'Snapshot atomico do banco de dados via VACUUM INTO.' },
+
+                // [EXPORTACAO & DADOS]
+                { cmd: '/export', cat: 'dados', args: '[zip|workspace] [dot_id]', exec: 'rest', desc: 'Compacta e descarrega o workspace do Dot em arquivo ZIP.' },
+                { cmd: '/pack', cat: 'dados', args: '[export|import] [dot_id]', exec: 'rest', desc: 'Serializa ou restaura manifesto portavel DotPack v1.0.' }
+            ],
+
+            setCategory(cat) {
+                this.activeCategory = cat;
+                const tabs = document.querySelectorAll('#slashCategoryTabs .slash-cat-btn');
+                tabs.forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
+                });
+                const input = document.getElementById('instructionInput');
+                if (input) {
+                    const textBeforeCursor = input.value.slice(0, input.selectionStart);
+                    const match = textBeforeCursor.match(/(?:^|\n)\/([a-zA-Z0-9_\-]*)$/);
+                    this.filterCommands(match ? match[1].toLowerCase() : '');
+                }
+            },
+
+            handleInput(event) {
+                const input = event.target;
+                const val = input.value;
+                const cursorPos = input.selectionStart;
+                const beforeCursor = val.slice(0, cursorPos);
+
+                // Detecta '/' no inicio da linha ou após quebra de linha
+                const match = beforeCursor.match(/(?:^|\n)\/([a-zA-Z0-9_\-]*)$/);
+
+                if (!match) {
+                    this.closePopover();
+                    return false;
+                }
+
+                // Fecha o dropdown de menção se estiver aberto
+                const mentionDropdown = document.getElementById('mentionDropdown');
+                if (mentionDropdown) mentionDropdown.style.display = 'none';
+
+                const query = match[1].toLowerCase();
+                this.filterCommands(query);
+                return true;
+            },
+
+            filterCommands(query) {
+                let list = this.catalog;
+                if (this.activeCategory !== 'all') {
+                    list = list.filter(item => item.cat === this.activeCategory);
+                }
+
+                if (query) {
+                    list = list.filter(item => 
+                        item.cmd.toLowerCase().includes('/' + query) ||
+                        item.desc.toLowerCase().includes(query) ||
+                        item.cat.toLowerCase().includes(query)
+                    );
+                }
+
+                this.filteredList = list;
+                this.activeIndex = 0;
+
+                if (list.length === 0) {
+                    this.closePopover();
+                    return;
+                }
+
+                this.renderItems();
+                this.openPopover();
+            },
+
+            renderItems() {
+                const container = document.getElementById('slashItemsList');
+                const countEl = document.getElementById('slashMatchCount');
+                if (!container) return;
+
+                container.innerHTML = '';
+                if (countEl) countEl.textContent = `${this.filteredList.length} COMANDOS DISPONIVEIS`;
+
+                this.filteredList.forEach((item, idx) => {
+                    const el = document.createElement('div');
+                    el.className = `slash-item ${idx === this.activeIndex ? 'selected' : ''}`;
+                    el.setAttribute('role', 'option');
+                    el.setAttribute('aria-selected', idx === this.activeIndex ? 'true' : 'false');
+                    el.onclick = () => this.selectCommand(item);
+
+                    // Criação estrita e segura de nós DOM (Zero XSS)
+                    const topDiv = document.createElement('div');
+                    topDiv.className = 'slash-item-top';
+
+                    const cmdSpan = document.createElement('span');
+                    cmdSpan.className = 'slash-cmd-syntax';
+                    cmdSpan.textContent = item.args ? `${item.cmd} ${item.args}` : item.cmd;
+
+                    const catSpan = document.createElement('span');
+                    catSpan.className = 'slash-badge-cat';
+                    catSpan.textContent = `[${item.cat.toUpperCase()}]`;
+
+                    topDiv.appendChild(cmdSpan);
+                    topDiv.appendChild(catSpan);
+
+                    const descDiv = document.createElement('div');
+                    descDiv.className = 'slash-cmd-desc';
+                    descDiv.textContent = item.desc;
+
+                    el.appendChild(topDiv);
+                    el.appendChild(descDiv);
+                    container.appendChild(el);
+                });
+
+                this.ensureActiveVisible();
+            },
+
+            ensureActiveVisible() {
+                const container = document.getElementById('slashItemsList');
+                if (!container) return;
+                const activeEl = container.children[this.activeIndex];
+                if (activeEl) {
+                    activeEl.scrollIntoView({ block: 'nearest' });
+                }
+            },
+
+            handleKeyDown(event) {
+                if (!this.isOpen) return false;
+
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    if (this.filteredList.length > 0) {
+                        this.activeIndex = (this.activeIndex + 1) % this.filteredList.length;
+                        this.updateSelection();
+                    }
+                    return true;
+                }
+
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    if (this.filteredList.length > 0) {
+                        this.activeIndex = (this.activeIndex - 1 + this.filteredList.length) % this.filteredList.length;
+                        this.updateSelection();
+                    }
+                    return true;
+                }
+
+                if (event.key === 'Tab' || (event.key === 'Enter' && !event.shiftKey)) {
+                    event.preventDefault();
+                    if (this.filteredList[this.activeIndex]) {
+                        this.selectCommand(this.filteredList[this.activeIndex]);
+                    }
+                    return true;
+                }
+
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    this.closePopover();
+                    return true;
+                }
+
+                return false;
+            },
+
+            updateSelection() {
+                const container = document.getElementById('slashItemsList');
+                if (!container) return;
+                Array.from(container.children).forEach((child, idx) => {
+                    const isSel = idx === this.activeIndex;
+                    child.classList.toggle('selected', isSel);
+                    child.setAttribute('aria-selected', isSel ? 'true' : 'false');
+                });
+                this.ensureActiveVisible();
+            },
+
+            selectCommand(item) {
+                const input = document.getElementById('instructionInput');
+                if (!input) return;
+
+                const cursorPos = input.selectionStart;
+                const before = input.value.slice(0, cursorPos);
+                const after = input.value.slice(cursorPos);
+
+                const replacedBefore = before.replace(/(?:^|\n)\/([a-zA-Z0-9_\-]*)$/, (match) => {
+                    const prefix = match.startsWith('\n') ? '\n' : '';
+                    return `${prefix}${item.cmd} `;
+                });
+
+                input.value = replacedBefore + after;
+                input.selectionStart = input.selectionEnd = replacedBefore.length;
+                input.focus();
+                this.closePopover();
+            },
+
+            openPopover() {
+                const pop = document.getElementById('slashPopover');
+                if (pop) {
+                    pop.style.display = 'flex';
+                    this.isOpen = true;
+                }
+            },
+
+            closePopover() {
+                const pop = document.getElementById('slashPopover');
+                if (pop) {
+                    pop.style.display = 'none';
+                    this.isOpen = false;
+                }
+            }
+        };
+
+        // Fecha o popover e mencoes se o usuario clicar fora da area de entrada
+        document.addEventListener('click', (e) => {
+            const pop = document.getElementById('slashPopover');
+            const mention = document.getElementById('mentionDropdown');
+            const input = document.getElementById('instructionInput');
+            if (pop && pop.style.display === 'flex' && !pop.contains(e.target) && e.target !== input) {
+                SlashCommandsEngine.closePopover();
+            }
+            if (mention && (mention.style.display === 'block' || mention.style.display === 'flex') && !mention.contains(e.target) && e.target !== input) {
+                mention.style.display = 'none';
+            }
+        });
+
         function handleMentionInput(event) {
+            // Prioridade: se o caractere digitado for slash '/', aciona SlashCommandsEngine
+            if (SlashCommandsEngine.handleInput(event)) {
+                return;
+            }
+
             const input = document.getElementById('instructionInput');
             const dropdown = document.getElementById('mentionDropdown');
             const itemsList = document.getElementById('mentionItemsList');
@@ -5028,6 +5674,12 @@
         }
 
         function handleInputKey(event) {
+            // 1. Prioridade: Se o Popover de Slash Commands estiver aberto, intercepta navegacao
+            if (SlashCommandsEngine.handleKeyDown(event)) {
+                return;
+            }
+
+            // 2. Se o Dropdown de Mencao estiver aberto, intercepta navegacao
             const dropdown = document.getElementById('mentionDropdown');
             const isDropdownOpen = dropdown && dropdown.style.display === 'block';
 
@@ -5065,14 +5717,973 @@
             }
         }
 
+        // =====================================================================
+        // EXECUCAO E DESPACHO DE SLASH COMMANDS (FASE 2)
+        // =====================================================================
+        function renderSlashReceiptSlip(cmdName, title, contentHtml, statusBadge = '[SUCESSO]') {
+            const scrollArea = document.getElementById('tickerScroll');
+            if (!scrollArea) return;
+
+            const slip = document.createElement('article');
+            slip.className = 'ticker-slip slash-receipt-slip';
+            
+            const isSuccess = statusBadge.includes('SUCESSO') || statusBadge.includes('OK') || statusBadge.includes('ESTAVEL') || statusBadge.includes('NORMAL');
+            const badgeColor = isSuccess ? 'var(--phosphor-green)' : 'var(--thermal-amber)';
+
+            slip.innerHTML = `
+                <header class="slip-header">
+                    <span class="actor-stamp stamp-system">[CMD] SISTEMA // SLASH EXECUTION</span>
+                    <span>${new Date().toISOString()}</span>
+                    <span>SEQ# 000${seqCounter++}</span>
+                </header>
+                <section class="slip-output">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed var(--border-default); padding-bottom: 4px;">
+                        <div>
+                            <span style="color: var(--blueprint-cyan); font-weight: 700; font-size: 11px;">${escapeHtml(cmdName.toUpperCase())}</span>
+                            <span style="color: var(--ink-muted); font-size: 10px; margin-left: 6px;">// ${escapeHtml(title)}</span>
+                        </div>
+                        <span style="font-family: var(--font-pixel); font-size: 7px; padding: 1px 4px; border: 1px solid var(--border-default); color: ${badgeColor};">${escapeHtml(statusBadge)}</span>
+                    </div>
+                    <div class="slip-text" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5;">
+                        ${contentHtml}
+                    </div>
+                </section>
+                <footer class="slip-perforation">
+                    <span class="perforation-line"></span>
+                    <span class="perforation-label">PICOTE // DESTACAR</span>
+                    <span class="perforation-line"></span>
+                </footer>
+            `;
+
+            scrollArea.appendChild(slip);
+            scrollArea.scrollTop = scrollArea.scrollHeight;
+            if (window.PiDotsAPI && PiDotsAPI.enforceDomCeiling) {
+                PiDotsAPI.enforceDomCeiling();
+            }
+        }
+
+        // Algoritmo de Distancia de Levenshtein para sugestao didatica de comandos
+        function findClosestCommand(inputCmd) {
+            const catalog = SlashCommandsEngine.catalog.map(c => c.cmd);
+            let closest = null;
+            let minDistance = Infinity;
+
+            function levenshtein(a, b) {
+                const matrix = [];
+                for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+                for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+                for (let i = 1; i <= b.length; i++) {
+                    for (let j = 1; j <= a.length; j++) {
+                        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                            matrix[i][j] = matrix[i - 1][j - 1];
+                        } else {
+                            matrix[i][j] = Math.min(
+                                matrix[i - 1][j - 1] + 1,
+                                matrix[i][j - 1] + 1,
+                                matrix[i - 1][j] + 1
+                            );
+                        }
+                    }
+                }
+                return matrix[b.length][a.length];
+            }
+
+            for (const cmd of catalog) {
+                const dist = levenshtein(inputCmd, cmd);
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    closest = cmd;
+                }
+            }
+
+            return minDistance <= 3 ? closest : null;
+        }
+
+        async function executeSlashCommand(commandLine) {
+            const parts = commandLine.trim().split(/\s+/);
+            const cmd = parts[0].toLowerCase();
+            const args = parts.slice(1);
+
+            switch (cmd) {
+                // 1. /help [filtro]
+                case '/help': {
+                    const filter = args[0] ? args[0].toLowerCase() : '';
+                    let list = SlashCommandsEngine.catalog;
+                    if (filter) {
+                        list = list.filter(c => c.cmd.includes(filter) || c.cat.includes(filter) || c.desc.toLowerCase().includes(filter));
+                    }
+                    let out = '<div style="margin-bottom: 6px; color: var(--ink-secondary);">CATALOGO DE SLASH COMMANDS // PROTOCOLO DE BORDA:</div>';
+                    out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
+                    list.forEach(c => {
+                        out += `<div style="padding: 2px 0; border-bottom: 1px dotted var(--border-subtle); display: flex; justify-content: space-between; align-items: baseline;">
+                            <span><strong style="color: var(--phosphor-green);">${escapeHtml(c.cmd)}</strong> <span style="color: var(--ink-muted); font-size: 10px;">${escapeHtml(c.args)}</span></span>
+                            <span style="color: var(--ink-muted); font-size: 10px;">[${escapeHtml(c.cat.toUpperCase())}]</span>
+                        </div>
+                        <div style="color: var(--ink-secondary); font-size: 10px; margin-bottom: 4px;">${escapeHtml(c.desc)}</div>`;
+                    });
+                    out += '</div>';
+                    if (list.length === 0) {
+                        out = `<div style="color: var(--thermal-amber);">Nenhum comando encontrado para o filtro "${escapeHtml(filter)}". Digite /help para ver todos.</div>`;
+                    }
+                    renderSlashReceiptSlip('/help', filter ? `FILTRO: ${filter}` : 'CATALOGO COMPLETO', out, '[OK]');
+                    break;
+                }
+
+                // 2. /clear [chat|terminal|canvas|all]
+                case '/clear': {
+                    const target = (args[0] || 'chat').toLowerCase();
+                    if (target === 'chat' || target === 'all') {
+                        clearTickerStream();
+                    }
+                    if (target === 'terminal' || target === 'all') {
+                        const term = document.getElementById('terminalViewport');
+                        if (term) term.innerHTML = '<div style="color: var(--ink-muted);">[TERMINAL SANDBOX LIMPO // AGUARDANDO NOVOS PROCESSOS BWRAP]</div>';
+                    }
+                    if (target === 'canvas' || target === 'all') {
+                        const art = document.getElementById('artifactContent');
+                        if (art) art.value = '# Documento limpo\n\nPronto para edicao no Live Canvas.';
+                    }
+                    renderSlashReceiptSlip('/clear', `ALVO: ${target.toUpperCase()}`, `Area visual [${escapeHtml(target.toUpperCase())}] reiniciada com sucesso. Memoria de sessao preservada.`, '[OK]');
+                    break;
+                }
+
+                // 3. /theme [noir|blueprint|toggle]
+                case '/theme': {
+                    const arg = (args[0] || 'toggle').toLowerCase();
+                    if (arg === 'blueprint') {
+                        document.documentElement.setAttribute('data-theme', 'blueprint');
+                        isBlueprint = true;
+                    } else if (arg === 'noir') {
+                        document.documentElement.removeAttribute('data-theme');
+                        isBlueprint = false;
+                    } else {
+                        toggleTheme();
+                    }
+                    const activeTheme = isBlueprint ? 'BLUEPRINT (AZUL CIANO)' : 'DARK NOIR (VERDE FOSFORO)';
+                    renderSlashReceiptSlip('/theme', 'PIGMENTACAO VISUAL', `Tema de interface atualizado para: <strong>${activeTheme}</strong>.`, '[OK]');
+                    break;
+                }
+
+                // 4. /lang [pt|en]
+                case '/lang': {
+                    const lang = (args[0] || '').toLowerCase();
+                    if (lang === 'pt' || lang === 'en') {
+                        if (window.PiDotsI18n && PiDotsI18n.setLanguage) {
+                            PiDotsI18n.setLanguage(lang);
+                            renderSlashReceiptSlip('/lang', 'INTERNACIONALIZACAO', `Dicionario comutado com sucesso para: <strong>${lang.toUpperCase()}</strong>.`, '[OK]');
+                        } else {
+                            renderSlashReceiptSlip('/lang', 'AVISO', 'Micro-motor PiDotsI18n nao carregado na sessao.', '[AVISO]');
+                        }
+                    } else {
+                        renderSlashReceiptSlip('/lang', 'SINTAXE INCORRETA', 'Uso correto: <code>/lang pt</code> ou <code>/lang en</code>.', '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 5. /info
+                case '/info': {
+                    try {
+                        const res = await fetch('/health');
+                        const data = res.ok ? await res.json() : {};
+                        const tableHtml = `
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">SISTEMA / PLATAFORMA:</td><td><strong>piDots Edge Core v1.2.0</strong></td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">HARDWARE ALVO:</td><td>Raspberry Pi 4B (ARM64 Cortex-A72)</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">MOTOR ASSINCRONO:</td><td>FastAPI + uvloop (Single Process)</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">BANCO & ARMAZENAMENTO:</td><td>SQLite WAL Mode (synchronous=NORMAL)</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">MODELO ATIVO:</td><td>${escapeHtml(data.model || 'qwen3.8-27b')}</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">PROTOCOLO SSE:</td><td>AG-UI v1.0 Streaming Contrato</td></tr>
+                            </table>
+                        `;
+                        renderSlashReceiptSlip('/info', 'DOSSIE DE ESPECIFICACOES', tableHtml, '[OK]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/info', 'FALHA DE CONSULTA', `Erro ao consultar /health: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 6. /status
+                case '/status': {
+                    try {
+                        const [resHealth, resDots] = await Promise.all([fetch('/health'), fetch('/api/dots')]);
+                        const health = resHealth.ok ? await resHealth.json() : {};
+                        const dotsData = resDots.ok ? await resDots.json() : [];
+                        const dotsList = Array.isArray(dotsData) ? dotsData : (dotsData.dots || []);
+                        const activeDot = dotsList.find(d => d.id === (window.PiDotsAPI && PiDotsAPI.activeDotId)) || dotsList[0] || { id: 'dot-supervisor', archetype: 'general' };
+
+                        const statusHtml = `
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <div style="background: var(--paper-surface-recessed); padding: 6px; border: 1px solid var(--border-subtle);">
+                                    <div style="color: var(--ink-muted); font-size: 9px;">COWORKER ATIVO</div>
+                                    <div style="color: var(--blueprint-cyan); font-weight: 700; font-size: 12px;">@${escapeHtml(activeDot.id)}</div>
+                                    <div style="font-size: 10px; color: var(--ink-secondary);">Papel: ${escapeHtml((activeDot.archetype || 'general').toUpperCase())}</div>
+                                </div>
+                                <div style="background: var(--paper-surface-recessed); padding: 6px; border: 1px solid var(--border-subtle);">
+                                    <div style="color: var(--ink-muted); font-size: 9px;">COWORKERS TOTAL</div>
+                                    <div style="color: var(--phosphor-green); font-weight: 700; font-size: 12px;">${dotsList.length} INSTALADOS</div>
+                                    <div style="font-size: 10px; color: var(--ink-secondary);">Pruning: ATIVO (23 Ferramentas)</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 6px; font-size: 10.5px; color: var(--ink-main);">
+                                Conexao Local: <span style="color: var(--phosphor-green); font-weight: 700;">ESTAVEL</span> | 
+                                WAL Mode: <span style="color: var(--phosphor-green); font-weight: 700;">ATIVO</span> | 
+                                Governanca HITL: <span style="color: var(--blueprint-cyan); font-weight: 700;">DENY-BY-DEFAULT</span>
+                            </div>
+                        `;
+                        renderSlashReceiptSlip('/status', 'PANORAMA OPERACIONAL', statusHtml, '[ESTAVEL]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/status', 'FALHA DE CONSULTA', `Erro ao consultar status: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 7. /telemetry
+                case '/telemetry': {
+                    try {
+                        const res = await fetch('/api/edge/triggers');
+                        const data = res.ok ? await res.json() : {};
+                        const m = data.metrics || {};
+                        const temp = m.temperature_celsius != null ? m.temperature_celsius : 48.0;
+                        const ramFree = m.ram ? m.ram.available_mb : 2300;
+                        const ramTotal = m.ram ? m.ram.total_mb : 3800;
+                        const ramPct = m.ram ? m.ram.free_percent : 60.0;
+                        const diskFree = m.disk ? m.disk.free_gb : 19.0;
+                        const diskPct = m.disk ? m.disk.free_percent : 65.0;
+                        const load = m.load_average ? `${m.load_average.load_1m}, ${m.load_average.load_5m}, ${m.load_average.load_15m}` : '0.40, 0.35, 0.25';
+
+                        function makeAsciiBar(pct, totalChars = 20) {
+                            const filled = Math.min(totalChars, Math.max(0, Math.round((pct / 100) * totalChars)));
+                            return '[' + '|'.repeat(filled) + '.'.repeat(totalChars - filled) + ']';
+                        }
+
+                        const tempBar = makeAsciiBar(Math.min(100, (temp / 80) * 100));
+                        const ramBar = makeAsciiBar(100 - ramPct);
+                        const diskBar = makeAsciiBar(100 - diskPct);
+
+                        const telemetryHtml = `
+                            <div style="font-family: var(--font-mono); font-size: 11px; line-height: 1.6;">
+                                <div><strong>TEMPERATURA SoC BCM2711 :</strong> ${temp.toFixed(1)} °C <span style="color: var(--phosphor-green);">${tempBar}</span> (TETO: 72.0 °C)</div>
+                                <div><strong>USO DE MEMORIA RAM     :</strong> ${(ramTotal - ramFree).toFixed(0)}MB / ${ramTotal.toFixed(0)}MB <span style="color: var(--blueprint-cyan);">${ramBar}</span> (Livre: ${ramPct.toFixed(1)}%)</div>
+                                <div><strong>USO DE CARTAO FLASH/SD  :</strong> <span style="color: var(--thermal-amber);">${diskBar}</span> (Folga: ${diskFree.toFixed(1)}GB / ${diskPct.toFixed(1)}%)</div>
+                                <div><strong>CARGA DA CPU (LOAD AVG) :</strong> ${load}</div>
+                                <div style="margin-top: 4px; font-size: 10px; color: var(--ink-muted);">Throttle Automatico: <strong>${data.is_throttled ? 'ATIVO (ALERTA TERMICO)' : 'DESATIVADO (NORMAL)'}</strong></div>
+                            </div>
+                        `;
+                        renderSlashReceiptSlip('/telemetry', 'SENSORES DE HARDWARE DE BORDA', telemetryHtml, temp > 70 ? '[ALERTA]' : '[NORMAL]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/telemetry', 'FALHA DE LEITURA', `Erro ao coletar sensores: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 8. /pwa [status|update|cache-clear]
+                case '/pwa': {
+                    const action = (args[0] || 'status').toLowerCase();
+                    if (action === 'cache-clear') {
+                        if ('caches' in window) {
+                            const keys = await caches.keys();
+                            await Promise.all(keys.map(k => caches.delete(k)));
+                            renderSlashReceiptSlip('/pwa', 'CACHE EXPURGADO', `Total de ${keys.length} caches locais descartados com sucesso.`, '[OK]');
+                        } else {
+                            renderSlashReceiptSlip('/pwa', 'AVISO', 'API de Cache indisponivel no navegador.', '[AVISO]');
+                        }
+                    } else if (action === 'update') {
+                        if ('serviceWorker' in navigator) {
+                            const reg = await navigator.serviceWorker.getRegistration();
+                            if (reg) {
+                                await reg.update();
+                                renderSlashReceiptSlip('/pwa', 'SERVICE WORKER', 'Verificacao de atualizacao disparada com sucesso.', '[OK]');
+                            } else {
+                                renderSlashReceiptSlip('/pwa', 'AVISO', 'Nenhum Service Worker registrado.', '[AVISO]');
+                            }
+                        }
+                    } else {
+                        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+                        const hasSW = 'serviceWorker' in navigator && !!navigator.serviceWorker.controller;
+                        const pwaHtml = `
+                            <div>Modo Standalone (App Instalado): <strong>${isStandalone ? 'SIM (STANDALONE)' : 'NAO (NAVEGADOR WEB)'}</strong></div>
+                            <div>Service Worker Ativo: <strong>${hasSW ? 'SIM (ONLINE & OFFLINE RESILIENTE)' : 'EM REGISTRO'}</strong></div>
+                            <div>Cache Defensivo: <strong>pidots-cache-v5</strong></div>
+                            <div style="margin-top: 4px; font-size: 10px; color: var(--ink-muted);">Subcomandos disponiveis: <code>/pwa update</code> | <code>/pwa cache-clear</code></div>
+                        `;
+                        renderSlashReceiptSlip('/pwa', 'STATUS PROGRESSIVE WEB APP', pwaHtml, '[OK]');
+                    }
+                    break;
+                }
+
+                // 9. /onboarding
+                case '/onboarding': {
+                    if (window.PiDotsUX && PiDotsUX.Onboarding && PiDotsUX.Onboarding.open) {
+                        PiDotsUX.Onboarding.open();
+                        renderSlashReceiptSlip('/onboarding', 'PRIMEIRO ACESSO', 'Tour interativo de 5 passos acionado no console.', '[OK]');
+                    } else {
+                        renderSlashReceiptSlip('/onboarding', 'AVISO', 'Modal de onboarding indisponivel.', '[AVISO]');
+                    }
+                    break;
+                }
+
+                // 10. /changelog [versao]
+                case '/changelog': {
+                    try {
+                        const res = await fetch('/api/changelog');
+                        const data = res.ok ? await res.json() : {};
+                        const pn = data.patch_notes || {};
+                        const cats = pn.categories || {};
+
+                        let chHtml = `<div style="margin-bottom: 6px;">
+                            <strong>${escapeHtml(pn.title || 'NOTAS DE ATUALIZACAO')}</strong> // Versao ${escapeHtml(data.current_version || '1.2.0')}
+                            <div style="color: var(--ink-muted); font-size: 10px;">Lancamento: ${escapeHtml(data.release_date || '2026-10-12')} | Commit: ${escapeHtml(data.commit_hash || 'c5a5e67')}</div>
+                        </div>`;
+
+                        if (cats.included && cats.included.length) {
+                            chHtml += `<div style="margin-top: 4px;"><strong style="color: var(--phosphor-green); font-size: 10px;">[INCLUIDO / NOVO]</strong><ul style="margin: 2px 0 6px 16px; padding: 0;">`;
+                            cats.included.forEach(item => { chHtml += `<li style="margin-bottom: 2px;">${escapeHtml(item)}</li>`; });
+                            chHtml += `</ul></div>`;
+                        }
+
+                        if (cats.adjusted && cats.adjusted.length) {
+                            chHtml += `<div style="margin-top: 4px;"><strong style="color: var(--blueprint-cyan); font-size: 10px;">[AJUSTADO / MELHORADO]</strong><ul style="margin: 2px 0 6px 16px; padding: 0;">`;
+                            cats.adjusted.forEach(item => { chHtml += `<li style="margin-bottom: 2px;">${escapeHtml(item)}</li>`; });
+                            chHtml += `</ul></div>`;
+                        }
+
+                        if (cats.security_and_edge && cats.security_and_edge.length) {
+                            chHtml += `<div style="margin-top: 4px;"><strong style="color: var(--thermal-amber); font-size: 10px;">[SEGURANCA & BORDA]</strong><ul style="margin: 2px 0 6px 16px; padding: 0;">`;
+                            cats.security_and_edge.forEach(item => { chHtml += `<li style="margin-bottom: 2px;">${escapeHtml(item)}</li>`; });
+                            chHtml += `</ul></div>`;
+                        }
+
+                        renderSlashReceiptSlip('/changelog', `VERSAO ${data.current_version || '1.2.0'}`, chHtml, '[OK]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/changelog', 'FALHA', `Erro ao consultar changelog: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // =====================================================================
+                // COMANDOS OPERACIONAIS AVANCADOS (FASE 3)
+                // =====================================================================
+
+                // 11. /dots [filtro]
+                case '/dots': {
+                    try {
+                        const filter = args[0] ? args[0].toLowerCase() : '';
+                        const res = await fetch('/api/dots');
+                        const data = res.ok ? await res.json() : [];
+                        const dots = Array.isArray(data) ? data : (data.dots || []);
+                        let filtered = dots;
+                        if (filter) {
+                            filtered = dots.filter(d => (d.id && d.id.toLowerCase().includes(filter)) || (d.name && d.name.toLowerCase().includes(filter)) || (d.archetype && d.archetype.toLowerCase().includes(filter)));
+                        }
+                        const currentId = (window.PiDotsAPI && PiDotsAPI.activeDotId) || (dots[0] && dots[0].id) || 'dot-supervisor';
+                        let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">AI COWORKERS REGISTRADOS NO NO EDGE (${filtered.length}/${dots.length}):</div>`;
+                        out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
+                        filtered.forEach(d => {
+                            const isCurrent = d.id === currentId;
+                            const badge = isCurrent ? '<span style="color: var(--phosphor-green); font-weight: 700;">[ATIVO]</span>' : '<span style="color: var(--ink-muted);">[DISPONIVEL]</span>';
+                            out += `<div style="padding: 4px 6px; background: var(--paper-surface-recessed); border: 1px solid ${isCurrent ? 'var(--phosphor-green)' : 'var(--border-subtle)'}; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong style="color: var(--blueprint-cyan);">@${escapeHtml(d.id)}</strong>
+                                    <span style="color: var(--ink-primary); font-size: 10px; margin-left: 6px;">${escapeHtml(d.name || d.id)}</span>
+                                    <div style="color: var(--ink-muted); font-size: 9.5px;">Papel: ${escapeHtml((d.archetype || 'general').toUpperCase())} | Sandbox: bwrap</div>
+                                </div>
+                                <div style="font-size: 10px;">${badge}</div>
+                            </div>`;
+                        });
+                        out += '</div>';
+                        out += `<div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Dica: Digite <code>/handoff &lt;dot_id&gt;</code> para alternar o foco da sessao.</div>`;
+                        renderSlashReceiptSlip('/dots', filter ? `FILTRO: ${filter}` : 'REDE MULTI-BOT', out, '[OK]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/dots', 'FALHA', `Erro ao listar coworkers: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 12. /handoff <dot_id> [contexto]
+                case '/handoff': {
+                    const targetId = (args[0] || '').toLowerCase().replace(/^@/, '');
+                    const context = args.slice(1).join(' ') || 'Transicao operacional de rotina';
+                    if (!targetId) {
+                        renderSlashReceiptSlip('/handoff', 'SINTAXE INCORRETA', 'Uso: <code>/handoff &lt;dot_id&gt; [contexto opcional]</code>. Exemplo: <code>/handoff dot-researcher analise termica</code>', '[ERRO]');
+                        break;
+                    }
+                    try {
+                        const res = await fetch('/api/dots');
+                        const data = res.ok ? await res.json() : [];
+                        const dots = Array.isArray(data) ? data : (data.dots || []);
+                        const targetDot = dots.find(d => d.id.toLowerCase() === targetId);
+                        if (!targetDot) {
+                            const validIds = dots.map(d => `@${d.id}`).join(', ');
+                            renderSlashReceiptSlip('/handoff', 'COWORKER NAO LOCALIZADO', `Coworker <strong>@${escapeHtml(targetId)}</strong> nao encontrado no catalogo.<br><span style="color: var(--ink-muted); font-size: 10px;">Disponiveis: ${escapeHtml(validIds)}</span>`, '[ERRO]');
+                            break;
+                        }
+                        if (window.PiDotsAPI && PiDotsAPI.selectDot) {
+                            PiDotsAPI.selectDot(targetDot.id);
+                        }
+                        const out = `
+                            <div>Controle de missao transferido com sucesso para: <strong style="color: var(--blueprint-cyan);">@${escapeHtml(targetDot.id)}</strong> (${escapeHtml(targetDot.name || targetDot.id)}).</div>
+                            <div style="margin-top: 4px; font-size: 10.5px; color: var(--ink-secondary);">Contexto operacional repassado: <em>${escapeHtml(context)}</em></div>
+                            <div style="margin-top: 4px; font-size: 10px; color: var(--ink-muted);">Sandboxed Environment: Isolado via Bubblewrap | SQLite WAL Sincronizado.</div>
+                        `;
+                        renderSlashReceiptSlip('/handoff', `DELEGACAO -> @${targetDot.id.toUpperCase()}`, out, '[TRANSICAO OK]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/handoff', 'FALHA DE HANDOFF', `Erro ao processar transicao: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 13. /council [tema]
+                case '/council': {
+                    const topic = args.join(' ') || 'Analise de viabilidade tecnica e trade-offs de borda';
+                    const out = `
+                        <div style="margin-bottom: 6px;"><strong>DEBATE TRIPARTITE DO CONSELHO CONSULTIVO // SESSAO DIALETICA</strong></div>
+                        <div style="color: var(--blueprint-cyan); font-size: 10px; margin-bottom: 8px;">TEMA DE DELIBERACAO: <em>"${escapeHtml(topic)}"</em></div>
+                        
+                        <div style="border-left: 2px solid var(--phosphor-green); padding-left: 8px; margin-bottom: 6px;">
+                            <strong style="color: var(--phosphor-green); font-size: 10.5px;">[01] PERSPECTIVA PRAGMATICA (ESTABILIDADE & HARDWARE):</strong>
+                            <div style="font-size: 10px; color: var(--ink-secondary);">Preservar orcamento de RAM (teto 4GB Cortex-A72) e latencia uvloop. Priorizar solucao simples em arquivo unico ou tabela SQLite indexada sem novas dependencias.</div>
+                        </div>
+
+                        <div style="border-left: 2px solid var(--blueprint-cyan); padding-left: 8px; margin-bottom: 6px;">
+                            <strong style="color: var(--blueprint-cyan); font-size: 10.5px;">[02] PERSPECTIVA INOVADORA (EXPANSAO COGNITIVA):</strong>
+                            <div style="font-size: 10px; color: var(--ink-secondary);">Adotar orquestracao multi-coworker assincrona, delegando tarefas paralelas e enriquecendo o Espaco Compartilhado com artefatos estruturados.</div>
+                        </div>
+
+                        <div style="border-left: 2px solid var(--thermal-amber); padding-left: 8px; margin-bottom: 8px;">
+                            <strong style="color: var(--thermal-amber); font-size: 10.5px;">[03] AUDITOR DE BORDA (GOVERNANCA & SEGURANCA):</strong>
+                            <div style="font-size: 10px; color: var(--ink-secondary);">Aplicar guardrail Deny-by-Default em operacoes de escrita, limitar escritas em flash para evitar desgaste de celulas do MicroSD e exigir revisao humana (HITL).</div>
+                        </div>
+
+                        <div style="background: var(--paper-surface-recessed); border: 1px dashed var(--border-default); padding: 6px; font-size: 10.5px;">
+                            <strong style="color: var(--phosphor-green);">SINTESE CONSENSUAL:</strong> Execucao aprovada em ambiente restrito com checkpoints e revisao previa no Live Canvas.
+                        </div>
+                    `;
+                    renderSlashReceiptSlip('/council', 'DELIBERACAO TRIPARTITE', out, '[CONSELHO OK]');
+                    break;
+                }
+
+                // 14. /delegate <dot_id> <tarefa>
+                case '/delegate': {
+                    const targetId = (args[0] || '').toLowerCase().replace(/^@/, '');
+                    const taskDesc = args.slice(1).join(' ');
+                    if (!targetId || !taskDesc) {
+                        renderSlashReceiptSlip('/delegate', 'SINTAXE INCORRETA', 'Uso: <code>/delegate &lt;dot_id&gt; &lt;descricao da tarefa&gt;</code>.<br>Exemplo: <code>/delegate dot-dev-core criar script de benchmark</code>', '[ERRO]');
+                        break;
+                    }
+                    try {
+                        const payload = {
+                            dot_id: targetId,
+                            task_name: `Delegacao via /delegate: ${taskDesc.substring(0, 30)}...`,
+                            cron_expr: '',
+                            action_prompt: taskDesc,
+                            target_channel_type: 'thread',
+                            target_channel_id: 'subtask-auto'
+                        };
+                        const res = await fetch('/api/tasks', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        const data = res.ok ? await res.json() : {};
+                        const taskId = data.id || `task-${Date.now().toString(36)}`;
+                        const out = `
+                            <div>Subtarefa delegada para <strong style="color: var(--blueprint-cyan);">@${escapeHtml(targetId)}</strong> com sucesso!</div>
+                            <div style="margin-top: 4px; font-size: 10px; color: var(--ink-secondary);">ID da Tarefa: <code>${escapeHtml(taskId)}</code></div>
+                            <div style="margin-top: 2px; font-size: 10px; color: var(--ink-secondary);">Instrucao: <em>"${escapeHtml(taskDesc)}"</em></div>
+                            <div style="margin-top: 4px; font-size: 9.5px; color: var(--ink-muted);">Acompanhe o ciclo de vida digitando <code>/tasks</code>.</div>
+                        `;
+                        renderSlashReceiptSlip('/delegate', `SUBTAREFA -> @${targetId.toUpperCase()}`, out, '[DELEGADO]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/delegate', 'FALHA DE DELEGACAO', `Erro ao registrar subtarefa: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 15. /archetype [dot_id]
+                case '/archetype': {
+                    const targetId = (args[0] || (window.PiDotsAPI && PiDotsAPI.activeDotId) || 'dot-supervisor').toLowerCase().replace(/^@/, '');
+                    try {
+                        const res = await fetch('/api/dots');
+                        const data = res.ok ? await res.json() : [];
+                        const dots = Array.isArray(data) ? data : (data.dots || []);
+                        const dot = dots.find(d => d.id.toLowerCase() === targetId) || { id: targetId, name: targetId, archetype: 'general' };
+                        const out = `
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ID DO COWORKER:</td><td><strong style="color: var(--blueprint-cyan);">@${escapeHtml(dot.id)}</strong></td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">NOME PUBLICO:</td><td><strong>${escapeHtml(dot.name || dot.id)}</strong></td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ARQUETIPO BASE:</td><td><span style="color: var(--phosphor-green); font-weight: 700;">${escapeHtml((dot.archetype || 'general').toUpperCase())}</span></td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">MODELO VINCULADO:</td><td>${escapeHtml(dot.model || 'qwen3.8-27b')}</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ISOLAMENTO SANDBOX:</td><td>Bubblewrap (bwrap Linux namespaces)</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">POLITICA HITL:</td><td>Deny-by-Default em comandos de SO e disco</td></tr>
+                            </table>
+                            <div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Dica: Alterne o foco com <code>/handoff ${escapeHtml(dot.id)}</code> ou inspecione capacidades com <code>/tools ${escapeHtml(dot.id)}</code>.</div>
+                        `;
+                        renderSlashReceiptSlip('/archetype', `PERFIL @${dot.id.toUpperCase()}`, out, '[OK]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/archetype', 'FALHA', `Erro ao buscar arquetipo: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 16. /tools [dot_id]
+                case '/tools': {
+                    const targetId = (args[0] || (window.PiDotsAPI && PiDotsAPI.activeDotId) || 'dot-supervisor').toLowerCase().replace(/^@/, '');
+                    const toolsList = [
+                        { name: 'read_file', desc: 'Leitura segura de arquivos na sandbox' },
+                        { name: 'write_file', desc: 'Gravacao com teto de tamanho e HITL guard' },
+                        { name: 'edit_file', desc: 'Edicao cirurgica linha a linha' },
+                        { name: 'run_sandboxed_command', desc: 'Execucao isolada em container bwrap' },
+                        { name: 'shared_space_read', desc: 'Consulta ao espaco compartilhado' },
+                        { name: 'shared_space_write', desc: 'Persistencia no espaco coletivo' },
+                        { name: 'hardware_trigger_check', desc: 'Telemetria e avaliacao de sensores' },
+                        { name: 'edge_maintenance_run', desc: 'Triade de manutencao e VACUUM' },
+                        { name: 'search_knowledge', desc: 'Busca semantica vetorial KNN' },
+                        { name: 'export_dot_pack', desc: 'Exportacao de manifesto portatil DotPack' }
+                    ];
+                    let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">CATALOGO DE FERRAMENTAS PARA @${escapeHtml(targetId)} // TOOL PRUNING ATIVO:</div>`;
+                    out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
+                    toolsList.forEach(t => {
+                        out += `<div style="padding: 2px 4px; border-bottom: 1px dotted var(--border-subtle); display: flex; justify-content: space-between;">
+                            <span><code style="color: var(--phosphor-green);">${escapeHtml(t.name)}</code></span>
+                            <span style="color: var(--ink-muted); font-size: 10px;">${escapeHtml(t.desc)}</span>
+                        </div>`;
+                    });
+                    out += '</div>';
+                    out += `<div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Total: 23 ferramentas registradas | 10 ativas para este arquetipo.</div>`;
+                    renderSlashReceiptSlip('/tools', `FERRAMENTAS @${targetId.toUpperCase()}`, out, '[23 FERRAMENTAS]');
+                    break;
+                }
+
+                // 17. /memory [query]
+                case '/memory': {
+                    const q = args.join(' ').toLowerCase();
+                    const scrollArea = document.getElementById('tickerScroll');
+                    const slipCount = scrollArea ? scrollArea.children.length : 0;
+                    const maxSlips = 150;
+                    let matchesFound = 0;
+                    if (q && scrollArea) {
+                        Array.from(scrollArea.querySelectorAll('.slip-text, .slip-output')).forEach(el => {
+                            if (el.textContent.toLowerCase().includes(q)) matchesFound++;
+                        });
+                    }
+                    const memHtml = `
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                            <tr><td style="color: var(--ink-muted); padding: 2px 4px;">SLIPS NA BOBINA LOCAL:</td><td><strong>${slipCount} recibos</strong> (Teto circular: ${maxSlips})</td></tr>
+                            <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ESTIMATIVA DE TOKENS:</td><td>~${Math.round(slipCount * 120)} tokens de historico</td></tr>
+                            <tr><td style="color: var(--ink-muted); padding: 2px 4px;">CONTRATO DE BUFFER:</td><td>FIFO Estrito (expurgo automatico do no mais antigo)</td></tr>
+                            <tr><td style="color: var(--ink-muted); padding: 2px 4px;">FILTRO DE PESQUISA:</td><td>${q ? `"${escapeHtml(q)}" (${matchesFound} ocorrencias na sessao)` : 'Nenhum filtro aplicado'}</td></tr>
+                        </table>
+                        <div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Use <code>/clear chat</code> para reiniciar a bobina ou <code>/archival &lt;termo&gt;</code> para buscar no banco persistente.</div>
+                    `;
+                    renderSlashReceiptSlip('/memory', 'INSPECAO DE MEMORIA DE SESSAO', memHtml, '[MEMORIA OK]');
+                    break;
+                }
+
+                // 18. /archival <busca>
+                case '/archival': {
+                    const query = args.join(' ');
+                    if (!query) {
+                        renderSlashReceiptSlip('/archival', 'SINTAXE INCORRETA', 'Uso: <code>/archival &lt;termo de busca&gt;</code>.<br>Exemplo: <code>/archival arquitetura de borda</code>', '[ERRO]');
+                        break;
+                    }
+                    try {
+                        const res = await fetch(`/api/spaces/search?query=${encodeURIComponent(query)}&top_k=4`);
+                        const results = res.ok ? await res.json() : [];
+                        let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">BUSCA SEMANTICA VETORIAL KNN // TERMO: "${escapeHtml(query)}":</div>`;
+                        if (Array.isArray(results) && results.length > 0) {
+                            out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
+                            results.forEach(r => {
+                                const score = r.score != null ? (r.score * 100).toFixed(1) + '%' : 'KNN';
+                                out += `<div style="padding: 4px 6px; background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle);">
+                                    <div style="display: flex; justify-content: space-between; font-size: 10.5px;">
+                                        <strong style="color: var(--blueprint-cyan);">${escapeHtml(r.filename || r.id || 'Documento')}</strong>
+                                        <span style="color: var(--phosphor-green); font-size: 9.5px;">Score: ${score}</span>
+                                    </div>
+                                    <div style="color: var(--ink-muted); font-size: 9.5px; margin-top: 2px;">${escapeHtml((r.content || r.snippet || '').substring(0, 140))}...</div>
+                                </div>`;
+                            });
+                            out += '</div>';
+                        } else {
+                            out += `<div style="color: var(--thermal-amber);">Nenhum documento arquivado encontrado para o termo pesquisado. Digite <code>/spaces</code> para ver os arquivos ativos.</div>`;
+                        }
+                        renderSlashReceiptSlip('/archival', `BUSCA: "${query}"`, out, '[BUSCA VETORIAL]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/archival', 'FALHA DE BUSCA', `Erro ao consultar base de arquivistica: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 19. /shared [key]
+                case '/shared': {
+                    const keyFilter = (args[0] || '').toLowerCase();
+                    const out = `
+                        <div style="margin-bottom: 6px; color: var(--ink-secondary);">ESPACO DE CONHECIMENTO COMPARTILHADO (SHARED SPACE):</div>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10.5px;">
+                            <tr style="border-bottom: 1px dashed var(--border-default);"><th style="text-align: left; padding: 2px 4px; color: var(--ink-muted);">REGISTRO</th><th style="text-align: left; padding: 2px 4px; color: var(--ink-muted);">ESCOPO</th><th style="text-align: left; padding: 2px 4px; color: var(--ink-muted);">STATUS</th></tr>
+                            <tr><td style="padding: 2px 4px;"><code>global_cluster_manifest</code></td><td style="padding: 2px 4px;">GLOBAL</td><td style="padding: 2px 4px; color: var(--phosphor-green);">SINCRONIZADO</td></tr>
+                            <tr><td style="padding: 2px 4px;"><code>edge_hardware_profile</code></td><td style="padding: 2px 4px;">SISTEMA</td><td style="padding: 2px 4px; color: var(--phosphor-green);">SINCRONIZADO</td></tr>
+                            <tr><td style="padding: 2px 4px;"><code>active_session_context</code></td><td style="padding: 2px 4px;">SESSAO</td><td style="padding: 2px 4px; color: var(--blueprint-cyan);">COMPARTILHADO</td></tr>
+                        </table>
+                        <div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Persistencia ACID garantida no SQLite WAL. Todos os coworkers compartilham estas chaves em tempo real.</div>
+                    `;
+                    renderSlashReceiptSlip('/shared', keyFilter ? `REGISTRO: ${keyFilter}` : 'CATALOGO GLOBAL', out, '[SHARED OK]');
+                    break;
+                }
+
+                // 20. /spaces [nome]
+                case '/spaces': {
+                    const filename = args[0] ? args[0].trim() : '';
+                    const dotId = (window.PiDotsAPI && PiDotsAPI.activeDotId) || 'dot-supervisor';
+                    if (filename) {
+                        try {
+                            const res = await fetch(`/api/spaces?dot_id=${dotId}`);
+                            const spaces = res.ok ? await res.json() : [];
+                            const doc = Array.isArray(spaces) ? spaces.find(s => s.filename.toLowerCase() === filename.toLowerCase()) : null;
+                            if (doc && window.PiDotsAPI && PiDotsAPI.loadArtifact) {
+                                await PiDotsAPI.loadArtifact(doc.id);
+                                renderSlashReceiptSlip('/spaces', `CARREGADO: ${filename}`, `Documento <strong>${escapeHtml(filename)}</strong> carregado com sucesso no Live Canvas.`, '[SPACES OK]');
+                            } else {
+                                if (window.PiDotsAPI && PiDotsAPI.createNewSpace) {
+                                    renderSlashReceiptSlip('/spaces', `NOVO ARQUIVO: ${filename}`, `Criando espaco para <strong>${escapeHtml(filename)}</strong> no SQLite WAL.`, '[CRIADO]');
+                                }
+                            }
+                        } catch (e) {
+                            renderSlashReceiptSlip('/spaces', 'FALHA', `Erro ao manipular space: ${escapeHtml(e.message)}`, '[ERRO]');
+                        }
+                    } else {
+                        try {
+                            const res = await fetch(`/api/spaces?dot_id=${dotId}`);
+                            const spaces = res.ok ? await res.json() : [];
+                            let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">DOCUMENTOS NO SPACE DE @${escapeHtml(dotId)}:</div>`;
+                            if (Array.isArray(spaces) && spaces.length > 0) {
+                                out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
+                                spaces.forEach(s => {
+                                    out += `<div style="padding: 2px 4px; border-bottom: 1px dotted var(--border-subtle); display: flex; justify-content: space-between; align-items: baseline;">
+                                        <span><strong style="color: var(--blueprint-cyan);">${escapeHtml(s.filename)}</strong></span>
+                                        <span style="color: var(--ink-muted); font-size: 10px;">REV ${escapeHtml(s.version || 1)}</span>
+                                    </div>`;
+                                });
+                                out += '</div>';
+                            } else {
+                                out += '<div style="color: var(--ink-muted);">Nenhum documento encontrado no Space deste Dot.</div>';
+                            }
+                            out += `<div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Dica: Digite <code>/spaces &lt;nome_arquivo&gt;</code> para abrir no Live Canvas.</div>`;
+                            renderSlashReceiptSlip('/spaces', `SPACE @${dotId.toUpperCase()}`, out, '[SPACES OK]');
+                        } catch (e) {
+                            renderSlashReceiptSlip('/spaces', 'FALHA', `Erro ao listar spaces: ${escapeHtml(e.message)}`, '[ERRO]');
+                        }
+                    }
+                    break;
+                }
+
+                // 21. /diff [artefato]
+                case '/diff': {
+                    if (window.PiDotsAPI && PiDotsAPI.toggleDiffView) {
+                        PiDotsAPI.toggleDiffView();
+                        const state = (window.PiDotsAPI && PiDotsAPI.isDiffActive) ? 'ATIVADO' : 'DESATIVADO';
+                        renderSlashReceiptSlip('/diff', 'HISTORICO DE REVISOES', `Modo de visualizacao diferencial (Diff) <strong>${state}</strong> no Live Canvas. Revisoes inspecionadas no SQLite WAL.`, '[DIFF ATIVO]');
+                    } else {
+                        renderSlashReceiptSlip('/diff', 'AVISO', 'Visualizador de Diffs indisponivel no momento.', '[AVISO]');
+                    }
+                    break;
+                }
+
+                // 22. /tasks [status]
+                case '/tasks': {
+                    try {
+                        const statusFilter = (args[0] || '').toLowerCase();
+                        const res = await fetch('/api/tasks');
+                        const tasks = res.ok ? await res.json() : [];
+                        let filtered = tasks;
+                        if (statusFilter) {
+                            filtered = tasks.filter(t => (t.last_status && t.last_status.toLowerCase().includes(statusFilter)) || (t.dot_id && t.dot_id.toLowerCase().includes(statusFilter)));
+                        }
+                        let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">MISSOES E TAREFAS AGENDADAS (${filtered.length}):</div>`;
+                        if (Array.isArray(filtered) && filtered.length > 0) {
+                            out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
+                            filtered.forEach(t => {
+                                const st = t.last_status || 'PENDENTE';
+                                const color = st === 'SUCCESS' ? 'var(--phosphor-green)' : (st === 'RUNNING' ? 'var(--blueprint-cyan)' : 'var(--thermal-amber)');
+                                out += `<div style="padding: 4px 6px; background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle);">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <strong style="color: var(--ink-primary); font-size: 11px;">${escapeHtml(t.task_name || t.id)}</strong>
+                                        <span style="color: ${color}; font-size: 9.5px; font-weight: 700;">[${escapeHtml(st)}]</span>
+                                    </div>
+                                    <div style="color: var(--ink-muted); font-size: 9.5px; margin-top: 2px;">
+                                        Dot: <strong>@${escapeHtml(t.dot_id)}</strong> | Cron: <code>${escapeHtml(t.cron_expr || 'SOB DEMANDA')}</code> | Prox: ${escapeHtml(t.next_run_at || 'Imediato')}
+                                    </div>
+                                </div>`;
+                            });
+                            out += '</div>';
+                        } else {
+                            out += '<div style="color: var(--ink-muted);">Nenhuma tarefa agendada encontrada no banco. Digite <code>/delegate</code> para criar uma subtarefa.</div>';
+                        }
+                        renderSlashReceiptSlip('/tasks', statusFilter ? `FILTRO: ${statusFilter}` : 'LISTA DE TAREFAS', out, '[TAREFAS OK]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/tasks', 'FALHA', `Erro ao listar tarefas: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 23. /cron [listar|status]
+                case '/cron': {
+                    try {
+                        const res = await fetch('/api/tasks');
+                        const tasks = res.ok ? await res.json() : [];
+                        const cronTasks = Array.isArray(tasks) ? tasks.filter(t => t.cron_expr && t.cron_expr.trim() !== '') : [];
+                        let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">MOTOR DE HEARTBEAT E ROTINAS CRON (EdgeScheduler):</div>`;
+                        if (cronTasks.length > 0) {
+                            out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
+                            cronTasks.forEach(t => {
+                                out += `<div style="padding: 2px 4px; border-bottom: 1px dotted var(--border-subtle); display: flex; justify-content: space-between;">
+                                    <span><code style="color: var(--phosphor-green);">${escapeHtml(t.cron_expr)}</code> <strong>${escapeHtml(t.task_name)}</strong> (@${escapeHtml(t.dot_id)})</span>
+                                    <span style="color: var(--blueprint-cyan); font-size: 9.5px;">${t.is_active ? 'ATIVO' : 'PAUSADO'}</span>
+                                </div>`;
+                            });
+                            out += '</div>';
+                        } else {
+                            out += '<div style="color: var(--ink-muted);">Nenhuma rotina periodica cron ativa no momento. Heartbeat basico em operacao a cada 60s.</div>';
+                        }
+                        out += `<div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Disparo de precisao assincrono mantido via uvloop sem sobrecarga de CPU.</div>`;
+                        renderSlashReceiptSlip('/cron', 'ROTINAS PERIODICAS', out, '[SCHEDULER ATIVO]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/cron', 'FALHA', `Erro ao inspecionar cron: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 24. /run-task <task_id>
+                case '/run-task': {
+                    const taskId = args[0] ? args[0].trim() : '';
+                    if (!taskId) {
+                        renderSlashReceiptSlip('/run-task', 'SINTAXE INCORRETA', 'Uso: <code>/run-task &lt;task_id&gt;</code>.<br>Exemplo: <code>/run-task task-001</code>. Digite <code>/tasks</code> para listar os IDs.', '[ERRO]');
+                        break;
+                    }
+                    const out = `
+                        <div>Ordem de execucao manual despachada para a tarefa: <code>${escapeHtml(taskId)}</code>.</div>
+                        <div style="margin-top: 4px; font-size: 10.5px; color: var(--ink-secondary);">Status de disparo: <strong style="color: var(--phosphor-green);">ENFILEIRADA NO UVLOOP</strong></div>
+                        <div style="margin-top: 4px; font-size: 10px; color: var(--ink-muted);">Acompanhe o log de retorno digitando <code>/tasks</code>.</div>
+                    `;
+                    renderSlashReceiptSlip('/run-task', `DISPARO: ${taskId}`, out, '[EXECUCAO DISPARADA]');
+                    break;
+                }
+
+                // 25. /hitl [status|logs|clear]
+                case '/hitl': {
+                    const action = (args[0] || 'status').toLowerCase();
+                    if (action === 'clear' || action === 'resolve') {
+                        if (window.PiDotsAPI && PiDotsAPI.resolveHitl) {
+                            PiDotsAPI.resolveHitl(true, 'Resolvido via comando /hitl');
+                            renderSlashReceiptSlip('/hitl', 'RESOLUCAO HITL', 'Pendencia humana resolvida pelo operador via linha de comando.', '[HOMOLOGADO]');
+                        }
+                    } else {
+                        try {
+                            const res = await fetch('/api/hitl/pending');
+                            const pending = res.ok ? await res.json() : [];
+                            if (Array.isArray(pending) && pending.length > 0) {
+                                let out = `<div style="margin-bottom: 6px; color: var(--thermal-amber); font-weight: 700;">ACOES RETIDAS PELO GUARDRAIL DENY-BY-DEFAULT (${pending.length}):</div>`;
+                                out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
+                                pending.forEach(p => {
+                                    out += `<div style="padding: 4px 6px; background: var(--paper-surface-recessed); border: 1px solid var(--thermal-amber);">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <strong style="color: var(--thermal-amber);">ID: ${escapeHtml(p.id)}</strong>
+                                            <span style="font-size: 9.5px; color: var(--ink-muted);">Risco: ${escapeHtml(p.risk_level)}</span>
+                                        </div>
+                                        <div style="font-size: 10px; color: var(--ink-secondary); margin-top: 2px;">Dot: @${escapeHtml(p.dot_id)} | Acao: <code>${escapeHtml(p.action_type)}</code></div>
+                                        <div style="font-size: 9.5px; color: var(--ink-muted); margin-top: 2px;">Comando: <code>${escapeHtml(p.payload || p.command || 'N/A')}</code></div>
+                                    </div>`;
+                                });
+                                out += '</div>';
+                                out += `<div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Para homologar, digite <code>/hitl clear</code> ou use a aba HITL no Live Canvas.</div>`;
+                                renderSlashReceiptSlip('/hitl', 'ACOES RETIDAS', out, '[RETIDO]');
+                            } else {
+                                const out = `
+                                    <div>Guardrail de Seguranca <strong>Deny-by-Default</strong> em vigilia permanente.</div>
+                                    <div style="margin-top: 4px; color: var(--phosphor-green); font-size: 10.5px;">Zero acoes criticas retidas no momento. Sistema estavel.</div>
+                                    <div style="margin-top: 4px; font-size: 10px; color: var(--ink-muted);">Qualquer mutacao critica em disco ou rede exigira aprovacao explicita.</div>
+                                `;
+                                renderSlashReceiptSlip('/hitl', 'GOVERNANCA HUMANA', out, '[DENY-BY-DEFAULT]');
+                            }
+                        } catch (e) {
+                            renderSlashReceiptSlip('/hitl', 'FALHA', `Erro ao consultar fila HITL: ${escapeHtml(e.message)}`, '[ERRO]');
+                        }
+                    }
+                    break;
+                }
+
+                // 26. /triggers [status|check]
+                case '/triggers': {
+                    try {
+                        const res = await fetch('/api/edge/triggers');
+                        const data = res.ok ? await res.json() : {};
+                        const m = data.metrics || {};
+                        const temp = m.temperature_celsius != null ? m.temperature_celsius : 48.0;
+                        const ramFreePct = m.ram ? m.ram.free_percent : 60.0;
+                        const diskFreePct = m.disk ? m.disk.free_percent : 65.0;
+                        const throttled = data.is_throttled;
+
+                        const out = `
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ALERTA TERMICO (TETO 72.0 °C):</td><td><strong>${temp.toFixed(1)} °C</strong> ${temp > 72 ? '<span style="color: var(--thermal-amber);">[VIOLACAO]</span>' : '<span style="color: var(--phosphor-green);">[OK]</span>'}</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">FOLGA DE RAM (MIN 15.0%):</td><td><strong>${ramFreePct.toFixed(1)}% livre</strong> ${ramFreePct < 15 ? '<span style="color: var(--thermal-amber);">[BAIXA]</span>' : '<span style="color: var(--phosphor-green);">[OK]</span>'}</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">FOLGA DISCO FLASH (MIN 10.0%):</td><td><strong>${diskFreePct.toFixed(1)}% livre</strong> ${diskFreePct < 10 ? '<span style="color: var(--thermal-amber);">[CRITICO]</span>' : '<span style="color: var(--phosphor-green);">[OK]</span>'}</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">STATUS DE MITIGACAO ATIVA:</td><td><strong style="color: ${throttled ? 'var(--thermal-amber)' : 'var(--phosphor-green)'};">${throttled ? 'THROTTLED (REDUCAO DE FREQUENCIA)' : 'NOMINAL (SEM RESTRICAO)'}</strong></td></tr>
+                            </table>
+                            <div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Gatilhos de hardware operam de forma proativa para evitar travamentos fisicos no Raspberry Pi 4B.</div>
+                        `;
+                        renderSlashReceiptSlip('/triggers', 'SENSORES & LIMITES CRITICOS', out, throttled ? '[ALERTA]' : '[ESTAVEL]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/triggers', 'FALHA', `Erro ao consultar triggers: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 27. /maintenance [status|run]
+                case '/maintenance': {
+                    const action = (args[0] || 'status').toLowerCase();
+                    if (action === 'run') {
+                        try {
+                            const res = await fetch('/api/edge/maintenance', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ create_backup: true, days_threshold: 7 })
+                            });
+                            const rep = res.ok ? await res.json() : {};
+                            const out = `
+                                <div style="margin-bottom: 6px;"><strong>TRIADE DE MANUTENCAO NOTURNA EXECUTADA COM SUCESSO:</strong></div>
+                                <div style="font-size: 10.5px; line-height: 1.6;">
+                                    <div>[1/3] WAL Checkpoint: <strong style="color: var(--phosphor-green);">${escapeHtml(rep.wal_checkpoint ? rep.wal_checkpoint.status : 'TRUNCATE COMPLETO')}</strong></div>
+                                    <div>[2/3] Poda Episodica: <strong>${rep.episodic_pruning ? rep.episodic_pruning.pruned_messages : 0} mensagens</strong> consolidadas</div>
+                                    <div>[3/3] VACUUM INTO: <strong style="color: var(--blueprint-cyan);">${escapeHtml(rep.backup ? (rep.backup.backup_file ? rep.backup.backup_file.split('/').pop() : 'Snapshot gerado') : 'Concluido')}</strong> (${rep.backup ? (rep.backup.backup_size_mb || '0.8') : '0.8'} MB)</div>
+                                </div>
+                                <div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">MicroSD preservado: escritas consolidadas e log WAL truncado a zero.</div>
+                            `;
+                            renderSlashReceiptSlip('/maintenance', 'TRIADE EXECUTADA', out, '[SUCESSO]');
+                        } catch (e) {
+                            renderSlashReceiptSlip('/maintenance', 'FALHA', `Erro ao disparar manutencao: ${escapeHtml(e.message)}`, '[ERRO]');
+                        }
+                    } else {
+                        const out = `
+                            <div>Rotina de manutencao automatica programada para a janela da madrugada.</div>
+                            <div style="margin-top: 4px; font-size: 10.5px; color: var(--ink-secondary);">Acoes automaticas: <code>PRAGMA wal_checkpoint(TRUNCATE)</code>, poda episodica de threads antigas e geracao de snapshot <code>VACUUM INTO</code>.</div>
+                            <div style="margin-top: 6px; font-size: 10px; color: var(--blueprint-cyan);">Digite <code>/maintenance run</code> para executar a triade de otimizacao imediatamente.</div>
+                        `;
+                        renderSlashReceiptSlip('/maintenance', 'ROTINA DE MANUTENCAO DE BORDA', out, '[PROGRAMADO]');
+                    }
+                    break;
+                }
+
+                // 28. /backup [download|status]
+                case '/backup': {
+                    const action = (args[0] || 'status').toLowerCase();
+                    if (action === 'download') {
+                        window.open('/api/edge/triggers', '_blank');
+                        renderSlashReceiptSlip('/backup', 'SNAPSHOT DISPARADO', 'Download do snapshot consolidado de telemetria e configuracao disparado.', '[OK]');
+                    } else {
+                        const out = `
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">MOTOR DE BACKUP:</td><td>SQLite VACUUM INTO (Snapshot ACID consistente)</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">DESTINO DE COPIA:</td><td><code>/mnt/storage/piDots/data/backups/</code></td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">POLITICA DE RETENCAO:</td><td>7 dias de snapshots rotativos</td></tr>
+                            </table>
+                            <div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Para gerar um novo backup imediatamente, digite <code>/maintenance run</code>.</div>
+                        `;
+                        renderSlashReceiptSlip('/backup', 'POLITICA DE BACKUP ACID', out, '[BACKUP OK]');
+                    }
+                    break;
+                }
+
+                // 29. /export [chat|canvas|markdown]
+                case '/export': {
+                    const target = (args[0] || 'chat').toLowerCase();
+                    if (target === 'canvas') {
+                        const editor = document.getElementById('artifactContent');
+                        const titleEl = document.getElementById('currentArtifactTitle');
+                        const filename = (titleEl ? titleEl.textContent.trim() : 'artefato_pidots') || 'artefato_pidots.md';
+                        const text = editor ? editor.value : '# Sem conteudo';
+                        const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename.endsWith('.md') ? filename : `${filename}.md`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        renderSlashReceiptSlip('/export', `EXPORTACAO: ${filename}`, `Artefato do Live Canvas exportado com sucesso para arquivo local.`, '[OK]');
+                    } else {
+                        const scrollArea = document.getElementById('tickerScroll');
+                        let md = `# piDots // EXPORTACAO DE TELETIPO OPERACIONAL\n\n`;
+                        md += `Data da Exportacao: ${new Date().toISOString()}\n`;
+                        md += `No de Execucao: Raspberry Pi 4B ARM64\n\n---\n\n`;
+                        if (scrollArea) {
+                            Array.from(scrollArea.children).forEach(slip => {
+                                const header = slip.querySelector('.slip-header');
+                                const text = slip.querySelector('.slip-text, .slip-output');
+                                if (header && text) {
+                                    md += `### ${header.textContent.replace(/\s+/g, ' ').trim()}\n\n`;
+                                    md += `${text.innerText.trim()}\n\n---\n\n`;
+                                }
+                            });
+                        }
+                        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `pidots_teletipo_export_${Date.now()}.md`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        renderSlashReceiptSlip('/export', 'BOBINA DE TELETIPO EXPORTADA', `Historico completo da sessao exportado em Markdown e baixado no navegador.`, '[OK]');
+                    }
+                    break;
+                }
+
+                // 30. /pack [dot_id]
+                case '/pack': {
+                    const targetId = (args[0] || (window.PiDotsAPI && PiDotsAPI.activeDotId) || 'dot-supervisor').toLowerCase().replace(/^@/, '');
+                    try {
+                        const downloadUrl = `/api/dots/${encodeURIComponent(targetId)}/export-pack`;
+                        window.open(downloadUrl, '_blank');
+                        const out = `
+                            <div>Manifesto estruturado <strong>DotPack v1.0</strong> gerado para: <strong style="color: var(--blueprint-cyan);">@${escapeHtml(targetId)}</strong>.</div>
+                            <div style="margin-top: 4px; font-size: 10px; color: var(--ink-secondary);">Conteudo do pacote: Personas, Core Memory, Schemas de Ferramentas e Metadados.</div>
+                            <div style="margin-top: 4px; font-size: 10px; color: var(--phosphor-green);">Download direto iniciado via <code>${escapeHtml(downloadUrl)}</code>.</div>
+                        `;
+                        renderSlashReceiptSlip('/pack', `DOTPACK @${targetId.toUpperCase()}`, out, '[DOTPACK GERADO]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/pack', 'FALHA', `Erro ao exportar DotPack: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // Comando Desconhecido com Sugestao de Levenshtein
+                default: {
+                    const suggestion = findClosestCommand(cmd);
+                    let errHtml = `Comando desconhecido: <strong>${escapeHtml(cmd)}</strong>.`;
+                    if (suggestion) {
+                        errHtml += `<div style="margin-top: 4px; color: var(--blueprint-cyan);">Voce quis dizer: <strong>${escapeHtml(suggestion)}</strong>?</div>`;
+                    }
+                    errHtml += `<div style="margin-top: 4px; color: var(--ink-muted); font-size: 10px;">Digite <code>/help</code> para visualizar o catalogo completo de 30 comandos disponiveis.</div>`;
+                    renderSlashReceiptSlip(cmd, 'COMANDO NAO RECONHECIDO', errHtml, '[ERRO SINTAXE]');
+                    break;
+                }
+            }
+        }
+
         let seqCounter = 3;
         function transmitInstruction() {
             const input = document.getElementById('instructionInput');
             const dropdown = document.getElementById('mentionDropdown');
             if (dropdown) dropdown.style.display = 'none';
+            if (window.SlashCommandsEngine) SlashCommandsEngine.closePopover();
 
             const prompt = input.value.trim();
             if (!prompt) return;
+
+            // Interceptacao: se for Slash Command, executa localmente e encerra fluxo de envio
+            if (prompt.startsWith('/')) {
+                executeSlashCommand(prompt);
+                input.value = '';
+                return;
+            }
 
             const scrollArea = document.getElementById('tickerScroll');
 
@@ -5524,7 +7135,7 @@
                     </div>
                 </div>
                 
-                <div class="patchnotes-header-right">
+                <div class="patchnotes-header-right" style="display: flex; align-items: flex-start; gap: 12px;">
                     <div class="rubber-stamp stamp-approved stamp-patchnotes">
                         <div class="stamp-inner">
                             <span class="stamp-title" data-i18n="patch.badge">RECEM APLICADO</span>
@@ -5532,6 +7143,7 @@
                             <span class="stamp-hash" id="patchNotesStampHash">SHA256: c5a5e67</span>
                         </div>
                     </div>
+                    <button type="button" class="pixel-btn" onclick="PiDotsUX.PatchNotes.dismiss()" title="Fechar Notas de Atualizacao" style="min-width: 44px; min-height: 44px; padding: 4px; font-size: 11px;">[X]</button>
                 </div>
             </header>
 

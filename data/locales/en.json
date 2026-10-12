@@ -90,6 +90,19 @@
     "step4_tag": "STEP 04 // MULTI-BOT CHAT & @DOT MENTIONS",
     "step5_tag": "STEP 05 // DOT HEARTBEAT & TELEGRAM/WHATSAPP",
     "step6_tag": "STEP 06 // INTERACTIVE REST API TESTER",
-    "step7_tag": "STEP 07 // AUDITING & HITL GOVERNANCE"
+    "step7_tag": "STEP 07 // AUDITING & HITL GOVERNANCE",
+    "step8_tag": "STEP 08 // COMPLETE SLASH COMMANDS CATALOG (/)"
+  },
+  "slash": {
+    "popover_title": "SLASH COMMANDS // EDGE PROTOCOL",
+    "badge": "CATALOG: 30 COMMANDS",
+    "tab_all": "[ALL]",
+    "tab_system": "[SYSTEM]",
+    "tab_agents": "[AGENTS]",
+    "tab_memory": "[MEMORY]",
+    "tab_tasks": "[TASKS]",
+    "tab_gov": "[GOVERNANCE]",
+    "tab_data": "[DATA]",
+    "tip_navigation": "Navigate with arrows, Tab to autocomplete, and Enter to execute."
   }
 }

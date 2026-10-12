@@ -1,41 +1,47 @@
 {
   "system": "piDots",
   "app_name": "piDots Edge Console",
-  "current_version": "1.2.0",
+  "current_version": "1.3.0",
   "release_date": "2026-10-12",
   "build": "20261012-ARM64",
-  "commit_hash": "c5a5e67",
+  "commit_hash": "e8f4a19",
   "channel": "stable",
   "patch_notes": {
-    "version": "1.2.0",
-    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.2.0",
-    "summary": "Edicao Soberana Bilingue & Humanizacao Radical de Voz: micro-motor nativo i18n Vanilla JS, erradicacao de cliches de IA, correcoes gramaticais, higienizacao de termos e governanca de silicio.",
+    "version": "1.3.0",
+    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.3.0",
+    "summary": "Protocolo Unificado de Slash Commands (/): Catalogo completo de 30 comandos em 6 categorias funcionais, motor de autocomplete popover em Vanilla JS, recibos de teletipo tatis e integracao profunda com o SQLite WAL e hardware de borda.",
     "categories": {
       "included": [
-        "Micro-Motor i18n Vanilla JS de Borda: alternancia instantanea de idioma [PT | EN] com memoria local, deteccao de locale, comutacao in-memory inferior a 5ms e zero dependencias externas.",
-        "Dicionarios Canonicos Bilingues Desacoplados: especificacao estruturada pt.json e en.json servida com cabecalhos Cache-Control estritos de borda.",
-        "Comutador Global de Idioma: botao de controle tátil integrado no cabecalho de todas as superficies (/app, / e /docs) com estado persistente.",
-        "Endpoint de Idioma com Protecao de Borda: rota /data/locales/{lang}.json com allowlist contra path traversal e validacao formal de entrada."
+        "Motor Frontend de Slash Commands: Invocacao instantanea via tecla '/', filtragem fuzzy em memoria, navegacao ciclica por setas (ArrowUp/ArrowDown), autocompletar com Tab/Enter e fechamento por Esc.",
+        "Catalogo Completo de 30 Comandos: 10 de Sistema & UI, 6 de Agentes & Multi-Bot, 5 de Memoria & Conhecimento, 3 de Tarefas & Heartbeat, 4 de Governanca & Borda e 2 de Exportacao & Dados.",
+        "Recibos Tatis de Teletipo (Slash Receipt Slip): Geracao de slips com cabecalho de sistema, timestamp ISO UTC, numero sequencial de auditoria SEQ#, picote serrilhado e teto estrito de 150 nos DOM.",
+        "Tolerancia a Falhas via Levenshtein: Algoritmo de distancia de edicao sugerindo comandos aproximados ('Voce quis dizer: /comando?') para erros de digitacao do operador.",
+        "Exportacao Direta no Navegador (/export): Baixa instantaneamente o historico do teletipo ou o documento ativo do Live Canvas em Markdown sem intermediarios."
       ],
       "adjusted": [
-        "Humanizacao Radical de Voz e Tom de Engenharia: eliminacao completa de chavões inflados ('revolucionario', 'potencializar', 'ecossistema definitivo') e adocao de cadencia Gary Provost com tom de artesao de software.",
-        "Correcao Ortografica e Gramatical Culta: correcao de 'arquotipos' para 'arquetipos', restauracao de diacriticos e revisao sintatica rigorosa no Guia e Manuais.",
-        "Unificacao de Topologia GitHub: links de repositorios padronizados no espaco de documentacao tecnica.",
-        "Ajuste da Politica de Cache do Motor JS: cabecalho Cache-Control calibrado com stale-while-revalidate prevenindo retencao de versoes obsoletas."
+        "Interceptacao de Baixa Latencia no Chat: Comandos iniciados por '/' executam localmente no cliente em menos de 16ms, sem chamada desnecessaria a LLM e com zero consumo de tokens.",
+        "Integracao Harmoniosa com Mencao @dot: Coexistencia sem atrito entre o autocomplete de agentes (@) e o autocomplete de comandos (/)."
       ],
       "removed": [
-        "Erradicacao de Jargoes Corporativos Vazios: eliminadas metaforas infladas e promessas genericas de IA sem respaldo na arquitetura de silicio.",
-        "Descarte de Expressoes Enganosas: remocao de termos que sugeriam travas fisicas digitais ou falhas cognitivas inexistentes.",
-        "Remocao de Dependencias Pesadas de Traducao: eliminada qualquer necessidade de bibliotecas de internacionalizacao client-side pesadas."
+        "Eliminacao de Rotinas Dispersas: Centralizacao de acoes operacionais (manutencao, telemetria, diff, backup) em comandos de barra de alta velocidade."
       ],
       "security_and_edge": [
-        "Imunidade Total a XSS no DOM: mutacao textual estrita via textContent e setAttribute no micro-motor de internacionalizacao.",
-        "Atualizacao do Service Worker para Cache v5: sincronizacao de CORE_STATIC_ASSETS para incluir dicionarios de locale e motor JS com operacao offline completa.",
-        "Validacao Estrutural de Paridade: garantia de 100% de paridade de chaves entre dicionarios pt.json e en.json."
+        "Zero Chamadas de LLM para Comandos Locais: Economia de banda e ciclos de inferencia do processador Cortex-A72.",
+        "Sanitizacao Rigorosa e Imunidade XSS: Todas as interpolacoes utilizam escapeHtml estrito e mutacao estruturada no DOM."
       ]
     }
   },
   "history": [
+    {
+      "version": "1.2.0",
+      "release_date": "2026-10-12",
+      "type": "MINOR RELEASE",
+      "highlights": [
+        "Micro-Motor i18n Vanilla JS bilingue nativo [PT | EN] com troca in-memory.",
+        "Humanizacao radical de voz e tom de engenharia (anti-AI-slop e cadencia Gary Provost).",
+        "Restauração gramatical culta e unificacao de topologia GitHub."
+      ]
+    },
     {
       "version": "1.1.0",
       "release_date": "2026-10-12",

@@ -490,6 +490,46 @@ Para agilizar o fluxo operacional diario do operador:
 | `Ctrl+L` | Limpar Teletipo | Limpa mensagens visuais da bobina do teletipo/chat local |
 | `F1` | Manual Operacional | Abre a gaveta lateral retratil com o manual tecnico |
 
+### 14.3 Guia Rapido dos 30 Slash Commands no Teletipo
+
+O operador de borda pode controlar o no diretamente pelo teletipo do console digitando comandos iniciados por barra (`/`):
+
+#### 1. Sistema & UI
+- `/help [filtro]`: Exibe o catalogo completo de comandos em tabela formatada.
+- `/clear [chat|terminal|canvas|all]`: Limpa a bobina de teletipo ou o console sandbox mantendo a sessao ativa.
+- `/theme [noir|blueprint|toggle]`: Comuta a paleta de cores entre Dark Noir e Blueprint.
+- `/lang [pt|en]`: Comuta o idioma da interface em tempo real via micro-motor i18n.
+- `/info`: Consulta `/health` e renderiza o dossie de hardware ARM64 e do SQLite WAL.
+- `/status`: Panorama operacional de coworkers instalados e coworker em foco.
+- `/telemetry`: Exibe barras em ASCII 1-bit de Temperatura SoC BCM2711, RAM, Disco e Load Avg.
+- `/pwa [status|update|cache-clear]`: Inspeciona modo standalone do PWA e atualiza o Service Worker.
+- `/onboarding`: Dispara o tour interativo de 5 passos para novos operadores.
+- `/changelog [versao]`: Consulta `/api/changelog` e exibe notas da versao SemVer ativa.
+
+#### 2. Agentes & Multi-Bot
+- `/dots [filtro]`: Lista coworkers registrados no no, arquetipos e estado de operacao.
+- `/handoff <dot_id> [contexto]`: Transfere a missao para outro coworker com slip de transicao.
+- `/council [tema]`: Executa sessao dialetica tripartite (Pragmatica, Inovadora e Auditor de Borda).
+- `/delegate <dot_id> <tarefa>`: Enfileira uma subtarefa assincrona em segundo plano para o coworker alvo.
+- `/archetype [dot_id]`: Exibe ficha tecnica da persona, modelo vinculado e isolamento sandbox.
+- `/tools [dot_id]`: Catalogo de 23 ferramentas registradas e ferramentas ativas pos-pruning.
+
+#### 3. Memoria, Tarefas, Governanca e Dados
+- `/memory [query]`: Inspeciona recibos na bobina local, estimativa de tokens e limite de 150 nos DOM.
+- `/archival <busca>`: Dispara busca semantica vetorial KNN na memoria persistente do SQLite WAL.
+- `/shared [key]`: Inspeciona chaves do Espaco Compartilhado (Shared Space) sincronizadas no cluster.
+- `/spaces [nome]`: Lista arquivos do workspace ou abre documento no Live Canvas.
+- `/diff [artefato]`: Alterna o modo de visualizacao diferencial (Diff) e historico de revisoes.
+- `/tasks [status]`: Tabela de tarefas e missoes agendadas com estado do EdgeScheduler.
+- `/cron [listar|status]`: Inspeciona as rotinas automaticas registradas no cron do uvloop.
+- `/run-task <task_id>`: Despacha ordem de execucao manual imediata para uma tarefa agendada.
+- `/hitl [status|logs|clear]`: Inspeciona ou homologa acoes retidas pelo guardrail Deny-by-Default.
+- `/triggers [status|check]`: Avalia sensores fisicos contra limiares de seguranca de silicio.
+- `/maintenance [status|run]`: Executa a triade de manutencao: WAL Checkpoint TRUNCATE, poda e VACUUM.
+- `/backup [download|status]`: Politica de snapshots rotativos ACID de 7 dias e download do banco.
+- `/export [chat|canvas|markdown]`: Exporta o historico do teletipo ou o artefato ativo em Markdown.
+- `/pack [dot_id]`: Gera e baixa pacote portatil estruturado DotPack v1.0 para distribuicao.
+
 ---
 
 ## 15. Operacao da Memoria Hierarquica (Padrao MemGPT / Letta)

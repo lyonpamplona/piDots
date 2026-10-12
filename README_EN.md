@@ -431,6 +431,22 @@ Tactical terminal and artifact operations without interface friction:
 | `Ctrl+L` | Clear Teletype | Clears local screen messages from active teletype spool |
 | `F1` | Operational Manual | Opens retractable side drawer with technical operator manual |
 
+#### Unified Slash Commands (/) Protocol
+The Operational SPA Console features a native slash command (`/`) engine designed for rapid execution and direct edge hardware control:
+- **Zero Token Cost for Local Commands:** System, UI, and hardware inspection commands execute locally in the browser under 16ms with zero LLM API calls.
+- **Floating Autocomplete Popover:** Triggered on typing `/`, with fuzzy memory filtering, keyboard navigation (Arrow keys), and instant selection via `Tab` or `Enter`.
+- **Levenshtein Fault Tolerance:** Proactively suggests the closest valid command when minor typing mistakes occur (*"Did you mean: /command?"*).
+- **Physical Teletype Receipt Slips:** Structured responses with `[CMD] SISTEMA` stamps, ISO UTC timestamps, sequential audit IDs (`SEQ# 000X`), and perforated tear-off edges under a 150-node DOM ceiling.
+
+| Category | Primary Commands | Usage Examples |
+| :--- | :--- | :--- |
+| **System & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/onboarding`, `/changelog` | `/telemetry`, `/theme blueprint`, `/lang pt`, `/clear chat` |
+| **Agents & Multi-Bot** | `/dots`, `/handoff`, `/council`, `/delegate`, `/archetype`, `/tools` | `/dots`, `/handoff dot-researcher`, `/council thermal analysis` |
+| **Memory & Knowledge** | `/memory`, `/archival`, `/shared`, `/spaces`, `/diff` | `/archival SQLite WAL`, `/spaces analysis.md`, `/diff` |
+| **Tasks & Heartbeat** | `/tasks`, `/cron`, `/run-task` | `/tasks`, `/cron list`, `/run-task task-001` |
+| **Governance & Edge** | `/hitl`, `/triggers`, `/maintenance`, `/backup` | `/hitl status`, `/triggers`, `/maintenance run` |
+| **Export & Data** | `/export`, `/pack` | `/export chat`, `/export canvas`, `/pack dot-dev-core` |
+
 ---
 
 ## Governance and Security

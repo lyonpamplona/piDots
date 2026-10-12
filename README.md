@@ -431,6 +431,22 @@ Operacao tática de terminal e gerenciamento sem atrito:
 | `Ctrl+L` | Limpar Teletipo | Limpa mensagens visuais da bobina do teletipo/chat local |
 | `F1` | Manual Operacional | Abre a gaveta lateral retratil com o manual tecnico |
 
+#### Protocolo Unificado de Slash Commands (/)
+O Console SPA incorpora um motor de comandos iniciados por barra (`/`) para execucao direta de acoes operacionais e controle de borda:
+- **Execucao Local sem Custo de Tokens:** Comandos operacionais e de telemetria rodam diretamente no cliente em menos de 16ms sem chamada a LLM.
+- **Menu Popover com Autocompletar:** Invocado ao digitar `/`, com filtragem fuzzy em memoria, navegacao por setas e selecao via `Tab` ou `Enter`.
+- **Tolerancia a Falhas via Levenshtein:** Sugere proativamente o comando correto em caso de pequenos erros de digitacao do operador (*"Voce quis dizer: /comando?"*).
+- **Recibos Tatis no Teletipo:** Respostas formatadas com cabecalho `[CMD] SISTEMA`, timestamp ISO UTC, numero sequencial de auditoria `SEQ# 000X` e picote serrilhado.
+
+| Categoria | Comandos Principais | Exemplos de Uso |
+| :--- | :--- | :--- |
+| **Sistema & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/onboarding`, `/changelog` | `/telemetry`, `/theme noir`, `/lang en`, `/clear chat` |
+| **Agentes & Multi-Bot** | `/dots`, `/handoff`, `/council`, `/delegate`, `/archetype`, `/tools` | `/dots`, `/handoff dot-researcher`, `/council analise termica` |
+| **Memoria & Conhecimento** | `/memory`, `/archival`, `/shared`, `/spaces`, `/diff` | `/archival SQLite WAL`, `/spaces analise.md`, `/diff` |
+| **Tarefas & Heartbeat** | `/tasks`, `/cron`, `/run-task` | `/tasks`, `/cron listar`, `/run-task task-001` |
+| **Governanca & Borda** | `/hitl`, `/triggers`, `/maintenance`, `/backup` | `/hitl status`, `/triggers`, `/maintenance run` |
+| **Exportacao & Dados** | `/export`, `/pack` | `/export chat`, `/export canvas`, `/pack dot-dev-core` |
+
 ---
 
 ## Governanca e Seguranca

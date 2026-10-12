@@ -417,6 +417,54 @@ O micro-motor realiza a varredura e mutação segura do DOM através de atributo
 2. **Cache HTTP Calibrado:** O endpoint `/data/locales/{lang}.json` responde com `Cache-Control: public, max-age=3600, stale-while-revalidate=86400`, eliminando requisições repetidas ao disco MicroSD.
 3. **Fallback Dinâmico e Preservação de Tags:** Elementos complexos com formatações filhas (como quebras de linha `<br>` ou badges internos) utilizam spans desacoplados para que a substituição de texto preserve a integridade visual da árvore DOM.
 
+### 12.6 Arquitetura do Protocolo de Slash Commands (/) e Despacho de Borda
+
+O Console Operacional incorpora um motor lexico e despachador assincrono de comandos iniciados por barra (`/`) projetado sob os seguintes pilares tecnicos:
+
+```
++--------------------------------------------------------------------------+
+|                 FLUXO ARQUITETURAL DE SLASH COMMANDS                     |
++--------------------------------------------------------------------------+
+|                                                                          |
+|  [Input: #instructionInput]  --> Digita '/'                              |
+|             |                                                            |
+|             +--> [SlashCommandsEngine] (Fuzzy Filter in-memory < 10KB)    |
+|             |          |                                                 |
+|             |          v                                                 |
+|             |    Popover Flutuante (7 Abas de Filtro, Setas, Tab/Enter)  |
+|             |                                                            |
+|             v                                                            |
+|  [Submit: transmitInstruction()]                                         |
+|             |                                                            |
+|             +-- [Prompt comeca com '/']?                                 |
+|             |          |                                                 |
+|             |        [SIM]                                               |
+|             |          v                                                 |
+|             |   [executeSlashCommand(cmdLine)]                           |
+|             |          |                                                 |
+|             |          +-- Match no catalogo de 30 comandos?             |
+|             |          |         |                                       |
+|             |        [SIM]     [NAO] -> findClosestCommand (Levenshtein) |
+|             |          |                                                 |
+|             |          v                                                 |
+|             |   Execucao Local (< 16ms) / REST Endpoint Direto           |
+|             |          |                                                 |
+|             |          v                                                 |
+|             |   renderSlashReceiptSlip()                                 |
+|             |   (Recibo Tatil, SEQ#, Timestamp ISO, Picote Serrilhado)   |
+|             |   enforceDomCeiling() -> Teto estrito de 150 nos DOM       |
+|             |                                                            |
+|           [NAO]                                                          |
+|             v                                                            |
+|  Fluxo Padrao LLM / SSE (/api/threads/{id}/runs)                         |
++--------------------------------------------------------------------------+
+```
+
+1. **Interceptacao no Cliente (< 16ms):** Comandos locais nao realizam chamadas a provedores de LLM, eliminando latencia de rede e consumo de tokens para inspecao de telemetria, configuracao de interface e gerenciamento de sessao.
+2. **Buffer Circular de DOM (150 Nós):** A funcao `renderSlashReceiptSlip` integra-se a `enforceDomCeiling`, garantindo que recibos antigos sejam purgados do DOM de forma FIFO estrita, mantendo a pegada de memoria RAM estavel em hardware restrito.
+3. **Levenshtein Fault Tolerance:** Algoritmo de distancia de edicao com limite `max_distance <= 3` integrado, sugerindo correcoes imediatas quando erros tipograficos ocorrem.
+4. **Isolamento de Escopo e XSS:** Todo texto dinamico e parametro fornecido pelo operador passa por `escapeHtml()` antes da montagem estrutural dos recibos.
+
 ---
 
 ## 13. Camada de Cabecalhos de Seguranca HTTP e Hardening de Rede de Borda

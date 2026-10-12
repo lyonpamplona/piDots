@@ -38,6 +38,7 @@ services:
       - ./workspaces:/app/workspaces
       # Sincronização de código e frontend
       - ./pidots:/app/pidots
+      - ./static:/app/static
       - ./pidots_spa_prototype.html:/app/pidots_spa_prototype.html
       - ./pidots_apresentacao_pixel_paper.html:/app/pidots_apresentacao_pixel_paper.html
       - ./pidots_guia.html:/app/pidots_guia.html

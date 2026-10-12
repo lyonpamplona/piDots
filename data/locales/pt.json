@@ -90,6 +90,19 @@
     "step4_tag": "PASSO 04 // CHAT MULTI-BOT E MENCOES @DOT",
     "step5_tag": "PASSO 05 // DOT HEARTBEAT E TELEGRAM/WHATSAPP",
     "step6_tag": "PASSO 06 // TESTADOR INTERATIVO DE API REST",
-    "step7_tag": "PASSO 07 // AUDITORIA E GOVERNANCA HITL"
+    "step7_tag": "PASSO 07 // AUDITORIA E GOVERNANCA HITL",
+    "step8_tag": "PASSO 08 // CATALOGO COMPLETO DE SLASH COMMANDS (/)"
+  },
+  "slash": {
+    "popover_title": "SLASH COMMANDS // PROTOCOLO DE BORDA",
+    "badge": "CATALOGO: 30 COMANDOS",
+    "tab_all": "[TODOS]",
+    "tab_system": "[SISTEMA]",
+    "tab_agents": "[AGENTES]",
+    "tab_memory": "[MEMORIA]",
+    "tab_tasks": "[TAREFAS]",
+    "tab_gov": "[GOVERNANCA]",
+    "tab_data": "[DADOS]",
+    "tip_navigation": "Navegue com setas, Tab para autocompletar e Enter para executar."
   }
 }
