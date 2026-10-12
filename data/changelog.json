@@ -1,41 +1,52 @@
 {
   "system": "piDots",
   "app_name": "piDots Edge Console",
-  "current_version": "1.1.0",
+  "current_version": "1.2.0",
   "release_date": "2026-10-12",
   "build": "20261012-ARM64",
-  "commit_hash": "9F2A1C",
+  "commit_hash": "c5a5e67",
   "channel": "stable",
   "patch_notes": {
-    "version": "1.1.0",
-    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.1.0",
-    "summary": "Implementacao do Guia de Primeiro Acesso em Ficha Catalografica, Suporte PWA 100% Instalavel com WebAPK, Changelog Unificado e Otimizacoes de Borda.",
+    "version": "1.2.0",
+    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.2.0",
+    "summary": "Edicao Soberana Bilingue & Humanizacao Radical de Voz: micro-motor nativo i18n Vanilla JS, erradicacao de cliches de IA, correcoes gramaticais, higienizacao de termos e governanca de silicio.",
     "categories": {
       "included": [
-        "Onboarding Tatil em Ficha Catalografica: modal interativo de 5 etapas com navegacao por abas ortogonais, memorizacao de conclusao e atalhos globais de teclado.",
-        "Integracao e Suporte PWA Nativo: geracao de icones PNG rasterizados com supersampling Lanczos para WebAPK e Apple Touch Icon, captura transparente de beforeinstallprompt e execucao standalone offline.",
-        "Changelog Central com Persistencia: sistema unificado de notas de versao integrado ao armazenamento local do navegador e historico retroativo.",
-        "Monitor de Telemetria SVG crispEdges: renderizacao nativa de curvas de carga e temperatura sem frameworks pesados de terceiros."
+        "Micro-Motor i18n Vanilla JS de Borda: alternancia instantanea de idioma [PT | EN] com memoria local, deteccao de locale, comutacao in-memory inferior a 5ms e zero dependencias externas.",
+        "Dicionarios Canonicos Bilingues Desacoplados: especificacao estruturada pt.json e en.json servida com cabecalhos Cache-Control estritos de borda.",
+        "Comutador Global de Idioma: botao de controle tátil integrado no cabecalho de todas as superficies (/app, / e /docs) com estado persistente.",
+        "Endpoint de Idioma com Protecao de Borda: rota /data/locales/{lang}.json com allowlist contra path traversal e validacao formal de entrada."
       ],
       "adjusted": [
-        "Teto Estrito de DOM (150 Nos): otimizacao do buffer circular de slips da bobina de teletipo, estabilizando o consumo de memoria em hardware restrito.",
-        "Hitbox Tatil de 48x48px: ampliacao da area fisica de toque em botoes interativos sem distorcer o alinhamento de pixel art.",
-        "Sincronizacao ao Vivo do Live Canvas: atualizacao incremental de documentos sem necessidade de recarregar a tela.",
-        "Fisica Mecanica Padronizada: unificacao das microinteracoes em funcoes steps(1) e steps(2) com duracao menor que 50ms."
+        "Humanizacao Radical de Voz e Tom de Engenharia: eliminacao completa de chavões inflados ('revolucionario', 'potencializar', 'ecossistema definitivo') e adocao de cadencia Gary Provost com tom de artesao de software.",
+        "Correcao Ortografica e Gramatical Culta: correcao de 'arquotipos' para 'arquetipos', restauracao de diacriticos e revisao sintatica rigorosa no Guia e Manuais.",
+        "Unificacao de Topologia GitHub: links de repositorios padronizados no espaco de documentacao tecnica.",
+        "Ajuste da Politica de Cache do Motor JS: cabecalho Cache-Control calibrado com stale-while-revalidate prevenindo retencao de versoes obsoletas."
       ],
       "removed": [
-        "Descarte de Bibliotecas Graficas Externas: eliminados Chart.js e pacotes pesados em favor de graficos matriciais construidos com SVG nativo.",
-        "Eliminacao de Caixas de Dialogo Nativas: descontinuado o uso de alert(), confirm() e prompt() do navegador em prol de modais Pixel Paper UI.",
-        "Remocao de Filtros de Desfoque (backdrop-filter): eliminados filtros gaussianos que causavam engasgos de renderizacao em chips ARM64."
+        "Erradicacao de Jargoes Corporativos Vazios: eliminadas metaforas infladas e promessas genericas de IA sem respaldo na arquitetura de silicio.",
+        "Descarte de Expressoes Enganosas: remocao de termos que sugeriam travas fisicas digitais ou falhas cognitivas inexistentes.",
+        "Remocao de Dependencias Pesadas de Traducao: eliminada qualquer necessidade de bibliotecas de internacionalizacao client-side pesadas."
       ],
       "security_and_edge": [
-        "Trava Mecanica de Dois Estagios: exigencia de desarme de chave de protecao antes da homologacao de comandos criticos no dossie HITL.",
-        "Isolamento de Sandbox Bubblewrap: execucao estrita de ferramentas de terminal com bloqueio de leitura de chaves e certificados do sistema.",
-        "Sanitizacao Estrita de Payload: validacao formal de esquemas no gateway de mensageria prevenindo injecao de comandos em prompts multi-bot."
+        "Imunidade Total a XSS no DOM: mutacao textual estrita via textContent e setAttribute no micro-motor de internacionalizacao.",
+        "Atualizacao do Service Worker para Cache v5: sincronizacao de CORE_STATIC_ASSETS para incluir dicionarios de locale e motor JS com operacao offline completa.",
+        "Validacao Estrutural de Paridade: garantia de 100% de paridade de chaves entre dicionarios pt.json e en.json."
       ]
     }
   },
   "history": [
+    {
+      "version": "1.1.0",
+      "release_date": "2026-10-12",
+      "type": "MINOR RELEASE",
+      "highlights": [
+        "Onboarding Tatil em Ficha Catalografica com stepper de 5 etapas.",
+        "Suporte PWA nativo 100% instalavel com WebAPK e Service Worker resiliente.",
+        "Changelog central e modal de Patch Notes com persistencia em localStorage.",
+        "Monitor de telemetria SVG crispEdges sem bibliotecas graficas externas."
+      ]
+    },
     {
       "version": "1.0.1",
       "release_date": "2026-10-11",

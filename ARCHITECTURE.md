@@ -354,6 +354,10 @@ A informacao foi organizada para eliminar colisoes entre navegacao de produto, o
 | **Guia Didatico** | `GET /docs` | Documentacao operacional rica, esteira passo a passo, Omnisearch Ctrl+K e Mini API Tester |
 | **OpenAPI Swagger UI** | `GET /api/docs` | Interface OpenAPI interativa nativa do FastAPI desacoplada de `/docs` |
 | **Esquema OpenAPI JSON** | `GET /api/openapi.json` | Contrato formal OpenAPI 3.0 estruturado em JSON |
+| **Dicionarios de Locale** | `GET /data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
+| **Micro-Motor i18n JS** | `GET /static/pidots-i18n.js` | Micro-motor Vanilla JS de traducao dinamica client-side |
+| **Changelog e Patch Notes** | `GET /api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.2.0) |
+| **Service Worker PWA** | `GET /sw.js` | Service Worker com cache defensivo v5 para operacao offline |
 | **Redirecionamentos RFC 7538** | `/apresentacao`, `/guia`, `/console` | Redirecionamentos permanentes HTTP 308 preservando compatibilidade retroativa |
 
 ### 12.2 Surface Switcher e Navegacao Cruzada via Chords Globais
@@ -382,6 +386,36 @@ As interfaces foram calibradas para dispositivos moveis (iOS Safari e Android Ch
 4. **Respeito a Safe Areas:** Utilizacao de `env(safe-area-inset-top)` e `env(safe-area-inset-bottom)` nos cabecalhos e na barra de navegacao inferior (`.mobile-bottom-nav`), garantindo compatibilidade com Dynamic Island e Home Indicators do iOS.
 5. **Tap Targets Acessiveis:** Areas minimas de toque de 44x44px em botoes e icones com feedback haptico sutil via `navigator.vibrate` em navegadores compativeis.
 6. **Estetica Pixel Paper UI:** Visual tatico inspirado em teletipos tecnicos, fichas catalograficas e papel milimetrado com alta densidade de informacoes, tipografia tecnica crisp, ausencia de filtros graficos pesados e catalogo uniforme de 26 icones SVGs tecnicos. Buffer circular de DOM mantido em 150 nos para prevenir exaustao de memoria em navegadores de borda.
+
+### 12.5 Arquitetura do Micro-Motor de Internacionalização (i18n) e Localização de Borda
+
+Para oferecer suporte nativo bilíngue completo (Português do Brasil `pt-BR` e Inglês Técnico `en-US`) sem dependência de bibliotecas pesadas de terceiros (como `i18next` ou `vue-i18n`), o piDots implementa um micro-motor Vanilla JS assíncrono e atômico (`static/pidots-i18n.js`):
+
+```mermaid
+flowchart TD
+    Init["Carregamento da Pagina (HTML DOM)"] --> Detect["Deteccao de Idioma\nlocalStorage.getItem('pidots_lang') || 'pt'"]
+    Detect --> Fetch["Requisicao Assincrona do Dicionario\nGET /data/locales/{lang}.json"]
+    Fetch --> Cache{"Verificacao de Cache de Borda\n(stale-while-revalidate)"}
+    Cache --> Load["Carga do Objeto JSON em Memoria (< 15KB)"]
+    Load --> Mutate["Varredura Declarativa do DOM\n[data-i18n] e [data-i18n-attr]"]
+    Mutate --> StrictDOM["Mutacao Estrita via textContent\n(Imunidade a XSS)"]
+    StrictDOM --> Dispatch["Emissao de Evento Customizado\nwindow.dispatchEvent('languageChanged')"]
+```
+
+#### Contrato Declarativo de Atributos HTML
+O micro-motor realiza a varredura e mutação segura do DOM através de atributos semânticos:
+
+| Atributo DOM | Mecanismo de Atualizacao | Exemplo de Uso |
+| :--- | :--- | :--- |
+| `data-i18n="chave"` | Mutação estrita de texto via `node.textContent` | `<span data-i18n="nav.overview">VISAO GERAL</span>` |
+| `data-i18n-placeholder="chave"` | Atualização segura do atributo `placeholder` | `<input data-i18n-placeholder="guide.search_placeholder" />` |
+| `data-i18n-title="chave"` | Atualização do atributo `title` de acessibilidade | `<button data-i18n-title="telemetry.node_title">...</button>` |
+| `data-i18n-attr="attr:chave"` | Mapeamento genérico de atributos HTML | `<button data-i18n-attr="aria-label:nav.manual">...</button>` |
+
+#### Proteções de Borda e Resiliência
+1. **Imunidade a XSS:** Toda mutação textual utiliza exclusivamente `textContent`, prevenindo qualquer injeção de HTML arbitrário ou execução não autorizada de scripts provindos de traduções.
+2. **Cache HTTP Calibrado:** O endpoint `/data/locales/{lang}.json` responde com `Cache-Control: public, max-age=3600, stale-while-revalidate=86400`, eliminando requisições repetidas ao disco MicroSD.
+3. **Fallback Dinâmico e Preservação de Tags:** Elementos complexos com formatações filhas (como quebras de linha `<br>` ou badges internos) utilizam spans desacoplados para que a substituição de texto preserve a integridade visual da árvore DOM.
 
 ---
 

@@ -1,0 +1,95 @@
+{
+  "nav": {
+    "overview": "[OVERVIEW]",
+    "workspace": "[WORKSPACE]",
+    "docs": "[DOCS]",
+    "swagger": "[SWAGGER]",
+    "theme": "[THEME]",
+    "guide_index": "[GUIDE INDEX]",
+    "lang_toggle": "[LANG: EN | PT]",
+    "pwa_install": "[INSTALL PWA]",
+    "onboarding": "[TOUR]",
+    "patch_notes": "[NOTES V1.1]",
+    "clean": "[CLEAR]",
+    "split_canvas": "[CANVAS: SPLIT]",
+    "manual": "[TECH MANUAL]"
+  },
+  "telemetry": {
+    "node_title": "Edge Node Online // ARM64 Edge Hardware",
+    "soc": "BCM2711 SoC",
+    "ram": "RSS RAM < 70MB",
+    "wal": "WAL ACTIVE",
+    "hitl": "HITL: SAFE"
+  },
+  "hero": {
+    "badge": "EDGE COMPUTING // SYSTEMS ENGINEERING",
+    "title": "AI COWORKER TEAMS ON YOUR OWN HARDWARE.",
+    "subtitle": "24/7 local operation under 6 Watts, using less than 70 MB RAM.",
+    "lead": "Persistent autonomous coworkers running 24/7 on your Raspberry Pi, Mini PC, or home server. No cloud bill surprises, no hidden headless browsers, and zero file leakage to third-party SaaS.",
+    "cta_workspace": "[LAUNCH WORKSPACE /app]",
+    "cta_docs": "[EXPLORE DOCS /docs]",
+    "cta_install": "[INSTALL PWA]",
+    "cta_onboarding": "[FIRST-RUN WALKTHROUGH]"
+  },
+  "sections": {
+    "sec1_badge": "SECTION 01 // REAL BENCHMARKS UNDER LOAD",
+    "sec1_title": "MEASURED DATA ON PRODUCTION EDGE HARDWARE",
+    "sec2_badge": "SECTION 02 // WHY EDGE HARDWARE REQUIRES A DIFFERENT ARCHITECTURE",
+    "sec2_title": "MOST AI FRAMEWORKS ASSUME INFINITE RAM. PIDOTS WAS BUILT FOR REAL SILICON.",
+    "sec8_badge": "SECTION 08 // 8 ENGINEERING FACTS & DIRECT ANSWERS",
+    "sec8_title": "FREQUENT QUESTIONS & ARCHITECTURE DETAILS",
+    "cta_final_badge": "INSTANT START // ZERO FRICTION",
+    "cta_final_title": "SPIN UP YOUR STATION IN UNDER TWO MINUTES",
+    "cta_final_lead": "Clone the repository and run Docker Compose. No hidden steps, no convoluted configs, and 100% auditable code."
+  },
+  "console": {
+    "chat_title": "TELETYPE TICKER FEED // MULTI-BOT CHAT",
+    "canvas_title": "LIVE ARTIFACT CANVAS // DOCUMENTS",
+    "input_placeholder": "Type a task or mention @coder, @muse, @auditor...",
+    "send_btn": "[SEND]",
+    "welcome_system": "[SYSTEM] piDots ready. Local connection established with SQLite WAL. Active model: qwen3.8-27b (RSS Memory: 52 MB).",
+    "welcome_agent": "Hello, Lyon. The environment is ready to work. Local workspace (/workspace) is mapped and hardware telemetry is stable. What are we building or reviewing today? You can type a task directly, summon another specialist with @coder, or press F1 to open the quick manual."
+  },
+  "onboarding": {
+    "badge": "PIDOTS OPERATIONAL CONSOLE // ONBOARDING TOUR",
+    "title": "WELCOME TO THE PIDOTS OPERATIONAL CONSOLE",
+    "subtitle": "A quick 2-minute tour to master controlling your local edge agents.",
+    "step1_title": "01 // CONCEPT: PERSISTENT EDGE AGENTS",
+    "step1_desc": "piDots turns your edge device into a smart workstation. Lightweight async Python monolith running multiple specialists using under 70 MB RAM.",
+    "step2_title": "02 // MENTIONS & DELEGATION: @DOT",
+    "step2_desc": "Speak directly to bots by typing @coder for code, @muse for docs, and @auditor for command review. The supervisor delegates work with zero extra setup.",
+    "step3_title": "03 // LIVE CANVAS & ARTIFACTS",
+    "step3_desc": "Files, code diffs, and diagrams appear in the right-side canvas without cluttering the chat. Inspect diffs and restore revisions at any time.",
+    "step4_title": "04 // HITL GOVERNANCE & SAFETY",
+    "step4_desc": "Potentially destructive commands (like deleting files or editing system configs) are paused instantly. You review the exact command before granting approval.",
+    "step5_title": "05 // KEYBOARD SHORTCUTS & PWA",
+    "step5_desc": "Fast navigation: F1 opens the manual, Alt+I inspects artifacts, Ctrl+L clears the ticker. Install as PWA on mobile or desktop for full-screen mode.",
+    "btn_skip": "[SKIP TOUR]",
+    "btn_prev": "[PREVIOUS STEP]",
+    "btn_next": "[NEXT STEP]",
+    "btn_finish": "[FINISH TOUR & START]"
+  },
+  "patch": {
+    "header": "PIDOTS // RELEASE NOTES - VERSION 1.2.0",
+    "badge": "JUST APPLIED",
+    "title": "RELEASE NOTES - VERSION 1.2.0",
+    "subtitle": "Performance improvements, new visual guide, and reduced memory footprint.",
+    "tag_new": "[INCLUDED / NEW]",
+    "tag_opt": "[TUNED / IMPROVED]",
+    "tag_dep": "[REMOVED / DEPRECATED]",
+    "tag_sec": "[SECURITY & EDGE]",
+    "btn_ack": "[UNDERSTOOD / CLOSE]"
+  },
+  "guide": {
+    "title": "PIDOTS // OPERATIONAL ENGINEERING MANUAL",
+    "subtitle": "Step-by-step setup guide, multi-bot architecture, and continuous edge operation",
+    "search_placeholder": "Search concepts, routes, or commands (Ctrl+K)...",
+    "step1_tag": "STEP 01 // CONCEPT & EDGE ARCHITECTURE",
+    "step2_tag": "STEP 02 // INSTALLATION & DOCKER COMPOSE",
+    "step3_tag": "STEP 03 // ENVIRONMENT & VARIABLES (.ENV)",
+    "step4_tag": "STEP 04 // MULTI-BOT CHAT & @DOT MENTIONS",
+    "step5_tag": "STEP 05 // DOT HEARTBEAT & TELEGRAM/WHATSAPP",
+    "step6_tag": "STEP 06 // INTERACTIVE REST API TESTER",
+    "step7_tag": "STEP 07 // AUDITING & HITL GOVERNANCE"
+  }
+}

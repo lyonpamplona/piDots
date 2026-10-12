@@ -117,16 +117,16 @@ The `pidots/core/messaging_gateway.py` module exposes stateless HTTP endpoints f
   1. Strict recursion counter (`hop_count <= 3`).
   2. Bots only answer other bots when explicitly mentioned via `@dot_id`.
   3. Silent `NO_ACTION` directive when an agent has no actionable contribution.
-- **Graceful Operational Failure Handling:** When upstream inference fails, the gateway catches the event and dispatches an informative `[FALHA OPERACIONAL]` notice to the remote user without degrading communication channel integrity.
+- **Graceful Operational Failure Handling:** When upstream inference fails, the gateway catches the event and dispatches an informative `[OPERATIONAL_ERROR]` notice to the remote user without degrading communication channel integrity.
 
 ### 4. Cognitive Resilience Architecture and Typed Exception Handling
 The core piDots engine enforces an end-to-end resilient execution loop:
 - **Typed Provider Exceptions:** The `OpenAIUniversalProvider` client strictly differentiates `ProviderAuthError` (HTTP 401/403 with immediate short-circuiting and no wasteful retries) from `ProviderTransientError` (HTTP 503/429/timeout with exponential backoff and jitter).
 - **Standardized AG-UI v1.0 Protocol Contract:** The `DotAgent.run_thread` lifecycle emits a terminal `run:finished` event with `status: "failed"`, providing structured `error`, `error_type` (`auth_error` or `transient_error`), and `final_response: ""`.
-- **Internal Carbon Diagnostic Tape:** Root-cause errors are persisted to SQLite WAL `messages` with `internal` visibility (`[FALHA DE INFERENCIA]` or `[FALHA DE AUTENTICACAO]`), ensuring complete forensic auditability without polluting human-facing feeds.
+- **Internal Diagnostic Tape:** Root-cause errors are persisted to SQLite WAL `messages` with `internal` visibility (`[INFERENCE_ERROR]` or `[AUTH_ERROR]`), ensuring complete technical auditability without polluting human-facing feeds.
 - **Integrated Resilience across Three Consumer Subsystems:**
   - *EdgeScheduler:* Accurately persists `FAILED` status with actual technical error summaries in SQLite, eliminating false-positive completions.
-  - *MessagingGateway:* Returns structured, user-friendly error notices (`[FALHA OPERACIONAL]`) across external chat bridges.
+  - *MessagingGateway:* Returns structured, user-friendly error notices (`[OPERATIONAL_ERROR]`) across external chat bridges.
   - *MultiBotOrchestrator:* Marks subtasks in `agent_handoffs` as `FAILED`, writes internal diagnostic alerts to parent threads, and provides structured feedback `{'success': False, 'error': ...}` allowing supervisory replanning.
 
 ### 5. Hierarchical Autonomous Memory (MemGPT / Letta Pattern)
@@ -143,7 +143,7 @@ The `pidots/storage/memory_manager.py` module delivers a 3-tier memory hierarchy
 ### 7. Advisory Council and Dialectic Multi-Bot Deliberation
 The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 - **Council Roles:** Proponent (`@coder` formulates technical designs), Critical Auditor (`@auditor` conducts adversarial risk reviews), and Supervisor (`@supervisor` synthesizes executive resolutions).
-- **Carbon-Copy Tape Isolation:** Intermediary deliberation rounds are tagged with `visibility: 'internal'`. Only the final resolution is published with a `[CONSELHO CONSULTIVO - RESOLUCAO FINAL]` header.
+- **Deliberation Log Isolation:** Intermediary deliberation rounds are tagged with `visibility: 'internal'`. Only the final resolution is published with an `[ADVISORY COUNCIL - FINAL RESOLUTION]` header.
 - **Safety Ceiling:** Strict 3-round upper limit to enforce finite inference expenditure, maintaining resident RAM consumption below 53 MB.
 - **Native Tool:** Accessible to agents via `run_council_debate`.
 
@@ -155,6 +155,11 @@ The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 - **Event-Driven Hardware Triggers (`pidots/core/edge_triggers.py`):** Proactively reads SoC Broadcom BCM2711 temperatures via sysfs (`/sys/class/thermal/thermal_zone0/temp`), MicroSD free disk space, and free RAM. Automatically triggers inference throttling and dispatches HITL alerts if temperature exceeds 72°C or free storage drops below 10%. Endpoint: `GET /api/edge/triggers`.
 - **Nightly Autonomous Maintenance (`pidots/storage/maintenance.py`):** Runs `PRAGMA wal_checkpoint(TRUNCATE)` to zero out WAL size, consolidates older messages (> 7 days) into `episodic_memories` while pruning raw rows, performs atomic backups via `VACUUM INTO` in an isolated connection (`isolation_level=None`), and optimizes SQLite query planner indices via `PRAGMA optimize`. Endpoint: `POST /api/edge/maintenance`.
 
+### 10. Native Bilingual Internationalization (PT/EN) & Edge Micro-Engine
+- **Vanilla JS Micro-Engine (`static/pidots-i18n.js`):** Instant language switching (< 10ms) without bloated frontend frameworks or memory overhead, persisting preference safely in `localStorage.getItem('pidots_lang')`.
+- **Atomic JSON Dictionaries (`data/locales/pt.json` and `data/locales/en.json`):** Semantic edge localization dictionaries with proactive stale-while-revalidate caching and graceful fallbacks.
+- **Strict textContent DOM Mutation:** Declarative attribute bindings via `data-i18n` and `data-i18n-attr`, guaranteeing complete immunity against cross-site scripting (XSS).
+- **Interactive Onboarding & SemVer v1.2.0 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
 
 ---
 
@@ -176,8 +181,8 @@ Containerized execution is the standard approach for persistent edge environment
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/lyon-christopher/pidots.git
-cd pidots
+git clone https://github.com/lyonchristopher/piDots.git
+cd piDots
 ```
 
 2. Configure environment variables:
@@ -352,7 +357,11 @@ The application exposes endpoints for external integration with Server-Sent Even
 | `GET` | `/relatorio` | Engineering feasibility and benchmark technical report |
 | `GET` | `/health` | Hardware telemetry (SoC temperature, RAM, SQLite WAL status) |
 | `GET` | `/manifest.json` | Progressive Web App manifest for desktop and mobile installation (`start_url: /app`) |
+| `GET` | `/sw.js` | Progressive Web App Service Worker with defensive v5 cache for offline resilience |
 | `GET` | `/icon.svg` | Official vector SVG icon with 24-hour cache headers |
+| `GET` | `/static/pidots-i18n.js` | Client-side Vanilla JS internationalization micro-engine |
+| `GET` | `/data/locales/{lang}.json` | Atomic bilingual localization dictionaries (PT/EN) with edge caching |
+| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.2.0) |
 | `GET` | `/api/dots` | List all registered AI Coworkers with archetypes and status |
 | `GET` | `/api/dots/{id}/export-pack` | Portable DotPack v1.0 export (persona, memory stores, and workspace files) |
 | `POST` | `/api/dots/import-pack` | Atomic import of AI Coworker packages from DotPack manifest |
@@ -398,6 +407,8 @@ piDots includes a native dark-mode SPA/PWA interface served on the canonical pat
 - **Diff Viewer and Versioning:** Side-by-side inspection of file modifications persisted in SQLite WAL with analog status stamps.
 - **Interactive HITL Governance:** Forensic approval and veto cards for commands with audit trail logging and state stamps.
 - **AG-UI Reasoning Streaming:** Progressive token-by-token display of agent thoughts and tool calls.
+- **Guided Onboarding Walkthrough:** Five-step interactive onboarding flow for first-time operators with client persistence and instant F1 replay.
+- **SemVer v1.2.0 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
 
 #### Cross-Surface Navigation via Global Keyboard Chords
 Instant, zero-friction transition between system surfaces without requiring a mouse:
@@ -479,6 +490,11 @@ python3 scripts/stress_test.py
 ├── .gitignore
 ├── ARCHITECTURE.md                  # In-depth architectural and I/O specifications
 ├── CONTRIBUTING.md                  # Technical contribution guidelines
+├── data/                            # Static application data, changelog, and localization dictionaries
+│   ├── changelog.json               # SemVer v1.2.0 release history and categorized update notes
+│   └── locales/                     # Atomic internationalization dictionaries (i18n)
+│       ├── en.json                  # English localization terms
+│       └── pt.json                  # Brazilian Portuguese localization terms
 ├── docker-compose.yml               # Official Docker Compose orchestration
 ├── Dockerfile                       # Lean image based on python:3.13-slim
 ├── LICENSE                          # MIT License
@@ -522,7 +538,9 @@ python3 scripts/stress_test.py
 ├── relatorio_estudo_pidots.html     # Technical feasibility and engineering study report
 ├── requirements.txt                 # Strict dependency pinning
 ├── SECURITY.md                      # Security policy and vulnerability reporting
-└── scripts/                         # Automated test suites and stress benchmarks
+├── scripts/                         # Automated test suites and stress benchmarks
+└── static/                          # Frontend static assets
+    └── pidots-i18n.js               # Client-side Vanilla JS internationalization micro-engine
 ```
 
 ---

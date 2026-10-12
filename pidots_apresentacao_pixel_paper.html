@@ -2211,17 +2211,17 @@
         <nav class="surface-switcher" aria-label="Superficies de Produto">
             <a href="/" class="surface-tab active" id="tab-overview" title="Atalho: G H">
                 <span class="tab-idx">01</span>
-                <span class="tab-lbl">VISAO GERAL</span>
+                <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
                 <span class="tab-chord">g h</span>
             </a>
             <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
                 <span class="tab-idx">02</span>
-                <span class="tab-lbl">WORKSPACE</span>
+                <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
                 <span class="tab-chord">g w</span>
             </a>
             <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
                 <span class="tab-idx">03</span>
-                <span class="tab-lbl">DOCUMENTACAO</span>
+                <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
                 <span class="tab-chord">g d</span>
             </a>
         </nav>
@@ -2240,7 +2240,7 @@
         </nav>
 
         <div class="header-actions">
-            <div class="node-telemetry-badge" id="headerNodeBadge" title="Nó Edge Raspberry Pi 4B ARM64 Operacional">
+            <div class="node-telemetry-badge" id="headerNodeBadge" title="Nó Edge Raspberry Pi 4B ARM64 Operacional" data-i18n-title="telemetry.node_title">
                 <span class="telemetry-led"></span>
                 <span>NO: ONLINE</span>
             </div>
@@ -2248,15 +2248,18 @@
                 <span>[SECOES]</span>
             </button>
             <button class="pixel-btn pwa-install-trigger" id="btnLandingPwaInstall" style="display: none; background: #0284c7; border-color: #38bdf8; color: #ffffff;" onclick="PiDotsLandingPWA.install()" title="Instalar piDots como aplicativo PWA">
-                <span>[INSTALAR PWA]</span>
+                <span data-i18n="nav.pwa_install">[INSTALAR PWA]</span>
+            </button>
+            <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
+                [IDIOMA: PT | EN]
             </button>
             <button class="pixel-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <span>[TEMA]</span>
+                <span data-i18n="nav.theme">[TEMA]</span>
             </button>
             <button class="pixel-btn btn-cyan" onclick="toggleDrawer()" id="btnHeaderManual" title="Abrir Manual Operacional do Sistema">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                <span>[MANUAL]</span>
+                <span data-i18n="nav.manual">[MANUAL TECNICO]</span>
             </button>
         </div>
     </header>
@@ -2287,12 +2290,13 @@
             </div>
 
             <h1 class="hero-title">
-                A PRIMEIRA ESTACAO MULTI-BOT SOBERANA.<br>
-                EQUIPES DE AGENTES NO SEU HARDWARE DE BORDA. <span>SOB 6 WATTS E &lt; 70MB.</span>
+                <span data-i18n="hero.title">AGENTES DE IA EM EQUIPE NO SEU PRÓPRIO HARDWARE.</span><br>
+                <span data-i18n="hero.subtitle">Operação local contínua em 6 Watts, gastando menos de 70 MB de RAM.</span>
             </h1>
 
-            <p class="hero-description">
-                Esqueca instancias infladas de nuvem, faturas abusivas em dolar e dependencia de SaaS de terceiros. O piDots transforma seu dispositivo de borda ou SBC (como o Raspberry Pi 4B 4GB ARM64 de referencia) na primeira estacao autonoma de trabalho multi-bot always-on de alta densidade. Invoque especialistas dedicados via mencao @dot diretamente no terminal, monte salas tematicas colaborativas (#devops, #pesquisa), monitore sua infraestrutura 24/7 com Dot Heartbeat silencioso (filtro inteligente HEARTBEAT_OK que consome zero tokens desnecessarios) e controle tudo remotamente pelo Telegram ou WhatsApp. Tudo isso consumindo menos de 70MB de RAM fisica real, com preservacao radical do armazenamento flash e governanca forense que nunca executa comandos criticos sem sua homologacao.
+            <p class="hero-description" data-i18n="hero.lead">
+                Seus agentes autônomos trabalhando 24 horas por dia no seu Raspberry Pi, Mini PC ou servidor local. Sem faturas surpresa em dólar, sem navegadores pesados rodando escondidos e sem expor seus arquivos para serviços de terceiros.<br><br>
+                No piDots, você coordena especialistas em terminal com um simples @dot, cria salas compartilhadas para tarefas complexas e mantém rotinas proativas de monitoramento que só geram alertas quando algo realmente exige sua intervenção. Cada ação de risco passa pela sua aprovação, e toda gravação em disco foi desenhada para proteger a vida útil do seu cartão de memória flash.
             </p>
 
             <!-- Pilulas de Prova Tecnica Imediata (4 Pilares Essenciais) -->
@@ -2319,7 +2323,7 @@
             <div class="hero-cta-group">
                 <a href="/app" class="pixel-btn-cta-primary">
                     <span class="pulse-step-dot"></span>
-                    <span>[ABRIR WORKSPACE OPERACIONAL]</span>
+                    <span data-i18n="hero.cta_workspace">[ABRIR WORKSPACE OPERACIONAL]</span>
                     <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </a>
                 <a href="#quickstart" class="pixel-btn btn-cyan btn-lg">
@@ -2349,7 +2353,7 @@
 
                 <!-- Visualizador 1: Terminal ReAct Interativo -->
                 <div class="sim-viewport" id="heroSimViewport">
-                    <div class="sim-line prefix">[BOOT] piDots Edge Core v1.4 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
+                    <div class="sim-line prefix">[BOOT] piDots Edge Core v1.2.0 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
                     <div class="sim-line">[03:14:00] <span style="color: var(--ink-muted);">HEARTBEAT-DAEMON //</span> Checagem periodica: <span style="color: var(--phosphor-green);">HEARTBEAT_OK [Filtro de silêncio ativo: 0 tokens consumidos]</span></div>
                     <div class="sim-line" style="color: var(--blueprint-cyan);">[INFO] Selecione um dos comandos rapidos abaixo ou digite seu comando no prompt:</div>
                 </div>
@@ -2402,14 +2406,14 @@
             <div class="section-header-bar">
                 <div class="section-tag">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
-                    <span>SECAO 01 // METRICAS DE CHOQUE TECNICO</span>
+                    <span data-i18n="sections.sec1_badge">SEÇÃO 01 // BENCHMARKS REAIS SOB CARGA</span>
                 </div>
                 <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">BENCHMARKS REAIS ARM64</span>
             </div>
 
-            <h2 class="section-headline">EFICIENCIA DE SILICIO: BORDA VS NUVEM</h2>
+            <h2 class="section-headline" data-i18n="sections.sec1_title">NÚMEROS REAIS MEDIDOS EM HARDWARE DE BORDA</h2>
             <p class="section-subtitle">
-                Numeros medidos em execucao direta em no de borda (Raspberry Pi 4B 4GB ARM64 de referencia) contra pilhas agenticas em nuvem corporativa.
+                Métricas coletadas sob carga contínua em computador de placa única (Raspberry Pi 4B 4GB ARM64 de referência) comparadas com frameworks tradicionais de agentes.
             </p>
 
             <div class="shock-metrics-grid">
@@ -2526,14 +2530,14 @@
             <div class="section-header-bar">
                 <div class="section-tag">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    <span>SECAO 02 // REALIDADE CRUA DO MERCADO</span>
+                    <span data-i18n="sections.sec2_badge">SEÇÃO 02 // POR QUE A BORDA EXIGE UMA ARQUITETURA DIFERENTE</span>
                 </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--stamp-danger);">4 LIMITACOES DA NUVEM VS 4 SOLUCOES DE BORDA</span>
+                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--stamp-danger);">4 LIMITAÇÕES DA NUVEM VS 4 SOLUÇÕES DE BORDA</span>
             </div>
 
-            <h2 class="section-headline">A MAIORIA DAS PILHAS AGENTICAS IGNORA AS RESTRICOES DE HARDWARE LOCAL. O PIDOTS FOI CALIBRADO PARA A BORDA.</h2>
+            <h2 class="section-headline" data-i18n="sections.sec2_title">A MAIORIA DOS FRAMEWORKS DE IA CONSIDERA MEMÓRIA INFINITA. O PIDOTS FOI PROJETADO PARA O SILÍCIO REAL.</h2>
             <p class="section-subtitle">
-                Projetos corporativos ignoram os limites fisicos do silicio real. O piDots nasceu para superar a ineficiencia computacional atraves de engenharia de sistemas de alta densidade e baixo overhead.
+                A maioria das bibliotecas de agentes assume servidores com gigabytes infinitos de RAM. O piDots foi construído na bancada com disciplina de sistemas operacionais: sem navegadores pesados ocultos e sem processos concorrentes que sobrecarreguem o processador.
             </p>
 
             <div class="pain-solution-container">
@@ -3682,15 +3686,15 @@
             <div class="section-header-bar">
                 <div class="section-tag">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                    <span>SECAO 08 // QUEBRA DE OBJECOES TECNICAS</span>
+                    <span>SECAO 08 // FATOS DE ENGENHARIA</span>
                 </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);">8 PROVAS TECNICAS IRREFUTAVEIS</span>
+                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);" data-i18n="sections.sec8_badge">SEÇÃO 08 // 8 FATOS DE ENGENHARIA E RESPOSTAS DIRETAS</span>
 
             </div>
 
-            <h2 class="section-headline">RESPOSTAS DIRETAS PARA DUVIDAS DE ENGENHARIA</h2>
+            <h2 class="section-headline" data-i18n="sections.sec8_title">RESPOSTAS DIRETAS PARA DÚVIDAS DE ENGENHARIA</h2>
             <p class="section-subtitle">
-                Sem rodeios ou promessas vazias. Aqui estao os fatos matematicos, arquiteturais e testes de estresse que comprovam a viabilidade do piDots.
+                Sem rodeios ou promessas de marketing. Aqui estão os fatos de arquitetura, limites físicos e testes práticos que explicam exatamente como o piDots opera.
             </p>
 
             <div class="objections-accordion-deck">
@@ -3864,12 +3868,12 @@
             <div style="background: var(--paper-surface-elevated); border: 2px solid var(--border-accent); box-shadow: var(--shadow-lg); padding: 32px 24px; text-align: center;">
                 <span class="brand-badge" style="margin-bottom: 12px; display: inline-block;">SILICIO LIBERADO // PRONTO PARA USO</span>
                 
-                <h2 style="font-family: var(--font-pixel); font-size: 24px; color: var(--ink-main); margin-bottom: 14px; letter-spacing: 0.04em;">
-                    COLOQUE SEU AI COWORKER PARA TRABALHAR HOJE MESMO
+                <h2 style="font-family: var(--font-pixel); font-size: 24px; color: var(--ink-main); margin-bottom: 14px; letter-spacing: 0.04em;" data-i18n="sections.cta_final_title">
+                    SUBINDO SUA ESTAÇÃO EM MENOS DE DOIS MINUTOS
                 </h2>
                 
-                <p style="max-width: 760px; margin: 0 auto 24px; font-size: 13px; color: var(--ink-secondary); line-height: 1.6;">
-                    Chega de adiar sua autonomia tecnica. Em menos de 2 minutos voce clona o repositorio, inicia o conteiner ultraotimizado e tem um colega de trabalho de IA persistente, seguro e sob seu controle absoluto rodando no seu hardware de borda ou servidor local.
+                <p style="max-width: 760px; margin: 0 auto 24px; font-size: 13px; color: var(--ink-secondary); line-height: 1.6;" data-i18n="sections.cta_final_lead">
+                    Basta clonar o repositório e disparar o Docker Compose. Sem passos ocultos, sem configurações mirabolantes e com código 100% auditável.
                 </p>
 
                 <!-- Terminal Deck em 1 Comando Unificado -->
@@ -3930,9 +3934,10 @@
             </div>
 
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <a href="/" class="pixel-btn btn-cyan">[01 // VISAO GERAL]</a>
-                <a href="/app" class="pixel-btn btn-green">[02 // WORKSPACE]</a>
-                <a href="/docs" class="pixel-btn">[03 // DOCUMENTACAO]</a>
+                <a href="/" class="pixel-btn btn-cyan" data-i18n="nav.overview">[01 // VISAO GERAL]</a>
+                <a href="/app" class="pixel-btn btn-green" data-i18n="nav.workspace">[02 // WORKSPACE]</a>
+                <a href="/docs" class="pixel-btn" data-i18n="nav.docs">[03 // DOCUMENTACAO]</a>
+                <a href="/api/changelog" class="pixel-btn" target="_blank" title="Consultar Changelog v1.2.0">[PATCH NOTES // V1.2.0]</a>
                 <button class="pixel-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
                     <span>[VOLTAR AO TOPO]</span>
@@ -4702,5 +4707,7 @@
             PiDotsLandingPWA.init();
         });
     </script>
+    <!-- Micro-motor de Internacionalização Ultraleve piDots -->
+    <script src="/static/pidots-i18n.js"></script>
 </body>
 </html>

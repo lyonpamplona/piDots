@@ -1592,17 +1592,17 @@
         <nav class="surface-switcher" aria-label="Superficies de Produto">
             <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
                 <span class="tab-idx">01</span>
-                <span class="tab-lbl">VISAO GERAL</span>
+                <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
                 <span class="tab-chord">g h</span>
             </a>
             <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
                 <span class="tab-idx">02</span>
-                <span class="tab-lbl">WORKSPACE</span>
+                <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
                 <span class="tab-chord">g w</span>
             </a>
             <a href="/docs" class="surface-tab active" id="tab-docs" title="Atalho: G D">
                 <span class="tab-idx">03</span>
-                <span class="tab-lbl">DOCUMENTACAO</span>
+                <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
                 <span class="tab-chord">g d</span>
             </a>
         </nav>
@@ -1610,31 +1610,36 @@
         <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch -->
         <div class="header-search-box" onclick="abrirOmnisearch()" style="cursor: pointer;" title="Abrir Omnisearch (Atalho: Ctrl+K ou /)">
             <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (CTRL+K OU /)..." readonly style="cursor: pointer;">
+            <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (CTRL+K OU /)..." data-i18n-placeholder="guide.search_placeholder" readonly style="cursor: pointer;">
             <kbd class="kbd-badge">CTRL+K</kbd>
         </div>
 
         <div class="header-actions">
-            <div class="node-telemetry-badge" id="headerNodeBadge" title="Nó Edge Raspberry Pi 4B ARM64 Operacional">
+            <div class="node-telemetry-badge" id="headerNodeBadge" title="Nó Edge Raspberry Pi 4B ARM64 Operacional" data-i18n-title="telemetry.node_title">
                 <span class="telemetry-led"></span>
                 <span>NO: ONLINE</span>
             </div>
 
             <!-- Botao de Instalacao PWA -->
             <button class="pixel-btn pwa-install-trigger" id="btnDocsPwaInstall" style="display: none; background: #0284c7; border-color: #38bdf8; color: #ffffff;" onclick="PiDotsDocsPWA.install()" title="Instalar piDots como aplicativo PWA">
-                <span>[INSTALAR PWA]</span>
+                <span data-i18n="nav.pwa_install">[INSTALAR PWA]</span>
+            </button>
+
+            <!-- Comutador Bilíngue de Idioma [PT | EN] -->
+            <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
+                [IDIOMA: PT | EN]
             </button>
 
             <!-- Alternador de Tema Dark Noir vs Blueprint -->
             <button class="pixel-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
                 <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <span>[TEMA]</span>
+                <span data-i18n="nav.theme">[TEMA]</span>
             </button>
 
             <!-- Botao do Menu Drawer Retratil a Direita -->
             <button id="toggleDrawerBtn" class="pixel-btn btn-cyan" title="Abrir Indice de Navegacao Passo a Passo">
                 <svg class="ui-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                <span>[INDICE GUIA]</span>
+                <span data-i18n="nav.manual">[INDICE GUIA]</span>
             </button>
         </div>
     </header>
@@ -1656,9 +1661,9 @@
                     <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted);">DOC# PIDOTS-MANUAL-V3</span>
                 </div>
 
-                <h1 class="catalog-title">MANUAL DE OPERACAO E GUIA DIDATICO DO PIDOTS</h1>
-                <p class="catalog-lead">
-                    Aprenda a operar o piDots de ponta a ponta: entenda a orquestracao multi-bot local, conheca os quatro novos arquetipos cognitivos, domine a delegacao de tarefas via Fitas de Carbono, configure o Heartbeat com a diretriz de silencio HEARTBEAT_OK, conecte mensageria externa via Telegram e WhatsApp, reduza em mais de 75% o consumo de tokens com Tool Pruning e mantenha seu cartao MicroSD 100% preservado.
+                <h1 class="catalog-title" data-i18n="guide.title">PIDOTS // MANUAL OPERACIONAL DE ENGENHARIA</h1>
+                <p class="catalog-lead" data-i18n="guide.subtitle">
+                    Este guia foi escrito de engenheiro para engenheiro. Aqui você encontra o passo a passo completo para configurar, operar e tirar o máximo de proveito do piDots no seu hardware — entendendo como a orquestração multi-agente funciona por dentro, como poupar memória e como proteger o armazenamento flash.
                 </p>
 
                 <div class="catalog-grid-telemetry">
@@ -1667,7 +1672,7 @@
                         <span class="catalog-telemetry-val">52 MB / 384 MB</span>
                     </div>
                     <div class="catalog-telemetry-item">
-                        <span class="catalog-telemetry-label">ARQUETIPOS NATIVOS</span>
+                        <span class="catalog-telemetry-label">ESPECIALISTAS NATIVOS</span>
                         <span class="catalog-telemetry-val">4 ESPECIALISTAS</span>
                     </div>
                     <div class="catalog-telemetry-item">
@@ -1688,16 +1693,19 @@
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 01</span>
-                        <h2 class="step-heading">O QUE E O PIDOTS E OS NOVOS ARQUETIPOS COGNITIVOS</h2>
+                        <h2 class="step-heading" data-i18n="guide.step1_tag">O QUE E O PIDOTS E A ARQUITETURA DE BORDA</h2>
                     </div>
                     <span class="pixel-stamp stamp-notice">CONCEITO &amp; IDENTIDADE</span>
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        O <strong>piDots</strong> nao e um chatbot convencional baseado em janelas efemeras de navegador. Ele e um <strong>ecossistema soberano de AI Coworkers autonomos e persistentes</strong>, projetado especificamente para operar com maxima eficiencia em computacao de borda e computadores de placa unica (SBCs como Raspberry Pi 4B, Orange Pi, Mini PCs x86_64 e servidores locais compactos). Cada acao do sistema e gravada de forma duravel no SQLite em modo Write-Ahead Logging (WAL), o que garante que nenhuma memoria de projeto, raciocinio ou arquivo seja perdido mesmo em caso de reinicializacao ou queda de energia.
+                        O <strong>piDots</strong> nasceu para responder a uma pergunta simples: é possível ter assistentes técnicos de IA colaborando de verdade em um computador de placa única, sem travamentos e sem depender de servidores caros na nuvem?
                     </p>
                     <p class="step-paragraph">
-                        Em vez de sobrecarregar um unico agente generico com instrucoes conflitantes, o piDots divide a carga cognitiva em <strong>quatro arquetipos especializados</strong>. Cada Dot possui identidade, carimbo visual exclusivo, prompt de sistema calibrado e um conjunto restrito de permissoes operacionais:
+                        A resposta está na disciplina de arquitetura. Em vez de subir navegadores Chromium pesados ou bancos vetoriais em contêineres separados, o piDots é um monólito enxuto em Python assíncrono. O estado, as conversas e as revisões de arquivos ficam salvos localmente em um banco SQLite configurado em modo WAL, garantindo que nada se perca caso falte luz.
+                    </p>
+                    <p class="step-paragraph">
+                        Para evitar que um único agente tente resolver tudo e se perca em instruções confusas, o trabalho é dividido entre <strong>quatro especialistas com perfis claros</strong>:
                     </p>
 
                     <div class="pixel-card-grid">
@@ -2430,6 +2438,8 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots', '')">[GET /api/dots]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tasks', '')">[GET /api/tasks]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/channels', '')">[GET /api/channels]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/data/locales/pt.json', '')">[GET /data/locales/pt.json]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/changelog', '')">[GET /api/changelog]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/triggers', '')">[GET /api/edge/triggers]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/dot-supervisor/export-pack', '')">[GET /export-pack]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/maintenance', '{\x22days_threshold\x22: 7, \x22create_backup\x22: true}')">[POST /maintenance]</button>
@@ -2822,7 +2832,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Para decisoes criticas de arquitetura, seguranca ou refatoracao de codigo, o piDots implementa o padrao de <strong>Conselho Consultivo Multi-Bot</strong> (<code>CouncilOrchestrator</code>). Em vez de depender da opiniao isolada de um unico modelo, tres arquotipos cognitivos deliberam formalmente em uma estrutura dialetica:
+                        Para decisões críticas de arquitetura, segurança ou refatoração de código, o piDots implementa o padrão de <strong>Conselho Consultivo Multi-Bot</strong> (<code>CouncilOrchestrator</code>). Em vez de depender da opinião isolada de um único modelo, três arquétipos deliberam formalmente em uma estrutura dialética:
                     </p>
 
                     <div class="pixel-card-grid">
@@ -2952,7 +2962,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                                 <span class="brand-badge">MANIFESTO PORTAVEL</span>
                             </div>
                             <p class="pixel-card-body">
-                                Formato padronizado JSON que empacota a identidade completa de um Dot: definicoes de persona, arquotipo, ferramentas autorizadas, blocos de Core Memory, base duradoura de Archival Memories e snapshot dos arquivos do workspace.
+                                Formato padronizado JSON que empacota a identidade completa de um Dot: definições de persona, arquétipo operacional, ferramentas autorizadas, blocos de Core Memory, base duradoura de Archival Memories e snapshot dos arquivos do workspace.
                             </p>
                         </article>
                     </div>
@@ -3115,7 +3125,90 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">CONCLUSAO DO GUIA (11 DE 11)</span>
+                    <span class="step-counter-tag">ETAPA 11 DE 12</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-12')">
+                        <span>AVANCAR: MOTOR I18N &amp; DICIONARIOS JSON</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 12: MICRO-MOTOR DE INTERNACIONALIZACAO (I18N) & DICIONARIOS JSON
+                 ================================================================= -->
+            <section class="step-module" id="passo-12">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 12</span>
+                        <h2 class="step-heading">MICRO-MOTOR DE INTERNACIONALIZACAO (I18N) &amp; DICIONARIOS JSON DE BORDA</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-approved">ARQUITETURA BILINGUE PT/EN</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        Para viabilizar adocao global sem onerar o hardware de borda com bibliotecas pesadas de terceiros (como i18next ou vue-i18n), o piDots adota um <strong>micro-motor nativo de internacionalizacao Vanilla JS</strong> (<code>/static/pidots-i18n.js</code>) de menos de 1.5 KB gzipped, acompanhado de dicionarios JSON desacoplados (<code>data/locales/pt.json</code> e <code>en.json</code>):
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">MOTOR VANILLA ZERO-DEPENDENCY</span>
+                                <span class="brand-badge">&lt; 1.5 KB GZIP</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Comutacao In-Memory:</strong> Alternancia completa de idioma em menos de 5ms sem recarregar a pagina.<br>
+                                <strong>Resolucao em 3 Niveis:</strong> Parametro de URL (<code>?lang=en</code>), chave em <code>localStorage</code> (<code>pidots_lang</code>) ou deteccao transparente de <code>navigator.language</code>.<br>
+                                <strong>Fallback Seguro:</strong> Falta eventual de chave recorre automaticamente ao dicionario padrao (pt-BR).
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">SEGURANCA &amp; IMUNIDADE A XSS</span>
+                                <span class="brand-badge">TEXTCONTENT</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Manipulacao Declarativa:</strong> Varredura de seletores <code>[data-i18n]</code>, <code>[data-i18n-placeholder]</code>, <code>[data-i18n-title]</code> e <code>[data-i18n-aria]</code>.<br>
+                                <strong>Zero innerHTML:</strong> Mutacao estrita de DOM via <code>textContent</code> e <code>setAttribute</code>, blindando o console operacional contra injecoes de script.<br>
+                                <strong>Evento Ciclo de Vida:</strong> Emissao de <code>pidots:langchange</code> para componentes reativos.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">CONTRATOS DECLARATIVOS DOM &amp; EXEMPLO DE CONSUMO</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <div class="terminal-block">
+                        <div class="terminal-top">
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-title">EXEMPLO // ATRIBUTOS DOM &amp; DISPARO DE TESTES CURL</span>
+                        </div>
+                        <pre class="terminal-pre"><code># 1. Consultar dicionario em Portugues (Cache de Borda 1h, Stale-While-Revalidate 24h)
+curl -s http://localhost:8000/data/locales/pt.json | jq .nav
+
+# 2. Consultar dicionario em Ingles
+curl -s http://localhost:8000/data/locales/en.json | jq .nav
+
+# 3. Micro-motor Vanilla JS com politicas de cache
+curl -s -I http://localhost:8000/static/pidots-i18n.js
+
+# 4. Atributos declarativos no HTML:
+# &lt;span data-i18n="nav.workspace"&gt;WORKSPACE&lt;/span&gt;
+# &lt;input data-i18n-placeholder="console.input_placeholder" placeholder="..."&gt;
+# &lt;button data-i18n-title="telemetry.node_title" title="..."&gt;[STATUS]&lt;/button&gt;</code></pre>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-11')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">CONCLUSAO DO GUIA (12 DE 12)</span>
                     <a href="/app" class="pixel-btn btn-green">
                         <span>ABRIR CONSOLE OPERACIONAL SPA</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -3211,11 +3304,17 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
                         <span>Triggers de Hardware &amp; Manutencao</span>
                     </a>
                 </li>
+                <li class="drawer-item" data-keywords="internacionalizacao i18n bilingue portugues ingles json locales static micro-motor textcontent">
+                    <a href="#passo-12" class="drawer-link" onclick="handleDrawerNav(event, 'passo-12')">
+                        <span class="drawer-step-idx">12</span>
+                        <span>Micro-Motor i18n &amp; Dicionarios JSON</span>
+                    </a>
+                </li>
             </ul>
 
             <div class="drawer-bottom-bar">
                 <span>PIDOTS // PIXEL PAPER UI</span>
-                <span>11 PASSOS DISPONIVEIS</span>
+                <span>12 PASSOS DISPONIVEIS</span>
             </div>
         </aside>
 
@@ -3230,7 +3329,7 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
         <div class="omnisearch-header">
             <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input type="text" id="omnisearchInput" class="omnisearch-input" placeholder="DIGITE TERMO DE BUSCA (EX: HITL, SPACES, DOCKER, WAL)..." autocomplete="off">
-            <span class="omnisearch-counter" id="omnisearchCounter">11 PASSOS</span>
+            <span class="omnisearch-counter" id="omnisearchCounter">12 PASSOS</span>
             <button class="pixel-btn" onclick="fecharOmnisearch()" style="padding: 3px 6px;">[ESC]</button>
         </div>
         <div class="omnisearch-hint-bar">
@@ -3588,6 +3687,13 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
                 title: 'Triggers de Hardware Edge & Manutenção do MicroSD',
                 keywords: 'hardware triggers temperatura broadcom bcm2711 microsd manutencao noturna vacuum wal truncate protecao fisica',
                 desc: 'Monitoramento termico direto do SoC BCM2711 com throttle automatico e rotina noturna de WAL TRUNCATE + VACUUM INTO.'
+            },
+            {
+                id: 'passo-12',
+                step: 'PASSO 12',
+                title: 'Micro-Motor de Internacionalização (i18n) & Dicionários JSON de Borda',
+                keywords: 'internacionalizacao i18n bilingue portugues ingles pt en locale traducao dicionario data-i18n client-side static pidots-i18n',
+                desc: 'Alternancia instantanea PT/EN sem frameworks pesados, dicionarios atomicos JSON com cache estatico e seguranca estrita via textContent.'
             }
         ];
 
@@ -3903,5 +4009,7 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
             PiDotsDocsPWA.init();
         });
     </script>
+    <!-- Micro-motor de Internacionalização Ultraleve piDots -->
+    <script src="/static/pidots-i18n.js"></script>
 </body>
 </html>

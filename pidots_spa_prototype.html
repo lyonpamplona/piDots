@@ -2892,39 +2892,39 @@
         <nav class="surface-switcher" aria-label="Superficies de Produto">
             <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
                 <span class="tab-idx">01</span>
-                <span class="tab-lbl">VISAO GERAL</span>
+                <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
                 <span class="tab-chord">g h</span>
             </a>
             <a href="/app" class="surface-tab active" id="tab-workspace" title="Atalho: G W">
                 <span class="tab-idx">02</span>
-                <span class="tab-lbl">WORKSPACE</span>
+                <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
                 <span class="tab-chord">g w</span>
             </a>
             <a href="/docs" target="_blank" rel="noopener" class="surface-tab" id="tab-docs" title="Atalho: G D (Abre em nova aba para preservar estado do workspace)">
                 <span class="tab-idx">03</span>
-                <span class="tab-lbl">DOCUMENTACAO</span>
+                <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
                 <span class="tab-chord">g d</span>
             </a>
         </nav>
 
         <!-- Telemetria do Sistema Edge (Raspberry Pi 4B) -->
         <div class="header-telemetry">
-            <div class="telemetry-chip" title="Temperatura do Processador / SoC">
+            <div class="telemetry-chip" title="Temperatura do Processador / SoC" data-i18n-title="telemetry.soc">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
                 <span class="chip-label">SOC:</span>
                 <span class="chip-value" id="val-temp">48.2 °C</span>
             </div>
-            <div class="telemetry-chip" title="Consumo de Memória RAM">
+            <div class="telemetry-chip" title="Consumo de Memória RAM" data-i18n-title="telemetry.ram">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
                 <span class="chip-label">RAM:</span>
                 <span class="chip-value ok" id="val-ram">118 MB / 300 MB</span>
             </div>
-            <div class="telemetry-chip desktop-only" title="Modo SQLite WAL">
+            <div class="telemetry-chip desktop-only" title="Modo SQLite WAL" data-i18n-title="telemetry.wal">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
                 <span class="chip-label">WAL:</span>
                 <span class="chip-value ok" id="val-wal">ATIVO (NORMAL)</span>
             </div>
-            <div class="telemetry-chip" title="Fila de Ações Human-in-the-Loop">
+            <div class="telemetry-chip" title="Fila de Ações Human-in-the-Loop" data-i18n-title="telemetry.hitl">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                 <span class="chip-label">HITL:</span>
                 <span class="chip-value" id="val-hitl">0 PENDENTES</span>
@@ -2940,16 +2940,19 @@
                     <path d="M8 11v3" stroke="currentColor" stroke-width="2"/>
                     <path d="M8 4v4M6 6l2 2 2-2" stroke="currentColor" stroke-width="1.5"/>
                 </svg>
-                <span>[INSTALAR PWA]</span>
+                <span data-i18n="nav.pwa_install">[INSTALAR PWA]</span>
+            </button>
+            <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
+                [IDIOMA: PT | EN]
             </button>
             <button class="pixel-btn" onclick="toggleCanvasSplit()" id="btn-canvas-toggle">
-                [CANVAS: DIVIDIDO]
+                <span data-i18n="nav.split_canvas">[CANVAS: DIVIDIDO]</span>
             </button>
             <button class="pixel-btn" onclick="toggleTheme()" id="btn-theme-toggle">
-                [TEMA: DARK NOIR]
+                <span data-i18n="nav.theme">[TEMA: DARK NOIR]</span>
             </button>
             <button class="pixel-btn btn-cyan" onclick="toggleDrawer()">
-                [MANUAL TECNICO]
+                <span data-i18n="nav.manual">[MANUAL TECNICO]</span>
             </button>
         </div>
     </header>
@@ -3071,7 +3074,7 @@
                             <span>SEQ# 0001</span>
                         </header>
                         <section class="slip-output">
-                            <p class="slip-text">piDots Edge Core inicializado sob a arquitetura de layout Triptych do OpenDots. Fita de teletipo conectada ao barramento de raciocinio assincrono ReAct. Provedor universal ativo via Gateway OpenAI-Compatível (Modelo: qwen3.8-27b).</p>
+                            <p class="slip-text" data-i18n="console.welcome_system">[SISTEMA] piDots pronto. Conexão local estabelecida com SQLite WAL. Modelo ativo: qwen3.8-27b (Memória RSS: 52 MB).</p>
                         </section>
                         <footer class="slip-perforation">
                             <span class="perforation-line"></span>
@@ -3083,7 +3086,7 @@
                     <!-- Fita 02: Resposta do Dot com Bloco de Raciocínio -->
                     <article class="ticker-slip">
                         <header class="slip-header">
-                            <span class="slip-tag">DOT-DEV // RESPOSTA</span>
+                            <span class="slip-tag">DOT-SUPERVISOR // RESPOSTA</span>
                             <span>2026-10-10T00:41:15Z</span>
                             <span>SEQ# 0002</span>
                         </header>
@@ -3091,14 +3094,14 @@
                         <section class="slip-reasoning">
                             <div class="reasoning-heading">[CADERNO DE RACIOCINIO - STREAM INTERNO]</div>
                             <div style="font-family: var(--font-mono); font-size: 11px;">
-                                > Analisando espaco de trabalho local (/workspace)...<br>
-                                > Ficha catalográfica architecture_spec.md carregada no Canvas Direito.<br>
-                                > Telemetria avaliada: RSS atual em 118MB (teto de 300MB perfeitamente preservado).
+                                > Verificando espaco de trabalho local (/workspace)...<br>
+                                > Ficha catalográfica architecture_spec.md ativa no Canvas Direito.<br>
+                                > Telemetria: RSS atual em 52MB (limite operacional de 150MB perfeitamente seguro).
                             </div>
                         </section>
 
                         <section class="slip-output">
-                            <p class="slip-text">Operador lyon christopher, a integracao do layout Triptico (openDots / grokDots / museDots) esta ativa. O chat opera nesta bobina central, enquanto o documento ativo e os graficos de telemetria estao renderizados em tempo real no Canvas a direita.</p>
+                            <p class="slip-text" data-i18n="console.welcome_agent">Olá, Lyon. O ambiente está pronto para trabalhar. O espaço de trabalho local (/workspace) está mapeado e a telemetria do hardware está estável. O que vamos construir ou revisar hoje? Você pode digitar uma tarefa diretamente, chamar outro especialista usando @coder ou pressionar F1 para abrir o manual rápido.</p>
                             
                             <!-- Review Card HITL Embutido Diretamente no Chat (Padrão OpenDots) -->
                             <div class="inline-hitl-card">
@@ -3142,8 +3145,8 @@
                 </div>
 
                 <span class="ticker-prompt-sign">PIDOTS@EDGE:&gt;</span>
-                <textarea class="ticker-textarea" id="instructionInput" placeholder="Digite uma instrucao ou mencione @dot (Enter para transmitir)..." onkeydown="handleInputKey(event)" oninput="handleMentionInput(event)"></textarea>
-                <button class="pixel-btn btn-cyan" onclick="transmitInstruction()">
+                <textarea class="ticker-textarea" id="instructionInput" placeholder="Digite uma instrucao ou mencione @dot (Enter para transmitir)..." data-i18n-placeholder="console.input_placeholder" onkeydown="handleInputKey(event)" oninput="handleMentionInput(event)"></textarea>
+                <button class="pixel-btn btn-cyan" onclick="transmitInstruction()" data-i18n="console.send_btn">
                     [TRANSMITIR COMANDO]
                 </button>
             </div>
@@ -3600,11 +3603,11 @@
             PIDOTS CORE ATIVO // NO DE BORDA ARM64 (REF: RPI4 4GB)
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
-            <button class="pixel-btn" onclick="PiDotsUX.Onboarding.open()" title="Rever Tour Operacional de Primeiro Acesso" style="padding: 2px 6px; font-size: 8px;">
+            <button class="pixel-btn" onclick="PiDotsUX.Onboarding.open()" title="Rever Tour Operacional de Primeiro Acesso" data-i18n="nav.onboarding" style="padding: 2px 6px; font-size: 8px;">
                 [TOUR OPERACIONAL]
             </button>
-            <button class="pixel-btn" onclick="PiDotsUX.PatchNotes.open()" title="Exibir Notas de Atualização e Changelog" style="padding: 2px 6px; font-size: 8px;">
-                [PATCH NOTES // V1.1.0]
+            <button class="pixel-btn" id="btnFooterPatchNotes" onclick="PiDotsUX.PatchNotes.open()" title="Exibir Notas de Atualização e Changelog" style="padding: 2px 6px; font-size: 8px;">
+                [PATCH NOTES // V1.2.0]
             </button>
         </div>
         <div>
@@ -5259,13 +5262,13 @@
             <!-- Cabecalho Principal da Ficha -->
             <section class="catalog-head-block">
                 <div class="catalog-meta-line">
-                    <span>SERVICO: PIDOTS WORKSPACE OPERACIONAL</span>
-                    <span>STATUS: PRONTO PARA INICIALIZACAO</span>
-                    <span>CANAL: CONSOLE TACTICAL V1.1.0</span>
+                    <span data-i18n="onboarding.badge">PIDOTS OPERATIONAL CONSOLE // TOUR DE INICIACAO</span>
+                    <span>STATUS: PRONTO</span>
+                    <span>VERSAO: 1.2.0</span>
                 </div>
-                <h2 class="catalog-main-title" id="onboardingTitle">PIDOTS OPERATIONAL CONSOLE // TOUR DE INICIACAO</h2>
-                <p class="catalog-lead-text">
-                    Manual sintetico de operacao tatica para desenvolvedores e operadores de IA em hardware restrito.
+                <h2 class="catalog-main-title" id="onboardingTitle" data-i18n="onboarding.title">BEM-VINDO AO CONSOLE OPERACIONAL DO PIDOTS</h2>
+                <p class="catalog-lead-text" data-i18n="onboarding.subtitle">
+                    Um tour rápido de 2 minutos para você dominar o controle dos seus agentes locais.
                 </p>
             </section>
 
@@ -5425,19 +5428,19 @@
                             </div>
                             <div class="flow-arrow">&gt;&gt;</div>
                             <div class="flow-node">
-                                <span class="node-badge">[2] TRAVA MECANICA</span>
-                                <span class="node-text">Operador deve destravar o interruptor fisico digital.</span>
+                                <span class="node-badge">[2] AVALIACAO</span>
+                                <span class="node-text">Operador revisa os parametros e o risco real do comando.</span>
                             </div>
                             <div class="flow-arrow">&gt;&gt;</div>
                             <div class="flow-node">
-                                <span class="node-badge">[3] CARIMBO</span>
-                                <span class="node-text">Aplicacao formal de [HOMOLOGADO] ou [VETADO].</span>
+                                <span class="node-badge">[3] DECISAO</span>
+                                <span class="node-text">Confirmacao manual de [HOMOLOGAR] ou [VETAR].</span>
                             </div>
                         </div>
                     </div>
                     <div class="pixel-callout amber">
-                        <span class="callout-label">[REGRA DE OURO]:</span>
-                        <span>Nenhum comando destrutivo e executado sem aprovacao explicita e auditavel pelo operador humano. Zero automacoes cegas.</span>
+                        <span class="callout-label">[REGRA DE SEGURANCA]:</span>
+                        <span>Nenhum comando potencialmente destrutivo e executado sem autorizacao explicita do operador. Sem surpresas indesejadas.</span>
                     </div>
                 </article>
 
@@ -5454,14 +5457,14 @@
                     <div class="shortcuts-matrix">
                         <div class="sc-item"><kbd>Alt + I</kbd><span>Inspecionar e focar artefato no Live Canvas</span></div>
                         <div class="sc-item"><kbd>Ctrl + S</kbd><span>Gravar revisao ativa no banco de dados SQLite</span></div>
-                        <div class="sc-item"><kbd>Alt + H</kbd><span>Abrir dossie de governanca humana (HITL)</span></div>
+                        <div class="sc-item"><kbd>Alt + H</kbd><span>Abrir painel de governanca humana (HITL)</span></div>
                         <div class="sc-item"><kbd>Ctrl + L</kbd><span>Limpar visualizacao da bobina de teletipo</span></div>
                         <div class="sc-item"><kbd>F1</kbd><span>Manual operacional completo e documentacao</span></div>
                         <div class="sc-item"><kbd>ESC</kbd><span>Fechar modais, dialogos e cancelar operacao</span></div>
                     </div>
                     <div class="pixel-callout green">
                         <span class="callout-label">[SISTEMA PRONTO]:</span>
-                        <span>O console operacional do piDots esta totalmente carregado e sincronizado com os workers locais. Bom turno operacional.</span>
+                        <span>O console operacional do piDots esta carregado e pronto para o trabalho. Bom desenvolvimento!</span>
                     </div>
                 </article>
 
@@ -5482,16 +5485,16 @@
                     </label>
                     
                     <div class="catalog-button-group">
-                        <button class="pixel-btn" id="btnOnboardingSkip" onclick="PiDotsUX.Onboarding.close(true)">
+                        <button class="pixel-btn" id="btnOnboardingSkip" onclick="PiDotsUX.Onboarding.close(true)" data-i18n="onboarding.btn_skip">
                             [PULAR INTRODUCAO]
                         </button>
-                        <button class="pixel-btn" id="btnOnboardingPrev" onclick="PiDotsUX.Onboarding.prevStep()" disabled>
+                        <button class="pixel-btn" id="btnOnboardingPrev" onclick="PiDotsUX.Onboarding.prevStep()" data-i18n="onboarding.btn_prev" disabled>
                             [PASSO ANTERIOR]
                         </button>
-                        <button class="pixel-btn btn-cyan" id="btnOnboardingNext" onclick="PiDotsUX.Onboarding.nextStep()">
+                        <button class="pixel-btn btn-cyan" id="btnOnboardingNext" onclick="PiDotsUX.Onboarding.nextStep()" data-i18n="onboarding.btn_next">
                             [PROXIMO PASSO]
                         </button>
-                        <button class="pixel-btn btn-phosphor" id="btnOnboardingFinish" onclick="PiDotsUX.Onboarding.finish()" style="display: none;">
+                        <button class="pixel-btn btn-phosphor" id="btnOnboardingFinish" onclick="PiDotsUX.Onboarding.finish()" data-i18n="onboarding.btn_finish" style="display: none;">
                             [CONCLUIR TOUR & INICIAR]
                         </button>
                     </div>
@@ -5510,12 +5513,12 @@
             <!-- Cabecalho de Versao e Carimbo Fisico -->
             <header class="patchnotes-header-block">
                 <div class="patchnotes-header-left">
-                    <div class="patchnotes-sys-tag">PIDOTS // SISTEMA OPERACIONAL DE AGENTES AUTONOMOS</div>
-                    <h2 class="patchnotes-main-title" id="patchNotesTitle">NOTAS DE ATUALIZACAO - VERSAO 1.1.0</h2>
+                    <div class="patchnotes-sys-tag" data-i18n="patch.header">PIDOTS // SISTEMA OPERACIONAL DE AGENTES AUTONOMOS</div>
+                    <h2 class="patchnotes-main-title" id="patchNotesTitle" data-i18n="patch.title">NOTAS DE ATUALIZACAO - VERSAO 1.2.0</h2>
                     <div class="patchnotes-meta-bar">
                         <span class="meta-item" id="patchNotesBuildTag">BUILD: 20261012-ARM64</span>
                         <span class="meta-separator">//</span>
-                        <span class="meta-item" id="patchNotesCommitTag">COMMIT: 9F2A1C</span>
+                        <span class="meta-item" id="patchNotesCommitTag">COMMIT: c5a5e67</span>
                         <span class="meta-separator">//</span>
                         <span class="meta-item">CANAL: ESTAVEL</span>
                     </div>
@@ -5524,9 +5527,9 @@
                 <div class="patchnotes-header-right">
                     <div class="rubber-stamp stamp-approved stamp-patchnotes">
                         <div class="stamp-inner">
-                            <span class="stamp-title">RECEM APLICADO</span>
+                            <span class="stamp-title" data-i18n="patch.badge">RECEM APLICADO</span>
                             <span class="stamp-sub" id="patchNotesStampDate">2026-10-12 // 04:00 UTC</span>
-                            <span class="stamp-hash" id="patchNotesStampHash">SHA256: 9F2A1C</span>
+                            <span class="stamp-hash" id="patchNotesStampHash">SHA256: c5a5e67</span>
                         </div>
                     </div>
                 </div>
@@ -5538,63 +5541,75 @@
                 <!-- SECAO 1: PILULA VERDE [INCLUIDO / NOVO] -->
                 <section class="patchnotes-category-section">
                     <div class="category-header">
-                        <span class="pixel-pill pill-green">[INCLUIDO / NOVO]</span>
+                        <span class="pixel-pill pill-green" data-i18n="patch.tag_new">[INCLUIDO / NOVO]</span>
                         <span class="category-summary">RECURSOS INEDITOS DE INTERFACE E BORDA</span>
                     </div>
                     <ul class="patchnotes-list" id="patchListIncluded">
-                        <li><strong>Onboarding Tatil em Ficha Catalografica:</strong> Modal de 5 passos com navegacao por abas ortogonais, memorizacao de estado e atalhos globais de teclado.</li>
-                        <li><strong>Integracao e Suporte PWA Nativo:</strong> Captura transparente do evento beforeinstallprompt, banner retratil em teletipo e execucao standalone offline.</li>
-                        <li><strong>Changelog Central com Persistencia:</strong> Sistema unificado de notas de versao integrado ao armazenamento local do navegador e historico retroativo.</li>
-                        <li><strong>Monitor de Telemetria SVG crispEdges:</strong> Marcador estatico e curva de carga para frequencia e temperatura termica da CPU Broadcom.</li>
+                        <li><strong>Micro-Motor i18n Vanilla JS de Borda:</strong> Alternancia instantanea de idioma [PT | EN] com memoria local, comutacao in-memory inferior a 5ms e zero dependencias externas.</li>
+                        <li><strong>Dicionarios Canonicos Bilingues Desacoplados:</strong> Especificacao estruturada pt.json e en.json servida com cabecalhos Cache-Control estritos de borda.</li>
+                        <li><strong>Comutador Global de Idioma:</strong> Botao de controle tátil integrado no cabecalho de todas as superficies (/app, / e /docs) com estado persistente.</li>
+                        <li><strong>Endpoint de Idioma com Protecao de Borda:</strong> Rota /data/locales/{lang}.json com allowlist contra path traversal e validacao formal de entrada.</li>
                     </ul>
                 </section>
 
                 <!-- SECAO 2: PILULA CIANO [AJUSTADO / MELHORADO] -->
                 <section class="patchnotes-category-section">
                     <div class="category-header">
-                        <span class="pixel-pill pill-cyan">[AJUSTADO / MELHORADO]</span>
+                        <span class="pixel-pill pill-cyan" data-i18n="patch.tag_opt">[AJUSTADO / MELHORADO]</span>
                         <span class="category-summary">REFATORACOES, DESEMPENHO E ERGONOMIA</span>
                     </div>
                     <ul class="patchnotes-list" id="patchListAdjusted">
-                        <li><strong>Teto Estrito de DOM (150 Nos):</strong> Otimizacao do buffer circular de slips da bobina de teletipo, estabilizando o uso de memoria no dispositivo.</li>
-                        <li><strong>Hitbox Tatil de 48x48px:</strong> Ampliacao da area fisica de toque em botoes interativos sem distorcer o alinhamento de pixel art.</li>
-                        <li><strong>Sincronizacao ao Vivo do Live Canvas:</strong> Atualizacao parcial de documentos sem necessidade de recarregar toda a interface.</li>
-                        <li><strong>Fisica Mecanica Padronizada:</strong> Unificacao das microinteracoes em funcoes steps(1) e steps(2) com duracao menor que 50ms.</li>
+                        <li><strong>Humanizacao Radical de Voz e Tom de Engenharia:</strong> Eliminacao completa de chavões corporativos inflados e adocao de cadencia Gary Provost com tom de artesao de software.</li>
+                        <li><strong>Correcao Ortografica e Gramatical Culta:</strong> Correcao de 'arquotipos' para 'arquetipos', restauracao de diacriticos e revisao sintatica rigorosa no Guia e Manuais.</li>
+                        <li><strong>Unificacao de Topologia GitHub:</strong> Links de repositorios padronizados no espaco de documentacao tecnica.</li>
+                        <li><strong>Ajuste da Politica de Cache do Motor JS:</strong> Cabecalho Cache-Control calibrado com stale-while-revalidate prevenindo retencao de versoes obsoletas.</li>
                     </ul>
                 </section>
 
                 <!-- SECAO 3: PILULA VERMELHA [REMOVIDO / DEPRECIADO] -->
                 <section class="patchnotes-category-section">
                     <div class="category-header">
-                        <span class="pixel-pill pill-red">[REMOVIDO / DEPRECIADO]</span>
+                        <span class="pixel-pill pill-red" data-i18n="patch.tag_dep">[REMOVIDO / DEPRECIADO]</span>
                         <span class="category-summary">ELIMINACAO DE CARGAS PESADAS E APIS OBSOLETAS</span>
                     </div>
                     <ul class="patchnotes-list" id="patchListRemoved">
-                        <li><strong>Descarte de Bibliotecas Graficas Externas:</strong> Removidos Chart.js e pacotes pesados em favor de graficos matriciais construidos com SVG nativo.</li>
-                        <li><strong>Eliminacao de Caixas de Dialogo Nativas:</strong> Descontinuado o uso de alert(), confirm() e prompt() do navegador.</li>
-                        <li><strong>Remocao de Filtros de Desfoque (backdrop-filter):</strong> Eliminados filtros gaussianos que causavam engasgos de composicao grafica no ARM64.</li>
+                        <li><strong>Erradicacao de Jargoes Corporativos Vazios:</strong> Eliminadas metaforas infladas e promessas genericas de IA sem respaldo na arquitetura de silicio.</li>
+                        <li><strong>Descarte de Expressoes Enganosas:</strong> Remocao de termos que sugeriam travas fisicas digitais ou falhas cognitivas inexistentes.</li>
+                        <li><strong>Remocao de Dependencias Pesadas de Traducao:</strong> Eliminada qualquer necessidade de bibliotecas de internacionalizacao client-side pesadas.</li>
                     </ul>
                 </section>
 
                 <!-- SECAO 4: PILULA AMBAR [SEGURANCA & BORDA] -->
                 <section class="patchnotes-category-section">
                     <div class="category-header">
-                        <span class="pixel-pill pill-amber">[SEGURANCA & BORDA]</span>
-                        <span class="category-summary">BLINDAGEM OPERACIONAL E GOVERNANCA FORENSE</span>
+                        <span class="pixel-pill pill-amber" data-i18n="patch.tag_sec">[SEGURANCA & BORDA]</span>
+                        <span class="category-summary">SEGURANCA DE COMANDOS E ISOLAMENTO DE EXECUCAO</span>
                     </div>
                     <ul class="patchnotes-list" id="patchListSecurity">
-                        <li><strong>Trava Mecanica de Dois Estagios:</strong> Exigencia de desarme de chave de protecao antes da homologacao de comandos criticos no dossie HITL.</li>
-                        <li><strong>Isolamento de Sandbox Bubblewrap:</strong> Execucao estrita de ferramentas de terminal com bloqueio de leitura de chaves e certificados raiz.</li>
-                        <li><strong>Sanitizacao Estrita de Payload:</strong> Validacao formal de esquemas no gateway de mensageria prevenindo injecao de comandos em prompts multi-bot.</li>
+                        <li><strong>Imunidade Total a XSS no DOM:</strong> Mutacao textual estrita via textContent e setAttribute no micro-motor de internacionalizacao.</li>
+                        <li><strong>Atualizacao do Service Worker para Cache v5:</strong> Sincronizacao de CORE_STATIC_ASSETS para incluir dicionarios de locale e motor JS com operacao offline completa.</li>
+                        <li><strong>Validacao Estrutural de Paridade:</strong> Garantia de 100% de paridade de chaves entre dicionarios pt.json e en.json.</li>
                     </ul>
                 </section>
 
                 <!-- HISTORICO RETRATIL DE VERSOES ANTERIORES -->
                 <details class="patchnotes-history-accordion" id="patchNotesHistoryAccordion">
                     <summary class="history-summary">
-                        <span>[+] HISTORICO // VERSOES ANTERIORES DO SISTEMA (V1.0.1, V1.0.0)</span>
+                        <span>[+] HISTORICO // VERSOES ANTERIORES DO SISTEMA (V1.1.0, V1.0.1, V1.0.0)</span>
                     </summary>
                     <div class="history-content" id="patchNotesHistoryContent">
+                        <div class="history-version-block">
+                            <div class="history-ver-head">
+                                <span class="ver-badge">VERSAO 1.1.0 // 2026-10-12</span>
+                                <span class="ver-type">[MINOR RELEASE]</span>
+                            </div>
+                            <ul class="history-ver-list">
+                                <li>Onboarding Tatil em Ficha Catalografica com stepper de 5 etapas.</li>
+                                <li>Suporte PWA nativo 100% instalavel com WebAPK e Service Worker resiliente.</li>
+                                <li>Changelog central e modal de Patch Notes com persistencia em localStorage.</li>
+                                <li>Monitor de telemetria SVG crispEdges sem bibliotecas graficas externas.</li>
+                            </ul>
+                        </div>
                         <div class="history-version-block">
                             <div class="history-ver-head">
                                 <span class="ver-badge">VERSAO 1.0.1 // 2026-10-11</span>
@@ -5626,7 +5641,7 @@
                 <div class="patchnotes-footer-status">
                     <span>ESTADO: GRAVACAO AUTOMATICA NO LOCALSTORAGE</span>
                 </div>
-                <button class="pixel-btn btn-cyan" id="btnPatchNotesAcknowledge" onclick="PiDotsUX.PatchNotes.acknowledge()">
+                <button class="pixel-btn btn-cyan" id="btnPatchNotesAcknowledge" onclick="PiDotsUX.PatchNotes.acknowledge()" data-i18n="patch.btn_ack">
                     [ENTENDIDO / FECHAR]
                 </button>
             </footer>
@@ -5833,7 +5848,7 @@
         // ---------------------------------------------------------------------
         const PatchNotes = {
             STORAGE_KEY: 'pidots_last_seen_version',
-            activeVersion: '1.1.0',
+            activeVersion: '1.2.0',
             dataCache: null,
 
             async init() {
@@ -5842,7 +5857,10 @@
                     if (!res.ok) return;
                     const data = await res.json();
                     this.dataCache = data;
-                    this.activeVersion = data.current_version || '1.1.0';
+                    this.activeVersion = data.current_version || '1.2.0';
+
+                    const footerBtn = document.getElementById('btnFooterPatchNotes');
+                    if (footerBtn) footerBtn.textContent = `[PATCH NOTES // V${this.activeVersion}]`;
 
                     const lastSeen = localStorage.getItem(this.STORAGE_KEY);
                     // Se a versao em disco for diferente da versao vista pelo usuario, abre o modal
@@ -5866,7 +5884,13 @@
                 if (this.dataCache && this.dataCache.patch_notes) {
                     const pn = this.dataCache.patch_notes;
                     const titleElem = document.getElementById('patchNotesTitle');
-                    if (titleElem) titleElem.textContent = pn.title || `NOTAS DE ATUALIZACAO - VERSAO ${this.activeVersion}`;
+                    if (titleElem) {
+                        if (window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en' && window.t) {
+                            titleElem.textContent = window.t('patch.title');
+                        } else {
+                            titleElem.textContent = pn.title || `NOTAS DE ATUALIZACAO - VERSAO ${this.activeVersion}`;
+                        }
+                    }
 
                     const buildElem = document.getElementById('patchNotesBuildTag');
                     if (buildElem && this.dataCache.build) buildElem.textContent = `BUILD: ${this.dataCache.build}`;
@@ -5894,7 +5918,21 @@
             _fillList(elementId, items) {
                 const ul = document.getElementById(elementId);
                 if (!ul || !items || !Array.isArray(items) || items.length === 0) return;
-                ul.innerHTML = items.map((item) => `<li>${item}</li>`).join('');
+                ul.textContent = '';
+                items.forEach((item) => {
+                    const li = document.createElement('li');
+                    const colonIdx = item.indexOf(':');
+                    if (colonIdx > 0 && colonIdx < 60) {
+                        const strong = document.createElement('strong');
+                        strong.textContent = item.substring(0, colonIdx + 1);
+                        li.appendChild(strong);
+                        const textNode = document.createTextNode(item.substring(colonIdx + 1));
+                        li.appendChild(textNode);
+                    } else {
+                        li.textContent = item;
+                    }
+                    ul.appendChild(li);
+                });
             },
 
             acknowledge() {
@@ -6128,6 +6166,8 @@
         PiDotsUX.init();
     });
     </script>
+    <!-- Micro-motor de Internacionalização Ultraleve piDots -->
+    <script src="/static/pidots-i18n.js"></script>
 
 </body>
 </html>

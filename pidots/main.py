@@ -230,9 +230,11 @@ async def lifespan(app: FastAPI):
     await app.state.http_client.aclose()
 
 
+APP_VERSION = "1.2.0"
+
 app = FastAPI(
     title="piDots Edge Core",
-    version="0.1.0",
+    version=APP_VERSION,
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
@@ -1126,7 +1128,7 @@ async def get_pwa_manifest():
 async def get_service_worker():
     """Retorna o Service Worker com ciclo de vida controlado, cache resiliente e suporte offline."""
     sw_code = """
-const CACHE_NAME = 'pidots-cache-v4';
+const CACHE_NAME = 'pidots-cache-v5';
 const CORE_STATIC_ASSETS = [
     '/app',
     '/',
@@ -1136,7 +1138,10 @@ const CORE_STATIC_ASSETS = [
     '/icon-192.png',
     '/icon-512.png',
     '/icon-maskable-192.png',
-    '/icon-maskable-512.png'
+    '/icon-maskable-512.png',
+    '/data/locales/pt.json',
+    '/data/locales/en.json',
+    '/static/pidots-i18n.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -1244,8 +1249,8 @@ async def get_changelog():
         return JSONResponse(
             content={
                 "system": "piDots",
-                "current_version": "1.1.0",
-                "patch_notes": {"version": "1.1.0", "categories": {}},
+                "current_version": APP_VERSION,
+                "patch_notes": {"version": APP_VERSION, "categories": {}},
                 "history": []
             },
             headers={"Cache-Control": "public, max-age=60"}
@@ -1259,6 +1264,41 @@ async def get_changelog():
     except Exception as exc:
         logger.error(f"Erro ao ler data/changelog.json: {exc}")
         raise HTTPException(status_code=500, detail="Erro interno ao carregar o changelog")
+
+
+@app.get("/data/locales/{lang}.json")
+async def get_locale_dictionary(lang: str):
+    """Serve os dicionários de internacionalização (PT/EN) para o frontend com cache de borda."""
+    if lang not in ["pt", "en"]:
+        raise HTTPException(status_code=404, detail="Locale não suportado")
+    locale_path = Path(__file__).resolve().parent.parent / "data" / "locales" / f"{lang}.json"
+    if not locale_path.exists():
+        raise HTTPException(status_code=404, detail="Arquivo de locale não encontrado")
+    try:
+        content = json.loads(locale_path.read_text(encoding="utf-8"))
+        return JSONResponse(
+            content=content,
+            headers={
+                "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+                "Content-Language": "pt-BR" if lang == "pt" else "en-US"
+            }
+        )
+    except Exception as exc:
+        logger.error(f"Erro ao carregar locale {lang}: {exc}")
+        raise HTTPException(status_code=500, detail="Erro interno ao carregar dicionário de idioma")
+
+
+@app.get("/static/pidots-i18n.js")
+async def get_i18n_script():
+    """Serve o micro-motor Vanilla JS de internacionalização com cache estático."""
+    script_path = Path(__file__).resolve().parent.parent / "static" / "pidots-i18n.js"
+    if not script_path.exists():
+        raise HTTPException(status_code=404, detail="Script i18n não encontrado")
+    return Response(
+        content=script_path.read_text(encoding="utf-8"),
+        media_type="application/javascript",
+        headers={"Cache-Control": "public, max-age=3600, stale-while-revalidate=86400"}
+    )
 
 
 # ==============================================================================

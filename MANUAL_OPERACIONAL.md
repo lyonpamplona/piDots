@@ -4,7 +4,7 @@
 **Autor e Criador:** lyon christopher  
 **Assistente:** Logger  
 **Ambiente Alvo:** Computacao de Borda e SBCs (Benchmark de Referencia: Raspberry Pi 4B 4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
-**Versão:** 1.0.0 (Produção Estável)  
+**Versão:** 1.2.0 (Produção Estável — Edição Soberana Bilíngue & Escrita Humana)  
 
 ---
 
@@ -362,14 +362,14 @@ O piDots implementa proteções ativas contra esse fenômeno:
   docker compose logs pidots-core
   ```
 
-### 13.2 Diagnostico e Tratamento de Falhas de Provedor de IA
-O piDots categoriza falhas cognitivas em duas excecoes tipadas com comportamentos deterministicos:
+### 13.2 Diagnóstico e Resolução de Falhas de Conexão com o Provedor de IA
+O piDots separa erros de API em duas categorias claras para agir com rapidez e evitar gastos desnecessários:
 
-#### A. Falhas Irrecuperaveis de Autenticacao (ProviderAuthError - HTTP 401/403)
-- **Sintoma:** O agente interrompe o ciclo imediatamente com short-circuit sem desperdicar tentativas de retry.
+#### A. Erro de Autenticação ou Chave Inválida (ProviderAuthError - HTTP 401/403)
+- **Sintoma:** O agente interrompe a execução na mesma hora, sem insistir em novas tentativas que só consumiriam tempo e chamadas inúteis.
 - **Log do Sistema:** `Falha de autenticação com provedor de IA: HTTP 401: Unauthorized...`
-- **Fita Interna:** O agente grava na tabela `messages` do SQLite WAL uma mensagem com `visibility: 'internal'` e prefixo `[FALHA DE AUTENTICAÇÃO]`.
-- **Inspecao Forense via SQLite:**
+- **Registro Interno:** O agente grava na tabela `messages` do SQLite WAL uma mensagem interna de depuração com prefixo `[FALHA DE AUTENTICAÇÃO]`.
+- **Inspeção de Logs via SQLite:**
   ```bash
   sqlite3 /mnt/storage/piDots/data/pidots.db \
     "SELECT id, thread_id, content, created_at FROM messages WHERE visibility = 'internal' AND content LIKE '%[FALHA%' ORDER BY created_at DESC LIMIT 5;"
@@ -569,9 +569,9 @@ Exemplo de resposta operacional:
 }
 ```
 
-### 17.2 Acoes em Caso de Status WARNING ou CRITICAL
-- **`THERMAL_EXCEEDED` (Temperatura $\ge 72°C$):** O sistema ativa throttle automatico nas filas de inferencia. Verifique a ventilacao passiva/ativa do Raspberry Pi.
-- **`DISK_LOW_SPACE` (Espaco livre no MicroSD $< 10\%$):** Dispare imediatamente a rotina de manutencao noturna (Seção 18) para purgar mensagens antigas e truncar o WAL.
+### 17.2 Ações em Caso de Alerta WARNING ou CRITICAL
+- **`THERMAL_EXCEEDED` (Temperatura no SoC >= 72 °C):** O sistema reduz preventivamente o ritmo de execução para evitar sobreaquecimento da placa. Verifique a ventilação passiva ou ativa do seu Raspberry Pi.
+- **`DISK_LOW_SPACE` (Espaço livre no cartão MicroSD < 10%):** Dispare imediatamente a rotina de manutenção noturna (Seção 18) para purgar mensagens antigas e truncar o arquivo WAL.
 
 ---
 
@@ -603,6 +603,57 @@ curl -s -X POST http://localhost:8000/api/tasks \
     "action_prompt": "Execute a ferramenta edge_maintenance_run com days_threshold=7 e create_backup=true para preservar a saude do cartao MicroSD.",
     "target_channel_type": "internal"
   }' | jq .
-```
 Apos cadastrada, o `EdgeScheduler` executara a rotina de compactacao automaticamente todas as noites as 03:00 sem intervencao do operador.
 
+---
+
+## 19. Homologacao Operacional de Internacionalizacao (i18n), Locales e Changelog
+
+Com o subsistema de internacionalizacao bilingue nativo (PT/EN) e versionamento SemVer v1.2.0 ativo, o operador pode validar a integridade dos dicionarios e dos endpoints de borda.
+
+### 19.1 Inspecao dos Endpoints de Traducao e Changelog via cURL
+```bash
+# Validar endpoint de traducao em Portugues do Brasil (pt-BR)
+curl -s -i http://localhost:8000/data/locales/pt.json | head -n 15
+
+# Validar endpoint de traducao em Ingles Tecnico (en-US)
+curl -s -i http://localhost:8000/data/locales/en.json | head -n 15
+
+# Validar cabecalhos de cache de borda do script i18n
+curl -s -i http://localhost:8000/static/pidots-i18n.js | grep -E "HTTP/|content-type|cache-control"
+
+# Validar integridade da API de Changelog e Patch Notes SemVer v1.2.0
+curl -s http://localhost:8000/api/changelog | jq '{version: .current_version, released_at: .released_at, total_notes: (.notes | length)}'
+```
+
+### 19.2 Validacao Automatizada de Paridade Estrutural dos Dicionarios
+Execute o script em linha de comando no ambiente virtual para confirmar que 100% das chaves estao presentes em ambos os idiomas:
+```bash
+python3 -c "
+import json
+
+def flatten(d, prefix=''):
+    items = []
+    for k, v in d.items():
+        new_k = f'{prefix}.{k}' if prefix else k
+        if isinstance(v, dict):
+            items.extend(flatten(v, new_k))
+        else:
+            items.append(new_k)
+    return items
+
+with open('data/locales/pt.json', encoding='utf-8') as f:
+    pt = json.load(f)
+with open('data/locales/en.json', encoding='utf-8') as f:
+    en = json.load(f)
+
+pt_flat = set(flatten(pt))
+en_flat = set(flatten(en))
+diff = pt_flat.symmetric_difference(en_flat)
+if diff:
+    print(f'[ALERTA] Divergencia de chaves detectada: {diff}')
+    exit(1)
+else:
+    print(f'[OK] Paridade estrita confirmada: {len(pt_flat)} chaves folha sincronizadas entre PT e EN.')
+"
+```

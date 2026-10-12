@@ -1,6 +1,6 @@
 # piDots
 
-**Edge AI Coworker Persistente para Computacao de Borda (SBCs, ARM64 / x86_64, Benchmark: Raspberry Pi 4B)**
+**Edge AI Coworker Persistente para Computação de Borda (SBCs, ARM64 / x86_64, Benchmark: Raspberry Pi 4B)**
 
 [Português](README.md) | [English](README_EN.md)
 
@@ -13,36 +13,36 @@
 
 ---
 
-## Visao Geral
+## Visão Geral
 
-O **piDots** e uma plataforma de agentes autonomos persistentes (AI Coworkers) desenvolvida especificamente para operar 24/7 em computacao de borda e dispositivos restritos (SBCs, Mini PCs e servidores compactos), tendo o **Raspberry Pi 4B com 4GB de RAM (ARM64)** como benchmark de referencia.
+O **piDots** é uma plataforma de agentes autônomos persistentes (AI Coworkers) projetada para funcionar 24 horas por dia em computadores de placa única (SBCs), Mini PCs e servidores locais, tendo o **Raspberry Pi 4B com 4GB de RAM (ARM64)** como referência de hardware.
 
-Inspirado nos conceitos de agentes autonomos do OpenDots corporativo, o piDots foi reestruturado e otimizado como um monólito modular assincrono de alta performance. Ele elimina dependencias pesadas de navegadores Chromium headless, conteineres pesados de bancos vetoriais e orquestradores em Node.js, alcancando uma pegada de memoria operacional inferior a **50 MB de RAM** em idle e menos de **150 MB** sob execucao simultanea de multiplos agentes.
+Desenvolvido a partir dos conceitos de agentes persistentes do OpenDots, o piDots foi totalmente reconstruído como um monólito modular assíncrono em Python (FastAPI + uvloop). Eliminamos navegadores Chromium headless em segundo plano, bancos vetoriais pesados em contêineres separados e dependências de Node.js. O resultado prático é uma aplicação estável que consome menos de **50 MB de RAM** em repouso e menos de **100 MB** durante a execução ativa de múltiplos agentes.
 
-O sistema disponibiliza agentes persistentes orientados a tarefas tecnicas (DevOps, Pesquisa, Auditoria de Codigo), equipados com memoria de longo prazo, isolamento em sandbox de seguranca no sistema de arquivos, governanca com aprovacao humana (Human-in-the-Loop) para acoes de alto risco, e uma interface web SPA/PWA dark mode ultra-responsiva.
+O sistema disponibiliza especialistas orientados a tarefas técnicas (DevOps, Pesquisa, Auditoria de Código), equipados com memória de longo prazo, isolamento em sandbox de segurança no sistema de arquivos, governança com aprovação humana (Human-in-the-Loop) para ações de alto risco, e uma interface web SPA/PWA dark mode ultra-responsiva.
 
 ---
 
-## Comparativo Tecnico: piDots vs OpenDots Corporativo
+## Comparativo Técnico: piDots vs OpenDots Corporativo
 
-| Parametro | OpenDots (Padrao Corporativo) | piDots (Edge Computing) |
+| Parâmetro | OpenDots (Padrão Corporativo) | piDots (Computação de Borda) |
 | :--- | :--- | :--- |
-| **Hardware Minimo** | Servidor x86_64 com 8GB a 16GB RAM | Raspberry Pi 4B (4GB RAM) / ARM64 / x86_64 |
-| **Stack de Execucao** | Node.js, Electron/Next.js, Python, Redis | Python 3.11-3.13 (FastAPI, uvloop, AsyncIO) |
-| **Consumo de Memoria (Idle)** | 2.000 MB - 3.500 MB RAM | ~48 MB - 52 MB RAM (Reducao de ~98%) |
-| **Consumo sob Carga (Pico)** | 4.000 MB - 6.000 MB RAM | < 150 MB RAM |
+| **Hardware Mínimo** | Servidor x86_64 com 8GB a 16GB RAM | Raspberry Pi 4B (4GB RAM) / ARM64 / x86_64 |
+| **Stack de Execução** | Node.js, Electron/Next.js, Python, Redis | Python 3.11-3.13 (FastAPI, uvloop, AsyncIO) |
+| **Consumo de Memória (Repouso)** | 2.000 MB - 3.500 MB RAM | ~48 MB - 52 MB RAM (Redução de ~98%) |
+| **Consumo sob Carga (Pico)** | 4.000 MB - 6.000 MB RAM | < 100 MB RAM |
 | **Banco de Dados & Estado** | PostgreSQL / Neo4j / Redis | SQLite com WAL Mode e PRAGMAs otimizados |
-| **Banco Vetorial / Memoria** | ChromaDB / Pinecone / Qdrant (500MB+) | Extrator Vetorial CRC32 KNN em disco (< 5MB) |
-| **Navegador e Leitura Web** | Chromium / Playwright headless (~500MB RAM) | Trafilatura / httpx assincrono puro em CPU (~20MB) |
-| **Isolamento de Seguranca** | Docker aninhado / VM Cloud | Sandbox Bubblewrap (`bwrap`) nativo Linux |
+| **Banco Vetorial / Memória** | ChromaDB / Pinecone / Qdrant (500MB+) | Extrator Vetorial CRC32 KNN em disco (< 5MB) |
+| **Navegador e Leitura Web** | Chromium / Playwright headless (~500MB RAM) | Trafilatura / httpx assíncrono puro em CPU (~20MB) |
+| **Isolamento de Segurança** | Docker aninhado / VM Cloud | Sandbox Bubblewrap (`bwrap`) nativo Linux |
 | **Desgaste de Armazenamento** | Alto overhead de fsync em disco | Otimizado para preservar MicroSD / SSD USB |
-| **Integracao e Distribuicao** | Sistema fechado / Microsservicos | Pacote Python modular (`pip install -e .`) e Docker |
+| **Integração e Distribuição** | Sistema fechado / Microsserviços | Pacote Python modular (`pip install -e .`) e Docker |
 
 ---
 
-## Arquitetura e Principais Modulos
+## Arquitetura e Principais Módulos
 
-O piDots foi projetado como um monolito modular assincrono com baixa sobrecarga computacional:
+O piDots foi projetado como um monólito modular assíncrono com baixa sobrecarga computacional:
 
 ```
 pidots/
@@ -85,76 +85,81 @@ pidots/
 
 ---
 
-## Capacidades Avancadas de Borda
+## Capacidades Avançadas de Borda
 
-### 1. Orquestracao Multi-Bot e Arquetipos Cognitivos
-O piDots transcende o chat isolado permitindo cooperacao multi-agente in-process:
-- **Mencoes Dinamicas (@dot):** O `ThreadRouter` extrai mencoes no formato `@nome_do_dot`, resolvendo interlocutores e gravando os participantes na tabela `thread_participants`.
-- **Topologia Supervisor-Worker:** O supervisor planeja e delega subtarefas tecnicas atraves da ferramenta `delegate_task`, executando workers em threads isoladas e consolidando os resultados na conversa principal.
-- **Transferencia de Lideranca (Handoff):** Ferramenta `handoff_to_dot` para transferir a titularidade operacional de uma thread para outro especialista com registro na tabela `agent_handoffs`.
-- **Fitas de Carbono:** Mensagens de comunicacao inter-agente sao gravadas com `visibility: 'internal'` para auditoria sem poluir a interface do usuario.
-- **Arquetipos Cognitivos:** Suporte nativo a perfis operacionais:
-  - `supervisor`: Coordenador geral e gestao de metas.
-  - `grok`: Analitico-convergente, auditoria de codigo, terminal e testes.
-  - `muse`: Criativo-divergente, arquitetura, sintese e documentacao.
-  - `auditor`: Inspecao de integridade, telemetria e conformidade.
-- **Dynamic Tool Pruning:** Cada Dot carrega apenas as ferramentas permitidas em `allowed_tools_json`, reduzindo em ate 75% o consumo de tokens de contexto e eliminando alucinacoes.
+### 1. Orquestração Multi-Bot e Especialistas Locais
+Em vez de chats isolados, o piDots conecta múltiplos especialistas dentro do mesmo processo:
+- **Menções Dinâmicas (@dot):** O `ThreadRouter` extrai menções no formato `@nome_do_dot`, resolvendo interlocutores e gravando os participantes na tabela `thread_participants`.
+- **Topologia Supervisor-Worker:** O supervisor planeja e delega subtarefas técnicas através da ferramenta `delegate_task`, executando workers em threads isoladas e consolidando os resultados na conversa principal.
+- **Transferência de Liderança (Handoff):** Ferramenta `handoff_to_dot` para transferir a titularidade operacional de uma thread para outro especialista com registro na tabela `agent_handoffs`.
+- **Logs Internos de Depuração:** Mensagens de comunicação inter-agente são gravadas com `visibility: 'internal'` para auditoria sem poluir a interface do usuário.
+- **Perfis Especializados:** Suporte nativo a papéis operacionais bem definidos:
+  - `supervisor`: Coordenador geral e gestão de metas.
+  - `grok` ou `coder`: Analítico, terminal, automação e testes de código.
+  - `muse`: Arquitetura de sistemas, síntese e redação técnica.
+  - `auditor`: Inspeção de segurança, telemetria e conformidade de comandos.
+- **Dynamic Tool Pruning:** Cada Dot carrega apenas as ferramentas permitidas em `allowed_tools_json`, reduzindo em até 75% o consumo de tokens de contexto e eliminando alucinações.
 
-### 2. Automacoes Proativas: Padrao Dot Heartbeat e Circuit Breaker
-O modulo `pidots/core/scheduler.py` implementa um scheduler in-process perpetuo baseado em `croniter`, sem necessidade de Redis ou Celery:
+### 2. Automações Proativas: Padrão Dot Heartbeat e Circuit Breaker
+O módulo `pidots/core/scheduler.py` implementa um agendador contínuo in-process baseado em `croniter`, sem necessidade de Redis ou Celery:
 - **Rotinas Cron:** Agendamentos persistidos na tabela `scheduled_tasks` do SQLite WAL.
-- **Diretriz de Silencio Operacional (HEARTBEAT_OK):** Ao executar checagens rotineiras, se o agente constatar integridade do sistema, responde estritamente `HEARTBEAT_OK`. O scheduler registra o estado como `SILENT` e hiberna sem gerar notificacoes inuteis ou poluir o banco de dados.
-- **Controle de Exclusao Mutua in-process:** Trava em memoria (`_running_tasks`) que previne reentrancia e disparos em cascata da mesma tarefa quando o ciclo de raciocinio do LLM ultrapassa o intervalo periodico de varredura (15s).
-- **Circuit Breaker com Backoff Exponencial:** Tarefas proativas com falhas recorrentes aplicam retardo progressivo de 30s ate 3.600s (`min(3600, 30 * 2^(n-1))`). Na 5ª falha consecutiva, o circuito abre (`CIRCUIT_OPEN`), desativando a tarefa (`is_active = 0`) para preservar ciclos de CPU ARM64 e conectividade.
-- **Sanity Check Preventivo de Inicializacao (AUTH_REQUIRED):** Caso a chave de API esteja vazia ou configurada com valores placeholder, tarefas proativas sao pausadas em `AUTH_REQUIRED` com backoff protetivo de 10 minutos, poupando requisicoes externas inuteis.
+- **Diretriz de Silêncio Operacional (HEARTBEAT_OK):** Ao executar checagens rotineiras, se o agente constatar integridade do sistema, responde estritamente `HEARTBEAT_OK`. O agendador registra o estado como `SILENT` e hiberna sem gerar notificações inúteis ou poluir o banco de dados.
+- **Controle de Exclusão Mútua in-process:** Trava em memória (`_running_tasks`) que previne reentrância e disparos em cascata da mesma tarefa quando o ciclo de raciocínio do LLM ultrapassa o intervalo periódico de varredura (15s).
+- **Circuit Breaker com Backoff Exponencial:** Tarefas proativas com falhas recorrentes aplicam retardo progressivo de 30s até 3.600s (`min(3600, 30 * 2^(n-1))`). Na 5ª falha consecutiva, o circuito abre (`CIRCUIT_OPEN`), desativando a tarefa (`is_active = 0`) para preservar ciclos de CPU ARM64 e conectividade.
+- **Verificação Preventiva de Inicialização (AUTH_REQUIRED):** Caso a chave de API esteja vazia ou configurada com valores placeholder, tarefas proativas são pausadas em `AUTH_REQUIRED` com backoff protetivo de 10 minutos, poupando requisições externas inúteis.
 
-### 3. Gateway de Mensageria Unificada e Canais Tematicos
-O modulo `pidots/core/messaging_gateway.py` centraliza comunicacoes externas via webhooks HTTP stateless:
-- **Adaptadores Nativos:** Endpoints dedicados para Telegram (`/api/webhooks/telegram/{dot_id}`), WhatsApp via Evolution API com autenticacao por apikey (`/api/webhooks/whatsapp/{dot_id}`) e Webhooks Genericos (`/api/webhooks/incoming/{dot_id}`).
-- **Integracao Nativa Evolution API:** Variaveis `EVOLUTION_API_URL` e `EVOLUTION_API_KEY` com atualizacao a quente e suporte a envio assincrono via cliente HTTPx.
-- **Salas Tematicas (#canais):** Canais de discussao colaborativa persistidos na tabela `channels`.
-- **Trava Anti-Recursao Estrita:** Para evitar loops infinitos entre bots, o barramento de canais aplica:
+### 3. Gateway de Mensageria Unificada e Canais Temáticos
+O módulo `pidots/core/messaging_gateway.py` centraliza comunicações externas via webhooks HTTP stateless:
+- **Adaptadores Nativos:** Endpoints dedicados para Telegram (`/api/webhooks/telegram/{dot_id}`), WhatsApp via Evolution API com autenticação por apikey (`/api/webhooks/whatsapp/{dot_id}`) e Webhooks Genéricos (`/api/webhooks/incoming/{dot_id}`).
+- **Integração Nativa Evolution API:** Variáveis `EVOLUTION_API_URL` e `EVOLUTION_API_KEY` com atualização a quente e suporte a envio assíncrono via cliente HTTPx.
+- **Salas Temáticas (#canais):** Canais de discussão colaborativa persistidos na tabela `channels`.
+- **Trava Anti-Recursão Estrita:** Para evitar loops infinitos entre bots, o barramento de canais aplica:
   1. Contador de saltos estrito (`hop_count <= 3`).
-  2. Bots so respondem a outros bots se houver mencao explicita `@dot_id`.
-  3. Resposta silenciosa `NO_ACTION` quando o agente nao tem contribuicao relevante a acrescentar.
-- **Retorno Operacional Amigavel em Falhas:** Em caso de indisponibilidade do provedor, o gateway captura a interrupcao e devolve aviso estruturado `[FALHA OPERACIONAL]` ao interlocutor externo sem degradar o canal.
+  2. Bots só respondem a outros bots se houver menção explícita `@dot_id`.
+  3. Resposta silenciosa `NO_ACTION` quando o agente não tem contribuição relevante a acrescentar.
+- **Retorno Operacional Amigável em Falhas:** Em caso de indisponibilidade do provedor, o gateway captura a interrupção e devolve aviso estruturado `[FALHA OPERACIONAL]` ao interlocutor externo sem degradar o canal.
 
-### 4. Arquitetura de Resiliencia Cognitiva e Tratamento Tipado de Falhas
-O motor central do piDots implementa um protocolo unificado de resiliencia de ponta a ponta:
-- **Excecoes Tipadas de Provedor:** O cliente `OpenAIUniversalProvider` distingue `ProviderAuthError` (HTTP 401/403 com short-circuit imediato sem retentativas inuteis) de `ProviderTransientError` (HTTP 503/429/timeout com politicas de retry e jitter).
+### 4. Arquitetura de Resiliência e Tratamento Tipado de Falhas
+O motor central do piDots implementa um protocolo unificado de resiliência de ponta a ponta:
+- **Exceções Tipadas de Provedor:** O cliente `OpenAIUniversalProvider` distingue `ProviderAuthError` (HTTP 401/403 com short-circuit imediato sem retentativas inúteis) de `ProviderTransientError` (HTTP 503/429/timeout com políticas de retry e jitter).
 - **Contrato AG-UI v1.0 Padronizado:** O ciclo `DotAgent.run_thread` emite o evento terminal `run:finished` com status `'failed'`, populando `error`, `error_type` (`auth_error` ou `transient_error`) e `final_response: ""`.
-- **Fita Interna de Diagnostico:** Erros criticos sao gravados na tabela `messages` do SQLite WAL com visibilidade `internal` (`[FALHA DE INFERENCIA]` ou `[FALHA DE AUTENTICACAO]`), garantindo rastreabilidade forense sem poluir o feed do usuario.
-- **Resiliencia Integrada dos Tres Consumidores:**
-  - *EdgeScheduler:* Registra o status `FAILED` com sumario tecnico real no SQLite, eliminando falsos positivos de sucesso.
-  - *MessagingGateway:* Devolve retorno amigavel claro para canais externos (`[FALHA OPERACIONAL]`).
+- **Registro Interno de Diagnóstico:** Erros críticos são gravados na tabela `messages` do SQLite WAL com visibilidade `internal` (`[FALHA DE INFERENCIA]` ou `[FALHA DE AUTENTICACAO]`), garantindo rastreabilidade técnica sem poluir o feed do usuário.
+- **Resiliência Integrada dos Três Consumidores:**
+  - *EdgeScheduler:* Registra o status `FAILED` com sumário técnico real no SQLite, eliminando falsos positivos de sucesso.
+  - *MessagingGateway:* Devolve retorno amigável claro para canais externos (`[FALHA OPERACIONAL]`).
   - *MultiBotOrchestrator:* Marca a subtarefa em `agent_handoffs` como `FAILED`, registra alerta interno na thread pai e retorna feedback estruturado `{'success': False, 'error': ...}` para permitir replanejamento pelo supervisor.
 
-### 5. Memoria Hierarquica Autonoma (Padrao MemGPT / Letta)
-O modulo `pidots/storage/memory_manager.py` disponibiliza memoria em 3 camadas gerida pelo proprio Dot via Function Calling nativo:
-- **Core Memory In-Context (`<core_memory>`):** Blocos fixos de memoria residente injetados diretamente no system prompt com teto rigido de caracteres contra overflow: `human` (dados do usuario), `persona` (identidade do agente) e `active_context` (foco da missao).
-- **Ferramentas de Auto-Edicao:** `core_memory_append` e `core_memory_replace` permitem ao Dot aprender e atualizar sua propria identidade sem comandos do operador.
-- **Archival Memory Duradoura com Busca Hibrida:** Fatos e documentacoes gravados em `archival_memories` e indexados sincronamente na Virtual Table SQLite FTS5 (`archival_memories_fts`). Combina ranking BM25 com projecao vetorial esparsa 64d (baseada em hashing de trigramas e ativacao semantica), com as ferramentas `archival_memory_insert` e `archival_memory_search`.
+### 5. Memória Hierárquica Autônoma (Padrão MemGPT / Letta)
+O módulo `pidots/storage/memory_manager.py` disponibiliza memória em 3 camadas gerida pelo próprio Dot via Function Calling nativo:
+- **Core Memory In-Context (`<core_memory>`):** Blocos fixos de memória residente injetados diretamente no system prompt com teto rígido de caracteres contra overflow: `human` (dados do usuário), `persona` (identidade do agente) e `active_context` (foco da missão).
+- **Ferramentas de Auto-Edição:** `core_memory_append` e `core_memory_replace` permitem ao Dot aprender e atualizar sua própria identidade sem comandos do operador.
+- **Archival Memory Duradoura com Busca Híbrida:** Fatos e documentações gravados em `archival_memories` e indexados sincronicamente na Virtual Table SQLite FTS5 (`archival_memories_fts`). Combina ranking BM25 com projeção vetorial esparsa 64d (baseada em hashing de trigramas e ativação semântica), com as ferramentas `archival_memory_insert` e `archival_memory_search`.
 - **Recall Memory:** A ferramenta `recall_memory_search` permite consultar conversas anteriores na mesma thread sem poluir o contexto com turnos brutos.
 
-### 6. Self-Healing Harness e Planejamento em Dois Estagios (Goals & Milestones)
-- **Self-Healing Harness (`pidots/core/self_healing.py`):** Inspeciona resultados de shell e scripts Python. Ao detectar falhas de execucao, disseca o traceback bruto, identifica o arquivo, a linha e o tipo da excecao, emitindo o evento AG-UI `self_healing:triggered` e fornecendo diagnostico com recomendacao tecnica de correcao via ferramenta `execute_and_verify`.
-- **Two-Stage Planning (`pidots/core/planner.py`):** Modela metas (`goals`) e marcos operacionais (`milestones`) persistidos no SQLite. O agente cria planos (`plan_create`), atualiza o status de cada marco com evidencias tecnicas (`plan_update_step`) e consulta o progresso percentual (`plan_get_status`), com formatacao XML automatica `<execution_plan>`.
+### 6. Auto-Cura (Self-Healing Harness) e Planejamento em Dois Estágios (Goals & Milestones)
+- **Self-Healing Harness (`pidots/core/self_healing.py`):** Inspeciona resultados de shell e scripts Python. Ao detectar falhas de execução, disseca o traceback bruto, identifica o arquivo, a linha e o tipo da exceção, emitindo o evento AG-UI `self_healing:triggered` e fornecendo diagnóstico com recomendação técnica de correção via ferramenta `execute_and_verify`.
+- **Two-Stage Planning (`pidots/core/planner.py`):** Modela metas (`goals`) e marcos operacionais (`milestones`) persistidos no SQLite. O agente cria planos (`plan_create`), atualiza o status de cada marco com evidências técnicas (`plan_update_step`) e consulta o progresso percentual (`plan_get_status`), com formatação XML automática `<execution_plan>`.
 
-### 7. Conselho Consultivo e Debate Dialetico Multi-Bot
-O modulo `pidots/core/council.py` implementa deliberacao dialetica formal entre especialistas cognitivos:
-- **Papéis do Conselho:** Propositor (`@coder` formula proposta tecnica), Auditor Critico (`@auditor` faz revisao adversarial de riscos) e Supervisor Geral (`@supervisor` sintetiza o veredito executivo).
-- **Isolamento em Fitas de Carbono:** As rodadas intermediarias de debate sao gravadas com `visibility: 'internal'`. Somente a resolucao final e publicada no feed com o cabecalho `[CONSELHO CONSULTIVO - RESOLUCAO FINAL]`.
-- **Trava de Seguranca:** Teto maximo rigido de 3 rodadas de debate para conter custos e memoria, com consumo medido inferior a 53 MB de RAM.
-- **Ferramenta Nativa:** Invocacao direta via `run_council_debate`.
+### 7. Conselho Consultivo e Deliberação Dialética Multi-Bot
+O módulo `pidots/core/council.py` implementa deliberação dialética formal entre especialistas cognitivos:
+- **Papéis do Conselho:** Propositor (`@coder` formula proposta técnica), Auditor Crítico (`@auditor` faz revisão adversarial de riscos) e Supervisor Geral (`@supervisor` sintetiza o veredito executivo).
+- **Isolamento de Deliberação Interna:** As rodadas intermediárias de debate são gravadas com `visibility: 'internal'`. Somente a resolução final é publicada no feed com o cabeçalho `[CONSELHO CONSULTIVO - RESOLUCAO FINAL]`.
+- **Trava de Segurança:** Teto máximo rígido de 3 rodadas de debate para conter custos e memória, com consumo medido inferior a 53 MB de RAM.
+- **Ferramenta Nativa:** Invocação direta via `run_council_debate`.
 
-### 8. Espaco de Conhecimento Compartilhado e Dot Packs Portaveis
-- **Shared Knowledge Space (`pidots/storage/shared_space.py`):** Quadro colaborativo indexado por `(thread_id, topic_key)` na tabela `thread_shared_notes`. Permite gravacao (`shared_space_write`), leitura (`shared_space_read`) e sobrescrita colaborativa entre bots na mesma thread, com formatacao XML `<shared_knowledge_space>`.
-- **Dot Packs v1.0 (`pidots/core/dot_pack.py`):** Formato portavel de manifesto JSON que empacota definicoes do Dot, arquetipo, ferramentas, blocos de Core Memory, memórias duradouras e arquivos de workspace. Exportacao via `GET /api/dots/{dot_id}/export-pack` e importacao atomica via `POST /api/dots/import-pack`.
+### 8. Espaço de Conhecimento Compartilhado e Dot Packs Portáveis
+- **Shared Knowledge Space (`pidots/storage/shared_space.py`):** Quadro colaborativo indexado por `(thread_id, topic_key)` na tabela `thread_shared_notes`. Permite gravação (`shared_space_write`), leitura (`shared_space_read`) e sobrescrita colaborativa entre bots na mesma thread, com formatação XML `<shared_knowledge_space>`.
+- **Dot Packs v1.0 (`pidots/core/dot_pack.py`):** Formato portável de manifesto JSON que empacota definições do Dot, perfil, ferramentas, blocos de Core Memory, memórias duradouras e arquivos de workspace. Exportação via `GET /api/dots/{dot_id}/export-pack` e importação atômica via `POST /api/dots/import-pack`.
 
-### 9. Triggers de Hardware Edge e Manutencao Noturna do MicroSD
-- **Triggers Orientados a Eventos de Hardware (`pidots/core/edge_triggers.py`):** Monitora temperatura do SoC Broadcom BCM2711 via sysfs Linux (`/sys/class/thermal/thermal_zone0/temp`), espaco livre no MicroSD e memoria RAM livre. Emite alertas proativos e ativa throttle automatico caso a temperatura ultrapasse 72°C ou o espaco em disco seja inferior a 10%. Endpoint: `GET /api/edge/triggers`.
-- **Rotina de Manutencao Noturna Autonoma (`pidots/storage/maintenance.py`):** Executa `PRAGMA wal_checkpoint(TRUNCATE)` para esvaziar o arquivo WAL, consolida e poda mensagens brutas antigas (> 7 dias) na tabela `episodic_memories`, gera backups atomicos seguros via `VACUUM INTO` em conexao isolada (`isolation_level=None`) e atualiza indices com `PRAGMA optimize`. Endpoint: `POST /api/edge/maintenance`.
+### 9. Triggers de Hardware e Manutenção Noturna do MicroSD
+- **Triggers Orientados a Eventos de Hardware (`pidots/core/edge_triggers.py`):** Monitora temperatura do SoC Broadcom BCM2711 via sysfs Linux (`/sys/class/thermal/thermal_zone0/temp`), espaço livre no MicroSD e memória RAM livre. Emite alertas proativos e ativa throttle automático caso a temperatura ultrapasse 72°C ou o espaço em disco seja inferior a 10%. Endpoint: `GET /api/edge/triggers`.
+- **Rotina de Manutenção Noturna Autônoma (`pidots/storage/maintenance.py`):** Executa `PRAGMA wal_checkpoint(TRUNCATE)` para esvaziar o arquivo WAL, consolida e poda mensagens brutas antigas (> 7 dias) na tabela `episodic_memories`, gera backups atômicos seguros via `VACUUM INTO` em conexão isolada (`isolation_level=None`) e atualiza índices com `PRAGMA optimize`. Endpoint: `POST /api/edge/maintenance`.
 
+### 10. Internacionalização Bilíngue Nativa (PT/EN) e Micro-Motor de Borda
+- **Micro-Motor Vanilla JS (`static/pidots-i18n.js`):** Alternância instantânea de idioma (< 10ms) sem frameworks pesados ou consumo extra de RAM, com detecção e persistência segura em `localStorage.getItem('pidots_lang')`.
+- **Dicionários Atômicos JSON (`data/locales/pt.json` e `data/locales/en.json`):** Dicionários semânticos servidos com cache de borda e fallback defensivo inteligente.
+- **Mutação Estrita via textContent:** Mecanismo declarativo baseado em atributos `data-i18n` e `data-i18n-attr`, com imunidade total a injeções de script (XSS).
+- **Onboarding e Patch Notes SemVer v1.2.0:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
 
 ---
 
@@ -174,10 +179,10 @@ O modulo `pidots/core/council.py` implementa deliberacao dialetica formal entre 
 
 A execucao em conteiner e o metodo padrao para ambientes persistentes:
 
-1. Clone o repositorio:
+1. Clone o repositório:
 ```bash
-git clone https://github.com/lyon-christopher/pidots.git
-cd pidots
+git clone https://github.com/lyonchristopher/piDots.git
+cd piDots
 ```
 
 2. Configure as variaveis de ambiente:
@@ -352,7 +357,11 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 | `GET` | `/relatorio` | Relatorio tecnico de viabilidade de engenharia e benchmarks |
 | `GET` | `/health` | Telemetria de hardware (temperatura SoC, RAM, status SQLite WAL) |
 | `GET` | `/manifest.json` | Manifesto PWA para instalacao em dispositivos moveis e desktop (`start_url: /app`) |
+| `GET` | `/sw.js` | Service Worker PWA com cache defensivo v5 para operacao offline |
 | `GET` | `/icon.svg` | Logotipo vetorial oficial em formato SVG com cache prolongado |
+| `GET` | `/static/pidots-i18n.js` | Micro-motor Vanilla JS de internacionalizacao client-side |
+| `GET` | `/data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
+| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.2.0) |
 | `GET` | `/api/dots` | Listagem de AI Coworkers com arquetipos e status |
 | `GET` | `/api/dots/{id}/export-pack` | Exportacao portavel do manifesto DotPack v1.0 (persona, memorias, workspace) |
 | `POST` | `/api/dots/import-pack` | Importacao atomica de novos agentes a partir de arquivo de DotPack |
@@ -398,6 +407,8 @@ O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota ca
 - **Visualizador de Diffs e Versionamento:** Inspecao lado a lado de alteracoes em arquivos persistidos no SQLite WAL com carimbos analogicos de status.
 - **Governanca Interativa HITL:** Cartoes de aprovacao e veto forense de comandos com registro de auditoria e carimbos de estado.
 - **Streaming de Raciocinio AG-UI:** Exibicao token a token de pensamentos e chamadas de ferramentas.
+- **Onboarding Walkthrough Guiado:** Esteira interativa de 5 passos para novos operadores com retencao de conclusao no cliente e reabertura via atalho F1.
+- **Central de Patch Notes SemVer (v1.2.0):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
 
 #### Navegacao Cruzada via Chords Globais de Teclado
 Para transicao instantanea entre as superficies do sistema sem necessidade de mouse:
@@ -479,6 +490,11 @@ python3 scripts/stress_test.py
 ├── .gitignore
 ├── ARCHITECTURE.md                  # Especificacao detalhada de arquitetura e I/O
 ├── CONTRIBUTING.md                  # Diretrizes para contribuicao tecnica ao projeto
+├── data/                            # Dados estaticos, changelog e dicionarios de localizacao
+│   ├── changelog.json               # Historico de versoes e notas de atualizacao SemVer v1.2.0
+│   └── locales/                     # Dicionarios de internacionalizacao atomicos (i18n)
+│       ├── en.json                  # Dicionario de termos em Ingles Tecnico
+│       └── pt.json                  # Dicionario de termos em Portugues do Brasil
 ├── docker-compose.yml               # Configuracao oficial de orquestracao Docker
 ├── Dockerfile                       # Imagem otimizada baseada em python:3.13-slim
 ├── LICENSE                          # Licenca MIT
@@ -522,7 +538,9 @@ python3 scripts/stress_test.py
 ├── relatorio_estudo_pidots.html     # Relatorio tecnico de viabilidade e engenharia
 ├── requirements.txt                 # Dependencias estritas do projeto
 ├── SECURITY.md                      # Politica de seguranca e reporte de vulnerabilidades
-└── scripts/                         # Scripts de teste automatizado e benchmarks
+├── scripts/                         # Scripts de teste automatizado e benchmarks
+└── static/                          # Assets estaticos do frontend
+    └── pidots-i18n.js               # Micro-motor Vanilla JS de internacionalizacao client-side
 ```
 
 ---
