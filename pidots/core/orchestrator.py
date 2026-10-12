@@ -8,12 +8,10 @@ import re
 import uuid
 import json
 import logging
-from typing import AsyncGenerator, Any
-from datetime import datetime, timezone
+from typing import Any
 
 from ..storage.db import get_db
 from ..providers.openai_client import OpenAIUniversalProvider
-from .state import AGUIEvent
 
 logger = logging.getLogger("pidots.orchestrator")
 
@@ -293,10 +291,10 @@ class MultiBotOrchestrator:
         """
         logger.info("Transferência de liderança (Handoff): %s -> %s na thread %s", source_dot_id, target_dot_id, thread_id)
         async with get_db() as db:
-            # Atualiza dot_id da thread para o novo líder
+            # Atualiza dot_id e primary_dot_id da thread para o novo líder
             await db.execute(
-                "UPDATE threads SET dot_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                (target_dot_id, thread_id)
+                "UPDATE threads SET dot_id = ?, primary_dot_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                (target_dot_id, target_dot_id, thread_id)
             )
             handoff_id = str(uuid.uuid4())
             await db.execute(

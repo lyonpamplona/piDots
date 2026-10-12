@@ -5,13 +5,8 @@ e orquestra salas temáticas colaborativas com prevenção de loops infinitos.
 """
 
 import asyncio
-import hmac
-import hashlib
-import json
 import logging
 import uuid
-from typing import Any
-from datetime import datetime, timezone
 from pydantic import BaseModel
 import httpx
 

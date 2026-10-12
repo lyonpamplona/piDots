@@ -41,6 +41,7 @@ services:
       - ./pidots_spa_prototype.html:/app/pidots_spa_prototype.html
       - ./pidots_apresentacao_pixel_paper.html:/app/pidots_apresentacao_pixel_paper.html
       - ./pidots_guia.html:/app/pidots_guia.html
+      - ./relatorio_estudo_pidots.html:/app/relatorio_estudo_pidots.html
       # Proteção do MicroSD: /tmp em memória volátil (tmpfs)
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=64m

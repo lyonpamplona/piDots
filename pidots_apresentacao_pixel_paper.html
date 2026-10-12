@@ -2,15 +2,21 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <title>piDots // Landing Page Oficial de Alta Conversao (Pixel Paper UI)</title>
     
-    <!-- Favicon Oficial em SVG Vetorial -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' rx='4' fill='%2307090c'/%3E%3Ccircle cx='8.5' cy='14' r='4' fill='%2333ff66'/%3E%3Ccircle cx='19.5' cy='14' r='4' fill='%2338bdf8'/%3E%3Cpath d='M12 14h4' stroke='%23f1f5f9' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+    <!-- Favicon e Icones Oficiais PWA (Rasterizados & SVG) -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#07090c">
+    <meta name="theme-color" content="#07090c" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#e9ecef" media="(prefers-color-scheme: light)">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="piDots">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!-- Tipografia Pixel Art e Monospace de Engenharia -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +29,12 @@
            ===================================================================== */
         :root {
             --px: 2px; /* Unidade escalar de chanfro pixelado */
+
+            /* Insets de Seguranca de Hardware (Notch, Dynamic Island, Home Indicator) */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
 
             /* Tipografia Hibrida */
             --font-pixel: 'Silkscreen', monospace;
@@ -106,6 +118,8 @@
 
         html {
             scroll-behavior: smooth;
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
         }
 
         body {
@@ -122,10 +136,13 @@
             font-size: 13px;
             line-height: 1.6;
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            -webkit-font-smoothing: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: geometricPrecision;
         }
 
         /* Catalogo de Icones Tecnicos SVG */
@@ -160,7 +177,7 @@
         }
 
         /* ---------------------------------------------------------------------
-           CABECALHO FIXO (STICKY HEADER)
+           CABECALHO FIXO (STICKY HEADER) COM SUPORTE A SAFE AREAS
            --------------------------------------------------------------------- */
         header.landing-header {
             position: sticky;
@@ -168,11 +185,14 @@
             z-index: 80;
             background: var(--paper-surface);
             border-bottom: 2px solid var(--border-default);
-            height: 54px;
+            height: calc(54px + max(0px, var(--safe-top)));
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
+            padding-top: max(0px, var(--safe-top));
+            padding-bottom: 0;
+            padding-left: max(16px, var(--safe-left));
+            padding-right: max(16px, var(--safe-right));
             box-shadow: var(--shadow-sm);
         }
 
@@ -215,6 +235,9 @@
             padding: 5px 8px;
             border: 1px solid transparent;
             transition: all 0.05s steps(1);
+            position: relative;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .nav-link-btn:hover {
@@ -230,7 +253,7 @@
         }
 
         /* ---------------------------------------------------------------------
-           BOTOES E ELEMENTOS PIXEL ART
+           BOTOES E ELEMENTOS PIXEL ART COM HITBOXES ACESSIVEIS (48PX TOUCH)
            --------------------------------------------------------------------- */
         .pixel-btn {
             font-family: var(--font-pixel);
@@ -246,7 +269,25 @@
             gap: 6px;
             cursor: pointer;
             user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
             transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
+        }
+
+        /* Area de toque acessivel de 48x48px (Apple HIG & Google Material 3) */
+        .pixel-btn::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            min-width: 44px;
+            min-height: 44px;
+            pointer-events: auto;
         }
 
         .pixel-btn:hover {
@@ -1164,6 +1205,101 @@
             border-right: 2px solid var(--blueprint-cyan) !important;
         }
 
+        /* Deck de Fichas Catalograficas Empilhadas (Substituicao de Tabelas Rigidas no Mobile) */
+        .mobile-matrix-deck {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .catalog-index-card {
+            background: var(--paper-surface);
+            border: 2px solid var(--border-default);
+            box-shadow: var(--shadow-sm);
+            padding: 12px;
+            position: relative;
+        }
+
+        .card-tab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-default);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+
+        .card-tab-tag {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--thermal-amber);
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            padding: 2px 5px;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .card-dimension-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-main);
+            letter-spacing: 0.06em;
+            flex: 1;
+        }
+
+        .card-body-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .card-entry-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 10px;
+            padding: 6px 8px;
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .card-entry-row.competitor .entry-entity {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+            letter-spacing: 0.04em;
+        }
+
+        .card-entry-row.competitor .entry-value {
+            color: var(--ink-secondary);
+            font-size: 10px;
+            word-break: break-word;
+        }
+
+        .card-entry-row.pidots-spotlight {
+            border: 1px solid var(--blueprint-cyan);
+            border-left: 3px solid var(--blueprint-cyan);
+            background: rgba(56, 189, 248, 0.07);
+        }
+
+        .card-entry-row.pidots-spotlight .entry-entity-highlight {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--blueprint-cyan);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .card-entry-row.pidots-spotlight .entry-value-highlight {
+            color: var(--ink-main);
+            font-size: 11px;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
         /* ---------------------------------------------------------------------
            4. FAQ RETRATIL / AUDITORIA DE OBJECOES TECNICAS
            --------------------------------------------------------------------- */
@@ -1345,6 +1481,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
             background: var(--paper-surface-recessed);
             border: 1px solid var(--border-subtle);
             padding: 8px 12px;
@@ -1361,19 +1499,31 @@
             font-size: 12px;
             color: var(--phosphor-green);
             overflow-x: auto;
+            word-break: break-all;
+            overflow-wrap: anywhere;
         }
 
         /* ---------------------------------------------------------------------
-           RODAPE DA LANDING PAGE
+           RODAPE DA LANDING PAGE COM SUPORTE A SAFE AREAS
            --------------------------------------------------------------------- */
         footer.landing-footer {
             background: var(--paper-surface);
             border-top: 2px solid var(--border-default);
-            padding: 30px 24px;
+            padding-top: 30px;
+            padding-left: max(24px, var(--safe-left));
+            padding-right: max(24px, var(--safe-right));
+            padding-bottom: max(30px, calc(16px + var(--safe-bottom)));
             margin-top: 40px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+        }
+
+        /* Prevencao de Auto-Zoom no iOS Safari */
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
         }
 
         .footer-top {
@@ -1421,6 +1571,7 @@
             right: -440px;
             width: 440px;
             height: 100vh;
+            height: 100dvh;
             background: var(--paper-surface);
             border-left: 2px solid var(--border-accent);
             z-index: 100;
@@ -1435,9 +1586,12 @@
         }
 
         .drawer-header {
-            height: 52px;
+            min-height: 52px;
+            height: calc(52px + max(0px, var(--safe-top)));
+            padding-top: max(0px, var(--safe-top));
             border-bottom: 2px solid var(--border-default);
-            padding: 0 16px;
+            padding-left: 16px;
+            padding-right: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -1545,12 +1699,235 @@
         }
 
         /* ---------------------------------------------------------------------
-           RESPONSIVIDADE & MOBILE-FIRST
+           SIMULADOR REACT LIVE TERMINAL & TELEMETRIA NO HERO
            --------------------------------------------------------------------- */
-        @media (max-width: 900px) {
+        .live-react-simulator {
+            background: var(--paper-surface-recessed);
+            border: 2px solid var(--border-default);
+            box-shadow: var(--shadow-lg);
+            margin-top: 24px;
+            text-align: left;
+            position: relative;
+        }
+
+        .sim-header {
+            background: var(--paper-surface-elevated);
+            border-bottom: 2px solid var(--border-default);
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sim-tabs {
+            display: flex;
+            gap: 6px;
+        }
+
+        .sim-tab-btn {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--ink-secondary);
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            padding: 4px 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.05s steps(1);
+        }
+
+        .sim-tab-btn.active {
+            background: var(--paper-surface);
+            color: var(--blueprint-cyan);
+            border-color: var(--blueprint-cyan);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sim-viewport {
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            line-height: 1.6;
+            min-height: 230px;
+            max-height: 380px;
+            overflow-y: auto;
+            background: #040608;
+            color: var(--ink-main);
+        }
+
+        .sim-line {
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        .sim-line.prefix { color: var(--thermal-amber); }
+        .sim-line.thought {
+            background: rgba(255, 184, 48, 0.08);
+            border-left: 2px solid var(--thermal-amber);
+            padding: 6px 10px;
+            color: #fde68a;
+            margin: 6px 0;
+            font-size: 10px;
+        }
+        .sim-line.tool {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 2px solid var(--blueprint-cyan);
+            padding: 4px 8px;
+            color: #bae6fd;
+            font-size: 10px;
+        }
+        .sim-line.success { color: var(--phosphor-green); }
+        .sim-line.danger { color: var(--stamp-danger); }
+
+        .sim-chips-bar {
+            background: var(--paper-surface);
+            border-top: 1px solid var(--border-subtle);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .sim-chips-label {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+            margin-right: 4px;
+        }
+
+        .sim-chip {
+            background: var(--paper-surface-elevated);
+            border: 1px solid var(--border-default);
+            color: var(--ink-secondary);
+            font-family: var(--font-mono);
+            font-size: 9px;
+            padding: 3px 8px;
+            cursor: pointer;
+            transition: all 0.05s steps(1);
+        }
+
+        .sim-chip:hover {
+            color: var(--blueprint-cyan);
+            border-color: var(--blueprint-cyan);
+            transform: translate(-1px, -1px);
+        }
+
+        .sim-input-row {
+            display: flex;
+            background: #07090c;
+            border-top: 2px solid var(--border-default);
+            padding: 6px 10px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .sim-prompt-symbol {
+            color: var(--phosphor-green);
+            font-family: var(--font-pixel);
+            font-size: 9px;
+        }
+
+        .sim-input-field {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            outline: none;
+        }
+
+        /* ---------------------------------------------------------------------
+           WIDGETS INTERATIVOS DA ARENA DE DEMONSTRACAO (SECAO 04)
+           --------------------------------------------------------------------- */
+        .arena-council-feed, .arena-healing-feed {
+            background: #040608;
+            border: 1px solid var(--border-subtle);
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            line-height: 1.5;
+            min-height: 140px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+
+        .council-bubble {
+            padding: 5px 8px;
+            margin-bottom: 6px;
+            border-left: 2px solid;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .council-bubble.coder { border-color: var(--blueprint-cyan); color: #bae6fd; }
+        .council-bubble.auditor { border-color: var(--stamp-danger); color: #fecaca; }
+        .council-bubble.supervisor { border-color: var(--phosphor-green); color: #bbf7d0; }
+
+        .matrix-table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 20px;
+            border: 2px solid var(--border-default);
+        }
+
+        /* Menu de Navegacao Rapida Mobile */
+        .mobile-nav-panel {
+            display: none;
+            position: fixed;
+            top: calc(54px + max(0px, var(--safe-top)));
+            left: 0;
+            width: 100%;
+            background: rgba(7, 9, 12, 0.98);
+            border-bottom: 2px solid var(--border-accent);
+            padding: 12px;
+            z-index: 99;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .mobile-nav-panel.open {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 8px 10px;
+            background: var(--paper-surface);
+            border: 1px solid var(--border-default);
+            color: var(--ink-main);
+            text-decoration: none;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            text-align: center;
+            touch-action: manipulation;
+        }
+
+        .mobile-nav-item:hover, .mobile-nav-item:active {
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+        }
+
+        @media (max-width: 1280px) {
             .header-nav-links {
-                display: none;
+                display: none !important;
             }
+            #btnMobileNavToggle {
+                display: inline-flex !important;
+            }
+        }
+
+        @media (max-width: 900px) {
             .interactive-arena-grid {
                 grid-template-columns: 1fr;
             }
@@ -1569,11 +1946,246 @@
                 right: -100vw;
             }
             .hero-title {
-                font-size: 34px;
+                font-size: clamp(24px, 5.5vw, 34px);
             }
             .pixel-btn-cta-primary, .pixel-btn-cta-cyan {
                 width: 100%;
                 justify-content: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .landing-container {
+                padding: 14px 10px !important;
+            }
+            .hero-title {
+                font-size: clamp(20px, 4.8vw + 6px, 32px) !important;
+                line-height: 1.25 !important;
+            }
+            .hero-subtitle {
+                font-size: clamp(10.5px, 2.2vw + 3px, 13px) !important;
+            }
+            .section-headline {
+                font-size: clamp(14px, 3.4vw + 4px, 20px) !important;
+                line-height: 1.3 !important;
+            }
+            .section-subtitle {
+                font-size: clamp(9.5px, 1.8vw + 3px, 12px) !important;
+            }
+            .hero-cta-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            .hero-cta-group .pixel-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .features-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .hero-badges-row {
+                gap: 4px;
+            }
+            .tech-pill {
+                font-size: 8px;
+                padding: 3px 6px;
+            }
+
+            /* Transposicao da Matriz Comparativa: ativa Fichas Catalograficas */
+            .matrix-table-responsive {
+                border: none !important;
+                overflow: visible !important;
+            }
+            .matrix-table-responsive table.matrix-table {
+                display: none !important;
+            }
+            .mobile-matrix-deck {
+                display: flex !important;
+            }
+
+            /* Transposicao do Hero Terminal ReAct Simulator */
+            .sim-viewport {
+                overflow-x: hidden !important;
+                overflow-y: auto !important;
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+            }
+            .sim-line {
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                white-space: pre-wrap !important;
+            }
+            .sim-header {
+                padding: 6px 8px !important;
+            }
+            .sim-tabs {
+                width: 100% !important;
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 4px !important;
+            }
+            .sim-tab-btn {
+                font-size: 7px !important;
+                padding: 6px 4px !important;
+                justify-content: center !important;
+            }
+            .sim-chips-bar {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 4px !important;
+                padding: 6px 8px !important;
+                width: 100% !important;
+            }
+            .sim-chips-label {
+                grid-column: span 2 !important;
+                font-size: 7px !important;
+                margin-bottom: 2px !important;
+            }
+            .sim-chip {
+                width: 100% !important;
+                min-height: 32px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                font-size: 8px !important;
+                padding: 4px 6px !important;
+                white-space: normal !important;
+                word-break: break-word !important;
+            }
+            .sim-input-row {
+                flex-wrap: wrap !important;
+                gap: 6px !important;
+                padding: 8px !important;
+            }
+            .sim-input-field {
+                width: 100% !important;
+                min-width: 100% !important;
+                margin-bottom: 4px !important;
+            }
+
+            /* Transposicao da Arena Interativa */
+            .interactive-arena-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            .arena-panel {
+                padding: 12px !important;
+                width: 100% !important;
+            }
+            .arena-action-buttons {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 6px !important;
+                width: 100% !important;
+            }
+            .arena-action-buttons .pixel-btn {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .brand-title {
+                display: none;
+            }
+            .hero-tagline {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+        }
+
+        /* Surface Switcher Global & Telemetria Edge (Pixel Paper UI) */
+        .surface-switcher {
+            display: inline-flex;
+            align-items: center;
+            background: var(--paper-surface-recessed, #0b0e12);
+            border: 1px solid var(--border-default, #283340);
+            padding: 2px;
+            gap: 2px;
+        }
+        .surface-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 9px;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--ink-muted, #64748b);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .surface-tab:hover {
+            color: var(--ink-primary, #f1f5f9);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .surface-tab.active {
+            color: var(--phosphor-green, #33ff66);
+            background: rgba(51, 255, 102, 0.08);
+            border-color: rgba(51, 255, 102, 0.4);
+            font-weight: 700;
+        }
+        .surface-tab .tab-idx {
+            font-family: var(--font-pixel, 'Silkscreen', monospace);
+            font-size: 8px;
+            opacity: 0.7;
+        }
+        .surface-tab.active .tab-idx {
+            opacity: 1;
+            color: var(--phosphor-green, #33ff66);
+        }
+        .surface-tab .tab-chord {
+            font-size: 8px;
+            padding: 1px 4px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border-default, #283340);
+            color: var(--ink-muted, #64748b);
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+        }
+        .node-telemetry-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: rgba(51, 255, 102, 0.05);
+            border: 1px solid rgba(51, 255, 102, 0.25);
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+            font-size: 10px;
+            color: var(--phosphor-green, #33ff66);
+            white-space: nowrap;
+        }
+        .node-telemetry-badge .telemetry-led {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--phosphor-green, #33ff66);
+            box-shadow: 0 0 6px rgba(51, 255, 102, 0.8);
+            display: inline-block;
+        }
+        @media (max-width: 992px) {
+            .surface-tab .tab-chord {
+                display: none;
+            }
+        }
+        @media (max-width: 640px) {
+            .surface-switcher {
+                width: 100%;
+                justify-content: stretch;
+            }
+            .surface-tab {
+                flex: 1;
+                justify-content: center;
+                padding: 6px 3px;
+                font-size: 10px;
+                gap: 4px;
+            }
+            .node-telemetry-badge {
+                display: none;
             }
         }
     </style>
@@ -1595,13 +2207,32 @@
             <span class="brand-title">PIDOTS // APRESENTACAO</span>
         </a>
 
+        <!-- Comutador Canônico de Superfícies de Produto -->
+        <nav class="surface-switcher" aria-label="Superficies de Produto">
+            <a href="/" class="surface-tab active" id="tab-overview" title="Atalho: G H">
+                <span class="tab-idx">01</span>
+                <span class="tab-lbl">VISAO GERAL</span>
+                <span class="tab-chord">g h</span>
+            </a>
+            <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
+                <span class="tab-idx">02</span>
+                <span class="tab-lbl">WORKSPACE</span>
+                <span class="tab-chord">g w</span>
+            </a>
+            <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
+                <span class="tab-idx">03</span>
+                <span class="tab-lbl">DOCUMENTACAO</span>
+                <span class="tab-chord">g d</span>
+            </a>
+        </nav>
+
         <!-- Links de Navegacao Suave (Scroll Links Atualizados) -->
         <nav class="header-nav-links" aria-label="Navegacao Principal">
             <a href="#hero" class="nav-link-btn">[01 // VISAO]</a>
             <a href="#metricas-choque" class="nav-link-btn">[02 // CHOQUE]</a>
             <a href="#dor-solucao" class="nav-link-btn">[03 // NUVEM VS EDGE]</a>
             <a href="#pilares" class="nav-link-btn">[04 // PILARES]</a>
-            <a href="#arena-hitl" class="nav-link-btn">[05 // ARENA HITL]</a>
+            <a href="#arena-hitl" class="nav-link-btn">[05 // ARENA VIVA]</a>
             <a href="#calculadora-roi" class="nav-link-btn">[06 // ROI EDGE]</a>
             <a href="#matriz" class="nav-link-btn">[07 // MATRIZ DOTS]</a>
             <a href="#faq-objecoes" class="nav-link-btn">[08 // AUDITORIA FAQ]</a>
@@ -1609,19 +2240,39 @@
         </nav>
 
         <div class="header-actions">
+            <div class="node-telemetry-badge" id="headerNodeBadge" title="Nó Edge Raspberry Pi 4B ARM64 Operacional">
+                <span class="telemetry-led"></span>
+                <span>NO: ONLINE</span>
+            </div>
+            <button class="pixel-btn" onclick="toggleMobileNavMenu()" id="btnMobileNavToggle" style="display: none;" title="Abrir menu de seções móvel">
+                <span>[SECOES]</span>
+            </button>
+            <button class="pixel-btn pwa-install-trigger" id="btnLandingPwaInstall" style="display: none; background: #0284c7; border-color: #38bdf8; color: #ffffff;" onclick="PiDotsLandingPWA.install()" title="Instalar piDots como aplicativo PWA">
+                <span>[INSTALAR PWA]</span>
+            </button>
             <button class="pixel-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 <span>[TEMA]</span>
             </button>
-            <a href="/guia" target="_blank" class="pixel-btn btn-cyan" title="Abrir Guia Didático Completo">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                <span>[GUIA DIDATICO]</span>
-            </a>
-            <a href="/" class="pixel-btn btn-green" title="Abrir Console Operacional Oficial">
-                <span>[CONSOLE SPA]</span>
-            </a>
+            <button class="pixel-btn btn-cyan" onclick="toggleDrawer()" id="btnHeaderManual" title="Abrir Manual Operacional do Sistema">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <span>[MANUAL]</span>
+            </button>
         </div>
     </header>
+
+    <!-- Painel Retrátil de Navegação Móvel -->
+    <nav id="mobileNavPanel" class="mobile-nav-panel" aria-label="Menu Movel">
+        <a href="#hero" class="mobile-nav-item" onclick="toggleMobileNavMenu()">01 // VISAO</a>
+        <a href="#metricas-choque" class="mobile-nav-item" onclick="toggleMobileNavMenu()">02 // CHOQUE</a>
+        <a href="#dor-solucao" class="mobile-nav-item" onclick="toggleMobileNavMenu()">03 // NUVEM VS EDGE</a>
+        <a href="#pilares" class="mobile-nav-item" onclick="toggleMobileNavMenu()">04 // PILARES</a>
+        <a href="#arena-hitl" class="mobile-nav-item" onclick="toggleMobileNavMenu()">05 // ARENA VIVA</a>
+        <a href="#calculadora-roi" class="mobile-nav-item" onclick="toggleMobileNavMenu()">06 // ROI EDGE</a>
+        <a href="#matriz" class="mobile-nav-item" onclick="toggleMobileNavMenu()">07 // MATRIZ DOTS</a>
+        <a href="#faq-objecoes" class="mobile-nav-item" onclick="toggleMobileNavMenu()">08 // FAQ</a>
+        <a href="#quickstart" class="mobile-nav-item" onclick="toggleMobileNavMenu()">09 // DEPLOY</a>
+    </nav>
 
     <!-- CONTEUDO PRINCIPAL DA LANDING PAGE (LARGURA TOTAL // SEM CENTRALIZACAO ARTIFICIAL) -->
     <div class="landing-container">
@@ -1631,87 +2282,115 @@
              =================================================================== -->
         <section class="landing-section hero-section" id="hero">
             <div class="hero-tagline">
-                <span class="hero-badge-tag">AUTOR: LYON CHRISTOPHER // 2026</span>
-                <span class="hero-badge-tag" style="color: var(--phosphor-green);">ESTACAO DE TRABALHO SOBERANA MULTI-BOT // RPI4-ARM64</span>
-                <span class="hero-badge-tag" style="color: var(--thermal-amber);">CHAT MULTI-AGENTE & ALWAYS-ON // HEARTBEAT ATIVO</span>
-                <span class="hero-badge-tag" style="color: var(--blueprint-cyan);">DESIGN SYSTEM PIXEL PAPER UI // ZERO EMOJIS</span>
+                <span class="hero-badge-tag" style="color: var(--phosphor-green);">SISTEMA OPERACIONAL MULTI-BOT // HARDWARE DE BORDA &amp; SBCs</span>
+                <span class="hero-badge-tag" style="color: var(--blueprint-cyan);">DESIGN SYSTEM PIXEL PAPER UI // TIPOGRAFIA TECNICA CRISP // 100% SOBERANO</span>
             </div>
 
             <h1 class="hero-title">
                 A PRIMEIRA ESTACAO MULTI-BOT SOBERANA.<br>
-                EQUIPES DE AGENTES NO SEU RASPBERRY PI. <span>SOB 6 WATTS E &lt; 70MB.</span>
+                EQUIPES DE AGENTES NO SEU HARDWARE DE BORDA. <span>SOB 6 WATTS E &lt; 70MB.</span>
             </h1>
 
             <p class="hero-description">
-                Esqueca instancias infladas de nuvem, faturas abusivas em dolar e dependencia de SaaS de terceiros. O piDots transforma seu Raspberry Pi 4B (4GB ARM64) na primeira estacao autonoma de trabalho multi-bot always-on de alta densidade. Invoque especialistas dedicados via mencao @dot diretamente no terminal, monte salas tematicas colaborativas (#devops, #pesquisa), monitore sua infraestrutura 24/7 com Dot Heartbeat silencioso (filtro inteligente HEARTBEAT_OK que consome zero tokens desnecessarios) e controle tudo remotamente pelo Telegram ou WhatsApp. Tudo isso consumindo menos de 70MB de RAM fisica real, com preservacao radical do cartao MicroSD e governanca forense que nunca executa comandos criticos sem sua homologacao.
+                Esqueca instancias infladas de nuvem, faturas abusivas em dolar e dependencia de SaaS de terceiros. O piDots transforma seu dispositivo de borda ou SBC (como o Raspberry Pi 4B 4GB ARM64 de referencia) na primeira estacao autonoma de trabalho multi-bot always-on de alta densidade. Invoque especialistas dedicados via mencao @dot diretamente no terminal, monte salas tematicas colaborativas (#devops, #pesquisa), monitore sua infraestrutura 24/7 com Dot Heartbeat silencioso (filtro inteligente HEARTBEAT_OK que consome zero tokens desnecessarios) e controle tudo remotamente pelo Telegram ou WhatsApp. Tudo isso consumindo menos de 70MB de RAM fisica real, com preservacao radical do armazenamento flash e governanca forense que nunca executa comandos criticos sem sua homologacao.
             </p>
 
-            <!-- Pilulas de Prova Tecnica Imediata -->
+            <!-- Pilulas de Prova Tecnica Imediata (4 Pilares Essenciais) -->
             <div class="hero-badges-row">
                 <div class="tech-pill">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
-                    <span>POTENCIA MEDIA: 6.2 WATTS (FONTE USB-C)</span>
+                    <span>POTENCIA TERMICA: 6.2 WATTS (ALIMENTACAO USB-C)</span>
                 </div>
                 <div class="tech-pill">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                    <span>RAM RSS &lt; 70MB REAL (MULTI-BOT UVLOOP + PYTHON 3.13)</span>
+                    <span>CONSUMO DE MEMORIA: RAM RSS &lt; 70MB (PYTHON 3.13 + UVLOOP)</span>
                 </div>
                 <div class="tech-pill">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    <span>CHAT MULTI-BOT COM @DOT &amp; SALAS TEMATICAS</span>
+                    <span>ORQUESTRACAO MULTI-BOT: CHAT COM @DOT &amp; HEARTBEAT 24/7</span>
                 </div>
                 <div class="tech-pill">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 10"></polyline></svg>
-                    <span>DOT HEARTBEAT 24/7 (FILTRO SILENCIOSO HEARTBEAT_OK)</span>
-                </div>
-                <div class="tech-pill">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                    <span>GATEWAY UNIFICADO TELEGRAM &amp; WHATSAPP</span>
-                </div>
-                <div class="tech-pill">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                    <span>SUB-15MS SANDBOX LINUX BUBBLEWRAP</span>
-                </div>
-                <div class="tech-pill">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    <span>GOVERNANCA HITL COM TRAVAS &amp; CARIMBOS ANALOGICOS</span>
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>GOVERNANCA FORENSE: SANDBOX SUB-15MS &amp; HITL RIGOROSO</span>
                 </div>
             </div>
 
-            <!-- Micro-copy de Alto Clique para CTAs -->
+            <!-- Grupo Focado de CTAs Primarios -->
             <div class="hero-cta-group">
-                <a href="#quickstart" class="pixel-btn-cta-primary">
+                <a href="/app" class="pixel-btn-cta-primary">
                     <span class="pulse-step-dot"></span>
-                    <span>[FAZER DEPLOY EM 1 COMANDO]</span>
+                    <span>[ABRIR WORKSPACE OPERACIONAL]</span>
                     <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </a>
-                <a href="/" class="pixel-btn btn-green btn-lg">
-                    <span>[ABRIR CONSOLE OPERACIONAL SPA]</span>
-                </a>
-                <a href="#calculadora-roi" class="pixel-btn btn-cyan btn-lg">
-                    <span>[SIMULAR ECONOMIA DE NUVEM]</span>
-                </a>
-                <a href="#arena-hitl" class="pixel-btn btn-amber btn-lg">
-                    <span>[TESTAR GOVERNANCA AO VIVO]</span>
+                <a href="#quickstart" class="pixel-btn btn-cyan btn-lg">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    <span>[DEPLOY RAPIDO EM 1 COMANDO]</span>
                 </a>
             </div>
 
-            <!-- Terminal Teaser de Demonstracao AG-UI com Multi-Bot e Heartbeat -->
-            <article class="hero-terminal-card">
-                <header class="terminal-header">
-                    <div class="terminal-title">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                        <span>BOBINA TELETIPO AG-UI V1.0 // SALA #DEVOPS MULTI-BOT &amp; GATEWAY EM TEMPO REAL</span>
+            <!-- SIMULADOR REACT LIVE TERMINAL COM PROTOCOLO AG-UI & MULTI-BOT -->
+            <article class="live-react-simulator" id="heroLiveSimulator">
+                <header class="sim-header">
+                    <div class="sim-tabs">
+                        <button type="button" class="sim-tab-btn active" id="tabBtnTerminal" onclick="switchSimulatorTab('terminal')">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                            <span>TERMINAL AG-UI // MULTI-BOT RE-ACT</span>
+                        </button>
+                        <button type="button" class="sim-tab-btn" id="tabBtnTelemetry" onclick="switchSimulatorTab('telemetry')">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 10"></polyline></svg>
+                            <span>TELEMETRIA VIVA // BCM2711 ARM64</span>
+                        </button>
                     </div>
-                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">ORQUESTRADOR: 2 AGENTES ATIVOS // RSS: 68.4MB // SOC 46.2 C</span>
+                    <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green); display: flex; align-items: center; gap: 8px;">
+                        <span class="status-live-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--phosphor-green);"></span>
+                        <span id="heroSimStatusText">NO ATIVO // 3 AGENTES EM ESPERA // RSS: 64.2MB</span>
+                    </div>
                 </header>
-                <div class="terminal-viewport">
-                    <div>[03:14:00] <span style="color: var(--ink-muted);">HEARTBEAT-DAEMON //</span> Checagem periodica SQLite WAL e sensores: <span style="color: var(--phosphor-green);">HEARTBEAT_OK [Filtro ativado: 0 tokens consumidos]</span></div>
-                    <div>[03:14:02] <span style="color: var(--thermal-amber);">OPERADOR // VIA TELEGRAM:</span> "@dot-orchestrator audite os logs de telemetria e acione o @dot-sec para checar integridade."</div>
-                    <div>[03:14:03] <span style="color: var(--blueprint-cyan);">DOT-ORCHESTRATOR // HANDOFF:</span> &gt; Roteando contexto para @dot-sec via delegate_task(channel="#sec", scope="audit_flash")...</div>
-                    <div>[03:14:03] <span style="color: #a78bfa;">DOT-SEC // TOOL CALL:</span> execute_bwrap_command("cat /proc/meminfo | grep MemFree &amp;&amp; du -sh /workspace")</div>
-                    <div>[03:14:04] <span style="color: #94a3b8;">BUBBLEWRAP: Sandbox isolado montado em 11ms. Codigo: 0. RAM alocada pelo worker: 2.7MB.</span></div>
-                    <div>[03:14:04] <span style="color: var(--phosphor-green);">DOT-ORCHESTRATOR // RESPOSTA UNIFICADA:</span> "Auditoria multi-bot concluida: 3.5GB livres de RAM fisica, Flash 100% integro. Relatorio enviado ao Telegram." <span class="pixel-cursor" style="color: var(--phosphor-green);">&#9608;</span></div>
+
+                <!-- Visualizador 1: Terminal ReAct Interativo -->
+                <div class="sim-viewport" id="heroSimViewport">
+                    <div class="sim-line prefix">[BOOT] piDots Edge Core v1.4 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
+                    <div class="sim-line">[03:14:00] <span style="color: var(--ink-muted);">HEARTBEAT-DAEMON //</span> Checagem periodica: <span style="color: var(--phosphor-green);">HEARTBEAT_OK [Filtro de silêncio ativo: 0 tokens consumidos]</span></div>
+                    <div class="sim-line" style="color: var(--blueprint-cyan);">[INFO] Selecione um dos comandos rapidos abaixo ou digite seu comando no prompt:</div>
+                </div>
+
+                <!-- Visualizador 2: Painel de Telemetria (Inicialmente Oculto) -->
+                <div class="sim-viewport" id="heroTelemetryViewport" style="display: none;">
+                    <div class="sim-line" style="color: var(--blueprint-cyan); font-weight: bold;">[TELEMETRIA DO SILICIO BROADCOM BCM2711 // ARM64 CORTEX-A72]</div>
+                    <div class="sim-line" style="margin: 8px 0;">
+                        <span>MEMORIA RAM FISICA (RSS): </span>
+                        <span style="color: var(--phosphor-green); font-weight: bold;" id="simTeleRam">64.2 MB / 3840 MB (1.6% USO)</span>
+                    </div>
+                    <div class="sim-line" style="margin: 8px 0;">
+                        <span>TEMPERATURA DO PROCESSADOR (SOC): </span>
+                        <span style="color: var(--phosphor-green); font-weight: bold;" id="simTeleTemp">44.8 C (NOMINAL // LIMIAR 72 C)</span>
+                    </div>
+                    <div class="sim-line" style="margin: 8px 0;">
+                        <span>PERSISTENCIA BANCO RELACIONAL: </span>
+                        <span style="color: var(--thermal-amber);">SQLITE 3.45 WAL // JOURNAL_MODE=WAL // SYNCHRONOUS=NORMAL</span>
+                    </div>
+                    <div class="sim-line" style="margin: 8px 0;">
+                        <span>ESTADO DE ISOLAMENTO SANDBOX: </span>
+                        <span style="color: var(--blueprint-cyan);">BUBBLEWRAP (bwrap) ATIVO // TEMPO MEDIO DE MONTAGEM: 12ms</span>
+                    </div>
+                </div>
+
+                <!-- Barra de Comandos Pré-programados Clicáveis -->
+                <div class="sim-chips-bar">
+                    <span class="sim-chips-label">COMANDOS RAPIDOS:</span>
+                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('audit_flash')">[@dot-coder // AUDITAR FLASH &amp; RAM]</button>
+                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('council_debate')">[@conselho // DELIBERAR ARQUITETURA]</button>
+                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('self_healing')">[@self-healing // REPARAR SCRIPT SHELL]</button>
+                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('proactive_heartbeat')">[@heartbeat // EXECUTAR PULSO 24/7]</button>
+                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('hitl_danger')">[@hitl // TRAVA MECANICA FORENSE]</button>
+                </div>
+
+                <!-- Linha de Input de Comando Interativo -->
+                <div class="sim-input-row">
+                    <span class="sim-prompt-symbol">[OPERADOR]&gt;</span>
+                    <input type="text" id="heroSimInput" class="sim-input-field" placeholder="Digite uma instrucao para o agente ou clique em um comando acima..." onkeydown="if(event.key === 'Enter') handleCustomSimOrder();">
+                    <button type="button" class="pixel-btn btn-cyan btn-sm" onclick="handleCustomSimOrder()">[DISPARAR AG-UI]</button>
+                    <button type="button" class="pixel-btn btn-sm" onclick="clearSimViewport()">[LIMPAR]</button>
                 </div>
             </article>
         </section>
@@ -1730,14 +2409,14 @@
 
             <h2 class="section-headline">EFICIENCIA DE SILICIO: BORDA VS NUVEM</h2>
             <p class="section-subtitle">
-                Numeros expressivos medidos em execucao direta no Raspberry Pi 4B (4GB ARM64) contra pilhas agenticas em nuvem corporativa.
+                Numeros medidos em execucao direta em no de borda (Raspberry Pi 4B 4GB ARM64 de referencia) contra pilhas agenticas em nuvem corporativa.
             </p>
 
             <div class="shock-metrics-grid">
                 <!-- Metrica 01: RAM RSS Real sob Multi-Bot -->
                 <article class="shock-card">
                     <div class="shock-card-header">
-                        <span class="shock-card-index">CHOQUE // 01</span>
+                        <span class="shock-card-index">BENCHMARK // 01</span>
                         <span class="shock-card-badge">UVLOOP + PYTHON 3.13 MULTI-BOT</span>
                     </div>
                     <div class="shock-contrast-display">
@@ -1752,7 +2431,7 @@
                     </div>
                     <div class="shock-card-title">Pegada de Memoria RAM Real (RSS)</div>
                     <p class="shock-card-desc">
-                        Enquanto orquestradores em nuvem e conteineres Docker exigem pods inflados de 2GB a 4GB apenas para gerenciar filas de agentes, o piDots orquestra multiplos AI Coworkers com uvloop e Python 3.13 consumindo menos de 70MB de RAM fisica real no Raspberry Pi 4B.
+                        Enquanto orquestradores em nuvem e conteineres Docker exigem pods inflados de 2GB a 4GB apenas para gerenciar filas de agentes, o piDots orquestra multiplos AI Coworkers com uvloop e Python 3.13 consumindo menos de 70MB de RAM fisica real em dispositivos de borda (benchmark: Raspberry Pi 4B).
                     </p>
                     <div class="shock-diff-tag">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
@@ -1763,7 +2442,7 @@
                 <!-- Metrica 02: Custo Mensal -->
                 <article class="shock-card">
                     <div class="shock-card-header">
-                        <span class="shock-card-index">CHOQUE // 02</span>
+                        <span class="shock-card-index">ECONOMIA // 02</span>
                         <span class="shock-card-badge" style="color: var(--blueprint-cyan);">HARDWARE PROPRIO</span>
                     </div>
                     <div class="shock-contrast-display">
@@ -1778,7 +2457,7 @@
                     </div>
                     <div class="shock-card-title">Custo Mensal de Servidor / SaaS</div>
                     <p class="shock-card-desc">
-                        Zero faturas surpresa no cartao de credito. Instalacao definitiva no seu hardware fisico com custo operacional marginal de centavos.
+                        Zero custos imprevistos de infraestrutura. Instalacao definitiva no seu hardware fisico com custo operacional marginal de centavos.
                     </p>
                     <div class="shock-diff-tag" style="border-color: var(--blueprint-cyan); color: var(--blueprint-cyan); background: rgba(56,189,248,0.08);">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -1789,12 +2468,12 @@
                 <!-- Metrica 03: Potencia Eletrica -->
                 <article class="shock-card">
                     <div class="shock-card-header">
-                        <span class="shock-card-index">CHOQUE // 03</span>
+                        <span class="shock-card-index">POTENCIA // 03</span>
                         <span class="shock-card-badge" style="color: var(--thermal-amber);">BROADCOM BCM2711</span>
                     </div>
                     <div class="shock-contrast-display">
                         <div>
-                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">RPI 4B PLENA CARGA</div>
+                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">SBC EDGE (REF: RPI4 4B)</div>
                             <div class="shock-val-local" style="color: var(--thermal-amber);">6 W</div>
                         </div>
                         <div style="text-align: right;">
@@ -1815,7 +2494,7 @@
                 <!-- Metrica 04: Soberania & Privacidade -->
                 <article class="shock-card">
                     <div class="shock-card-header">
-                        <span class="shock-card-index">CHOQUE // 04</span>
+                        <span class="shock-card-index">SEGURANCA // 04</span>
                         <span class="shock-card-badge">SQLITE WAL FLASH-SAFE</span>
                     </div>
                     <div class="shock-contrast-display">
@@ -1841,7 +2520,7 @@
         </section>
 
         <!-- ===================================================================
-             SECAO 02: DOR VISCERAL VS ENGENHARIA PIDOTS (PROBLEMA VS SOLUCAO)
+             SECAO 02: GARGALOS DA NUVEM VS OTIMIZACAO EDGE
              =================================================================== -->
         <section class="landing-section" id="dor-solucao">
             <div class="section-header-bar">
@@ -1849,12 +2528,12 @@
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                     <span>SECAO 02 // REALIDADE CRUA DO MERCADO</span>
                 </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--stamp-danger);">4 FRATURAS DA NUVEM VS 4 REMEDIOS EDGE</span>
+                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--stamp-danger);">4 LIMITACOES DA NUVEM VS 4 SOLUCOES DE BORDA</span>
             </div>
 
-            <h2 class="section-headline">A MAIORIA DOS AGENTES DE IA FOI FEITA PARA O BOLSO DAS BIG TECHS. NAO PARA O SEU HARDWARE.</h2>
+            <h2 class="section-headline">A MAIORIA DAS PILHAS AGENTICAS IGNORA AS RESTRICOES DE HARDWARE LOCAL. O PIDOTS FOI CALIBRADO PARA A BORDA.</h2>
             <p class="section-subtitle">
-                Projetos corporativos ignoram os limites fisicos do silicio real. O piDots nasceu para quebrar esse ciclo de desperdicio com engenharia de precisao militar.
+                Projetos corporativos ignoram os limites fisicos do silicio real. O piDots nasceu para superar a ineficiencia computacional atraves de engenharia de sistemas de alta densidade e baixo overhead.
             </p>
 
             <div class="pain-solution-container">
@@ -1862,7 +2541,7 @@
                 <article class="pain-side-card">
                     <header class="side-header">
                         <div class="side-title-block">
-                            <h3>O CALVARIO DA NUVEM</h3>
+                            <h3>O OVERHEAD DA NUVEM CORPORATIVA</h3>
                             <span>ARQUITETURA FRAGIL, CARA E DEPENDENTE</span>
                         </div>
                         <div class="side-stamp-wrapper">
@@ -1920,7 +2599,7 @@
                 <article class="solution-side-card">
                     <header class="side-header">
                         <div class="side-title-block">
-                            <h3>A SOBERANIA DO PIDOTS</h3>
+                            <h3>A ARQUITETURA AUTONOMA DO PIDOTS</h3>
                             <span>COMPUTACAO DE BORDA ROBUSTA E PERSISTENTE</span>
                         </div>
                         <div class="side-stamp-wrapper">
@@ -1938,7 +2617,7 @@
                                 CUSTO DE ENERGIA DE R$ 3,50/MES EM 6 WATTS
                             </span>
                             <span class="side-item-desc">
-                                Operacao local continua no seu Raspberry Pi 4B proprio via USB-C. Zero intermediarios e payback total do hardware em menos de 30 dias.
+                                Operacao local continua em hardware proprio (SBCs, Mini PCs ou Raspberry Pi via USB-C). Zero intermediarios e payback total do hardware em menos de 30 dias.
                             </span>
                         </li>
 
@@ -1990,7 +2669,7 @@
 
             <h2 class="section-headline">CADA LINHA DE CODIGO OTIMIZADA PARA O SEU SILICIO</h2>
             <p class="section-subtitle">
-                Projetado especificamente para o chip Broadcom BCM2711 ARM64 do Raspberry Pi 4B, entregando maxima velocidade operacional com a menor pegada termica do mercado.
+                Otimizado para arquiteturas ARM64 e x86_64 de baixo consumo (com telemetria termica e benchmark no Broadcom BCM2711 do Raspberry Pi 4B), entregando maxima velocidade operacional com a menor pegada termica do mercado.
             </p>
 
             <div class="features-grid">
@@ -2002,10 +2681,10 @@
                     </header>
                     <h3 class="feature-title">Zero Custo de Nuvem &amp; Operacao em 6 Watts</h3>
                     <p class="feature-desc">
-                        Elimine a dependencia de assinaturas de SaaS e faturas surpresa de nuvem. O piDots roda localmente no seu Raspberry Pi 4B consumindo apenas 6.2 Watts via USB-C. Seu ambiente, suas regras, seus dados sob seu teto fisico.
+                        Elimine a dependencia de assinaturas de SaaS e custos imprevistos de infraestrutura. O piDots roda localmente no seu hardware de borda (consumindo apenas 6.2 Watts em SBCs como o Raspberry Pi via USB-C). Seu ambiente, suas regras, seus dados sob seu teto fisico.
                     </p>
                     <div class="feature-code-box">
-                        Processador: ARM Cortex-A72 Quad-Core 1.8GHz<br>
+                        Processador: ARM Cortex-A72 Quad-Core (Ref: RPi4) / SBCs e Linux x86_64<br>
                         Consumo: 6.2 Watts medios (Fonte USB-C 5V 3A)<br>
                         Independencia: Sem faturas mensais de infraestrutura
                     </div>
@@ -2104,7 +2783,7 @@
                     </header>
                     <h3 class="feature-title">Orquestracao Multi-Bot no Edge &amp; Handoff Autonomo</h3>
                     <p class="feature-desc">
-                        Substitua agentes solitarios por equipes coordenadas de coworkers especializados no mesmo Raspberry Pi. Mencione bots no chat via @dot (@dot-coder, @dot-devops, @dot-sec) ou crie salas tematicas (#devops, #pesquisa) onde multiplos bots cooperam com delegacao automatica via delegate_task. A Poda Dinamica de Ferramentas (Dynamic Tool Pruning) e travas anti-recursao (hop &lt;= 3) garantem foco absoluto e consumo infimo de RAM.
+                        Substitua agentes solitarios por equipes coordenadas de coworkers especializados no mesmo dispositivo de borda. Mencione bots no chat via @dot (@dot-coder, @dot-devops, @dot-sec) ou crie salas tematicas (#devops, #pesquisa) onde multiplos bots cooperam com delegacao automatica via delegate_task. A Poda Dinamica de Ferramentas (Dynamic Tool Pruning) e travas anti-recursao (hop &lt;= 3) garantem foco absoluto e consumo infimo de RAM.
                     </p>
                     <div class="feature-code-box">
                         Roteamento: ThreadRouter assincrono &amp; Invocacao @dot<br>
@@ -2138,7 +2817,7 @@
                     </header>
                     <h3 class="feature-title">Mensageria Unificada Telegram &amp; WhatsApp</h3>
                     <p class="feature-desc">
-                        Comande sua estacao de trabalho edge de qualquer lugar do planeta diretamente pelo Telegram ou WhatsApp. O MessagingGateway normaliza mensagens em UnifiedIncomingMessage com roteamento bidirecional. Dispare comandos remotos para o Raspberry Pi, aprove acoes retidas pela governanca HITL pelo celular e receba alertas imediatos dos agentes, tudo sem instalar servidores pesados e com criptografia de ponta a ponta.
+                        Comande sua estacao de trabalho edge de qualquer lugar do planeta diretamente pelo Telegram ou WhatsApp. O MessagingGateway normaliza mensagens em UnifiedIncomingMessage com roteamento bidirecional. Dispare comandos remotos para seu no de borda (ou Raspberry Pi), aprove acoes retidas pela governanca HITL pelo celular e receba alertas imediatos dos agentes, tudo sem instalar servidores pesados e com criptografia de ponta a ponta.
                     </p>
                     <div class="feature-code-box">
                         Integracoes: Webhooks nativos Telegram Bot API &amp; WhatsApp<br>
@@ -2146,37 +2825,89 @@
                         Comando Remoto: Interacao no chat e homologacao HITL movel
                     </div>
                 </article>
+
+                <!-- Pilar 10: Memoria Hierarquica Autonoma (Padrao MemGPT / Letta) -->
+                <article class="feature-card">
+                    <header class="feature-top">
+                        <span class="feature-num">PILAR 10</span>
+                        <span class="feature-badge" style="color: var(--blueprint-cyan);">MEMGPT HIERARCHY</span>
+                    </header>
+                    <h3 class="feature-title">Memoria Hierarquica Autonoma em 3 Camadas</h3>
+                    <p class="feature-desc">
+                        O piDots supera a amnesia dos agentes tradicionais. A Core Memory residente no prompt mantem persona e contexto ativos em blocos com limite seguro de caracteres. A Archival Memory duradoura indexa bases de conhecimento usando busca hibrida ultraleve (SQLite FTS5 BM25 + Projecao Vetorial 64d por hashing trigramas), e a Recall Memory recupera o historico recente de dialogos. O proprio Dot decide quando aprender e atualizar fatos via Function Calling nativo.
+                    </p>
+                    <div class="feature-code-box">
+                        Arquitetura: Core Memory (in-context) + Archival + Recall<br>
+                        Busca Hibrida: FTS5 BM25 + Projecao Vetorial 64d (Zero GPU)<br>
+                        Auto-Edicao: core_memory_append, replace e archival_insert
+                    </div>
+                </article>
+
+                <!-- Pilar 11: Conselho Consultivo Multi-Bot & Self-Healing Harness -->
+                <article class="feature-card">
+                    <header class="feature-top">
+                        <span class="feature-num">PILAR 11</span>
+                        <span class="feature-badge" style="color: var(--phosphor-green);">CONSELHO &amp; HEALING</span>
+                    </header>
+                    <h3 class="feature-title">Conselho Consultivo Multi-Bot &amp; Self-Healing Harness</h3>
+                    <p class="feature-desc">
+                        Decisoes criticas de arquitetura sao submetidas ao debate formal do Conselho Consultivo entre Propositor (@coder), Critico Adversarial (@auditor) e Supervisor (@supervisor), com debate em fitas internas e resolucao executiva publica (trava de seguranca de 3 rodadas e &lt; 53MB de RAM). Paralelamente, o Self-Healing Harness disseca tracebacks de comandos shell em caso de erro e aciona o loop interno de auto-correcao antes de responder ao usuario, acompanhado de planejamento em dois estagios (Goals &amp; Milestones).
+                    </p>
+                    <div class="feature-code-box">
+                        Debate Tripartite: Propositor + Auditor + Supervisor (max 3 rounds)<br>
+                        Self-Healing: Analise cirurgica de traceback e reparo autonomo<br>
+                        Planejamento: Metas e Marcos percentuais com evidencias tecnicas
+                    </div>
+                </article>
+
+                <!-- Pilar 12: Triggers de Hardware Edge & Manutencao Noturna MicroSD -->
+                <article class="feature-card">
+                    <header class="feature-top">
+                        <span class="feature-num">PILAR 12</span>
+                        <span class="feature-badge" style="color: var(--thermal-amber);">HARDWARE &amp; MICROSD</span>
+                    </header>
+                    <h3 class="feature-title">Triggers de Hardware Edge &amp; Manutencao Noturna do MicroSD</h3>
+                    <p class="feature-desc">
+                        Projetado para operacao 24/7 sem degradacao fisica. Triggers de hardware monitoram continuamente a temperatura do SoC Broadcom BCM2711, espaco livre flash e RAM, disparando throttle automatico e alertas proativos via HITL antes de superaquecer. A rotina noturna autonoma executa checkpoint WAL síncrono com truncamento (PRAGMA wal_checkpoint TRUNCATE), compactacao atomica com VACUUM INTO e consolidacao de mensagens antigas em memorias episodicas, eliminando inchaco no MicroSD.
+                    </p>
+                    <div class="feature-code-box">
+                        Monitoramento: Temperatura SoC (/sys), Disco Flash e RAM livre<br>
+                        Preservacao: PRAGMA wal_checkpoint(TRUNCATE) &amp; VACUUM INTO<br>
+                        Consolidacao: Poda automatica de mensagens &gt; 7 dias em memorias episodicas
+                    </div>
+                </article>
             </div>
         </section>
 
+
         <!-- ===================================================================
-             SECAO 04: ARENA INTERATIVA DE DEMONSTRACAO (SHOWCASE VIVO)
+             SECAO 05: ARENA INTERATIVA DE DEMONSTRACAO (SHOWCASE VIVO)
              =================================================================== -->
         <section class="landing-section" id="arena-hitl">
             <div class="section-header-bar">
                 <div class="section-tag">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    <span>SECAO 04 // SHOWCASE INTERATIVO AO VIVO</span>
+                    <span>SECAO 05 // SHOWCASE INTERATIVO AO VIVO</span>
                 </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">TESTE DE COMPONENTES</span>
+                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">4 NIVEIS DE AUTONOMIA TESTAVEIS</span>
             </div>
 
             <h2 class="section-headline">EXPERIMENTE OS COMPONENTES PIXEL PAPER UI</h2>
             <p class="section-subtitle">
-                Interaja diretamente com o simulador de governanca forense e os monitores de telemetria SVG em tempo real.
+                Interaja diretamente com os quatro subsistemas operacionais do piDots: governanca HITL, conselho tripartite, auto-cura de codigo e telemetria de silicio com triggers proativos.
             </p>
 
             <div class="interactive-arena-grid">
                 <!-- Painel 1: Simulador HITL -->
                 <article class="arena-panel">
                     <div class="feature-top">
-                        <span class="feature-num">GOVERNANCA INTERATIVA</span>
+                        <span class="feature-num">PAINEL 01 // GOVERNANCA</span>
                         <span class="feature-badge" style="color: var(--thermal-amber);">SIMULADOR HITL</span>
                     </div>
 
                     <h3 class="feature-title">Dossie Forense com Carimbos de Borracha</h3>
                     <p class="feature-desc">
-                        Destrave a trava mecanica de seguranca analogica e homologue ou vete a solicitacao de comando retida:
+                        Destrave a trava mecanica de seguranca analogica e homologue ou vete a solicitacao de comando retida no SQLite WAL:
                     </p>
 
                     <!-- Trava Mecanica -->
@@ -2199,7 +2930,7 @@
                         </div>
                         <div class="rubber-stamp stamp-approved" id="demoStampApprove">
                             <span>HOMOLOGADO</span>
-                            <span class="stamp-sub">ORDEM OK</span>
+                            <span class="stamp-sub">COMANDO OK</span>
                             <span style="font-size: 8px;">WAL-AUTH</span>
                         </div>
                     </div>
@@ -2216,22 +2947,72 @@
                     </div>
                 </article>
 
-                <!-- Painel 2: Osciloscopios SVG de Telemetria -->
+                <!-- Painel 2: Conselho Consultivo Tripartite ao Vivo -->
+                <article class="arena-panel" id="conselho-live">
+                    <div class="feature-top">
+                        <span class="feature-num">PAINEL 02 // DIALETICA</span>
+                        <span class="feature-badge" style="color: var(--blueprint-cyan);">CONSELHO TRIPARTITE</span>
+                    </div>
+
+                    <h3 class="feature-title">Deliberacao Multi-Bot em 3 Rodadas</h3>
+                    <p class="feature-desc">
+                        Simule a dialetica entre Propositor (@dot-coder), Auditor (@dot-auditor) e Supervisor (@dot-supervisor) resolvendo um conflito de arquitetura:
+                    </p>
+
+                    <div class="arena-council-feed" id="councilDemoFeed">
+                        <div style="color: var(--ink-muted); font-size: 9px;">[SISTEMA] Aguardando convocacao da sessao do conselho consultivo...</div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: auto;">
+                        <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary);" id="councilRoundStatus">STATUS: OCIOSO</span>
+                        <button class="pixel-btn btn-cyan" onclick="runCouncilDemoSimulation()">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>[CONVOCAR DELIBERACAO]</span>
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Painel 3: Self-Healing Harness & Auto-Cura -->
+                <article class="arena-panel" id="healing-live">
+                    <div class="feature-top">
+                        <span class="feature-num">PAINEL 03 // RESILIENCIA</span>
+                        <span class="feature-badge" style="color: var(--phosphor-green);">SELF-HEALING HARNESS</span>
+                    </div>
+
+                    <h3 class="feature-title">Auto-Cura e Reparo de Traceback</h3>
+                    <p class="feature-desc">
+                        O agente intercepta falhas de execucao de scripts, extrai o traceback sintatico e aplica a correcao cirurgica sem quebrar a esteira:
+                    </p>
+
+                    <div class="arena-healing-feed" id="healingDemoFeed">
+                        <div style="color: var(--ink-muted); font-size: 9px;">[SISTEMA] Pressione o botao para simular uma falha de codigo e observar a auto-cura...</div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: auto;">
+                        <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary);" id="healingStatus">HARNESS: ARMED</span>
+                        <button class="pixel-btn btn-amber" onclick="runHealingDemoSimulation()">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                            <span>[DISPARAR SCRIPT COM FALHA]</span>
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Painel 4: Osciloscopios SVG & Triggers Termicos -->
                 <article class="arena-panel" id="telemetria">
                     <div class="feature-top">
-                        <span class="feature-num">TELEMETRIA BROADCOM</span>
+                        <span class="feature-num">PAINEL 04 // SILICIO</span>
                         <span class="feature-badge">OSCILOSCOPIOS SVG</span>
                     </div>
 
-                    <h3 class="feature-title">Telemetria de Silicio em Tempo Real</h3>
+                    <h3 class="feature-title">Telemetria de Silicio &amp; Triggers Proativos</h3>
                     <p class="feature-desc">
-                        Graficos vetoriais nitidos em SVG (shape-rendering: crispEdges) monitorando RAM RSS e temperatura Broadcom:
+                        Graficos vetoriais em SVG (shape-rendering: crispEdges) com simulacao de carga em tempo real e protecao termica Broadcom:
                     </p>
 
                     <div class="telemetry-plotter-box">
                         <div style="display: flex; justify-content: space-between; font-size: 8px; color: var(--thermal-amber); margin-bottom: 4px; font-family: var(--font-pixel);">
                             <span>RAM RSS (TETO 300MB)</span>
-                            <span>118.4 MB (39.4%)</span>
+                            <span id="arenaRamDisplay">118.4 MB (39.4%)</span>
                         </div>
                         <svg class="plotter-svg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges">
                             <defs>
@@ -2243,15 +3024,15 @@
                             <rect width="320" height="80" fill="#040608" />
                             <line x1="0" y1="15" x2="320" y2="15" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,4" />
                             <text x="4" y="12" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="7">TETO 300MB</text>
-                            <polygon points="0,80 0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44 310,80" fill="url(#dither-amber-land)" />
-                            <polyline points="0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44" fill="none" stroke="#ffb830" stroke-width="2" />
+                            <polygon id="arenaRamPolygon" points="0,80 0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44 310,80" fill="url(#dither-amber-land)" />
+                            <polyline id="arenaRamPolyline" points="0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44" fill="none" stroke="#ffb830" stroke-width="2" />
                         </svg>
                     </div>
 
                     <div class="telemetry-plotter-box">
                         <div style="display: flex; justify-content: space-between; font-size: 8px; color: var(--phosphor-green); margin-bottom: 4px; font-family: var(--font-pixel);">
                             <span>TEMPERATURA SOC BROADCOM</span>
-                            <span>48.2 C (ESTAVEL)</span>
+                            <span id="arenaTempDisplay">48.2 C (NOMINAL)</span>
                         </div>
                         <svg class="plotter-svg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges">
                             <defs>
@@ -2263,9 +3044,18 @@
                             <rect width="320" height="80" fill="#040608" />
                             <line x1="0" y1="16" x2="320" y2="16" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,4" />
                             <text x="4" y="13" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="7">THROTTLE 80C</text>
-                            <polygon points="0,80 0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47 310,80" fill="url(#dither-green-land)" />
-                            <polyline points="0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47" fill="none" stroke="#33ff66" stroke-width="2" />
+                            <polygon id="arenaTempPolygon" points="0,80 0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47 310,80" fill="url(#dither-green-land)" />
+                            <polyline id="arenaTempPolyline" points="0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47" fill="none" stroke="#33ff66" stroke-width="2" />
                         </svg>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: auto;">
+                        <button class="pixel-btn btn-cyan btn-sm" onclick="injectTelemetryPulse()">
+                            <span>[INJETAR PULSO DE CARGA]</span>
+                        </button>
+                        <button class="pixel-btn btn-amber btn-sm" onclick="simulateThermalTriggerAlert()">
+                            <span>[TESTAR ALERTA TERMICO]</span>
+                        </button>
                     </div>
                 </article>
             </div>
@@ -2285,7 +3075,7 @@
 
             <h2 class="section-headline">CALCULADORA DE ECONOMIA EDGE & PAYBACK</h2>
             <p class="section-subtitle">
-                Ajuste os parametros abaixo para calcular em tempo real a economia financeira, watts poupados e tempo de amortizacao do Raspberry Pi 4B.
+                Ajuste os parametros abaixo para calcular em tempo real a economia financeira, watts poupados e tempo de amortizacao do hardware de borda (ex: Raspberry Pi 4B).
             </p>
 
             <div class="roi-calculator-board">
@@ -2359,7 +3149,7 @@
                     <div class="roi-submetrics-grid">
                         <div class="roi-submetric-card">
                             <span class="roi-submetric-num" id="resPaybackDays">21 DIAS</span>
-                            <span class="roi-submetric-label">AMORTIZACAO DO RASPBERRY PI 4B (PAYBACK)</span>
+                            <span class="roi-submetric-label">AMORTIZACAO DO DISPOSITIVO DE BORDA (PAYBACK)</span>
                         </div>
 
                         <div class="roi-submetric-card">
@@ -2402,6 +3192,7 @@
                 Analise comparativa direta entre os 4 expoentes de AI Coworkers com foco em hardware e autonomia.
             </p>
 
+            <div class="matrix-table-responsive">
             <table class="matrix-table">
                 <thead>
                     <tr>
@@ -2418,7 +3209,7 @@
                         <td>Nuvem Corporativa / Servidor x86</td>
                         <td>Workstation Criativa / GPU Dedicada</td>
                         <td>Terminal xAI em Datacenter Fechado</td>
-                        <td class="matrix-highlight">Raspberry Pi 4B (4GB ARM64) / 6.2W Mesa</td>
+                        <td class="matrix-highlight">Hardware de Borda (SBCs ARM64 / x86_64 / Ref: RPi4 6.2W)</td>
                     </tr>
                     <tr>
                         <td><strong>PEGADA DE RAM (RSS REAL)</strong></td>
@@ -2474,7 +3265,35 @@
                         <td>Tailwind / Shadcn Padrao</td>
                         <td>WebGL Fluido GPU</td>
                         <td>Dark High-Contrast xAI</td>
-                        <td class="matrix-highlight">Pixel Paper UI (Zero Emojis, 1-bit Otimizado)</td>
+                        <td class="matrix-highlight">Pixel Paper UI (Interface 1-Bit de Alta Densidade)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MEMORIA HIERARQUICA (MEMGPT)</strong></td>
+                        <td>Apenas janela de contexto pura</td>
+                        <td>Memoria efemera de sessao</td>
+                        <td>Embeddings vetoriais fechados</td>
+                        <td class="matrix-highlight">Core Memory + Archival FTS5 BM25 + Projecao 64d</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CONSELHO CONSULTIVO &amp; DIALETICA</strong></td>
+                        <td>Agente isolado monolitico</td>
+                        <td>Iteracoes sem auditoria adversarial</td>
+                        <td>Raciocinio em arvore proprietario</td>
+                        <td class="matrix-highlight">Debate Tripartite (Propositor, Auditor, Supervisor)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SELF-HEALING &amp; AUTO-CORRECAO</strong></td>
+                        <td>Erro exposto direto ao usuario</td>
+                        <td>Retry estatico de requisicao</td>
+                        <td>Interrupcao com traceback</td>
+                        <td class="matrix-highlight">Self-Healing Harness + Goals &amp; Milestones</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SAUDE DO SILICIO &amp; MICROSD</strong></td>
+                        <td>Desconsidera hardware local</td>
+                        <td>Exaustao de GPU sem monitoramento</td>
+                        <td>Invisivel em infraestrutura de nuvem</td>
+                        <td class="matrix-highlight">Thermal Throttling Broadcom + WAL TRUNCATE + VACUUM</td>
                     </tr>
                     <tr>
                         <td><strong>SOBERANIA &amp; CUSTO MENSAL</strong></td>
@@ -2485,18 +3304,388 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- FICHAS CATALOGRAFICAS EMPILHADAS (SUBSTITUICAO RESPONSIVA EM TELAS <= 640PX) -->
+            <div class="mobile-matrix-deck">
+                <!-- Ficha 01 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 01]</span>
+                        <h4 class="card-dimension-title">AMBIENTE ALVO &amp; HARDWARE</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS (SAAS):</span>
+                            <span class="entry-value">Nuvem Corporativa / Servidor x86</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS (GPU):</span>
+                            <span class="entry-value">Workstation Criativa / GPU Dedicada</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS (XAI):</span>
+                            <span class="entry-value">Terminal xAI em Datacenter Fechado</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE MULTI-BOT]:</span>
+                            <span class="entry-value-highlight">Hardware de Borda (SBCs / Mini PCs / Ref: RPi4 4GB 6.2W)</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 02 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 02]</span>
+                        <h4 class="card-dimension-title">PEGADA DE RAM (RSS REAL)</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">1.8 GB - 3.2 GB (Node / Chrome headless)</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">1.4 GB - 2.8 GB (React / WebGL)</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">1.5 GB - 3.0 GB (V8 Wasm Runtime)</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">&lt; 70 MB RSS Real (uvloop + Python 3.13 otimizado)</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 03 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 03]</span>
+                        <h4 class="card-dimension-title">ORQUESTRACAO MULTI-BOT</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Pods Docker pesados por agente isolado</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Agente criativo unico isolado na sessao</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Pipeline sequencial proprietario fechado</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Salas Tematicas + Handoff @dot + Dynamic Tool Pruning</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 04 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 04]</span>
+                        <h4 class="card-dimension-title">AUTONOMIA &amp; BACKGROUND</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Cron externo via Celery / Redis pesado</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Inexistente (requer sessao web ativa)</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Agendamentos restritos em datacenter</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Dot Heartbeat 24/7 (Filtro HEARTBEAT_OK: 0 tokens consumidos)</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 05 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 05]</span>
+                        <h4 class="card-dimension-title">MENSAGERIA &amp; CONTROLE REMOTO</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Requer servidor central SaaS terceiro</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Apenas interface desktop local</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Apenas aplicativo web proprietario fechado</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Gateway Nativo Telegram &amp; WhatsApp Embutido (Zero dependencias pesadas)</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 06 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 06]</span>
+                        <h4 class="card-dimension-title">SANDBOX DE EXECUCAO</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Containers Docker em nuvem multi-tenant</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Ambientes efemeros isolados WebGL</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Firecracker MicroVMs em cluster fechado</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Linux Bubblewrap Namespaces (sub-15ms, &lt; 3MB overhead)</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 07 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 07]</span>
+                        <h4 class="card-dimension-title">STORAGE &amp; PRESERVACAO FLASH</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">PostgreSQL / Supabase (alto indice de I/O em disco)</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">PostgreSQL / Cloud S3 Buckets</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">KV Distribuido / RocksDB corporativo</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">SQLite 3.45 WAL Flash-Safe (Zero desgaste do cartao MicroSD)</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 08 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 08]</span>
+                        <h4 class="card-dimension-title">GOVERNANCA HITL</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Modais genericos soltos no feed de conversa</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Menus simples de permissao de midia</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Logs inline em terminal de auditoria</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Review Cards + Travas Mecanicas + Carimbos Forenses</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 09 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 09]</span>
+                        <h4 class="card-dimension-title">DESIGN SYSTEM &amp; INTERFACE</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Tailwind CSS / Shadcn generico padrao</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">WebGL fluido com alto consumo de GPU</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Interface escura de alto contraste xAI</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Pixel Paper UI (Estetica 1-Bit Tatica, Mobile-First)</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 10 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 10]</span>
+                        <h4 class="card-dimension-title">MEMORIA HIERARQUICA (MEMGPT)</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Apenas janela de contexto estatica pura</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Memoria efemera atrelada a sessao aberta</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Embeddings vetoriais fechados de alto custo</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Core Memory + Archival FTS5 BM25 + Projecao 64d em memoria</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 11 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 11]</span>
+                        <h4 class="card-dimension-title">CONSELHO CONSULTIVO &amp; DIALETICA</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Agente isolado monolitico sem contraditorio</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Iteracoes criativas sem auditoria adversarial</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Raciocinio em arvore proprietario fechado</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Debate Tripartite (Propositor Coder, Auditor Critico, Supervisor)</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 12 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 12]</span>
+                        <h4 class="card-dimension-title">SELF-HEALING &amp; AUTO-CORRECAO</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Erro exposto diretamente para o usuario resolver</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Retry simples de requisicao sem analise de causa</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Interrupcao abrupta com traceback no console</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Self-Healing Harness + Ciclo de Auto-Reparo + Goals &amp; Milestones</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 13 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 13]</span>
+                        <h4 class="card-dimension-title">SAUDE DO SILICIO &amp; MICROSD</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Desconsidera condicoes termicas e I/O de hardware</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Exaustao de GPU sem monitoramento termico</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Invisivel em infraestrutura de nuvem remota</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">Thermal Throttling Broadcom + WAL TRUNCATE + Manutencao Noturna</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ficha 14 -->
+                <article class="catalog-index-card">
+                    <header class="card-tab-header">
+                        <span class="card-tab-tag">[REGISTRO // 14]</span>
+                        <h4 class="card-dimension-title">SOBERANIA &amp; CUSTO MENSAL</h4>
+                    </header>
+                    <div class="card-body-entries">
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">OPENDOTS:</span>
+                            <span class="entry-value">Faturas recorrentes de nuvem ($$/mes continuos)</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">MUSEDOTS:</span>
+                            <span class="entry-value">Hardware de altissimo custo de aquisicao e energia</span>
+                        </div>
+                        <div class="card-entry-row competitor">
+                            <span class="entry-entity">GROKDOTS:</span>
+                            <span class="entry-value">Assinatura xAI exclusiva ($$$/mes)</span>
+                        </div>
+                        <div class="card-entry-row pidots-spotlight">
+                            <span class="entry-entity-highlight">PIDOTS [LOCAL EDGE]:</span>
+                            <span class="entry-value-highlight">R$ 0 / mes (100% Soberano, Local e operando em 6 Watts)</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            </div>
         </section>
 
+
         <!-- ===================================================================
-             SECAO 07: AUDITORIA DE OBJECOES & FAQ RETRATIL DE ENGENHARIA
+             SECAO 08: AUDITORIA DE OBJECOES & FAQ RETRATIL DE ENGENHARIA
              =================================================================== -->
         <section class="landing-section" id="faq-objecoes">
             <div class="section-header-bar">
                 <div class="section-tag">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                    <span>SECAO 07 // QUEBRA DE OBJECOES TECNICAS</span>
+                    <span>SECAO 08 // QUEBRA DE OBJECOES TECNICAS</span>
                 </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);">7 PROVAS TECNICAS IRREFUTAVEIS</span>
+                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);">8 PROVAS TECNICAS IRREFUTAVEIS</span>
+
             </div>
 
             <h2 class="section-headline">RESPOSTAS DIRETAS PARA DUVIDAS DE ENGENHARIA</h2>
@@ -2510,7 +3699,7 @@
                     <button class="objection-trigger" onclick="toggleObjection('objCard1')">
                         <div class="objection-title-cluster">
                             <span class="objection-serial">OBJ-01</span>
-                            <span>O RASPBERRY PI 4B AGUENTA MESMO RODAR UMA ESTACAO MULTI-BOT 24/7 SEM TRAVAR POR FALTA DE RAM?</span>
+                            <span>UM DISPOSITIVO DE BORDA COMO O RASPBERRY PI 4B SUPORTA MESMO UMA ESTACAO MULTI-BOT 24/7 SEM TRAVAR?</span>
                         </div>
                         <span class="objection-indicator">[-]</span>
                     </button>
@@ -2591,7 +3780,7 @@
                         <span class="objection-indicator">[+]</span>
                     </button>
                     <div class="objection-drawer-body">
-                        <strong>Eficiencia radical, orquestracao multi-bot local e soberania fisica.</strong> Enquanto o OpenDots original e frameworks derivados dependem de pilhas densas em Node.js/Next.js consumindo de 1.8GB a 3.2GB de RAM e exigem conteineres Docker pesados com navegadores Chromium continuos, o piDots foi reengenheirado do zero para rodar em hardware de baixa potencia. O piDots substitui conteineres por Bubblewrap, scraping pesado por extracao semantica limpa em Markdown, integra chat multi-bot nativo com gateway Telegram/WhatsApp e traz o design system Pixel Paper UI (zero emojis, zero filtros blur pesados e aceleracao ortogonal em 1-bit).
+                        <strong>Eficiencia radical, orquestracao multi-bot local e soberania fisica.</strong> Enquanto o OpenDots original e frameworks derivados dependem de pilhas densas em Node.js/Next.js consumindo de 1.8GB a 3.2GB de RAM e exigem conteineres Docker pesados com navegadores Chromium continuos, o piDots foi reengenheirado do zero para rodar em hardware de baixa potencia. O piDots substitui conteineres por Bubblewrap, scraping pesado por extracao semantica limpa em Markdown, integra chat multi-bot nativo com gateway Telegram/WhatsApp e traz o design system Pixel Paper UI (tipografia tecnica crisp, ausencia de filtros graficos pesados e aceleracao ortogonal em 1-bit).
                         <div class="objection-pill-row">
                             <span class="objection-tech-pill">97% MAIS LEVE EM RAM</span>
                             <span class="objection-tech-pill">MULTI-BOT EDGE</span>
@@ -2605,7 +3794,7 @@
                     <button class="objection-trigger" onclick="toggleObjection('objCard6')">
                         <div class="objection-title-cluster">
                             <span class="objection-serial">OBJ-06</span>
-                            <span>COMO O RASPBERRY PI 4B CONSEGUE ORQUESTRAR MULTIPLOS BOTS AO MESMO TEMPO SEM ESGOTAR A CPU OU MEMORIA?</span>
+                            <span>COMO O PIDOTS CONSEGUE ORQUESTRAR MULTIPLOS BOTS EM UM SBC DE BAIXO CONSUMO SEM ESGOTAR CPU OU MEMORIA?</span>
                         </div>
                         <span class="objection-indicator">[+]</span>
                     </button>
@@ -2637,17 +3826,37 @@
                         </div>
                     </div>
                 </article>
+
+                <!-- Obj 08: Manutencao Noturna e Saude do Silicio -->
+                <article class="objection-card" id="objCard8">
+                    <button class="objection-trigger" onclick="toggleObjection('objCard8')">
+                        <div class="objection-title-cluster">
+                            <span class="objection-serial">OBJ-08</span>
+                            <span>COMO O PIDOTS EVITA O INCHACO DO BANCO E PROTEGE O SILICIO E ARMAZENAMENTO FLASH A LONGO PRAZO?</span>
+                        </div>
+                        <span class="objection-indicator">[+]</span>
+                    </button>
+                    <div class="objection-drawer-body">
+                        <strong>Com triggers termicos ativos e rotina noturna autonoma de compactacao.</strong> O piDots le continuamente o sensor termico do SoC Broadcom BCM2711 (/sys/class/thermal/thermal_zone0/temp). Se a temperatura ultrapassar 72 C, ativa throttle proativo sem travar o sistema. Para preservar o MicroSD, a rotina noturna autonoma executa checkpoint com truncamento de WAL (PRAGMA wal_checkpoint TRUNCATE), consolida turnos com mais de 7 dias na tabela de memorias episodicas (podando mensagens brutas antigas) e gera backups atomicos seguros com VACUUM INTO, garantindo velocidade de sub-milissegundo para sempre.
+                        <div class="objection-pill-row">
+                            <span class="objection-tech-pill">WAL TRUNCATE</span>
+                            <span class="objection-tech-pill">CONSOLIDACAO EPISODICA</span>
+                            <span class="objection-tech-pill">THERMAL GUARD 72 C</span>
+                        </div>
+                    </div>
+                </article>
             </div>
         </section>
 
+
         <!-- ===================================================================
-             SECAO 08: FECHAMENTO DE ALTO IMPACTO // DEPLOY EM 1 COMANDO
+             SECAO 09: FECHAMENTO DE ALTO IMPACTO // DEPLOY EM 1 COMANDO
              =================================================================== -->
         <section class="landing-section" id="quickstart">
             <div class="section-header-bar">
                 <div class="section-tag">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                    <span>SECAO 08 // DEPLOY INSTANTANEO</span>
+                    <span>SECAO 09 // DEPLOY INSTANTANEO</span>
                 </div>
                 <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">DISPONIVEL AGORA // OPEN SOURCE MIT</span>
             </div>
@@ -2660,7 +3869,7 @@
                 </h2>
                 
                 <p style="max-width: 760px; margin: 0 auto 24px; font-size: 13px; color: var(--ink-secondary); line-height: 1.6;">
-                    Chega de adiar sua autonomia tecnica. Em menos de 2 minutos voce clona o repositorio, inicia o conteiner ultraotimizado e tem um colega de trabalho de IA persistente, seguro e sob seu controle absoluto rodando no seu Raspberry Pi 4B.
+                    Chega de adiar sua autonomia tecnica. Em menos de 2 minutos voce clona o repositorio, inicia o conteiner ultraotimizado e tem um colega de trabalho de IA persistente, seguro e sob seu controle absoluto rodando no seu hardware de borda ou servidor local.
                 </p>
 
                 <!-- Terminal Deck em 1 Comando Unificado -->
@@ -2684,7 +3893,7 @@
 
                 <!-- Grupo de Fechamento -->
                 <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
-                    <a href="/" class="pixel-btn-cta-primary">
+                    <a href="/app" class="pixel-btn-cta-primary">
                         <span class="pulse-step-dot"></span>
                         <span>[INICIAR CONSOLE OPERACIONAL AGORA]</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -2699,7 +3908,7 @@
                 </div>
 
                 <div style="margin-top: 20px; font-size: 11px; color: var(--ink-muted);">
-                    LICENCA MIT OPEN SOURCE // CODIGO 100% AUDITAVEL // ZERO EMOJIS // SOBERANIA FISICA PERMANENTE
+                    LICENCA MIT OPEN SOURCE // CODIGO 100% AUDITAVEL // ESTETICA RETRO MINIMALISTA // SOBERANIA FISICA PERMANENTE
                 </div>
             </div>
         </section>
@@ -2720,8 +3929,10 @@
                 <span class="brand-title">PIDOTS // 2026</span>
             </div>
 
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <a href="/" class="pixel-btn btn-green">[CONSOLE SPA]</a>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <a href="/" class="pixel-btn btn-cyan">[01 // VISAO GERAL]</a>
+                <a href="/app" class="pixel-btn btn-green">[02 // WORKSPACE]</a>
+                <a href="/docs" class="pixel-btn">[03 // DOCUMENTACAO]</a>
                 <button class="pixel-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
                     <span>[VOLTAR AO TOPO]</span>
@@ -2734,7 +3945,7 @@
                 PROJETADO E DESENVOLVIDO POR <strong>LYON CHRISTOPHER</strong> (2026) // LICENCA MIT OPEN SOURCE
             </div>
             <div>
-                PIXEL PAPER UI // ZERO EMOJIS // 100% PORTUGUES DO BRASIL
+                PIXEL PAPER UI // DESIGN SYSTEM MINIMALISTA // 100% PORTUGUES DO BRASIL
             </div>
         </div>
     </footer>
@@ -2748,7 +3959,7 @@
             <span class="drawer-title">MANUAL TECNICO // GUIA PASSO A PASSO</span>
             <button class="pixel-btn" onclick="toggleDrawer()">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                <span>[FECHAR X]</span>
+                <span>[FECHAR]</span>
             </button>
         </header>
         
@@ -2757,67 +3968,98 @@
         </div>
 
         <div class="drawer-content" id="drawerContentList">
+            <div style="margin-bottom: 14px; padding: 10px; background: var(--paper-surface-elevated); border: 1px solid var(--border-accent); text-align: center;">
+                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); display: block; margin-bottom: 6px;">DOCUMENTACAO COMPLETA</span>
+                <a href="/docs" target="_blank" class="pixel-btn btn-cyan btn-sm" style="width: 100%; justify-content: center; text-decoration: none;">
+                    [ACESSAR GUIA DIDATICO EM TELA CHEIA]
+                </a>
+            </div>
+
             <div class="guide-step">
-                <div class="step-num">PASSO 01 // CONCEITO E IDENTIDADE</div>
-                <div class="step-heading">SOBERANIA OPERACIONAL NO RASPBERRY PI 4B</div>
+                <div class="step-num">PASSO 01 // CONCEITO &amp; ARQUETIPOS</div>
+                <div class="step-heading">AUTONOMIA OPERACIONAL EM HARDWARE DE BORDA</div>
                 <div class="step-body">
                     O piDots foi concebido para entregar persistencia, memoria duravel e governanca local sem depender de instancias em nuvem caras ou orquestradores pesados.
                 </div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 02 // PRESERVACAO DE HARDWARE FLASH</div>
-                <div class="step-heading">CALIBRACAO DO BANCO SQLITE WAL</div>
+                <div class="step-num">PASSO 02 // CHAT MULTI-BOT &amp; MENCOES</div>
+                <div class="step-heading">ORQUESTRACAO DINAMICA COM @DOT</div>
                 <div class="step-body">
-                    Com journal_mode=WAL e synchronous=NORMAL, eliminam-se pausas sincronas de escrita que desgastam celulas de memoria Flash no MicroSD ou SSD USB.
+                    Invoque especialistas pontuais no mesmo terminal com mencoes dinamicas. Handoff de lideranca sincronizado entre dots no SQLite WAL.
                 </div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 03 // STREAMING REACT & AG-UI</div>
-                <div class="step-heading">TRANSPARENCIA TOTAL DE RACIOCINIO</div>
+                <div class="step-num">PASSO 03 // DOT HEARTBEAT 24/7</div>
+                <div class="step-heading">AUTONOMIA PROATIVA E SILENCIO INTELIGENTE</div>
                 <div class="step-body">
-                    O protocolo AG-UI transmite pensamentos internos em thought:delta e chamadas de ferramentas em tool:called antes de emitir a resposta definitiva token a token.
+                    Tarefas agendadas via croniter despertam o Dot periodicamente. O filtro HEARTBEAT_OK descarta respostas triviais, consumindo zero tokens desnecessarios.
                 </div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 04 // GOVERNANCA FORENSE HITL</div>
-                <div class="step-heading">CONTROLE HUMANO SOBRE COMANDOS DE RISCO</div>
+                <div class="step-num">PASSO 04 // GATEWAY DE MENSAGERIA</div>
+                <div class="step-heading">TELEGRAM, WHATSAPP &amp; SALAS TEMATICAS</div>
                 <div class="step-body">
-                    Comandos como exclusao recursiva de arquivos ou reinicio de sistema sao retidos imediatamente. O operador homologa ou veta com carimbos oficiais.
+                    Controle seus agentes e receba relatorios pelo Telegram ou WhatsApp via Evolution API, com travas anti-loop (hop_count menor ou igual a 3).
                 </div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 05 // NAVEGACAO DA APRESENTACAO</div>
-                <div class="step-heading">ATALHOS E CONTROLES DO OPERADOR</div>
+                <div class="step-num">PASSO 05 // PODA DINAMICA DE FERRAMENTAS</div>
+                <div class="step-heading">DYNAMIC TOOL PRUNING E ECONOMIA DE RAM</div>
                 <div class="step-body">
-                    Utilize os botoes do cabecalho ou o scroll vertical para explorar os pilares de engenharia da landing page. Pressione F para alternar modo tela cheia.
+                    Dots carregam apenas as ferramentas autorizadas em seu catalogo, reduzindo em ate 65% o payload de esquemas e protegendo o contexto.
                 </div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 06 // MODELAGEM FINANCEIRA E ROI</div>
-                <div class="step-heading">AMORTIZACAO E SOBERANIA EM HARDWARE PROPRIO</div>
+                <div class="step-num">PASSO 06 // PRESERVACAO FLASH &amp; DEPLOY</div>
+                <div class="step-heading">CALIBRACAO SQLITE WAL E CONSUMO 6W</div>
                 <div class="step-body">
-                    A migracao de agentes de instancias em nuvem para o silicio Raspberry Pi 4B elimina custos mensais recorrentes em moeda estrangeira e atinge payback completo em menos de um mes de execucao ininterrupta.
+                    Com journal_mode=WAL e temp_store=MEMORY, escritas sincronas sao amortecidas, garantindo vida util prolongada ao cartao MicroSD.
                 </div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 07 // ORQUESTRACAO MULTI-BOT E SALAS</div>
-                <div class="step-heading">EQUIPES ESPECIALIZADAS NO MESMO SILICIO</div>
+                <div class="step-num">PASSO 07 // MEMORIA HIERARQUICA</div>
+                <div class="step-heading">CORE MEMORY, RECALL &amp; ARCHIVAL FTS5</div>
                 <div class="step-body">
-                    Invoque coworkers pontuais com mencoes @dot e organize a cooperacao em salas tematicas (#devops, #pesquisa). A poda dinamica de ferramentas preserva memoria mantendo o consumo global abaixo de 70MB de RAM.
+                    Estrutura inspirada no MemGPT com auto-edicao autonoma, busca semantica hibrida FTS5 BM25 e projecao vetorial local de 64 dimensoes.
                 </div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 08 // AUTONOMIA PROATIVA E MENSAGERIA</div>
-                <div class="step-heading">DOT HEARTBEAT 24/7 E CONTROLE REMOTO</div>
+                <div class="step-num">PASSO 08 // SELF-HEALING HARNESS</div>
+                <div class="step-heading">AUTO-CURA DE CODIGO &amp; TWO-STAGE PLANNING</div>
                 <div class="step-body">
-                    O EdgeScheduler monitora o Raspberry Pi 24/7 de forma silenciosa via filtro HEARTBEAT_OK, alertando o operador pelo Telegram ou WhatsApp apenas quando uma intervencao real e exigida.
+                    Captura automatica de tracebacks, diagnostico sintatico cirurgico e reparo de codigo em loop fechado antes da entrega ao operador.
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-num">PASSO 09 // CONSELHO CONSULTIVO</div>
+                <div class="step-heading">DELIBERACAO TRIPARTITE EM 3 RODADAS</div>
+                <div class="step-body">
+                    Dialetica colaborativa entre Propositor, Auditor e Supervisor gerando fitas internas e resolucao executiva publica consolidada.
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-num">PASSO 10 // SHARED SPACE &amp; DOT PACKS</div>
+                <div class="step-heading">QUADRO COMPARTILHADO &amp; MANIFESTOS V1.0</div>
+                <div class="step-body">
+                    Espaco duravel de conhecimento compartilhado entre agentes e exportacao/importacao atomica de dots completos com historico e persona.
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-num">PASSO 11 // TRIGGERS DE SILICIO &amp; VACUUM</div>
+                <div class="step-heading">PROTECAO TERMICA BROADCOM &amp; ROTINA 03H</div>
+                <div class="step-body">
+                    Monitoramento de temperatura do SoC, mitigacao de throttling e consolidacao noturna automatica com WAL TRUNCATE e VACUUM INTO.
                 </div>
             </div>
         </div>
@@ -2924,7 +4166,7 @@
             playHapticMechanicalClick();
 
             setTimeout(() => {
-                showToast('HOMOLOGADO: Ordem oficial autenticada no SQLite WAL! Comando liberado para o sandbox.', 'success');
+                showToast('HOMOLOGADO: Acao oficial autenticada no SQLite WAL! Comando liberado para o sandbox.', 'success');
                 if (approveStamp) approveStamp.style.transform = 'rotate(2deg) scale(1.0)';
             }, 180);
         }
@@ -3046,6 +4288,269 @@
             playHapticMechanicalClick();
         }
 
+        // Controle do Menu Movel de Secoes
+        function toggleMobileNavMenu() {
+            playHapticMechanicalClick();
+            const panel = document.getElementById('mobileNavPanel');
+            if (panel) panel.classList.toggle('open');
+        }
+
+        // Alternancia de Abas no Simulador ReAct do Hero
+        function switchSimulatorTab(tab) {
+            playHapticMechanicalClick();
+            const termVp = document.getElementById('heroSimViewport');
+            const teleVp = document.getElementById('heroTelemetryViewport');
+            const btnTerm = document.getElementById('tabBtnTerminal');
+            const btnTele = document.getElementById('tabBtnTelemetry');
+
+            if (tab === 'terminal') {
+                if (termVp) termVp.style.display = 'block';
+                if (teleVp) teleVp.style.display = 'none';
+                if (btnTerm) btnTerm.classList.add('active');
+                if (btnTele) btnTele.classList.remove('active');
+            } else {
+                if (termVp) termVp.style.display = 'none';
+                if (teleVp) teleVp.style.display = 'block';
+                if (btnTerm) btnTerm.classList.remove('active');
+                if (btnTele) btnTele.classList.add('active');
+            }
+        }
+
+        // Limpeza do Viewport do Simulador
+        function clearSimViewport() {
+            playHapticMechanicalClick();
+            const vp = document.getElementById('heroSimViewport');
+            if (vp) {
+                vp.innerHTML = `
+                    <div class="sim-line prefix">[BOOT] piDots Edge Core pronto para receber novas instrucoes.</div>
+                    <div class="sim-line" style="color: var(--blueprint-cyan);">[INFO] Selecione um comando rapido ou envie seu comando customizado.</div>
+                `;
+            }
+            showToast('Terminal limpo com sucesso.', 'info');
+        }
+
+        // Execucao de Instrucoes Simuladas no Protocolo AG-UI
+        function executeSimulatedOrder(type) {
+            playHapticMechanicalClick();
+            switchSimulatorTab('terminal');
+            const vp = document.getElementById('heroSimViewport');
+            if (!vp) return;
+
+            const input = document.getElementById('heroSimInput');
+            if (input) input.value = '';
+
+            const statusText = document.getElementById('heroSimStatusText');
+            if (statusText) statusText.innerText = 'PROCESSANDO INSTRUCAO AG-UI...';
+
+            if (type === 'audit_flash') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @dot-coder auditar integridade Flash MicroSD e consumo RSS</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line thought">[CADERNO DE RACIOCINIO // DOT-CODER]<br>Inspecionando /proc/meminfo, journal_mode do SQLite e espaco de particao /workspace...</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 350);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line tool">[TOOL CALL // SUB-15MS BWRAP]<br>execute_bwrap_command("cat /proc/meminfo | grep MemFree &amp;&amp; df -h /workspace")</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 750);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line success">[TOOL RESULT] Codigo: 0 | Saida: MemFree: 3120 MB | Particao Flash: 68% livre. Desgaste 0.</div>`;
+                    vp.innerHTML += `<div class="sim-line" style="color: var(--phosphor-green); font-weight: bold;">[DOT-CODER // RESPOSTA] O ecossistema esta operando com 64.2MB de RAM real. Nenhuma escrita sincrona danosa foi detectada no MicroSD.</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'NO ATIVO // 3 AGENTES EM ESPERA // RSS: 64.2MB';
+                }, 1200);
+
+            } else if (type === 'council_debate') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @conselho deliberar sobre politica de sincronizacao WAL para modo headless</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line thought">[CONSELHO // RODADA 1 - PROPOSTA]<br>@dot-coder: "Proponho manter PRAGMA synchronous=NORMAL e flush a cada 15 segundos."</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 400);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line thought" style="border-color: var(--stamp-danger); color: #fecaca;">[CONSELHO // RODADA 2 - AUDITORIA]<br>@dot-auditor: "Validado: sob kernel Linux com journaling, o risco de corrupcao e zero e poupa 94% de I/O."</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 850);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line success">[CONSELHO // RESOLUCAO DO SUPERVISOR]<br>@dot-supervisor: "Deliberacao encerrada com consenso. Gravando diretriz no SQLite WAL."</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'DELIBERACAO HOMOLOGADA // WAL PERSISTIDO';
+                }, 1300);
+
+            } else if (type === 'self_healing') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @self-healing executar pipeline de validacao do script data/loader.py</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line danger">[FALHA DETECTADA // TRACEBACK]<br>ZeroDivisionError: division by zero na linha 28 de data/loader.py (divisor = 0)</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 400);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line thought">[SELF-HEALING HARNESS // DIAGNOSTICO CIRURGICO]<br>Detectada divisao por zero. Aplicando guarda condicional "if divisor == 0: return 0.0"...</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 850);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line success">[AUTO-CURA CONCLUIDA // EXIT 0]<br>Script reexecutado com sucesso em sandbox Bubblewrap. 100% dos testes aprovados sem intervencao humana!</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'AUTO-CURA FINALIZADA COM SUCESSO';
+                }, 1350);
+
+            } else if (type === 'proactive_heartbeat') {
+                vp.innerHTML += `<div class="sim-line prefix">[SISTEMA // CRONITER]&gt; Disparo de tarefa proativa agendada: rotina de checagem a cada 15s</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line tool">[EDGE SCHEDULER // CHECAGEM PROATIVA]<br>Lendo temperatura SoC (/sys/class/thermal), pool SQLite e portas de rede...</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 350);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line success">[SILENCIO INTELIGENTE // HEARTBEAT_OK]<br>Todos os parametros nominais. Nenhuma notificacao desnecessaria enviada ao operador (0 tokens desperdicados).</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'PULSO OPERACIONAL NOMINAL // 0 TOKENS';
+                }, 800);
+
+            } else if (type === 'hitl_danger') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @dot-coder executar rm -rf /etc/systemd/system/pidots.service</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line danger" style="background: rgba(239, 68, 68, 0.15); border-left: 3px solid var(--stamp-danger); padding: 8px;">[VETO FORENSE HITL // MISSILE SWITCH ENGATADO]<br>Comando de risco CRITICO retido pelo HITLManager! Requer homologacao humana do operador na Arena de Governanca.</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'COMANDO BLOQUEADO // AGUARDANDO APROVACAO';
+                    showToast('VETO HITL: Acao destrutiva retida com seguranca!', 'danger');
+                }, 450);
+            }
+        }
+
+        // Comando Customizado Digitado pelo Usuario no Prompt
+        function handleCustomSimOrder() {
+            const input = document.getElementById('heroSimInput');
+            if (!input || !input.value.trim()) return;
+
+            const text = input.value.trim();
+            playHapticMechanicalClick();
+            switchSimulatorTab('terminal');
+
+            const vp = document.getElementById('heroSimViewport');
+            if (!vp) return;
+
+            vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; ${text}</div>`;
+            input.value = '';
+            vp.scrollTop = vp.scrollHeight;
+
+            setTimeout(() => {
+                vp.innerHTML += `<div class="sim-line thought">[CADERNO DE RACIOCINIO // AG-UI]<br>Analisando intencao semantica... Roteando comando atraves da poda dinamica de ferramentas...</div>`;
+                vp.scrollTop = vp.scrollHeight;
+            }, 300);
+
+            setTimeout(() => {
+                vp.innerHTML += `<div class="sim-line tool">[TOOL CALL // LOCAL FIRST]<br>execute_bwrap_command("echo '[PROCESSO EM EXECUCAO NA BORDA]'")</div>`;
+                vp.scrollTop = vp.scrollHeight;
+            }, 700);
+
+            setTimeout(() => {
+                vp.innerHTML += `<div class="sim-line success">[RESPOSTA DO AGENTE]<br>Comando processado com sucesso pelo ecossistema soberano piDots em menos de 14ms.</div>`;
+                vp.scrollTop = vp.scrollHeight;
+            }, 1100);
+        }
+
+        // Simulacao da Arena: Conselho Tripartite
+        function runCouncilDemoSimulation() {
+            playHapticMechanicalClick();
+            const feed = document.getElementById('councilDemoFeed');
+            const status = document.getElementById('councilRoundStatus');
+            if (!feed) return;
+
+            if (status) status.innerText = 'STATUS: SESSAO EM ANDAMENTO (RODADA 1/3)';
+            feed.innerHTML = `<div class="council-bubble coder"><strong>[@dot-coder // PROPOSTA]:</strong> Proponho unificar o historico de mensagens com visibilidade 'internal' para manter o feed do operador 100% limpo.</div>`;
+
+            setTimeout(() => {
+                if (status) status.innerText = 'STATUS: DEBATE CRITICO (RODADA 2/3)';
+                feed.innerHTML += `<div class="council-bubble auditor"><strong>[@dot-auditor // AUDITORIA]:</strong> Ponto critico: mensagens internas devem ter chave estrangeira estrita no SQLite WAL para evitar orfaos.</div>`;
+                feed.scrollTop = feed.scrollHeight;
+            }, 600);
+
+            setTimeout(() => {
+                if (status) status.innerText = 'STATUS: CONCLUIDO (RODADA 3/3)';
+                feed.innerHTML += `<div class="council-bubble supervisor"><strong>[@dot-supervisor // VEREDITO]:</strong> Aprovado com a restricao do auditor. Registrando resolucao na tabela agent_handoffs como COMPLETED.</div>`;
+                feed.scrollTop = feed.scrollHeight;
+                showToast('Conselho Consultivo: Deliberacao tripartite homologada!', 'success');
+            }, 1200);
+        }
+
+        // Simulacao da Arena: Self-Healing
+        function runHealingDemoSimulation() {
+            playHapticMechanicalClick();
+            const feed = document.getElementById('healingDemoFeed');
+            const status = document.getElementById('healingStatus');
+            if (!feed) return;
+
+            if (status) status.innerText = 'HARNESS: INTERCEPTANDO FALHA';
+            feed.innerHTML = `<div style="color: var(--stamp-danger);">[EXECUCAO FALHOU] File "pipeline.py", line 42: ZeroDivisionError: float division by zero</div>`;
+
+            setTimeout(() => {
+                feed.innerHTML += `<div style="color: var(--thermal-amber); margin: 4px 0;">[HARNESS] AST Parser isolou a falha: variavel 'taxa_amostragem' recebendo 0.</div>`;
+                feed.scrollTop = feed.scrollHeight;
+            }, 500);
+
+            setTimeout(() => {
+                feed.innerHTML += `<div style="color: var(--phosphor-green); font-weight: bold;">[AUTO-CURA] Correcao aplicada: adicionada guarda 'max(taxa, 1e-6)'. Reexecutando... SUCESSO (Exit: 0).</div>`;
+                if (status) status.innerText = 'HARNESS: REPARADO COM EXITO';
+                feed.scrollTop = feed.scrollHeight;
+                showToast('Self-Healing: Script reparado automaticamente sem parada de servico!', 'success');
+            }, 1100);
+        }
+
+        // Simulacao da Arena: Telemetria & Triggers
+        function injectTelemetryPulse() {
+            playHapticMechanicalClick();
+            const ramPolyline = document.getElementById('arenaRamPolyline');
+            const ramPolygon = document.getElementById('arenaRamPolygon');
+            const ramDisplay = document.getElementById('arenaRamDisplay');
+
+            if (ramDisplay) ramDisplay.innerText = '178.6 MB (59.5% // PULSO DE TESTE)';
+            if (ramPolyline) ramPolyline.setAttribute('points', '0,60 40,60 40,35 90,35 90,38 140,38 140,25 190,25 190,30 240,30 240,40 290,40 290,42 310,42');
+            if (ramPolygon) ramPolygon.setAttribute('points', '0,80 0,60 40,60 40,35 90,35 90,38 140,38 140,25 190,25 190,30 240,30 240,40 290,40 290,42 310,42 310,80');
+
+            showToast('TELEMETRIA: Pulso de estresse injetado. RAM estabilizada abaixo de 200MB!', 'warning');
+
+            setTimeout(() => {
+                if (ramDisplay) ramDisplay.innerText = '118.4 MB (39.4% // RECUPERADO)';
+                if (ramPolyline) ramPolyline.setAttribute('points', '0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44');
+                if (ramPolygon) ramPolygon.setAttribute('points', '0,80 0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44 310,80');
+            }, 3000);
+        }
+
+        function simulateThermalTriggerAlert() {
+            playHapticMechanicalClick();
+            const tempDisplay = document.getElementById('arenaTempDisplay');
+            const tempPolyline = document.getElementById('arenaTempPolyline');
+            const tempPolygon = document.getElementById('arenaTempPolygon');
+
+            if (tempDisplay) tempDisplay.innerHTML = '<span style="color: var(--stamp-danger);">76.4 C (TRIGGER ATIVADO // MITIGACAO)</span>';
+            if (tempPolyline) tempPolyline.setAttribute('stroke', '#ef4444');
+            if (tempPolyline) tempPolyline.setAttribute('points', '0,52 50,52 50,30 110,30 110,22 170,22 170,18 230,18 230,15 290,15 290,14 310,14');
+            if (tempPolygon) tempPolygon.setAttribute('points', '0,80 0,52 50,52 50,30 110,30 110,22 170,22 170,18 230,18 230,15 290,15 290,14 310,14 310,80');
+
+            showToast('ALERTA TERMICO: Temperatura acima de 72 C! EdgeHardwareTriggers ativou desaceleracao de polling preventivo.', 'danger', 4500);
+
+            setTimeout(() => {
+                if (tempDisplay) tempDisplay.innerHTML = '<span>48.2 C (NOMINAL)</span>';
+                if (tempPolyline) tempPolyline.setAttribute('stroke', '#33ff66');
+                if (tempPolyline) tempPolyline.setAttribute('points', '0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47');
+                if (tempPolygon) tempPolygon.setAttribute('points', '0,80 0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47 310,80');
+            }, 3500);
+        }
+
         // Copiar Snippet com Feedback Tatil
         function copySnippet(text) {
             playHapticMechanicalClick();
@@ -3101,6 +4606,100 @@
                     toggleDrawer();
                 }
             }
+        });
+
+        // Navegacao Global por Teclado (Go-to Chords: g h, g w, g d)
+        (function() {
+            let lastKeyTime = 0;
+            let pendingPrefix = false;
+
+            window.addEventListener('keydown', function(e) {
+                const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+                if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) return;
+                if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+                const key = e.key.toLowerCase();
+                const now = Date.now();
+
+                if (pendingPrefix && (now - lastKeyTime < 1000)) {
+                    pendingPrefix = false;
+                    if (key === 'h' || key === 'v') {
+                        window.location.href = '/';
+                    } else if (key === 'w' || key === 'a') {
+                        window.location.href = '/app';
+                    } else if (key === 'd' || key === 'g') {
+                        window.location.href = '/docs';
+                    }
+                    return;
+                }
+
+                if (key === 'g') {
+                    pendingPrefix = true;
+                    lastKeyTime = now;
+                    setTimeout(() => { pendingPrefix = false; }, 1000);
+                }
+        })();
+
+        // Integracao PWA & Service Worker na Landing Page Oficial
+        const PiDotsLandingPWA = (function() {
+            let deferredPrompt = null;
+
+            function init() {
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register('/sw.js').catch((err) => {
+                            console.warn('[piDots Landing] Falha ao registrar Service Worker:', err);
+                        });
+                    });
+                }
+
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    const btn = document.getElementById('btnLandingPwaInstall');
+                    if (btn) btn.style.display = 'inline-flex';
+                });
+
+                window.addEventListener('appinstalled', () => {
+                    deferredPrompt = null;
+                    const btn = document.getElementById('btnLandingPwaInstall');
+                    if (btn) btn.style.display = 'none';
+                });
+
+                // Detecção do iOS Safari
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                const isStandalone = window.navigator.standalone === true;
+                if (isIOS && !isStandalone) {
+                    const btn = document.getElementById('btnLandingPwaInstall');
+                    if (btn) {
+                        btn.style.display = 'inline-flex';
+                        btn.onclick = () => {
+                            alert('Instalacao no iOS Safari:\n1. Toque no botao Compartilhar (icone de quadrado com seta para cima)\n2. Selecione "Adicionar a Tela de Inicio"');
+                        };
+                    }
+                }
+            }
+
+            async function install() {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('[piDots Landing] Instalacao PWA aceita.');
+                }
+                deferredPrompt = null;
+                const btn = document.getElementById('btnLandingPwaInstall');
+                if (btn) btn.style.display = 'none';
+            }
+
+            return {
+                init: init,
+                install: install
+            };
+        })();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            PiDotsLandingPWA.init();
         });
     </script>
 </body>

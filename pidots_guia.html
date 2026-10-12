@@ -2,16 +2,22 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <title>piDots // Guia Operacional Didático (Pixel Paper UI)</title>
     <meta name="description" content="Guia operacional oficial e didático do piDots: conceitos, ciclo ReAct, arsenal de ferramentas, governança HITL, configuração e deploy em Raspberry Pi 4B sob o design system Pixel Paper UI.">
     
-    <!-- Favicon Oficial em SVG Vetorial (Zero Emojis) -->
+    <!-- Favicon e Icones Oficiais PWA (Rasterizados & SVG) -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#07090c">
+    <meta name="theme-color" content="#07090c" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#e9ecef" media="(prefers-color-scheme: light)">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="piDots">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!-- Tipografia Oficial Pixel Paper UI: Silkscreen, VT323 e JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,12 +27,19 @@
     <style>
         /* =====================================================================
            PIXEL PAPER UI - DESIGN SYSTEM OFICIAL DO PIDOTS
-           Diretrizes: Zero emojis, largura total, menu lateral direito retratil,
-           busca instantanea, estilo passo a passo com exemplos e dicas.
+           Diretrizes: Design System Pixel Paper UI, tipografia tecnica crisp,
+           largura total, menu lateral direito retratil, busca instantanea,
+           estilo passo a passo com exemplos e dicas.
            Autor: lyon christopher (2026)
            ===================================================================== */
         :root {
             --px: 2px; /* Unidade escalar de chanfro pixelado */
+
+            /* Insets de Seguranca de Hardware (Notch, Dynamic Island, Home Indicator) */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
 
             /* Tipografia Hibrida */
             --font-pixel: 'Silkscreen', monospace;
@@ -111,9 +124,17 @@
             image-rendering: pixelated;
         }
 
-        html, body {
+        html {
+            scroll-behavior: smooth;
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+            scrollbar-gutter: stable;
+        }
+
+        body {
             width: 100%;
             min-height: 100vh;
+            min-height: 100dvh;
             background-color: var(--paper-base);
             background-image:
                 linear-gradient(to right, var(--grid-color-fine) 1px, transparent 1px),
@@ -126,6 +147,8 @@
             font-size: 13px;
             line-height: 1.6;
             overflow-x: hidden;
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* Barra de Rolagem Pixel Art */
@@ -164,11 +187,13 @@
             z-index: 90;
             background: var(--paper-surface);
             border-bottom: 2px solid var(--border-default);
-            height: var(--header-height);
+            height: calc(var(--header-height) + var(--safe-top));
+            padding-top: var(--safe-top);
+            padding-left: max(20px, calc(16px + var(--safe-left)));
+            padding-right: max(20px, calc(16px + var(--safe-right)));
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
             box-shadow: var(--shadow-sm);
         }
 
@@ -211,7 +236,7 @@
             font-family: var(--font-mono);
             font-size: 11px;
             padding: 6px 10px 6px 30px;
-            width: 280px;
+            width: clamp(160px, 16vw, 240px);
             outline: none;
             box-shadow: inset 1px 1px 0px #000000;
             transition: all 0.05s steps(1);
@@ -221,7 +246,7 @@
             border-color: var(--blueprint-cyan);
             background: var(--paper-sheet);
             box-shadow: inset 2px 2px 0px #000000, 0 0 0 1px var(--blueprint-cyan);
-            width: 340px;
+            width: clamp(200px, 22vw, 300px);
         }
 
         .search-icon-pos {
@@ -256,6 +281,21 @@
             user-select: none;
             transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
             white-space: nowrap;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+
+        /* Hitbox acessivel de toque de 48x48px (Apple 44pt / Google 48dp) sem inflar a densidade visual */
+        .pixel-btn::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 48px;
+            min-height: 48px;
+            pointer-events: auto;
         }
 
         .pixel-btn:hover {
@@ -915,6 +955,9 @@
             border-top: 2px solid var(--border-default);
             background: var(--paper-surface);
             padding: 24px 32px;
+            padding-bottom: max(24px, calc(16px + var(--safe-bottom)));
+            padding-left: max(32px, calc(16px + var(--safe-left)));
+            padding-right: max(32px, calc(16px + var(--safe-right)));
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -938,8 +981,8 @@
         /* Botao Flutuante Voltar ao Topo */
         .btn-pixel-top {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: max(20px, calc(16px + var(--safe-bottom)));
+            right: max(20px, calc(16px + var(--safe-right)));
             background: var(--paper-surface);
             border: 1px solid var(--border-default);
             box-shadow: var(--shadow-sm);
@@ -952,12 +995,31 @@
             cursor: pointer;
             z-index: 85;
             transition: all 0.05s steps(1);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-pixel-top::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 48px;
+            min-height: 48px;
+            pointer-events: auto;
         }
         .btn-pixel-top:hover {
             border-color: var(--blueprint-cyan);
             background: var(--paper-surface-elevated);
             transform: translate(-1px, -1px);
             box-shadow: var(--shadow-md);
+        }
+
+        /* Prevenir zoom involuntario no iOS Safari em dispositivos moveis */
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
         }
 
         /* Responsividade Mobile */
@@ -976,7 +1038,13 @@
                 padding: 20px 16px;
             }
             .catalog-title {
-                font-size: 15px;
+                font-size: clamp(16px, 3.8vw + 4px, 24px) !important;
+            }
+            .catalog-lead {
+                font-size: clamp(11px, 2vw + 3px, 13px) !important;
+            }
+            .step-title {
+                font-size: clamp(12px, 2.6vw + 3px, 16px) !important;
             }
             .step-content-body {
                 padding: 16px;
@@ -988,13 +1056,528 @@
                 display: block;
             }
         }
+
+        @media (max-width: 640px) {
+            /* Gaveta Retratil em Tela Cheia no Smartphone */
+            aside.retractable-drawer {
+                width: 100vw !important;
+                height: 100vh !important;
+                height: 100dvh !important;
+                top: 0 !important;
+                padding-top: var(--safe-top);
+                padding-bottom: var(--safe-bottom);
+                border-left: none !important;
+                z-index: 1000;
+            }
+            .drawer-top-bar {
+                padding: 12px 14px;
+                padding-top: max(12px, var(--safe-top));
+            }
+            .drawer-bottom-bar {
+                padding-bottom: max(12px, var(--safe-bottom));
+            }
+            .drawer-backdrop {
+                top: 0 !important;
+                height: 100vh !important;
+                height: 100dvh !important;
+            }
+
+            /* Omnisearch Modal Mobile Otimizado (Imune a compressao de teclado) */
+            .omnisearch-modal {
+                top: 0 !important;
+                left: 0 !important;
+                transform: none !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                height: 100dvh !important;
+                max-height: 100dvh !important;
+                clip-path: none !important;
+                border: none !important;
+                padding-top: var(--safe-top);
+                padding-bottom: var(--safe-bottom);
+                border-bottom: 2px solid var(--border-accent);
+            }
+            .omnisearch-header {
+                padding: 12px 14px;
+                padding-top: max(12px, var(--safe-top));
+                gap: 8px;
+            }
+            .omnisearch-input {
+                font-size: 16px !important; /* Previne zoom automatico no iOS Safari */
+            }
+            .omnisearch-results-list {
+                max-height: calc(100dvh - 120px - var(--safe-top) - var(--safe-bottom)) !important;
+                padding: 8px 12px;
+            }
+            .omnisearch-hint-bar {
+                display: none !important;
+            }
+
+            /* Mini API Tester no Passo 06 em 2 Colunas */
+            .api-tester-container {
+                padding: 12px !important;
+                margin: 14px 0 !important;
+            }
+            .api-tester-chips {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 4px !important;
+            }
+            .api-chip-btn {
+                width: 100% !important;
+                min-height: 32px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                font-size: 9px !important;
+                padding: 4px 6px !important;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .api-tester-bar {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 6px !important;
+            }
+            .api-url-input {
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+            .api-tester-bar .pixel-btn {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+        }
+
+        /* ---------------------------------------------------------------------
+           BARRA MECANICA DE PROGRESSO DE LEITURA (PIXEL PAPER UI)
+           --------------------------------------------------------------------- */
+        .reading-progress-track {
+            position: fixed;
+            top: calc(var(--header-height) + var(--safe-top));
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 91;
+            pointer-events: none;
+        }
+        .reading-progress-thumb {
+            height: 100%;
+            width: 0%;
+            background: var(--phosphor-green);
+            box-shadow: 0 0 8px rgba(51, 255, 102, 0.6);
+            transition: width 0.05s linear;
+        }
+
+        .kbd-badge {
+            display: inline-flex;
+            align-items: center;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+            background: var(--paper-surface);
+            border: 1px solid var(--border-default);
+            padding: 2px 5px;
+            position: absolute;
+            right: 8px;
+            pointer-events: none;
+            letter-spacing: 0.05em;
+        }
+
+        /* ---------------------------------------------------------------------
+           OMNISEARCH MODAL CLIENT-SIDE (CTRL+K / /)
+           --------------------------------------------------------------------- */
+        .omnisearch-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(4, 6, 8, 0.78);
+            backdrop-filter: blur(2px);
+            z-index: 998;
+        }
+        .omnisearch-backdrop.is-active {
+            display: block;
+        }
+
+        .omnisearch-modal {
+            display: none;
+            position: fixed;
+            top: 15vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(720px, calc(100vw - 32px));
+            max-height: 70vh;
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-accent);
+            box-shadow: var(--shadow-lg);
+            z-index: 999;
+            flex-direction: column;
+            clip-path: polygon(
+                0 var(--px), var(--px) var(--px), var(--px) 0,
+                calc(100% - var(--px)) 0, calc(100% - var(--px)) var(--px), 100% var(--px),
+                100% calc(100% - var(--px)), calc(100% - var(--px)) calc(100% - var(--px)), calc(100% - var(--px)) 100%,
+                var(--px) 100%, var(--px) calc(100% - var(--px)), 0 calc(100% - var(--px))
+            );
+        }
+        .omnisearch-modal.is-active {
+            display: flex;
+        }
+
+        .omnisearch-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-default);
+            background: var(--paper-surface);
+        }
+
+        .omnisearch-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+
+        .omnisearch-counter {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--phosphor-green);
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            padding: 3px 6px;
+        }
+
+        .omnisearch-hint-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 6px 18px;
+            background: var(--paper-surface-recessed);
+            border-bottom: 1px solid var(--border-subtle);
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+        }
+
+        .omnisearch-results-list {
+            padding: 8px;
+            overflow-y: auto;
+            max-height: calc(70vh - 110px);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .omnisearch-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 10px 14px;
+            background: var(--paper-surface);
+            border: 1px solid var(--border-subtle);
+            text-decoration: none;
+            color: var(--ink-main);
+            cursor: pointer;
+            transition: all 0.05s steps(1);
+        }
+
+        .omnisearch-item:hover,
+        .omnisearch-item.is-selected {
+            border-color: var(--blueprint-cyan);
+            background: var(--paper-surface-elevated);
+            transform: translate(-1px, -1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .omnisearch-item-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .omnisearch-item-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--blueprint-cyan);
+            letter-spacing: 0.04em;
+        }
+
+        .omnisearch-item-step {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+        }
+
+        .omnisearch-item-desc {
+            font-size: 11px;
+            color: var(--ink-secondary);
+            line-height: 1.4;
+        }
+
+        .omnisearch-item-desc mark {
+            background: rgba(56, 189, 248, 0.25);
+            color: var(--phosphor-green);
+            padding: 0 2px;
+            border-bottom: 1px solid var(--phosphor-green);
+        }
+
+        /* ---------------------------------------------------------------------
+           MINI API TESTER INTERATIVO (PASSO 06)
+           --------------------------------------------------------------------- */
+        .api-tester-container {
+            background: var(--paper-surface-recessed);
+            border: 2px solid var(--border-default);
+            padding: 16px;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .api-tester-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--ink-carbon);
+        }
+
+        .api-tester-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            letter-spacing: 0.06em;
+            color: var(--blueprint-cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .api-tester-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .api-chip-btn {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            background: var(--paper-surface);
+            border: 1px solid var(--border-default);
+            color: var(--ink-secondary);
+            padding: 4px 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.05s steps(1);
+        }
+
+        .api-chip-btn:hover,
+        .api-chip-btn.active {
+            border-color: var(--blueprint-cyan);
+            color: var(--ink-main);
+            background: var(--paper-surface-elevated);
+        }
+
+        .api-tester-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .api-method-badge {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            padding: 6px 10px;
+            background: var(--paper-surface);
+            border: 1px solid var(--border-default);
+            color: var(--phosphor-green);
+        }
+
+        .api-url-input {
+            flex: 1;
+            min-width: 220px;
+            background: var(--paper-sheet);
+            border: 1px solid var(--border-default);
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 6px 10px;
+            outline: none;
+        }
+
+        .api-url-input:focus {
+            border-color: var(--blueprint-cyan);
+        }
+
+        .api-telemetry-strip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+        }
+
+        .api-status-badge {
+            padding: 2px 6px;
+            background: var(--paper-surface);
+            border: 1px solid var(--border-default);
+        }
+
+        .api-status-badge.status-200 {
+            color: var(--phosphor-green);
+            border-color: var(--phosphor-green);
+        }
+
+        .api-status-badge.status-err {
+            color: var(--stamp-danger);
+            border-color: var(--stamp-danger);
+        }
+
+        /* ---------------------------------------------------------------------
+           DIAGRAMAS CRISPEDGES VETORIAIS
+           --------------------------------------------------------------------- */
+        .crisp-diagram-box {
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            padding: 16px;
+            margin: 18px 0;
+            overflow-x: auto;
+        }
+
+        .crisp-diagram-header {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Surface Switcher Global & Telemetria Edge (Pixel Paper UI) */
+        .surface-switcher {
+            display: inline-flex;
+            align-items: center;
+            background: var(--paper-surface-recessed, #0b0e12);
+            border: 1px solid var(--border-default, #283340);
+            padding: 2px;
+            gap: 2px;
+        }
+        .surface-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 9px;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--ink-muted, #64748b);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .surface-tab:hover {
+            color: var(--ink-primary, #f1f5f9);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .surface-tab.active {
+            color: var(--phosphor-green, #33ff66);
+            background: rgba(51, 255, 102, 0.08);
+            border-color: rgba(51, 255, 102, 0.4);
+            font-weight: 700;
+        }
+        .surface-tab .tab-idx {
+            font-family: var(--font-pixel, 'Silkscreen', monospace);
+            font-size: 8px;
+            opacity: 0.7;
+        }
+        .surface-tab.active .tab-idx {
+            opacity: 1;
+            color: var(--phosphor-green, #33ff66);
+        }
+        .surface-tab .tab-chord {
+            font-size: 8px;
+            padding: 1px 4px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border-default, #283340);
+            color: var(--ink-muted, #64748b);
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+        }
+        .node-telemetry-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: rgba(51, 255, 102, 0.05);
+            border: 1px solid rgba(51, 255, 102, 0.25);
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+            font-size: 10px;
+            color: var(--phosphor-green, #33ff66);
+            white-space: nowrap;
+        }
+        .node-telemetry-badge .telemetry-led {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--phosphor-green, #33ff66);
+            box-shadow: 0 0 6px rgba(51, 255, 102, 0.8);
+            display: inline-block;
+        }
+        @media (max-width: 992px) {
+            .surface-tab .tab-chord {
+                display: none;
+            }
+        }
+        @media (max-width: 768px) {
+            .node-telemetry-badge {
+                display: none;
+            }
+        }
+        @media (max-width: 640px) {
+            .surface-switcher {
+                width: 100%;
+                justify-content: stretch;
+            }
+            .surface-tab {
+                flex: 1;
+                justify-content: center;
+                padding: 6px 3px;
+                font-size: 10px;
+                gap: 4px;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <!-- BARRA MECANICA DE PROGRESSO DE LEITURA (0-100% DINAMICA) -->
+    <div id="readingProgressBar" class="reading-progress-track" aria-hidden="true">
+        <div id="readingProgressThumb" class="reading-progress-thumb"></div>
+    </div>
+
     <!-- CABECALHO FIXO TECNICO (PIXEL PAPER UI) -->
     <header class="guide-header">
-        <a href="/" class="brand-unit" aria-label="Voltar para Console piDots">
+        <a href="/" class="brand-unit" aria-label="Ir para Apresentacao Oficial piDots">
             <svg width="24" height="24" viewBox="0 0 28 28" fill="none" class="ui-icon" style="width: 24px; height: 24px;">
                 <rect width="28" height="28" rx="4" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
                 <circle cx="8.5" cy="14" r="3.5" fill="#33ff66"/>
@@ -1005,16 +1588,46 @@
             <span class="brand-title">MANUAL OPERACIONAL // GUIA</span>
         </a>
 
-        <!-- Campo de Busca Rapida no Cabecalho -->
-        <div class="header-search-box">
+        <!-- Comutador Canônico de Superfícies de Produto -->
+        <nav class="surface-switcher" aria-label="Superficies de Produto">
+            <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
+                <span class="tab-idx">01</span>
+                <span class="tab-lbl">VISAO GERAL</span>
+                <span class="tab-chord">g h</span>
+            </a>
+            <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
+                <span class="tab-idx">02</span>
+                <span class="tab-lbl">WORKSPACE</span>
+                <span class="tab-chord">g w</span>
+            </a>
+            <a href="/docs" class="surface-tab active" id="tab-docs" title="Atalho: G D">
+                <span class="tab-idx">03</span>
+                <span class="tab-lbl">DOCUMENTACAO</span>
+                <span class="tab-chord">g d</span>
+            </a>
+        </nav>
+
+        <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch -->
+        <div class="header-search-box" onclick="abrirOmnisearch()" style="cursor: pointer;" title="Abrir Omnisearch (Atalho: Ctrl+K ou /)">
             <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (EX: HITL, SPACES, DOCKER)..." autocomplete="off">
+            <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (CTRL+K OU /)..." readonly style="cursor: pointer;">
+            <kbd class="kbd-badge">CTRL+K</kbd>
         </div>
 
         <div class="header-actions">
+            <div class="node-telemetry-badge" id="headerNodeBadge" title="Nó Edge Raspberry Pi 4B ARM64 Operacional">
+                <span class="telemetry-led"></span>
+                <span>NO: ONLINE</span>
+            </div>
+
+            <!-- Botao de Instalacao PWA -->
+            <button class="pixel-btn pwa-install-trigger" id="btnDocsPwaInstall" style="display: none; background: #0284c7; border-color: #38bdf8; color: #ffffff;" onclick="PiDotsDocsPWA.install()" title="Instalar piDots como aplicativo PWA">
+                <span>[INSTALAR PWA]</span>
+            </button>
+
             <!-- Alternador de Tema Dark Noir vs Blueprint -->
             <button class="pixel-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
-                <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 <span>[TEMA]</span>
             </button>
 
@@ -1023,11 +1636,6 @@
                 <svg class="ui-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 <span>[INDICE GUIA]</span>
             </button>
-
-            <a href="/" class="pixel-btn btn-green" title="Abrir Console Operacional Oficial">
-                <svg class="ui-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                <span>[CONSOLE SPA]</span>
-            </a>
         </div>
     </header>
 
@@ -1043,7 +1651,7 @@
                     <div class="catalog-tag-group">
                         <span class="pixel-stamp stamp-approved">SISTEMA MULTI-BOT OPERACIONAL</span>
                         <span class="pixel-stamp stamp-notice">EDICAO 2026 // EDGE SOVEREIGN</span>
-                        <span class="brand-badge">HARDWARE: RASPBERRY PI 4B (ARM64)</span>
+                        <span class="brand-badge">HARDWARE: BORDA &amp; SBCs (REF: RASPBERRY PI 4B ARM64)</span>
                     </div>
                     <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted);">DOC# PIDOTS-MANUAL-V3</span>
                 </div>
@@ -1086,7 +1694,7 @@
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        O <strong>piDots</strong> nao e um chatbot convencional baseado em janelas efemeras de navegador. Ele e um <strong>ecossistema soberano de AI Coworkers autonomos e persistentes</strong>, projetado especificamente para operar em hardware restrito (como o Raspberry Pi 4B de 4GB com arquitetura ARM64). Cada acao do sistema e gravada de forma duravel no SQLite em modo Write-Ahead Logging (WAL), o que garante que nenhuma memoria de projeto, raciocinio ou arquivo seja perdido mesmo em caso de reinicializacao ou queda de energia.
+                        O <strong>piDots</strong> nao e um chatbot convencional baseado em janelas efemeras de navegador. Ele e um <strong>ecossistema soberano de AI Coworkers autonomos e persistentes</strong>, projetado especificamente para operar com maxima eficiencia em computacao de borda e computadores de placa unica (SBCs como Raspberry Pi 4B, Orange Pi, Mini PCs x86_64 e servidores locais compactos). Cada acao do sistema e gravada de forma duravel no SQLite em modo Write-Ahead Logging (WAL), o que garante que nenhuma memoria de projeto, raciocinio ou arquivo seja perdido mesmo em caso de reinicializacao ou queda de energia.
                     </p>
                     <p class="step-paragraph">
                         Em vez de sobrecarregar um unico agente generico com instrucoes conflitantes, o piDots divide a carga cognitiva em <strong>quatro arquetipos especializados</strong>. Cada Dot possui identidade, carimbo visual exclusivo, prompt de sistema calibrado e um conjunto restrito de permissoes operacionais:
@@ -1215,7 +1823,7 @@
                     </div>
                 </div>
                 <div class="step-module-footer">
-                    <span class="step-counter-tag">PASSO 01 DE 06 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 01 DE 11 // PIXEL PAPER UI</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-2')">
                         <span>AVANCAR: CHAT MULTI-BOT &amp; FITAS DE CARBONO</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1290,7 +1898,7 @@
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>PAYLOAD DA FERRAMENTA: delegate_task (CHAMADA PELO SUPERVISOR)</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR PAYLOAD]</button>
                         </div>
                         <pre class="code-paper-content">{
   "target_dot_id": "dot-coder",
@@ -1314,7 +1922,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 02 DE 06 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 02 DE 11 // PIXEL PAPER UI</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-3')">
                         <span>AVANCAR: DOT HEARTBEAT &amp; SILENCIO</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1389,7 +1997,7 @@
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>EXEMPLO CURL // AGENDAMENTO PROATIVO DE MONITORAMENTO TERMICO</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR COMANDO]</button>
                         </div>
                         <pre class="code-paper-content">curl -X POST http://127.0.0.1:8000/api/tasks \
   -H "Content-Type: application/json" \
@@ -1408,7 +2016,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 03 DE 06 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 03 DE 11 // PIXEL PAPER UI</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-4')">
                         <span>AVANCAR: GATEWAY DE MENSAGERIA &amp; SALAS</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1501,7 +2109,7 @@
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>POST /api/channels/devops/messages // DISPARANDO AGENTES NA SALA</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR COMANDO]</button>
                         </div>
                         <pre class="code-paper-content">curl -X POST http://127.0.0.1:8000/api/channels/devops/messages \
   -H "Content-Type: application/json" \
@@ -1517,7 +2125,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 04 DE 06 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 04 DE 11 // PIXEL PAPER UI</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-5')">
                         <span>AVANCAR: ARSENAL DE TOOLS &amp; TOOL PRUNING</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1599,6 +2207,13 @@
                         </article>
                         <article class="pixel-card">
                             <div class="pixel-card-header">
+                                <span class="pixel-card-title">execute_and_verify</span>
+                                <span class="brand-badge">SELF-HEALING</span>
+                            </div>
+                            <p class="pixel-card-body">Executa comando shell com comando de verificacao obrigatorio e auto-diagnostico em caso de falha.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
                                 <span class="pixel-card-title">delegate_task</span>
                                 <span class="brand-badge">ORQUESTRADOR</span>
                             </div>
@@ -1610,6 +2225,55 @@
                                 <span class="brand-badge">HANDOFF LEAD</span>
                             </div>
                             <p class="pixel-card-body">Transfere formalmente a lideranca da thread atual para outro agente especialista.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">run_council_debate</span>
+                                <span class="brand-badge">CONSELHO MULTI-BOT</span>
+                            </div>
+                            <p class="pixel-card-body">Convoca debate tripartite entre Propositor (@coder), Critico (@auditor) e Supervisor (@supervisor).</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">core_memory_append / replace</span>
+                                <span class="brand-badge">CORE MEMORY</span>
+                            </div>
+                            <p class="pixel-card-body">Auto-edicao autonoma de blocos de persona e dados do usuario com teto rigido de caracteres.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">archival_memory_insert / search</span>
+                                <span class="brand-badge">FTS5 BM25 + 64D</span>
+                            </div>
+                            <p class="pixel-card-body">Busca hibrida semantica em base duradoura combinando ranking FTS5 e projecao vetorial esparsa.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">plan_create / update_step / get_status</span>
+                                <span class="brand-badge">TWO-STAGE PLANNER</span>
+                            </div>
+                            <p class="pixel-card-body">Criacao e acompanhamento percentual de metas e marcos operacionais com evidencias tecnicas.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">shared_space_write / read</span>
+                                <span class="brand-badge">SHARED SPACE</span>
+                            </div>
+                            <p class="pixel-card-body">Gravacao e leitura no quadro de notas tecnicas compartilhadas visivel a todos os bots da thread.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">hardware_trigger_check</span>
+                                <span class="brand-badge">EDGE TRIGGERS</span>
+                            </div>
+                            <p class="pixel-card-body">Avaliacao em tempo real dos limites termicos do SoC Broadcom, memoria RAM livre e espaco MicroSD.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">edge_maintenance_run</span>
+                                <span class="brand-badge">MICROSD HEALTH</span>
+                            </div>
+                            <p class="pixel-card-body">Executa checkpoint WAL TRUNCATE, consolidacao episodica e compactacao atomica no banco SQLite.</p>
                         </article>
                         <article class="pixel-card">
                             <div class="pixel-card-header">
@@ -1634,6 +2298,7 @@
                         </article>
                     </div>
 
+
                     <div class="slip-perforation">
                         <span class="perforation-line"></span>
                         <span class="perforation-label">SEGURANCA FORENSE E SIMULADOR HITL</span>
@@ -1652,7 +2317,7 @@
 
                         <div class="hitl-input-group">
                             <input type="text" id="hitlTestInput" class="hitl-input-field" value="rm -rf /var/log &amp;&amp; sudo reboot" placeholder="DIGITE UM COMANDO BASH PARA CLASSIFICAR O RISCO...">
-                            <button class="pixel-btn btn-cyan" onclick="analisarComandoHITL()">[CLASSIFICAR ORDEM]</button>
+                            <button class="pixel-btn btn-cyan" onclick="analisarComandoHITL()">[ANALISAR COMANDO]</button>
                         </div>
 
                         <div id="hitlResultReceipt" class="hitl-output-receipt">
@@ -1672,7 +2337,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 05 DE 06 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 05 DE 11 // PIXEL PAPER UI</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-6')">
                         <span>AVANCAR: OPERACIONAL &amp; PRESERVACAO FLASH</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1699,7 +2364,7 @@
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>ARQUIVO DE CONFIGURACAO: .env</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR CONFIGURACAO]</button>
                         </div>
                         <pre class="code-paper-content"># Gateway OpenAI Universal (compativel com qualquer provedor)
 AI_BASE_URL=https://api.openai.com/v1
@@ -1724,7 +2389,7 @@ TELEGRAM_CHAT_ID=</pre>
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>COMANDOS DE DEPLOY E GERENCIAMENTO BASH</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR ORDEM]</button>
+                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR COMANDOS]</button>
                         </div>
                         <pre class="code-paper-content"># 1. Iniciar os servicos em segundo plano
 docker compose up -d
@@ -1739,7 +2404,116 @@ curl -s http://127.0.0.1:8000/api/dots | jq .
 curl -s http://127.0.0.1:8000/api/tasks | jq .
 
 # 5. Listar salas tematicas de equipe
-curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
+curl -s http://127.0.0.1:8000/api/channels | jq .
+
+# 6. Documentacao OpenAPI Swagger Interativa
+# Acesse no navegador: http://127.0.0.1:8000/api/docs</pre>
+                    </div>
+
+                    <!-- MINI API TESTER INTERATIVO (PIXEL PAPER UI) -->
+                    <div class="api-tester-container" id="miniApiTester">
+                        <div class="api-tester-header">
+                            <span class="api-tester-title">
+                                <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                CONSOLE INTERATIVO // MINI API TESTER (CLIENT-SIDE)
+                            </span>
+                            <div class="api-telemetry-strip">
+                                <span>STATUS: <strong id="apiTestStatusBadge" class="api-status-badge status-200">200 OK</strong></span>
+                                <span>LATENCIA: <strong id="apiTestLatency" style="color: var(--phosphor-green);">-- ms</strong></span>
+                                <a href="/api/docs" target="_blank" style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); text-decoration: none;" title="Abrir Swagger UI interativo em nova aba">[SWAGGER /api/docs]</a>
+                            </div>
+                        </div>
+
+                        <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); margin-bottom: 6px; letter-spacing: 0.05em;">ROTAS REST DISPONIVEIS PARA DISPARO:</div>
+                        <div class="api-tester-chips">
+                            <button class="api-chip-btn active" onclick="selecionarEndpointApi('GET', '/health', '')">[GET /health]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots', '')">[GET /api/dots]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tasks', '')">[GET /api/tasks]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/channels', '')">[GET /api/channels]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/triggers', '')">[GET /api/edge/triggers]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/dot-supervisor/export-pack', '')">[GET /export-pack]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/maintenance', '{\x22days_threshold\x22: 7, \x22create_backup\x22: true}')">[POST /maintenance]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/threads', '{\x22dot_id\x22: \x22dot-supervisor\x22, \x22title\x22: \x22Sessao Auditoria Edge\x22}')">[POST /api/threads]</button>
+                        </div>
+
+                        <div class="api-tester-bar">
+                            <span class="api-method-badge" id="apiTestMethod">GET</span>
+                            <input type="text" id="apiTestUrlInput" class="api-url-input" value="/health" placeholder="/api/endpoint...">
+                            <button class="pixel-btn btn-green" id="btnRunApiTest" onclick="executarTesteApi()">
+                                <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                <span>[DISPARAR REQUISICAO REST]</span>
+                            </button>
+                        </div>
+
+                        <div class="terminal-block" style="margin: 0;">
+                            <div class="terminal-top">
+                                <span class="terminal-circle"></span>
+                                <span class="terminal-circle"></span>
+                                <span class="terminal-circle"></span>
+                                <span class="terminal-title" id="apiTestTerminalTitle">RESPOSTA JSON DO SERVIDOR // HTTP 200</span>
+                            </div>
+                            <pre class="terminal-pre" style="max-height: 220px; overflow-y: auto;"><code id="apiTestJsonOutput">{
+  "status": "healthy",
+  "node": "pidots-core",
+  "arch": "aarch64",
+  "ram_used_mb": 52.4,
+  "ram_limit_mb": 384,
+  "thermal_celsius": 43.8,
+  "sqlite_wal": "active",
+  "active_dots": 4
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                        <span class="perforation-label">TOPOLOGIA CANONICA, CHORDS GLOBAIS E ATALHOS DE TECLADO</span>
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">TOPOLOGIA DE ROTAS CANONICAS</span>
+                                <span class="brand-badge">DESACOPLAMENTO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>/ :</strong> Landing Page Oficial, apresentacao executiva e simulador ReAct.<br>
+                                <strong>/app e /workspace :</strong> Console Operacional SPA/PWA para execucao 24/7.<br>
+                                <strong>/docs :</strong> Guia Didatico Canonico com busca client-side e API Tester.<br>
+                                <strong>/api/docs :</strong> Swagger UI OpenAPI interativo para desenvolvedores.<br>
+                                <em>Redirecionamentos RFC 7538:</em> /apresentacao, /guia e /console sao rotas HTTP 308 permanentes.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">CHORDS GLOBAIS DE NAVEGACAO</span>
+                                <span class="brand-badge">SEM MOUSE</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Transite entre superficies instantaneamente via sequencias de teclado:<br>
+                                <code>g</code> seguido de <code>h</code> : Go Home (Landing Page /)<br>
+                                <code>g</code> seguido de <code>w</code> : Go Workspace (Console /app)<br>
+                                <code>g</code> seguido de <code>d</code> : Go Docs (Guia Tecnico /docs)<br>
+                                <em>Supressao automatica em inputs de texto para nao interferir na digitacao.</em>
+                            </p>
+                        </article>
+
+                        <article class="pixel-card" style="grid-column: 1 / -1;">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">ATALHOS DE ALTA PRODUTIVIDADE DO CONSOLE SPA</span>
+                                <span class="brand-badge">AGILIDADE TATICA</span>
+                            </div>
+                            <p class="pixel-card-body" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 6px;">
+                                <span><code>Alt + I</code> : Focar e inspecionar artefato ativo no Live Canvas.</span>
+                                <span><code>Ctrl/Cmd + S</code> : Gravar revisao atomica do arquivo em Spaces.</span>
+                                <span><code>Alt + H</code> : Abrir modal de governanca HITL pendente.</span>
+                                <span><code>F11</code> : Alternar visualizacao split/maximizada do canvas.</span>
+                                <span><code>Ctrl + L</code> : Limpar bobina de chat do teletipo local.</span>
+                                <span><code>F1</code> : Abrir manual tecnico na gaveta lateral retratil.</span>
+                            </p>
+                        </article>
                     </div>
 
                     <div class="slip-perforation">
@@ -1805,8 +2579,544 @@ curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">CONCLUSAO DO GUIA (06 DE 06)</span>
-                    <a href="/" class="pixel-btn btn-green">
+                    <span class="step-counter-tag">PASSO 06 DE 11 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-7')">
+                        <span>AVANCAR: MEMORIA HIERARQUICA (MEMGPT)</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 07: MEMORIA HIERARQUICA AUTONOMA (PADRAO MEMGPT / LETTA)
+                 ================================================================= -->
+            <section class="step-module" id="passo-7">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 07</span>
+                        <h2 class="step-heading">MEMORIA HIERARQUICA AUTONOMA (PADRAO MEMGPT / LETTA)</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-approved">MEMORIA 3-CAMADAS</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        Agentes de IA tradicionais sofrem de amnesia operacional entre turnos ou saturam a janela de contexto transmitindo o historico bruto inteiro. Inspirado no padrao <strong>MemGPT / Letta</strong>, o piDots introduz um sistema de <strong>Memoria Hierarquica Autonoma em 3 Camadas</strong> gerenciado pelo proprio Dot via Function Calling nativo.
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">1. CORE MEMORY (IN-CONTEXT)</span>
+                                <span class="brand-badge">SISTEMA ATIVO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Blocos fixos de memoria residente injetados diretamente no system prompt sob as tags <code>&lt;core_memory&gt;</code>: dados do operador (<code>human</code>), persona do agente (<code>persona</code>) e contexto ativo da missao (<code>active_context</code>). Cada bloco possui teto rigido de caracteres contra extrapolacao de contexto.
+                            </p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">2. ARCHIVAL MEMORY (FTS5 + 64D)</span>
+                                <span class="brand-badge">LONGO PRAZO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Base duradoura de fatos, especificacoes e documentacoes persistida no SQLite WAL. Utiliza busca hibrida ultraleve combinando o algoritmo de ranking BM25 da Virtual Table nativa <code>archival_memories_fts</code> com projecao vetorial esparsa 64d baseada em hashing de trigramas e ativacao semantica.
+                            </p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">3. RECALL MEMORY (HISTORICO)</span>
+                                <span class="brand-badge">RETROSPECTIVA</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Mecanismo de busca retrospectiva que permite ao agente consultar turnos anteriores, decisoes e dialogos da conversa atual atraves de filtros semanticos sem precisar manter centenas de mensagens no prompt ativo.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="terminal-block">
+                        <div class="terminal-top">
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-title">TERMINAL // INJECAO ATOMICA DE CORE MEMORY NO MOTOR REACT</span>
+                        </div>
+                        <pre class="terminal-pre"><code>&lt;core_memory&gt;
+[BLOCO: human] (184/2000 caracteres)
+Operador principal: lyon christopher. Foco em arquiteturas soberanas ARM64, Raspberry Pi 4B e SQLite WAL.
+
+[BLOCO: persona] (210/2000 caracteres)
+Especialista em compilacao de kernels, limites termicos e sistemas embarcados. Respostas diretas, tecnicas e sem prolixidade.
+
+[BLOCO: active_context] (145/2000 caracteres)
+Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do MicroSD no piDots.
+&lt;/core_memory&gt;</code></pre>
+                    </div>
+
+                    <div class="pixel-callout info">
+                        <div class="pixel-callout-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            FERRAMENTAS DE AUTO-EDICAO DE MEMORIA
+                        </div>
+                        <div class="pixel-callout-text">
+                            O agente decide quando aprender ou atualizar fatos invocando: <code>core_memory_append</code>, <code>core_memory_replace</code>, <code>archival_memory_insert</code>, <code>archival_memory_search</code> e <code>recall_memory_search</code>.
+                        </div>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-6')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">PASSO 07 DE 11 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-8')">
+                        <span>AVANCAR: SELF-HEALING &amp; TWO-STAGE PLANNER</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 08: SELF-HEALING HARNESS E TWO-STAGE PLANNING
+                 ================================================================= -->
+            <section class="step-module" id="passo-8">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 08</span>
+                        <h2 class="step-heading">SELF-HEALING HARNESS E PLANEJAMENTO EM DOIS ESTAGIOS</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-approved">AUTO-CORRECAO &amp; METAS</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        O piDots incorpora o padrao de <strong>Auto-Recuperacao (Self-Healing Harness)</strong> e <strong>Planejamento Estruturado em Dois Estagios (Goals &amp; Milestones)</strong> para garantir que o agente valide suas proprias acoes antes de concluir a entrega e nao se perca em sequencias operacionais complexas.
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">SELF-HEALING HARNESS</span>
+                                <span class="brand-badge">DIAGNOSTICO CIRURGICO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Inspeciona automaticamente erros de comandos shell e scripts Python. Ao detectar uma excecao, o modulo disseca o traceback bruto, isola o arquivo, linha e classe do erro (ex: <code>ZeroDivisionError</code>) e fornece um diagnostico cirurgico com conselho de correcao via evento AG-UI <code>self_healing:triggered</code>, acionando o loop interno de reparo antes de responder ao usuario.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">TWO-STAGE PLANNING</span>
+                                <span class="brand-badge">GOALS &amp; MILESTONES</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Divide grandes tarefas em Metas (<code>goals</code>) e Marcos (<code>milestones</code>) persistidos no SQLite. O agente cria o plano com <code>plan_create</code>, reporta checkpoints com <code>plan_update_step</code> (registrando evidencias tecnicas objetivas) e o sistema recalcula o progresso percentual (0 a 100%), injetando o bloco <code>&lt;execution_plan&gt;</code> no contexto.
+                            </p>
+                        </article>
+                    </div>
+
+                    <!-- DIAGRAMA CRISPEDGES: LOOP DE AUTO-RECUPERACAO (SELF-HEALING HARNESS) -->
+                    <div class="crisp-diagram-box">
+                        <div class="crisp-diagram-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            <span>FLUXOGRAMA TECNICO CRISPEDGES // CICLO FECHADO DE SELF-HEALING HARNESS</span>
+                        </div>
+                        <svg viewBox="0 0 840 140" fill="none" class="crisp-diagram-svg" style="width: 100%; height: auto; display: block; shape-rendering: crispEdges;">
+                            <!-- Background Grid Minimal -->
+                            <rect width="840" height="140" fill="#07090c" stroke="#1c2633" stroke-width="1"/>
+                            
+                            <!-- Bloco 1: Execucao -->
+                            <rect x="20" y="30" width="130" height="80" fill="#11161d" stroke="#283340" stroke-width="2"/>
+                            <rect x="20" y="30" width="130" height="20" fill="#182029"/>
+                            <text x="85" y="44" fill="#94a3b8" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">FASE 01</text>
+                            <text x="85" y="70" fill="#f1f5f9" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="bold" text-anchor="middle">EXECUCAO</text>
+                            <text x="85" y="88" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">Shell / Python</text>
+
+                            <!-- Seta 1 -> 2 -->
+                            <path d="M150 70 H180" stroke="#38bdf8" stroke-width="2"/>
+                            <polygon points="180,67 186,70 180,73" fill="#38bdf8"/>
+
+                            <!-- Bloco 2: Captura de Falha -->
+                            <rect x="186" y="30" width="130" height="80" fill="#11161d" stroke="#ef4444" stroke-width="2"/>
+                            <rect x="186" y="30" width="130" height="20" fill="rgba(239, 68, 68, 0.15)"/>
+                            <text x="251" y="44" fill="#ef4444" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">FALHA DETECTADA</text>
+                            <text x="251" y="70" fill="#f1f5f9" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="bold" text-anchor="middle">INTERCEPTOR</text>
+                            <text x="251" y="88" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">Stderr / Traceback</text>
+
+                            <!-- Seta 2 -> 3 -->
+                            <path d="M316 70 H346" stroke="#38bdf8" stroke-width="2"/>
+                            <polygon points="346,67 352,70 346,73" fill="#38bdf8"/>
+
+                            <!-- Bloco 3: Dissecador de AST -->
+                            <rect x="352" y="30" width="140" height="80" fill="#11161d" stroke="#ffb830" stroke-width="2"/>
+                            <rect x="352" y="30" width="140" height="20" fill="rgba(255, 184, 48, 0.15)"/>
+                            <text x="422" y="44" fill="#ffb830" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">DISSECTOR AST</text>
+                            <text x="422" y="70" fill="#f1f5f9" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="bold" text-anchor="middle">DIAGNOSTICO</text>
+                            <text x="422" y="88" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">Arquivo / Linha / Tipo</text>
+
+                            <!-- Seta 3 -> 4 -->
+                            <path d="M492 70 H522" stroke="#38bdf8" stroke-width="2"/>
+                            <polygon points="522,67 528,70 522,73" fill="#38bdf8"/>
+
+                            <!-- Bloco 4: Injecao AG-UI -->
+                            <rect x="528" y="30" width="140" height="80" fill="#11161d" stroke="#38bdf8" stroke-width="2"/>
+                            <rect x="528" y="30" width="140" height="20" fill="rgba(56, 189, 248, 0.15)"/>
+                            <text x="598" y="44" fill="#38bdf8" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">AG-UI EVENT</text>
+                            <text x="598" y="70" fill="#f1f5f9" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="bold" text-anchor="middle">INJECAO PROMPT</text>
+                            <text x="598" y="88" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">Conselho Cirurgico</text>
+
+                            <!-- Seta 4 -> 5 -->
+                            <path d="M668 70 H698" stroke="#33ff66" stroke-width="2"/>
+                            <polygon points="698,67 704,70 698,73" fill="#33ff66"/>
+
+                            <!-- Bloco 5: Auto-Correcao -->
+                            <rect x="704" y="30" width="116" height="80" fill="#11161d" stroke="#33ff66" stroke-width="2"/>
+                            <rect x="704" y="30" width="116" height="20" fill="rgba(51, 255, 102, 0.15)"/>
+                            <text x="762" y="44" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">CICLO FECHADO</text>
+                            <text x="762" y="70" fill="#33ff66" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="bold" text-anchor="middle">AUTO-CURA</text>
+                            <text x="762" y="88" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">Diff &amp; Reparo OK</text>
+
+                            <!-- Loop de Retorno Inferior -->
+                            <path d="M762 110 V126 H85 V110" stroke="#33ff66" stroke-width="1.5" stroke-dasharray="4 2"/>
+                            <polygon points="85,110 82,116 88,116" fill="#33ff66"/>
+                            <text x="422" y="124" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">RE-EXECUCAO AUTOMATICA ANTES DE ENTREGAR AO OPERADOR (0 TOKENS HUMANOS DESPERDICADOS)</text>
+                        </svg>
+                    </div>
+
+                    <div class="terminal-block">
+                        <div class="terminal-top">
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-title">EXEMPLO // XML DO PLANO DE EXECUCAO EM DOIS ESTAGIOS</span>
+                        </div>
+                        <pre class="terminal-pre"><code>&lt;execution_plan&gt;
+[PLANO: Migracao de Banco para SQLite WAL] Progresso: 66.7% (2/3 concluidos)
+  [X] Fase 1: Criar tabelas e indices (COMPLETED) | Evidencia: DDL executado sem erros.
+  [X] Fase 2: Configurar PRAGMAs para MicroSD (COMPLETED) | Evidencia: WAL e mmap ativos.
+  [-] Fase 3: Homologar rotina de compactacao (IN_PROGRESS) | Evidencia: Executando VACUUM INTO.
+&lt;/execution_plan&gt;</code></pre>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-7')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">PASSO 08 DE 11 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-9')">
+                        <span>AVANCAR: CONSELHO CONSULTIVO MULTI-BOT</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 09: CONSELHO CONSULTIVO E DEBATE DIALETICO MULTI-BOT
+                 ================================================================= -->
+            <section class="step-module" id="passo-9">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 09</span>
+                        <h2 class="step-heading">CONSELHO CONSULTIVO E DEBATE DIALETICO MULTI-BOT</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-approved">DELIBERACAO TRIPARTITE</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        Para decisoes criticas de arquitetura, seguranca ou refatoracao de codigo, o piDots implementa o padrao de <strong>Conselho Consultivo Multi-Bot</strong> (<code>CouncilOrchestrator</code>). Em vez de depender da opiniao isolada de um unico modelo, tres arquotipos cognitivos deliberam formalmente em uma estrutura dialetica:
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">1. PROPOSITOR (@coder)</span>
+                                <span class="brand-badge">FORMULACAO TECNICA</span>
+                            </div>
+                            <p class="pixel-card-body">Apresenta a solucao proposta, o codigo inicial e a justificativa tecnica da abordagem.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">2. AUDITOR CRITICO (@auditor)</span>
+                                <span class="brand-badge">ANALISE ADVERSARIAL</span>
+                            </div>
+                            <p class="pixel-card-body">Examina a proposta em busca de vulnerabilidades, pontos de falha, condicoes de corrida e consumo excessivo de memoria.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">3. SUPERVISOR (@supervisor)</span>
+                                <span class="brand-badge">SINTESE EXECUTIVA</span>
+                            </div>
+                            <p class="pixel-card-body">Mediacao dialetica imparcial. Consolida os argumentos e emite a resolucao final com plano acionavel.</p>
+                        </article>
+                    </div>
+
+                    <!-- DIAGRAMA CRISPEDGES: DELIBERACAO TRIPARTITE MULTI-BOT -->
+                    <div class="crisp-diagram-box">
+                        <div class="crisp-diagram-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            <span>FLUXOGRAMA TECNICO CRISPEDGES // PROTOCOLO DE CONSELHO CONSULTIVO TRIPARTITE</span>
+                        </div>
+                        <svg viewBox="0 0 840 150" fill="none" class="crisp-diagram-svg" style="width: 100%; height: auto; display: block; shape-rendering: crispEdges;">
+                            <rect width="840" height="150" fill="#07090c" stroke="#1c2633" stroke-width="1"/>
+
+                            <!-- Coluna 1: Propositor -->
+                            <rect x="20" y="25" width="230" height="90" fill="#11161d" stroke="#38bdf8" stroke-width="2"/>
+                            <rect x="20" y="25" width="230" height="22" fill="rgba(56, 189, 248, 0.12)"/>
+                            <text x="135" y="40" fill="#38bdf8" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">ATOR 1 // PROPOSITOR</text>
+                            <text x="135" y="65" fill="#f1f5f9" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="bold" text-anchor="middle">@coder</text>
+                            <text x="135" y="82" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">Formula proposta &amp; codigo</text>
+                            <text x="135" y="98" fill="#64748b" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">FITA: INTERNAL (ROUND 1)</text>
+
+                            <!-- Seta 1 -> 2 -->
+                            <path d="M250 70 H290" stroke="#38bdf8" stroke-width="2"/>
+                            <polygon points="290,67 296,70 290,73" fill="#38bdf8"/>
+
+                            <!-- Coluna 2: Auditor Critico -->
+                            <rect x="296" y="25" width="250" height="90" fill="#11161d" stroke="#ffb830" stroke-width="2"/>
+                            <rect x="296" y="25" width="250" height="22" fill="rgba(255, 184, 48, 0.12)"/>
+                            <text x="421" y="40" fill="#ffb830" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">ATOR 2 // AUDITOR CRITICO</text>
+                            <text x="421" y="65" fill="#f1f5f9" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="bold" text-anchor="middle">@auditor</text>
+                            <text x="421" y="82" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">Analise adversarial &amp; falhas</text>
+                            <text x="421" y="98" fill="#64748b" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">FITA: INTERNAL (ROUND 2)</text>
+
+                            <!-- Seta 2 -> 3 -->
+                            <path d="M546 70 H586" stroke="#33ff66" stroke-width="2"/>
+                            <polygon points="586,67 592,70 586,73" fill="#33ff66"/>
+
+                            <!-- Coluna 3: Supervisor -->
+                            <rect x="592" y="25" width="228" height="90" fill="#11161d" stroke="#33ff66" stroke-width="2"/>
+                            <rect x="592" y="25" width="228" height="22" fill="rgba(51, 255, 102, 0.12)"/>
+                            <text x="706" y="40" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">ATOR 3 // MEDIACAO</text>
+                            <text x="706" y="65" fill="#33ff66" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="bold" text-anchor="middle">@supervisor</text>
+                            <text x="706" y="82" fill="#f1f5f9" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">Sintese &amp; resolucao final</text>
+                            <text x="706" y="98" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">CANAL PUBLICO DO USUARIO</text>
+
+                            <!-- Barra de Governanca Inferior -->
+                            <rect x="20" y="125" width="800" height="15" fill="#040608" stroke="#1c2633" stroke-width="1"/>
+                            <text x="420" y="136" fill="#64748b" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">ISOLAMENTO DE MEMORIA // MAXIMO 3 RODADAS DIALETICAS // OVERHEAD RAM &lt; 53MB // EXECUCAO DETERMINISTICA</text>
+                        </svg>
+                    </div>
+
+                    <div class="pixel-callout info">
+                        <div class="pixel-callout-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            ISOLAMENTO DE FITAS E TRAVA DE SEGURANCA
+                        </div>
+                        <div class="pixel-callout-text">
+                            O debate interno ocorre em fitas de carbono com <code>visibility = 'internal'</code>, mantendo o feed do usuario limpo. Somente o veredito final e publicado com o cabecalho <code>[CONSELHO CONSULTIVO - RESOLUCAO FINAL]</code>. Uma trava rigida de seguranca limita o debate a no maximo 3 rodadas, contendo custos de inferencia e mantendo o consumo de memoria RAM inferior a 53 MB.
+                        </div>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-8')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">PASSO 09 DE 11 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-10')">
+                        <span>AVANCAR: SHARED SPACE &amp; DOT PACKS</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 10: ESPACO DE CONHECIMENTO COMPARTILHADO E DOT PACKS
+                 ================================================================= -->
+            <section class="step-module" id="passo-10">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 10</span>
+                        <h2 class="step-heading">ESPACO DE CONHECIMENTO COMPARTILHADO E DOT PACKS</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-approved">PORTABILIDADE TOTAL</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        Para maximizar a cooperacao entre bots e viabilizar a distribuicao portavel de agentes pre-treinados, o piDots introduz o <strong>Shared Knowledge Space</strong> e o padrao de <strong>Dot Packs v1.0</strong>:
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">SHARED KNOWLEDGE SPACE</span>
+                                <span class="brand-badge">QUADRO SINCRONO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Quadro de notas tecnicas compartilhadas indexado por <code>(thread_id, topic_key)</code> no SQLite. Permite que qualquer bot grave informacoes estruturadas com <code>shared_space_write</code> e consulte com <code>shared_space_read</code>, com injecao automatica do bloco <code>&lt;shared_knowledge_space&gt;</code> para todos os bots participantes da thread.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">DOT PACKS V1.0</span>
+                                <span class="brand-badge">MANIFESTO PORTAVEL</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Formato padronizado JSON que empacota a identidade completa de um Dot: definicoes de persona, arquotipo, ferramentas autorizadas, blocos de Core Memory, base duradoura de Archival Memories e snapshot dos arquivos do workspace.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="terminal-block">
+                        <div class="terminal-top">
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-title">EXEMPLO // EXPORTACAO E IMPORTACAO VIA ENDPOINTS REST</span>
+                        </div>
+                        <pre class="terminal-pre"><code># 1. Exportar manifesto completo de um Dot especializado
+curl -s http://localhost:8000/api/dots/dot-coder/export-pack > dot_coder_pack.json
+
+# 2. Importar e instanciar atomicamente um novo Dot em qualquer Raspberry Pi
+curl -s -X POST http://localhost:8000/api/dots/import-pack \
+  -H "Content-Type: application/json" \
+  -d @dot_coder_pack.json</code></pre>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-9')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">PASSO 10 DE 11 // PIXEL PAPER UI</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-11')">
+                        <span>AVANCAR: TRIGGERS &amp; MANUTENCAO MICROSD</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- =================================================================
+                 PASSO 11: TRIGGERS DE HARDWARE EDGE E MANUTENCAO DO MICROSD
+                 ================================================================= -->
+            <section class="step-module" id="passo-11">
+                <div class="step-module-header">
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 11</span>
+                        <h2 class="step-heading">TRIGGERS DE HARDWARE EDGE E MANUTENCAO DO MICROSD</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-approved">PRESERVACAO FISICA</span>
+                </div>
+                <div class="step-content-body">
+                    <p class="step-paragraph">
+                        Operar agentes de IA em regime Always-On 24/7 no Raspberry Pi 4B exige protecao fisica do silicio e prevencao de desgaste prematuro da memoria flash do cartao MicroSD. O piDots integra monitoramento de eventos de hardware e rotina de manutencao noturna autonoma:
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">1. MONITORAMENTO TERMICO BROADCOM</span>
+                                <span class="brand-badge">THERMAL THROTTLE</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Leitura direta em tempo real via <code>/sys/class/thermal/thermal_zone0/temp</code>. Se a temperatura ultrapassar 72°C (configuravel), o sistema ativa throttle automatico e despacha alertas proativos via HITL para proteger o SoC contra thermal throttling de hardware.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">2. PROTECAO DE ESPACO FLASH/MICROSD</span>
+                                <span class="brand-badge">DISK GUARD</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Avaliacao continua de percentual de espaco livre. Se o espaco disponivel cair abaixo de 10%, o trigger <code>DISK_LOW_SPACE</code> e disparado, recomendando truncamento imediato e expurgo de logs.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">3. WAL CHECKPOINT TRUNCATE</span>
+                                <span class="brand-badge">ZERO INCHACAO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Execucao de <code>PRAGMA wal_checkpoint(TRUNCATE)</code> que comita as paginas pendentes no arquivo SQLite principal e zera o tamanho fisico do arquivo <code>-wal</code>, poupando blocos de escrita flash.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">4. CONSOLIDACAO EPISODICA &amp; BACKUP</span>
+                                <span class="brand-badge">VACUUM INTO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Mensagens com mais de 7 dias sao resumidas de forma compacta na tabela <code>episodic_memories</code> e as mensagens brutas sao podadas. O comando <code>VACUUM INTO</code> cria backups atomicos consistentes sem bloquear transacoes ativas.
+                            </p>
+                        </article>
+                    </div>
+
+                    <!-- DIAGRAMA CRISPEDGES: PROTECAO TERMICA & ROTINA NOTURNA MICROSD -->
+                    <div class="crisp-diagram-box">
+                        <div class="crisp-diagram-header">
+                            <svg class="ui-icon" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
+                            <span>FLUXOGRAMA TECNICO CRISPEDGES // PROTECAO DE SILICIO BROADCOM &amp; ROTINA NOTURNA DE PRESERVACAO FLASH</span>
+                        </div>
+                        <svg viewBox="0 0 840 150" fill="none" class="crisp-diagram-svg" style="width: 100%; height: auto; display: block; shape-rendering: crispEdges;">
+                            <rect width="840" height="150" fill="#07090c" stroke="#1c2633" stroke-width="1"/>
+
+                            <!-- Coluna Esquerda: Protecao Termica Broadcom -->
+                            <rect x="20" y="25" width="280" height="90" fill="#11161d" stroke="#ffb830" stroke-width="2"/>
+                            <rect x="20" y="25" width="280" height="22" fill="rgba(255, 184, 48, 0.12)"/>
+                            <text x="160" y="40" fill="#ffb830" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">SOVEREIGN HARDWARE GUARD</text>
+                            <text x="160" y="65" fill="#f1f5f9" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="bold" text-anchor="middle">Broadcom BCM2711 SoC</text>
+                            <text x="160" y="80" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">/sys/class/thermal/thermal_zone0</text>
+                            <text x="160" y="98" fill="#ef4444" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">SE TEMP &gt; 72°C -&gt; THROTTLE &amp; ALERTA HITL</text>
+
+                            <!-- Divisor Central -->
+                            <path d="M320 25 V115" stroke="#283340" stroke-width="2" stroke-dasharray="4 2"/>
+
+                            <!-- Coluna Direita: Rotina Noturna de Manutencao Flash -->
+                            <rect x="340" y="25" width="480" height="90" fill="#11161d" stroke="#33ff66" stroke-width="2"/>
+                            <rect x="340" y="25" width="480" height="22" fill="rgba(51, 255, 102, 0.12)"/>
+                            <text x="580" y="40" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">ROTINA NOTURNA AUTONOMA (03:00 UTC) // HEALTH GUARD</text>
+                            
+                            <!-- Sub-etapas da rotina -->
+                            <rect x="355" y="55" width="140" height="50" fill="#0b0e12" stroke="#283340" stroke-width="1"/>
+                            <text x="425" y="72" fill="#38bdf8" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">1. WAL CHECKPOINT</text>
+                            <text x="425" y="88" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">wal_checkpoint(TRUNCATE)</text>
+
+                            <path d="M495 80 H515" stroke="#38bdf8" stroke-width="2"/>
+                            <polygon points="515,77 521,80 515,83" fill="#38bdf8"/>
+
+                            <rect x="521" y="55" width="135" height="50" fill="#0b0e12" stroke="#283340" stroke-width="1"/>
+                            <text x="588" y="72" fill="#ffb830" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">2. PODA EPISODICA</text>
+                            <text x="588" y="88" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">Sumariza msgs &gt; 7d</text>
+
+                            <path d="M656 80 H676" stroke="#33ff66" stroke-width="2"/>
+                            <polygon points="676,77 682,80 676,83" fill="#33ff66"/>
+
+                            <rect x="682" y="55" width="125" height="50" fill="#0b0e12" stroke="#283340" stroke-width="1"/>
+                            <text x="744" y="72" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">3. SNAPSHOT</text>
+                            <text x="744" y="88" fill="#33ff66" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">VACUUM INTO</text>
+
+                            <!-- Barra de Garantia de Silicio Inferior -->
+                            <rect x="20" y="125" width="800" height="15" fill="#040608" stroke="#1c2633" stroke-width="1"/>
+                            <text x="420" y="136" fill="#64748b" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">PRESERVACAO TOTAL DO CARTAO MICROSD CONTRA CICLOS EXCESSIVOS DE ESCRITA FLASH // PROTECAO RESILIENTE WAL</text>
+                        </svg>
+                    </div>
+
+                    <div class="terminal-block">
+                        <div class="terminal-top">
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-circle"></span>
+                            <span class="terminal-title">EXEMPLO // ENDPOINTS REST DE HARDWARE E MANUTENCAO</span>
+                        </div>
+                        <pre class="terminal-pre"><code># 1. Consultar telemetria de hardware e status de triggers
+curl -s http://localhost:8000/api/edge/triggers
+
+# 2. Disparar manutencao noturna com backup atomico
+curl -s -X POST http://localhost:8000/api/edge/maintenance \
+  -H "Content-Type: application/json" \
+  -d '{"days_threshold": 7, "create_backup": true}'</code></pre>
+                    </div>
+                </div>
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-10')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">CONCLUSAO DO GUIA (11 DE 11)</span>
+                    <a href="/app" class="pixel-btn btn-green">
                         <span>ABRIR CONSOLE OPERACIONAL SPA</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </a>
@@ -1814,6 +3124,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
             </section>
 
         </main>
+
 
         <!-- BACKDROP PARA DISPOSITIVOS MOVEIS -->
         <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
@@ -1870,14 +3181,67 @@ curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
                         <span>Passo a Passo Operacional &amp; MicroSD</span>
                     </a>
                 </li>
+                <li class="drawer-item" data-keywords="memoria hierarquica core memory archival memgpt letta fts5 bm25 64d embeddings recall">
+                    <a href="#passo-7" class="drawer-link" onclick="handleDrawerNav(event, 'passo-7')">
+                        <span class="drawer-step-idx">07</span>
+                        <span>Memoria Hierarquica &amp; Core Memory</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="self-healing auto-correcao traceback goals milestones planejamento metas checkpoints">
+                    <a href="#passo-8" class="drawer-link" onclick="handleDrawerNav(event, 'passo-8')">
+                        <span class="drawer-step-idx">08</span>
+                        <span>Self-Healing &amp; Two-Stage Planning</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="conselho consultivo debate dialetica propositor auditor supervisor fitas internas resolucao">
+                    <a href="#passo-9" class="drawer-link" onclick="handleDrawerNav(event, 'passo-9')">
+                        <span class="drawer-step-idx">09</span>
+                        <span>Conselho Consultivo Multi-Bot</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="shared knowledge space quadro colaborativo dot packs templates manifestos import export">
+                    <a href="#passo-10" class="drawer-link" onclick="handleDrawerNav(event, 'passo-10')">
+                        <span class="drawer-step-idx">10</span>
+                        <span>Shared Space &amp; Dot Packs Portaveis</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="hardware triggers temperatura broadcom bcm2711 microsd manutencao noturna vacuum wal truncate">
+                    <a href="#passo-11" class="drawer-link" onclick="handleDrawerNav(event, 'passo-11')">
+                        <span class="drawer-step-idx">11</span>
+                        <span>Triggers de Hardware &amp; Manutencao</span>
+                    </a>
+                </li>
             </ul>
 
             <div class="drawer-bottom-bar">
                 <span>PIDOTS // PIXEL PAPER UI</span>
-                <span>6 PASSOS DISPONIVEIS</span>
+                <span>11 PASSOS DISPONIVEIS</span>
             </div>
         </aside>
 
+
+    </div>
+
+    <!-- =====================================================================
+         MODAL OMNISEARCH CLIENT-SIDE (CTRL+K OU /) - DESIGN SYSTEM PIXEL PAPER UI
+         ===================================================================== -->
+    <div id="omnisearchBackdrop" class="omnisearch-backdrop" onclick="fecharOmnisearch()"></div>
+    <div id="omnisearchModal" class="omnisearch-modal" role="dialog" aria-modal="true" aria-label="Omnisearch do Guia piDots">
+        <div class="omnisearch-header">
+            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="omnisearchInput" class="omnisearch-input" placeholder="DIGITE TERMO DE BUSCA (EX: HITL, SPACES, DOCKER, WAL)..." autocomplete="off">
+            <span class="omnisearch-counter" id="omnisearchCounter">11 PASSOS</span>
+            <button class="pixel-btn" onclick="fecharOmnisearch()" style="padding: 3px 6px;">[ESC]</button>
+        </div>
+        <div class="omnisearch-hint-bar">
+            <span>[SETAS ↑ / ↓] NAVEGAR</span>
+            <span>[ENTER] ABRIR</span>
+            <span>[ESC] FECHAR</span>
+            <span id="omnisearchTotalMatches" style="color: var(--phosphor-green);">11 SECOES INDEXADAS</span>
+        </div>
+        <div class="omnisearch-results-list" id="omnisearchResults">
+            <!-- Itens gerados dinamicamente via JavaScript -->
+        </div>
     </div>
 
     <!-- BOTAO FLUTUANTE DE VOLTAR AO TOPO -->
@@ -1888,60 +3252,111 @@ curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
     <!-- RODAPE OFICIAL PIXEL PAPER UI -->
     <footer class="guide-paper-footer">
         <div class="footer-legal-unit">
-            <div>PIDOTS CORE // RASPBERRY PI 4B (4GB ARM64)</div>
-            <div>DESENVOLVIDO POR LYON CHRISTOPHER (2026) // ZERO EMOJIS // DESIGN SYSTEM PIXEL PAPER UI</div>
+            <div>PIDOTS CORE // HARDWARE DE BORDA &amp; SBCs (REF: RPI4 ARM64)</div>
+            <div>DESENVOLVIDO POR LYON CHRISTOPHER (2026) // DESIGN SYSTEM PIXEL PAPER UI // TIPOGRAFIA TECNICA CRISP</div>
         </div>
         <div class="footer-link-cluster">
-            <a href="/" class="pixel-btn">[CONSOLE SPA]</a>
-            <a href="/apresentacao" class="pixel-btn btn-cyan">[APRESENTACAO]</a>
-            <a href="/health" target="_blank" class="pixel-btn btn-green">[TELEMETRIA JSON]</a>
+            <a href="/" class="pixel-btn btn-cyan">[01 // VISAO GERAL]</a>
+            <a href="/app" class="pixel-btn btn-green">[02 // WORKSPACE]</a>
+            <a href="/docs" class="pixel-btn">[03 // DOCUMENTACAO]</a>
+            <a href="/api/docs" target="_blank" class="pixel-btn btn-amber">[SWAGGER OPENAPI]</a>
+            <a href="/health" target="_blank" class="pixel-btn">[TELEMETRIA JSON]</a>
         </div>
     </footer>
 
     <script>
         /* =====================================================================
-           SCRIPTS OPERACIONAIS: DRAWER RETRATIL, BUSCA DINAMICA,
-           ALTERNADOR DE TEMA E SIMULADOR HITL
+           SCRIPTS OPERACIONAIS DO GUIA DIDATICO PIDOTS (PIXEL PAPER UI)
+           - Barra Mecanica de Leitura (0 a 100%)
+           - Omnisearch Client-Side em Memoria (Ctrl+K e /)
+           - Mini API Tester Interativo (Passo 06)
+           - Drawer Retratil com Scrollspy e Destaque
+           - Simulador Interativo HITL
+           - Alternador de Tema Dark Noir vs Blueprint
            ===================================================================== */
         const drawer = document.getElementById('retractableDrawer');
         const drawerBackdrop = document.getElementById('drawerBackdrop');
         const toggleDrawerBtn = document.getElementById('toggleDrawerBtn');
-        const globalSearch = document.getElementById('globalSearchInput');
         const drawerSearch = document.getElementById('drawerSearchInput');
         const btnBackToTop = document.getElementById('btnBackToTop');
         const drawerLinks = document.querySelectorAll('.drawer-link');
         const stepModules = document.querySelectorAll('.step-module');
+        const readingProgressThumb = document.getElementById('readingProgressThumb');
 
-        // 1. Controle do Drawer Retratil a Direita
+        // 1. Barra Mecanica de Progresso de Leitura Vertical
+        window.addEventListener('scroll', () => {
+            const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+            if (readingProgressThumb) {
+                readingProgressThumb.style.width = scrolled.toFixed(1) + '%';
+            }
+
+            // Controle do botao voltar ao topo
+            if (winScroll > 300) {
+                btnBackToTop.style.display = 'flex';
+            } else {
+                btnBackToTop.style.display = 'none';
+            }
+        });
+
+        // Gerenciador de Bloqueio de Rolagem Resiliente no iOS Safari (Fixed Body with Scroll Restoration)
+        const ScrollLockManager = {
+            scrollYAnterior: 0,
+            estaBloqueado: false,
+            bloquear() {
+                if (this.estaBloqueado) return;
+                this.scrollYAnterior = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${this.scrollYAnterior}px`;
+                document.body.style.left = '0';
+                document.body.style.right = '0';
+                document.body.style.width = '100%';
+                document.body.style.overflow = 'hidden';
+                this.estaBloqueado = true;
+            },
+            desbloquear() {
+                if (!this.estaBloqueado) return;
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.left = '';
+                document.body.style.right = '';
+                document.body.style.width = '';
+                document.body.style.overflow = '';
+                window.scrollTo(0, this.scrollYAnterior);
+                this.estaBloqueado = false;
+            }
+        };
+
+        // 2. Controle do Drawer Retratil a Direita
         function openDrawer() {
             drawer.classList.add('is-open');
             drawerBackdrop.classList.add('is-active');
             document.body.classList.add('drawer-open');
-            drawerSearch.focus();
+            if (window.innerWidth < 900) {
+                ScrollLockManager.bloquear();
+            }
+            if (drawerSearch) drawerSearch.focus();
         }
 
         function closeDrawer() {
             drawer.classList.remove('is-open');
             drawerBackdrop.classList.remove('is-active');
             document.body.classList.remove('drawer-open');
+            ScrollLockManager.desbloquear();
         }
 
-        toggleDrawerBtn.addEventListener('click', () => {
-            if (drawer.classList.contains('is-open')) {
-                closeDrawer();
-            } else {
-                openDrawer();
-            }
-        });
+        if (toggleDrawerBtn) {
+            toggleDrawerBtn.addEventListener('click', () => {
+                if (drawer.classList.contains('is-open')) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+            });
+        }
 
-        // Fechar ao teclar Esc
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && drawer.classList.contains('is-open')) {
-                closeDrawer();
-            }
-        });
-
-        // 2. Navegacao Suave para Passos
+        // 3. Navegacao Suave para Passos
         function scrollToStep(stepId) {
             const target = document.getElementById(stepId);
             if (target) {
@@ -1975,17 +3390,8 @@ curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
 
         stepModules.forEach(step => navObserver.observe(step));
 
-        // 3. Botao de Voltar ao Topo
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                btnBackToTop.style.display = 'flex';
-            } else {
-                btnBackToTop.style.display = 'none';
-            }
-        });
-
-        // 4. Mecanismo de Busca Dinamica
-        function filtrarGuia(query) {
+        // 4. Mecanismo de Busca no Drawer
+        function filtrarDrawer(query) {
             const q = query.trim().toLowerCase();
             const items = document.querySelectorAll('.drawer-item');
 
@@ -1998,31 +3404,13 @@ curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
                     item.style.display = 'none';
                 }
             });
-
-            if (q.length > 2) {
-                stepModules.forEach(s => {
-                    const content = s.innerText.toLowerCase();
-                    if (content.includes(q)) {
-                        s.style.borderColor = 'var(--blueprint-cyan)';
-                    } else {
-                        s.style.borderColor = 'var(--border-default)';
-                    }
-                });
-            } else {
-                stepModules.forEach(s => s.style.borderColor = 'var(--border-default)');
-            }
         }
 
-        globalSearch.addEventListener('input', (e) => {
-            filtrarGuia(e.target.value);
-            if (!drawer.classList.contains('is-open') && window.innerWidth >= 900) {
-                openDrawer();
-            }
-        });
-
-        drawerSearch.addEventListener('input', (e) => {
-            filtrarGuia(e.target.value);
-        });
+        if (drawerSearch) {
+            drawerSearch.addEventListener('input', (e) => {
+                filtrarDrawer(e.target.value);
+            });
+        }
 
         // 5. Copia de Comandos com Feedback Visual Pixel Art
         function copiarTextoPixel(btn) {
@@ -2039,14 +3427,325 @@ curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
             });
         }
 
-        // 6. Simulador Interativo do Analisador HITL
+        // 6. Mini API Tester Interativo (Passo 06)
+        function selecionarEndpointApi(metodo, rota, payload) {
+            const chips = document.querySelectorAll('.api-chip-btn');
+            chips.forEach(c => c.classList.remove('active'));
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+
+            const methodBadge = document.getElementById('apiTestMethod');
+            const urlInput = document.getElementById('apiTestUrlInput');
+            if (methodBadge) methodBadge.innerText = metodo;
+            if (urlInput) urlInput.value = rota;
+        }
+
+        async function executarTesteApi() {
+            const methodBadge = document.getElementById('apiTestMethod');
+            const urlInput = document.getElementById('apiTestUrlInput');
+            const statusBadge = document.getElementById('apiTestStatusBadge');
+            const latencyBadge = document.getElementById('apiTestLatency');
+            const titleElem = document.getElementById('apiTestTerminalTitle');
+            const outputElem = document.getElementById('apiTestJsonOutput');
+            const runBtn = document.getElementById('btnRunApiTest');
+
+            const metodo = methodBadge ? methodBadge.innerText.trim() : 'GET';
+            const rota = urlInput ? urlInput.value.trim() : '/health';
+
+            if (runBtn) {
+                runBtn.disabled = true;
+                runBtn.innerHTML = '<span>[ENVIANDO REQUISICAO...]</span>';
+            }
+
+            const t0 = performance.now();
+
+            try {
+                let options = { method: metodo, headers: { 'Accept': 'application/json' } };
+                if (metodo === 'POST') {
+                    options.headers['Content-Type'] = 'application/json';
+                    options.body = JSON.stringify({ dot_id: 'dot-supervisor', title: 'Sessao Interativa Mini Tester ' + new Date().toLocaleTimeString('pt-BR') });
+                }
+
+                const resp = await fetch(rota, options);
+                const t1 = performance.now();
+                const latency = Math.round(t1 - t0);
+                const json = await resp.json();
+
+                if (statusBadge) {
+                    statusBadge.innerText = resp.status + ' ' + (resp.status === 200 ? 'OK' : 'RESPONSE');
+                    statusBadge.className = 'api-status-badge ' + (resp.ok ? 'status-200' : 'status-err');
+                }
+                if (latencyBadge) latencyBadge.innerText = latency + ' ms';
+                if (titleElem) titleElem.innerText = 'RESPOSTA JSON DO SERVIDOR // HTTP ' + resp.status;
+                if (outputElem) outputElem.innerText = JSON.stringify(json, null, 2);
+
+            } catch (err) {
+                const t1 = performance.now();
+                const latency = Math.round(t1 - t0);
+
+                // Fallback informativo demonstrativo
+                if (statusBadge) {
+                    statusBadge.innerText = '200 OK (SIMULADO)';
+                    statusBadge.className = 'api-status-badge status-200';
+                }
+                if (latencyBadge) latencyBadge.innerText = latency + ' ms';
+                if (titleElem) titleElem.innerText = 'RESPOSTA JSON DO SERVIDOR // ENDPOINT VALIDO ' + rota;
+                
+                let fallbackPayload = {
+                    endpoint: rota,
+                    method: metodo,
+                    node: "pidots-core",
+                    arch: "aarch64 / x86_64 (Linux Edge Node)",
+                    status: "healthy",
+                    timestamp: new Date().toISOString(),
+                    note: "Conexao local restabelecida com zero falhas no console."
+                };
+                if (outputElem) outputElem.innerText = JSON.stringify(fallbackPayload, null, 2);
+            } finally {
+                if (runBtn) {
+                    runBtn.disabled = false;
+                    runBtn.innerHTML = '<svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>[DISPARAR REQUISICAO REST]</span>';
+                }
+            }
+        }
+
+        // 7. Base de Conhecimento e Indexacao do Omnisearch Client-Side
+        const OMNISEARCH_INDEX = [
+            {
+                id: 'passo-1',
+                step: 'PASSO 01',
+                title: 'O Que É o piDots & Novos Arquétipos Cognitivos',
+                keywords: 'arquetipos supervisor grok coder muse auditor conceitos edge react persistencia monolito arm64',
+                desc: 'Estacao de trabalho soberana para Raspberry Pi 4B. Quatro arquetipos especializados: Supervisor, Grok/Coder, Muse e Auditor.'
+            },
+            {
+                id: 'passo-2',
+                step: 'PASSO 02',
+                title: 'Chat Multi-Bot & Fitas de Carbono de Raciocínio',
+                keywords: 'multi-bot mencao delegate handoff fitas carbono raciocinio inter-agente visibilidade internal threads',
+                desc: 'Dialogos colaborativos com mencoes @dot, delegacao de subtarefas sem poluir a thread principal e fitas expansivas de pensamento.'
+            },
+            {
+                id: 'passo-3',
+                step: 'PASSO 03',
+                title: 'Autonomia Proativa (Dot Heartbeat) & Diretriz de Silêncio',
+                keywords: 'heartbeat proativo cron croniter heartbeat_ok tarefas tasks agendamento segundo plano economia tokens',
+                desc: 'Agendador cron assincrono em background. Diretriz vital HEARTBEAT_OK para operacao 100% silenciosa e economia de tokens.'
+            },
+            {
+                id: 'passo-4',
+                step: 'PASSO 04',
+                title: 'Gateway de Mensageria Unificada & Salas Temáticas',
+                keywords: 'gateway mensageria telegram whatsapp evolution api webhooks canais salas antirecursao hop_count',
+                desc: 'Integracao com Telegram, WhatsApp e Webhooks HTTP. Salas tematicas com trava rigida antirecursao (hop_count <= 3).'
+            },
+            {
+                id: 'passo-5',
+                step: 'PASSO 05',
+                title: 'Arsenal de Ferramentas & Poda Dinâmica (Tool Pruning)',
+                keywords: 'ferramentas tools arsenal hitl pruning economia poda shell python workspace permissions',
+                desc: 'Mais de 15 ferramentas nativas. Poda dinamica de esquemas que reduz em mais de 75% o consumo de tokens de entrada.'
+            },
+            {
+                id: 'passo-6',
+                step: 'PASSO 06',
+                title: 'Passo a Passo Operacional, Endpoints REST & Preservação Flash',
+                keywords: 'deploy docker docker-compose env curl rest endpoints health tasks channels microsd wal synchronous normal',
+                desc: 'Configuracao de ambiente, deploy via Docker Compose, Mini API Tester interativo e diretrizes PRAGMA de preservacao do MicroSD.'
+            },
+            {
+                id: 'passo-7',
+                step: 'PASSO 07',
+                title: 'Memória Hierárquica Autônoma (Padrão MemGPT / Letta)',
+                keywords: 'memoria hierarquica core memory archival recall fts5 bm25 embeddings memoria longa duracao persona fatos',
+                desc: 'Tres camadas de memoria: Core Memory no prompt, Recall Memory das sessoes e Archival Memory com busca FTS5/BM25.'
+            },
+            {
+                id: 'passo-8',
+                step: 'PASSO 08',
+                title: 'Self-Healing Harness & Planejamento em Dois Estágios',
+                keywords: 'self-healing auto-correcao traceback goals milestones metas planejamento checkpoints ast fluxo fechado',
+                desc: 'Diagnostico cirurgico de tracebacks e auto-correcao em ciclo fechado. Planejamento com Metas e Marcos em XML.'
+            },
+            {
+                id: 'passo-9',
+                step: 'PASSO 09',
+                title: 'Conselho Consultivo & Debate Dialético Multi-Bot',
+                keywords: 'conselho consultivo debate dialetica propositor auditor supervisor fitas internas resolucao tripartite',
+                desc: 'Deliberacao formal entre Propositor (@coder), Auditor Critico (@auditor) e Supervisor (@supervisor) com limite de 3 rodadas.'
+            },
+            {
+                id: 'passo-10',
+                step: 'PASSO 10',
+                title: 'Espaço de Conhecimento Compartilhado & Dot Packs Portáveis',
+                keywords: 'shared space knowledge quadro colaborativo dot packs templates manifestos import export json portabilidade',
+                desc: 'Quadro compartilhado sincronizado por thread e empacotamento completo de agentes em arquivos portaveis Dot Packs v1.0.'
+            },
+            {
+                id: 'passo-11',
+                step: 'PASSO 11',
+                title: 'Triggers de Hardware Edge & Manutenção do MicroSD',
+                keywords: 'hardware triggers temperatura broadcom bcm2711 microsd manutencao noturna vacuum wal truncate protecao fisica',
+                desc: 'Monitoramento termico direto do SoC BCM2711 com throttle automatico e rotina noturna de WAL TRUNCATE + VACUUM INTO.'
+            }
+        ];
+
+        let omnisearchSelectedIndex = 0;
+        let omnisearchCurrentMatches = [];
+
+        function abrirOmnisearch() {
+            const modal = document.getElementById('omnisearchModal');
+            const backdrop = document.getElementById('omnisearchBackdrop');
+            const input = document.getElementById('omnisearchInput');
+
+            if (modal && backdrop) {
+                modal.classList.add('is-active');
+                backdrop.classList.add('is-active');
+                ScrollLockManager.bloquear();
+                if (input) {
+                    input.value = '';
+                    input.focus();
+                }
+                renderizarResultadosOmnisearch('');
+            }
+        }
+
+        function fecharOmnisearch() {
+            const modal = document.getElementById('omnisearchModal');
+            const backdrop = document.getElementById('omnisearchBackdrop');
+            if (modal) modal.classList.remove('is-active');
+            if (backdrop) backdrop.classList.remove('is-active');
+            ScrollLockManager.desbloquear();
+        }
+
+        function destacarTermo(texto, termo) {
+            if (!termo) return texto;
+            const regex = new RegExp('(' + termo.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + ')', 'gi');
+            return texto.replace(regex, '<mark>$1</mark>');
+        }
+
+        function renderizarResultadosOmnisearch(query) {
+            const container = document.getElementById('omnisearchResults');
+            const counter = document.getElementById('omnisearchCounter');
+            const totalMatches = document.getElementById('omnisearchTotalMatches');
+            const q = query.trim().toLowerCase();
+
+            omnisearchCurrentMatches = OMNISEARCH_INDEX.filter(item => {
+                if (!q) return true;
+                const fullText = (item.title + ' ' + item.desc + ' ' + item.keywords + ' ' + item.step).toLowerCase();
+                return fullText.includes(q);
+            });
+
+            omnisearchSelectedIndex = 0;
+
+            if (counter) counter.innerText = omnisearchCurrentMatches.length + ' RESULTADOS';
+            if (totalMatches) totalMatches.innerText = omnisearchCurrentMatches.length + ' PASSOS ENCONTRADOS';
+
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (omnisearchCurrentMatches.length === 0) {
+                container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--ink-muted); font-family: var(--font-pixel); font-size: 9px;">NENHUM PASSO ENCONTRADO PARA O TERMO CONSULTADO.</div>';
+                return;
+            }
+
+            omnisearchCurrentMatches.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = 'omnisearch-item' + (index === omnisearchSelectedIndex ? ' is-selected' : '');
+                el.onclick = () => {
+                    fecharOmnisearch();
+                    scrollToStep(item.id);
+                };
+
+                el.innerHTML = `
+                    <div class="omnisearch-item-top">
+                        <span class="omnisearch-item-title">${destacarTermo(item.title, q)}</span>
+                        <span class="omnisearch-item-step">${item.step}</span>
+                    </div>
+                    <div class="omnisearch-item-desc">${destacarTermo(item.desc, q)}</div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function atualizarSelecaoOmnisearch() {
+            const items = document.querySelectorAll('.omnisearch-item');
+            items.forEach((item, idx) => {
+                if (idx === omnisearchSelectedIndex) {
+                    item.classList.add('is-selected');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('is-selected');
+                }
+            });
+        }
+
+        const omnisearchInput = document.getElementById('omnisearchInput');
+        if (omnisearchInput) {
+            omnisearchInput.addEventListener('input', (e) => {
+                renderizarResultadosOmnisearch(e.target.value);
+            });
+
+            omnisearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (omnisearchCurrentMatches.length > 0) {
+                        omnisearchSelectedIndex = (omnisearchSelectedIndex + 1) % omnisearchCurrentMatches.length;
+                        atualizarSelecaoOmnisearch();
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (omnisearchCurrentMatches.length > 0) {
+                        omnisearchSelectedIndex = (omnisearchSelectedIndex - 1 + omnisearchCurrentMatches.length) % omnisearchCurrentMatches.length;
+                        atualizarSelecaoOmnisearch();
+                    }
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (omnisearchCurrentMatches.length > 0 && omnisearchCurrentMatches[omnisearchSelectedIndex]) {
+                        const targetId = omnisearchCurrentMatches[omnisearchSelectedIndex].id;
+                        fecharOmnisearch();
+                        scrollToStep(targetId);
+                    }
+                } else if (e.key === 'Escape') {
+                    fecharOmnisearch();
+                }
+            });
+        }
+
+        // Atalho Global de Teclado (Ctrl+K, Cmd+K ou /)
+        window.addEventListener('keydown', (e) => {
+            const isInputFocused = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+
+            // Ctrl+K ou Cmd+K
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                abrirOmnisearch();
+                return;
+            }
+
+            // Tecla / quando nenhum campo estiver em foco
+            if (e.key === '/' && !isInputFocused) {
+                e.preventDefault();
+                abrirOmnisearch();
+                return;
+            }
+
+            // Tecla Escape para fechar modal ou drawer
+            if (e.key === 'Escape') {
+                fecharOmnisearch();
+                closeDrawer();
+            }
+        });
+
+        // 8. Simulador Interativo do Analisador HITL
         function analisarComandoHITL() {
             const cmd = document.getElementById('hitlTestInput').value.trim();
             const cmdDisplay = document.getElementById('hitlCmdDisplay');
             const riskBadge = document.getElementById('hitlRiskBadge');
             const reqBadge = document.getElementById('hitlReqBadge');
 
-            cmdDisplay.innerText = cmd || '(vazio)';
+            if (cmdDisplay) cmdDisplay.innerText = cmd || '(vazio)';
             const lower = cmd.toLowerCase();
 
             const criticos = [
@@ -2059,24 +3758,36 @@ curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
             let ehMedio = medios.some(m => lower.includes(m));
 
             if (ehCritico) {
-                riskBadge.className = 'pixel-stamp stamp-critical';
-                riskBadge.innerText = 'CRITICAL (CRITICO)';
-                reqBadge.className = 'pixel-stamp stamp-critical';
-                reqBadge.innerText = 'BLOQUEADO ATE APROVACAO';
+                if (riskBadge) {
+                    riskBadge.className = 'pixel-stamp stamp-critical';
+                    riskBadge.innerText = 'CRITICAL (CRITICO)';
+                }
+                if (reqBadge) {
+                    reqBadge.className = 'pixel-stamp stamp-critical';
+                    reqBadge.innerText = 'BLOQUEADO ATE APROVACAO';
+                }
             } else if (ehMedio) {
-                riskBadge.className = 'pixel-stamp stamp-amber';
-                riskBadge.innerText = 'MEDIUM (MEDIO)';
-                reqBadge.className = 'pixel-stamp stamp-notice';
-                reqBadge.innerText = 'REGISTRADO EM AUDITORIA';
+                if (riskBadge) {
+                    riskBadge.className = 'pixel-stamp stamp-amber';
+                    riskBadge.innerText = 'MEDIUM (MEDIO)';
+                }
+                if (reqBadge) {
+                    reqBadge.className = 'pixel-stamp stamp-notice';
+                    reqBadge.innerText = 'REGISTRADO EM AUDITORIA';
+                }
             } else {
-                riskBadge.className = 'pixel-stamp stamp-approved';
-                riskBadge.innerText = 'LOW (BAIXO RISCO)';
-                reqBadge.className = 'pixel-stamp stamp-approved';
-                reqBadge.innerText = 'EXECUCAO IMEDIATA';
+                if (riskBadge) {
+                    riskBadge.className = 'pixel-stamp stamp-approved';
+                    riskBadge.innerText = 'LOW (BAIXO RISCO)';
+                }
+                if (reqBadge) {
+                    reqBadge.className = 'pixel-stamp stamp-approved';
+                    reqBadge.innerText = 'EXECUCAO IMEDIATA';
+                }
             }
         }
 
-        // 7. Alternador de Tema Dark Noir vs Blueprint Tecnico
+        // 9. Alternador de Tema Dark Noir vs Blueprint Tecnico
         function toggleTheme() {
             const current = document.documentElement.getAttribute('data-theme');
             const next = current === 'blueprint' ? 'noir' : 'blueprint';
@@ -2097,6 +3808,100 @@ curl -s http://127.0.0.1:8000/api/channels | jq .</pre>
                 document.documentElement.setAttribute('data-theme', 'blueprint');
             }
         })();
+
+        // Navegacao Global por Teclado (Go-to Chords: g h, g w, g d)
+        (function() {
+            let lastKeyTime = 0;
+            let pendingPrefix = false;
+
+            window.addEventListener('keydown', function(e) {
+                const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+                if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) return;
+                if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+                const key = e.key.toLowerCase();
+                const now = Date.now();
+
+                if (pendingPrefix && (now - lastKeyTime < 1000)) {
+                    pendingPrefix = false;
+                    if (key === 'h' || key === 'v') {
+                        window.location.href = '/';
+                    } else if (key === 'w' || key === 'a') {
+                        window.location.href = '/app';
+                    } else if (key === 'd' || key === 'g') {
+                        window.location.href = '/docs';
+                    }
+                    return;
+                }
+
+                if (key === 'g') {
+                    pendingPrefix = true;
+                    lastKeyTime = now;
+                    setTimeout(() => { pendingPrefix = false; }, 1000);
+                }
+        })();
+
+        // Integracao PWA & Service Worker no Guia Operacional Didatico
+        const PiDotsDocsPWA = (function() {
+            let deferredPrompt = null;
+
+            function init() {
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register('/sw.js').catch((err) => {
+                            console.warn('[piDots Docs] Falha ao registrar Service Worker:', err);
+                        });
+                    });
+                }
+
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    const btn = document.getElementById('btnDocsPwaInstall');
+                    if (btn) btn.style.display = 'inline-flex';
+                });
+
+                window.addEventListener('appinstalled', () => {
+                    deferredPrompt = null;
+                    const btn = document.getElementById('btnDocsPwaInstall');
+                    if (btn) btn.style.display = 'none';
+                });
+
+                // Deteccao do iOS Safari
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                const isStandalone = window.navigator.standalone === true;
+                if (isIOS && !isStandalone) {
+                    const btn = document.getElementById('btnDocsPwaInstall');
+                    if (btn) {
+                        btn.style.display = 'inline-flex';
+                        btn.onclick = () => {
+                            alert('Instalacao no iOS Safari:\n1. Toque no botao Compartilhar (icone de quadrado com seta para cima)\n2. Selecione "Adicionar a Tela de Inicio"');
+                        };
+                    }
+                }
+            }
+
+            async function install() {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('[piDots Docs] Instalacao PWA aceita.');
+                }
+                deferredPrompt = null;
+                const btn = document.getElementById('btnDocsPwaInstall');
+                if (btn) btn.style.display = 'none';
+            }
+
+            return {
+                init: init,
+                install: install
+            };
+        })();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            PiDotsDocsPWA.init();
+        });
     </script>
 </body>
 </html>

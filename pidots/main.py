@@ -4,17 +4,23 @@ Servidor assíncrono em worker único calibrado para Raspberry Pi 4B (ARM64).
 Serve a API REST, streaming de eventos AG-UI e o console SPA.
 """
 
+import io
 import httpx
 import os
 import uuid
+import gzip
+import hashlib
 import json
 import asyncio
 import logging
+from typing import Any, Dict, Optional
 from pathlib import Path
+from PIL import Image, ImageDraw
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel
 
 from .config import settings
@@ -25,6 +31,110 @@ from .core.agent import DotAgent
 from .providers.openai_client import OpenAIUniversalProvider
 
 logger = logging.getLogger("pidots.main")
+
+
+class StaticPageManager:
+    """
+    Gerenciador de páginas HTML e assets estáticos residentes em memória RAM.
+    Elimina leituras no cartão MicroSD do Raspberry Pi 4B e fornece pré-compressão Gzip
+    com suporte completo a ETag (HTTP 304 Not Modified).
+    """
+
+    def __init__(self, search_dirs: list[Path]):
+        self.search_dirs = search_dirs
+        self._raw_cache: Dict[str, bytes] = {}
+        self._gzip_cache: Dict[str, bytes] = {}
+        self._etags: Dict[str, str] = {}
+
+    def _resolve_file(self, filename: str) -> Optional[Path]:
+        for base in self.search_dirs:
+            target = base / filename
+            if target.is_file():
+                return target
+        return None
+
+    def preload(self, filename: str, compress_level: int = 6) -> bool:
+        """Carrega e pré-comprime o arquivo HTML na memória RAM durante o startup."""
+        path = self._resolve_file(filename)
+        if not path:
+            return False
+        try:
+            content = path.read_bytes()
+            self._raw_cache[filename] = content
+            self._gzip_cache[filename] = gzip.compress(content, compresslevel=compress_level)
+            self._etags[filename] = f'"{hashlib.sha256(content).hexdigest()[:16]}"'
+            logger.info("Página '%s' pré-carregada na RAM (%d bytes, gzipped: %d bytes)", filename, len(content), len(self._gzip_cache[filename]))
+            return True
+        except Exception as e:
+            logger.warning("Falha ao pré-carregar '%s' na RAM: %s", filename, e)
+            return False
+
+    def serve(
+        self,
+        filename: str,
+        request: Request,
+        cache_control: str = "public, max-age=0, must-revalidate"
+    ) -> Response:
+        """Entrega o documento HTML com validação ETag e negociação de codificação Gzip."""
+        raw_data = self._raw_cache.get(filename)
+        if raw_data is None:
+            if not self.preload(filename):
+                return Response(
+                    content=f"<h1>Recurso '{filename}' não encontrado</h1>",
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    media_type="text/html; charset=utf-8"
+                )
+            raw_data = self._raw_cache[filename]
+
+        etag = self._etags.get(filename, "")
+
+        # 1. Validação de ETag condicional (HTTP 304 Not Modified)
+        client_etag = request.headers.get("if-none-match")
+        if client_etag and client_etag.strip() == etag:
+            return Response(
+                status_code=status.HTTP_304_NOT_MODIFIED,
+                headers={
+                    "ETag": etag,
+                    "Cache-Control": cache_control
+                }
+            )
+
+        # 2. Servir buffer pré-comprimido se o cliente aceitar Gzip
+        accept_encoding = request.headers.get("accept-encoding", "")
+        if "gzip" in accept_encoding and filename in self._gzip_cache:
+            content = b"" if request.method == "HEAD" else self._gzip_cache[filename]
+            return Response(
+                content=content,
+                status_code=status.HTTP_200_OK,
+                media_type="text/html; charset=utf-8",
+                headers={
+                    "Content-Encoding": "gzip",
+                    "ETag": etag,
+                    "Cache-Control": cache_control,
+                    "Vary": "Accept-Encoding"
+                }
+            )
+
+        # 3. Entrega sem compressão
+        content = b"" if request.method == "HEAD" else raw_data
+        return Response(
+            content=content,
+            status_code=status.HTTP_200_OK,
+            media_type="text/html; charset=utf-8",
+            headers={
+                "ETag": etag,
+                "Cache-Control": cache_control,
+                "Vary": "Accept-Encoding"
+            }
+        )
+
+
+HTML_SEARCH_DIRS = [
+    Path(__file__).resolve().parent.parent,
+    Path("/app"),
+    Path.cwd()
+]
+page_manager = StaticPageManager(search_dirs=HTML_SEARCH_DIRS)
 
 
 def get_soc_temperature() -> float:
@@ -109,6 +219,10 @@ async def lifespan(app: FastAPI):
         heartbeat_worker_loop(ai_provider=app.state.ai_provider, check_interval_seconds=15)
     )
 
+    # Pré-carregamento dos documentos HTML em memória RAM para latência ultra-baixa e preservação de I/O MicroSD
+    for page in ("pidots_apresentacao_pixel_paper.html", "pidots_spa_prototype.html", "pidots_guia.html", "relatorio_estudo_pidots.html"):
+        page_manager.preload(page)
+
     yield
 
     heartbeat_task.cancel()
@@ -119,7 +233,16 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="piDots Edge Core",
     version="0.1.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json",
     lifespan=lifespan
+)
+
+app.add_middleware(
+    GZipMiddleware,
+    minimum_size=1024,
+    compresslevel=4
 )
 
 app.add_middleware(
@@ -169,6 +292,34 @@ async def list_dots():
         cursor = await db.execute("SELECT id, name, role, model, workspace_path, is_active, archetype, avatar_stamp FROM dots")
         rows = await cursor.fetchall()
         return [dict(row) for row in rows]
+
+
+@app.get("/api/dots/{dot_id}/export-pack")
+async def export_dot_pack_endpoint(dot_id: str):
+    """Exporta manifesto estruturado DotPack v1.0 com personas, core memory e arquivística."""
+    from .core.dot_pack import DotPackManager
+    result = await DotPackManager.export_dot_pack(dot_id)
+    if not result.get("success"):
+        raise HTTPException(status_code=404, detail=result.get("error", "Dot não encontrado"))
+    return JSONResponse(
+        content=result["manifest"],
+        headers={"Content-Disposition": f"attachment; filename=dotpack_{dot_id}.json"}
+    )
+
+
+class ImportDotPackPayload(BaseModel):
+    pack: dict[str, Any]
+    override_id: str | None = None
+
+
+@app.post("/api/dots/import-pack")
+async def import_dot_pack_endpoint(payload: ImportDotPackPayload):
+    """Importa e instancia um novo Dot no SQLite WAL a partir de manifesto DotPack."""
+    from .core.dot_pack import DotPackManager
+    result = await DotPackManager.import_dot_pack(pack_data=payload.pack, override_id=payload.override_id)
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("error", "Falha ao importar DotPack"))
+    return result
 
 
 @app.get("/api/hitl/pending")
@@ -224,11 +375,11 @@ async def run_thread_stream(thread_id: str, payload: RunPayload, request: Reques
     Implementa o protocolo AG-UI v1.0 com suporte a roteamento multi-bot.
     """
     async with get_db() as db:
-        cursor = await db.execute("SELECT dot_id FROM threads WHERE id = ?", (thread_id,))
+        cursor = await db.execute("SELECT dot_id, primary_dot_id FROM threads WHERE id = ?", (thread_id,))
         row = await cursor.fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Thread não encontrada.")
-        default_dot_id = row["dot_id"]
+        default_dot_id = row["primary_dot_id"] or row["dot_id"]
 
     # Roteamento dinâmico de menções (@dot)
     from .core.orchestrator import ThreadRouter, MultiBotOrchestrator
@@ -737,8 +888,39 @@ async def add_channel_member(channel_id: str, payload: AddChannelMemberPayload):
     return {"status": "success", "channel_id": channel_id, "member_id": payload.member_id}
 
 
+class EdgeMaintenancePayload(BaseModel):
+    days_threshold: int = 7
+    create_backup: bool = False
+    dot_id: str | None = None
+
+
+@app.get("/api/edge/triggers")
+async def get_edge_hardware_triggers():
+    """Retorna o status em tempo real dos triggers de hardware (SoC Broadcom, MicroSD, RAM)."""
+    from .core.edge_triggers import EdgeHardwareTriggers
+    report = EdgeHardwareTriggers.check_triggers()
+    return report
+
+
+@app.post("/api/edge/maintenance")
+async def trigger_edge_maintenance(payload: EdgeMaintenancePayload | None = None):
+    """Executa sob demanda a suíte de compactação e saúde do MicroSD."""
+    from .storage.maintenance import EdgeMaintenanceManager
+    p = payload or EdgeMaintenancePayload()
+    backup_dir = None
+    if p.create_backup:
+        backup_dir = str(Path(settings.sqlite_db_path).parent / "backups")
+
+    report = await EdgeMaintenanceManager.run_full_maintenance(
+        backup_dir=backup_dir,
+        days_threshold=p.days_threshold,
+        dot_id=p.dot_id
+    )
+    return report
+
 
 OFFICIAL_SVG_ICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+
 <rect width="100" height="100" rx="16" fill="#07090c"/>
 <circle cx="32" cy="50" r="14" fill="#33ff66"/>
 <circle cx="68" cy="50" r="14" fill="#38bdf8"/>
@@ -748,34 +930,188 @@ OFFICIAL_SVG_ICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 
 </svg>"""
 
 
+def render_pidots_icon_png(size: int = 192, maskable: bool = False) -> bytes:
+    """
+    Renderiza o ícone oficial do piDots em buffer PNG rasterizado via Pillow.
+    Aplica supersampling 4x e filtro Lanczos para antialiasing de alta precisão.
+    Para variantes maskable, ajusta a geometria à Safe Zone de 80% do W3C.
+    """
+    scale = 4
+    canvas_size = size * scale
+    img = Image.new("RGBA", (canvas_size, canvas_size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    margin = int(canvas_size * 0.1) if maskable else 0
+    draw_size = canvas_size - (margin * 2)
+    s = draw_size / 100.0
+
+    bg_color = (7, 9, 12, 255)
+    if maskable:
+        draw.rectangle([0, 0, canvas_size, canvas_size], fill=bg_color)
+    else:
+        corner_r = int(16 * s)
+        draw.rounded_rectangle([0, 0, canvas_size, canvas_size], radius=corner_r, fill=bg_color)
+
+    ox, oy = margin, margin
+
+    # Círculo verde fósforo esquerdo
+    cx1, cy1 = ox + 32 * s, oy + 50 * s
+    r1 = 14 * s
+    draw.ellipse([cx1 - r1, cy1 - r1, cx1 + r1, cy1 + r1], fill=(51, 255, 102, 255))
+
+    # Círculo azul blueprint direito
+    cx2, cy2 = ox + 68 * s, oy + 50 * s
+    r2 = 14 * s
+    draw.ellipse([cx2 - r2, cy2 - r2, cx2 + r2, cy2 + r2], fill=(56, 189, 248, 255))
+
+    # Traço central de ligação
+    x_line1, x_line2 = ox + 46 * s, ox + 54 * s
+    y_line = oy + 50 * s
+    line_w = max(2, int(4 * s))
+    draw.line([(x_line1, y_line), (x_line2, y_line)], fill=(241, 245, 249, 255), width=line_w)
+
+    # Centros brancos crisp
+    rc = 6 * s
+    draw.ellipse([cx1 - rc, cy1 - rc, cx1 + rc, cy1 + rc], fill=(255, 255, 255, 255))
+    draw.ellipse([cx2 - rc, cy2 - rc, cx2 + rc, cy2 + rc], fill=(255, 255, 255, 255))
+
+    img = img.resize((size, size), Image.Resampling.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG", optimize=True)
+    return buf.getvalue()
+
+
+# Cache de memória estático para performance instantânea no ARM64 (< 1ms)
+PNG_ICONS_CACHE = {
+    "192": render_pidots_icon_png(192, maskable=False),
+    "512": render_pidots_icon_png(512, maskable=False),
+    "192_maskable": render_pidots_icon_png(192, maskable=True),
+    "512_maskable": render_pidots_icon_png(512, maskable=True),
+}
+
+
 @app.get("/icon.svg")
 async def get_app_icon():
-    """Serve o ícone oficial vetorial SVG para favicons e instalação PWA."""
+    """Serve o ícone oficial vetorial SVG para favicons e navegadores desktop."""
     return Response(
         content=OFFICIAL_SVG_ICON.strip(),
         media_type="image/svg+xml",
-        headers={"Cache-Control": "public, max-age=86400"}
+        headers={"Cache-Control": "public, max-age=604800, immutable"}
+    )
+
+
+@app.get("/icon-192.png")
+async def get_app_icon_192():
+    """Serve o ícone oficial PNG 192x192 para Android WebAPK e Apple Touch Icon."""
+    return Response(
+        content=PNG_ICONS_CACHE["192"],
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=604800, immutable"}
+    )
+
+
+@app.get("/icon-512.png")
+async def get_app_icon_512():
+    """Serve o ícone oficial PNG 512x512 para instalação e splash screen nativa."""
+    return Response(
+        content=PNG_ICONS_CACHE["512"],
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=604800, immutable"}
+    )
+
+
+@app.get("/icon-maskable-192.png")
+async def get_app_icon_maskable_192():
+    """Serve o ícone oficial PNG adaptativo com Safe Zone de 80% (192x192)."""
+    return Response(
+        content=PNG_ICONS_CACHE["192_maskable"],
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=604800, immutable"}
+    )
+
+
+@app.get("/icon-maskable-512.png")
+async def get_app_icon_maskable_512():
+    """Serve o ícone oficial PNG adaptativo com Safe Zone de 80% (512x512)."""
+    return Response(
+        content=PNG_ICONS_CACHE["512_maskable"],
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=604800, immutable"}
     )
 
 
 @app.get("/manifest.json")
 async def get_pwa_manifest():
-    """Retorna o manifesto oficial PWA para instalação no celular e desktop."""
+    """Retorna o manifesto oficial PWA 100% compatível com especificação W3C e WebAPK."""
     manifest = {
+        "id": "/",
         "name": "piDots Edge Console",
         "short_name": "piDots",
-        "description": "Console autônomo e persistente de AI coworkers para Raspberry Pi 4B",
-        "start_url": "/",
+        "description": "Console autônomo e persistente de AI coworkers para hardware de borda",
+        "start_url": "/app?source=pwa",
+        "scope": "/",
         "display": "standalone",
+        "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
         "background_color": "#07090c",
         "theme_color": "#07090c",
-        "orientation": "portrait-primary",
+        "orientation": "any",
+        "lang": "pt-BR",
+        "dir": "ltr",
+        "categories": ["productivity", "utilities", "developer-tools"],
+        "prefer_related_applications": False,
         "icons": [
             {
+                "src": "/icon-192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "any"
+            },
+            {
+                "src": "/icon-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any"
+            },
+            {
+                "src": "/icon-maskable-192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "maskable"
+            },
+            {
+                "src": "/icon-maskable-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "maskable"
+            },
+            {
                 "src": "/icon.svg",
-                "sizes": "192x192 512x512",
+                "sizes": "any",
                 "type": "image/svg+xml",
-                "purpose": "any maskable"
+                "purpose": "any"
+            }
+        ],
+        "shortcuts": [
+            {
+                "name": "Console Operacional",
+                "short_name": "Console",
+                "description": "Abrir o workspace e o terminal interativo dos Dots",
+                "url": "/app",
+                "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}]
+            },
+            {
+                "name": "Documentação Técnica",
+                "short_name": "Guia",
+                "description": "Abrir o guia didático operacional do piDots",
+                "url": "/docs",
+                "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}]
+            },
+            {
+                "name": "Apresentação e Visão Geral",
+                "short_name": "Visão Geral",
+                "description": "Abrir a landing page de onboarding e telemetria",
+                "url": "/",
+                "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}]
             }
         ]
     }
@@ -788,18 +1124,31 @@ async def get_pwa_manifest():
 
 @app.get("/sw.js")
 async def get_service_worker():
-    """Retorna o Service Worker para suporte PWA offline-first sem risco de cache imortal."""
+    """Retorna o Service Worker com ciclo de vida controlado, cache resiliente e suporte offline."""
     sw_code = """
-const CACHE_NAME = 'pidots-cache-v2';
-const STATIC_ASSETS = ['/', '/manifest.json', '/icon.svg'];
+const CACHE_NAME = 'pidots-cache-v4';
+const CORE_STATIC_ASSETS = [
+    '/app',
+    '/',
+    '/docs',
+    '/manifest.json',
+    '/icon.svg',
+    '/icon-192.png',
+    '/icon-512.png',
+    '/icon-maskable-192.png',
+    '/icon-maskable-512.png'
+];
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(STATIC_ASSETS);
+            return Promise.allSettled(
+                CORE_STATIC_ASSETS.map((asset) => cache.add(asset).catch((err) => {
+                    console.warn('[SW] Falha ao pre-armazenar asset:', asset, err);
+                }))
+            );
         })
     );
-    self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -813,20 +1162,35 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
 self.addEventListener('fetch', (event) => {
-    // 1. Chamadas à API ou endpoints de telemetria: bypass total de cache
+    // 1. Chamadas a API ou endpoints de telemetria e health: bypass total de cache
     if (event.request.url.includes('/api/') || event.request.url.includes('/health')) {
         event.respondWith(
             fetch(event.request).catch(() => {
-                return new Response(JSON.stringify({ error: 'Rede indisponível no modo offline' }), {
-                    headers: { 'Content-Type': 'application/json' }
-                });
+                return new Response(
+                    JSON.stringify({
+                        error: 'Rede indisponivel no modo offline',
+                        offline: true,
+                        timestamp: Date.now()
+                    }),
+                    {
+                        status: 503,
+                        statusText: 'Service Unavailable',
+                        headers: { 'Content-Type': 'application/json' }
+                    }
+                );
             })
         );
         return;
     }
 
-    // 2. Navegação de páginas HTML (evita cache imortal via Network-First)
+    // 2. Navegacao de paginas HTML (Network-First com fallback para cache local)
     if (event.request.mode === 'navigate' || event.request.destination === 'document') {
         event.respondWith(
             fetch(event.request).then((networkResponse) => {
@@ -838,13 +1202,15 @@ self.addEventListener('fetch', (event) => {
                 }
                 return networkResponse;
             }).catch(() => {
-                return caches.match(event.request).then((cached) => cached || caches.match('/'));
+                return caches.match(event.request).then((cached) => {
+                    return cached || caches.match('/app') || caches.match('/') || caches.match('/docs');
+                });
             })
         );
         return;
     }
 
-    // 3. Demais assets estáticos: Stale-While-Revalidate
+    // 3. Fontes externas (Google Fonts / gstatic) e assets estaticos: Stale-While-Revalidate
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             const fetchPromise = fetch(event.request).then((networkResponse) => {
@@ -869,52 +1235,78 @@ self.addEventListener('fetch', (event) => {
     )
 
 
-def find_html_file(filename: str) -> Path:
-    """Localiza o arquivo HTML seja dentro do container Docker (/app) ou no host."""
-    candidates = [
-        Path(__file__).resolve().parent.parent / filename,
-        Path("/app") / filename,
-        Path.cwd() / filename,
-    ]
-    for p in candidates:
-        if p.exists():
-            return p
-    return candidates[0]
+@app.get("/api/changelog")
+async def get_changelog():
+    """Retorna as notas de versão e histórico do changelog do piDots."""
+    changelog_path = Path(__file__).resolve().parent.parent / "data" / "changelog.json"
+    if not changelog_path.exists():
+        # Fallback de emergência caso o arquivo não seja encontrado
+        return JSONResponse(
+            content={
+                "system": "piDots",
+                "current_version": "1.1.0",
+                "patch_notes": {"version": "1.1.0", "categories": {}},
+                "history": []
+            },
+            headers={"Cache-Control": "public, max-age=60"}
+        )
+    try:
+        content = json.loads(changelog_path.read_text(encoding="utf-8"))
+        return JSONResponse(
+            content=content,
+            headers={"Cache-Control": "public, max-age=300"}
+        )
+    except Exception as exc:
+        logger.error(f"Erro ao ler data/changelog.json: {exc}")
+        raise HTTPException(status_code=500, detail="Erro interno ao carregar o changelog")
 
 
-@app.get("/", response_class=HTMLResponse)
-async def serve_spa_prototype():
-    """Serve o console operacional oficial do piDots em Pixel Paper UI (100% Funcional)."""
-    spa_path = find_html_file("pidots_spa_prototype.html")
-    if spa_path.exists():
-        return spa_path.read_text(encoding="utf-8")
-    return "<h1>piDots SPA em desenvolvimento</h1>"
+# ==============================================================================
+# Rotas Canônicas de Superfície & Redirecionamentos Suaves (RFC 7538)
+# ==============================================================================
+
+@app.api_route("/", methods=["GET", "HEAD"], response_class=Response)
+async def serve_landing_presentation(request: Request):
+    """Serve a Landing Page Oficial de Apresentação e Onboarding do piDots em Pixel Paper UI."""
+    return page_manager.serve("pidots_apresentacao_pixel_paper.html", request)
 
 
-@app.get("/relatorio", response_class=HTMLResponse)
-async def serve_study_report():
+@app.api_route("/app", methods=["GET", "HEAD"], response_class=Response)
+@app.api_route("/workspace", methods=["GET", "HEAD"], response_class=Response)
+@app.api_route("/app/{path:path}", methods=["GET", "HEAD"], response_class=Response)
+async def serve_spa_console(request: Request, path: str = ""):
+    """Serve o Console Operacional SPA dos Agentes (100% Funcional e reativo)."""
+    return page_manager.serve("pidots_spa_prototype.html", request)
+
+
+@app.api_route("/docs", methods=["GET", "HEAD"], response_class=Response)
+async def serve_canonical_guide(request: Request):
+    """Serve o Guia Didático Operacional e Documentação Oficial em Pixel Paper UI."""
+    return page_manager.serve("pidots_guia.html", request)
+
+
+@app.api_route("/relatorio", methods=["GET", "HEAD"], response_class=Response)
+async def serve_study_report(request: Request):
     """Serve o relatório completo de estudo e viabilidade."""
-    report_path = find_html_file("relatorio_estudo_pidots.html")
-    if report_path.exists():
-        return report_path.read_text(encoding="utf-8")
-    return "<h1>Relatório não encontrado</h1>"
+    return page_manager.serve("relatorio_estudo_pidots.html", request)
 
 
-@app.get("/apresentacao", response_class=HTMLResponse)
-async def serve_presentation():
-    """Serve o protótipo de apresentação do piDots em Pixel Paper UI."""
-    pres_path = find_html_file("pidots_apresentacao_pixel_paper.html")
-    if pres_path.exists():
-        return pres_path.read_text(encoding="utf-8")
-    return "<h1>Apresentação não encontrada</h1>"
+@app.api_route("/apresentacao", methods=["GET", "HEAD"])
+async def redirect_apresentacao():
+    """Redireciona a rota legada /apresentacao para a raiz canonica /."""
+    return RedirectResponse(url="/", status_code=status.HTTP_308_PERMANENT_REDIRECT)
 
 
-@app.get("/guia", response_class=HTMLResponse)
-async def serve_guide():
-    """Serve o guia didático operacional oficial do piDots."""
-    guide_path = find_html_file("pidots_guia.html")
-    if guide_path.exists():
-        return guide_path.read_text(encoding="utf-8")
-    return "<h1>Guia operacional não encontrado</h1>"
+@app.api_route("/guia", methods=["GET", "HEAD"])
+async def redirect_guia():
+    """Redireciona a rota legada /guia para a documentacao canonica /docs."""
+    return RedirectResponse(url="/docs", status_code=status.HTTP_308_PERMANENT_REDIRECT)
+
+
+@app.api_route("/console", methods=["GET", "HEAD"])
+async def redirect_console():
+    """Redireciona o alias /console para a aplicacao /app."""
+    return RedirectResponse(url="/app", status_code=status.HTTP_308_PERMANENT_REDIRECT)
+
 
 

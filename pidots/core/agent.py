@@ -11,10 +11,12 @@ from datetime import datetime, timezone
 
 from ..config import settings
 from ..storage.db import get_db
-from ..providers.openai_client import OpenAIUniversalProvider, ProviderAuthError, ProviderTransientError
+from ..storage.memory_manager import MemoryManager
+from ..storage.shared_space import SharedSpaceManager
+from ..providers.openai_client import OpenAIUniversalProvider, ProviderAuthError, ProviderEndpointError
 from ..tools.registry import registry as default_tool_registry, ToolRegistry
 from .hitl import HITLManager
-from .state import AGUIEvent
+from .planner import TwoStagePlanner
 
 logger = logging.getLogger("pidots.agent")
 
@@ -132,6 +134,37 @@ class DotAgent:
                     }
                 }
                 return
+            except ProviderEndpointError as endp_err:
+                err_msg = str(endp_err)
+                logger.error("Falha de endpoint/modelo com provedor de IA: %s", err_msg)
+
+                # Persiste mensagem interna de diagnóstico no SQLite WAL
+                diag_msg_id = str(uuid.uuid4())
+                async with get_db() as db:
+                    await db.execute(
+                        """
+                        INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                        VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
+                        """,
+                        (diag_msg_id, thread_id, f"[FALHA DE ENDPOINT]: {err_msg}", self.dot_id, err_msg)
+                    )
+                    await db.commit()
+
+                yield {
+                    "event": "thought:delta",
+                    "data": {"run_id": run_id, "error": err_msg}
+                }
+                yield {
+                    "event": "run:finished",
+                    "data": {
+                        "run_id": run_id,
+                        "status": "failed",
+                        "final_response": "",
+                        "error": err_msg,
+                        "error_type": "endpoint_error"
+                    }
+                }
+                return
             except Exception as e:
                 err_msg = str(e)
                 logger.error("Erro na chamada de inferência: %s", err_msg)
@@ -244,6 +277,22 @@ class DotAgent:
                         }
                     }
 
+                    # Se a ferramenta acionou Self-Healing Harness, emite evento de diagnóstico
+                    if isinstance(tool_result, dict) and tool_result.get("self_healing_details"):
+                        healing_info = tool_result["self_healing_details"]
+                        yield {
+                            "event": "self_healing:triggered",
+                            "data": {
+                                "run_id": run_id,
+                                "call_id": call_id,
+                                "tool_name": fn_name,
+                                "error_type": healing_info.get("error_type"),
+                                "target_file": healing_info.get("target_file"),
+                                "target_line": healing_info.get("target_line"),
+                                "diagnosis": healing_info.get("diagnosis")
+                            }
+                        }
+
                     # Registra resultado no contexto
                     messages.append({
                         "role": "tool",
@@ -323,8 +372,35 @@ class DotAgent:
             )
             rows = await cursor.fetchall()
 
+        # Injeção de Core Memory estruturada (Padrão MemGPT / Letta)
+        core_memory_xml = await MemoryManager.format_core_memory_prompt(
+            dot_id=self.dot_id,
+            default_persona=dot_info["system_prompt"]
+        )
+
+        # Injeção de Plano Ativo (Two-Stage Planning com Checkpoints)
+        plan_xml = await TwoStagePlanner.format_plan_prompt(thread_id, self.dot_id)
+        plan_section = f"\n\n{plan_xml}" if plan_xml else ""
+
+        # Injeção de Espaço de Conhecimento Compartilhado (Shared Knowledge Space)
+        shared_space_xml = await SharedSpaceManager.format_shared_space_prompt(thread_id)
+        shared_space_section = f"\n\n{shared_space_xml}" if shared_space_xml else ""
+
+        system_content = (
+            f"{dot_info['system_prompt']}\n\n"
+            f"{core_memory_xml}"
+            f"{plan_section}"
+            f"{shared_space_section}\n\n"
+            "DIRETRIZES OPERACIONAIS COGNITIVAS:\n"
+            "1. GESTÃO DE MEMÓRIA: Sua memória primária está no bloco <core_memory>. Use 'core_memory_append' ou 'core_memory_replace' para gravar preferências do operador (<human>), atualizações de persona (<persona>) ou contexto ativo (<active_context>). Use 'archival_memory_insert'/'archival_memory_search' para conhecimentos duradouros.\n"
+            "2. PLANEJAMENTO EM DUAS ETAPAS (Two-Stage Planning): Para tarefas complexas ou com múltiplos passos, utilize a ferramenta 'plan_create' para decompor a meta em marcos ordenados. Conforme concluir cada marco, invoque 'plan_update_step' registrando a evidência técnica comprovada.\n"
+            "3. AUTO-CORREÇÃO (Self-Healing Harness): Se a execução de comandos ou validações resultar em falha técnica ('needs_healing': True), não entregue a resposta com erro ao operador. Examine o diagnóstico em 'self_healing_advice', inspecione o código via 'workspace_read_file', aplique a correção com 'workspace_write_file' e reexecute a verificação com 'execute_and_verify' ou 'execute_shell_command' até a resolução definitiva.\n"
+            "4. CONSELHO CONSULTIVO (Dialética Multi-Bot): Para deliberações de arquitetura sensíveis ou consenso entre especialistas, utilize a ferramenta 'run_council_debate' para promover uma rodada formal de debate entre o Propositor (@coder), Auditor Crítico (@auditor) e Supervisor (@supervisor).\n"
+            "5. ESPAÇO DE CONHECIMENTO COMPARTILHADO (Shared Knowledge Space): Utilize 'shared_space_write' para registrar notas, contratos ou decisões que outros Dots devam consultar nesta thread, e 'shared_space_read' para ler notas do espaço comum."
+        )
+
         messages: list[dict[str, Any]] = [
-            {"role": "system", "content": dot_info["system_prompt"]}
+            {"role": "system", "content": system_content}
         ]
         for r in rows:
             entry: dict[str, Any] = {"role": r["role"], "content": r["content"]}

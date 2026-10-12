@@ -8,7 +8,6 @@ import uuid
 import json
 import logging
 from datetime import datetime, timezone
-from typing import Any
 from ..storage.db import get_db
 
 logger = logging.getLogger("pidots.hitl")
@@ -40,14 +39,14 @@ class HITLManager:
         if action_type in ("file_delete", "skill_create"):
             return True, "HIGH"
 
-        if action_type in ("shell_exec", "execute_shell_command"):
+        if action_type in ("shell_exec", "execute_shell_command", "execute_and_verify"):
             cmd_text = payload
             try:
                 data = json.loads(payload)
                 if isinstance(data, dict) and "command" in data:
                     cmd_text = data["command"]
-            except Exception:
-                pass
+            except Exception as parse_err:
+                logger.debug("Payload não é JSON ou falhou ao extrair campo command: %s", parse_err)
 
             for pattern in DANGEROUS_COMMAND_PATTERNS:
                 if re.search(pattern, cmd_text, re.IGNORECASE):

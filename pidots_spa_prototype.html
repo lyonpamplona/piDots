@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' rx='6' fill='%2307090c'/%3E%3Ccircle cx='8.5' cy='14' r='4' fill='%2333ff66'/%3E%3Ccircle cx='19.5' cy='14' r='4' fill='%2338bdf8'/%3E%3Cpath d='M12 14h4' stroke='%23f1f5f9' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#07090c">
+    <meta name="theme-color" content="#07090c" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#e9ecef" media="(prefers-color-scheme: light)">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="piDots">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <title>piDots // Pixel Paper UI Workspace (Triptych Layout)</title>
     <!-- Importação de fontes Pixel Art e Monospace com suporte a renderização crisp -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,6 +43,12 @@
            ===================================================================== */
         :root {
             --px: 2px; /* Unidade escalar de pixel */
+
+            /* Insets de Seguranca de Hardware (Notch, Dynamic Island, Home Indicator) */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
 
             /* Tipografia Híbrida */
             --font-pixel: 'Silkscreen', monospace;
@@ -118,6 +130,12 @@
             image-rendering: pixelated;
         }
 
+        html {
+            scroll-behavior: smooth;
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+        }
+
         body {
             background-color: var(--paper-base);
             background-image:
@@ -131,9 +149,12 @@
             font-size: 13px;
             line-height: 1.5;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* =====================================================================
@@ -144,6 +165,9 @@
             border-bottom: 2px solid var(--border-default);
             box-shadow: var(--shadow-sm);
             padding: 8px 16px;
+            padding-top: max(8px, var(--safe-top));
+            padding-left: max(16px, calc(16px + var(--safe-left)));
+            padding-right: max(16px, calc(16px + var(--safe-right)));
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -230,18 +254,33 @@
             align-items: center;
             gap: 6px;
             transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+
+        /* Hitbox acessivel de toque de 48x48px (Apple 44pt / Google 48dp) */
+        .pixel-btn::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 48px;
+            min-height: 48px;
+            pointer-events: auto;
         }
 
         .pixel-btn:hover {
             border-color: var(--border-accent);
             color: var(--border-accent);
             transform: translate(-1px, -1px);
-            box-shadow: 3px 3px 0px #000;
+            box-shadow: var(--shadow-sm);
         }
 
         .pixel-btn:active {
             transform: translate(2px, 2px);
-            box-shadow: 0px 0px 0px #000;
+            box-shadow: none;
         }
 
         .pixel-btn.btn-cyan {
@@ -1094,7 +1133,7 @@
         
         /* =====================================================================
            DESIGN SYSTEM MOBILE-FIRST & RESPONSIVIDADE COMPLETA
-           Adaptação tátil para smartphones (CLI/IDE minimalista, zero emojis)
+           Adaptação tátil para smartphones (CLI/IDE minimalista, tipografia tecnica crisp)
            ===================================================================== */
         
         /* Barra de Navegação Inferior (Bottom-Nav) */
@@ -1104,7 +1143,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 52px;
+            height: calc(52px + var(--safe-bottom));
             background: var(--paper-sheet);
             border-top: 2px solid var(--border-accent);
             box-shadow: 0px -4px 0px #000000;
@@ -1112,12 +1151,13 @@
             justify-content: space-around;
             align-items: center;
             padding: 0 4px;
-            padding-bottom: env(safe-area-inset-bottom, 0px);
+            padding-bottom: var(--safe-bottom);
         }
 
         .mobile-nav-btn {
             flex: 1;
-            height: 42px;
+            height: 44px;
+            min-height: 44px;
             background: var(--paper-surface);
             border: 1px solid var(--border-default);
             color: var(--ink-secondary);
@@ -1172,6 +1212,11 @@
                 touch-action: manipulation;
             }
 
+            /* Prevenir zoom involuntario no iOS Safari em dispositivos moveis */
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+
             /* Esconde rodapé estático de desktop */
             footer.mission-footer {
                 display: none !important;
@@ -1218,7 +1263,7 @@
 
             .header-actions .pixel-btn {
                 padding: 4px 6px !important;
-                font-size: 7.5px !important;
+                font-size: 8px !important;
             }
 
             #btn-canvas-toggle {
@@ -1228,8 +1273,10 @@
             /* Shell principal em visualização única por tela */
             .triptych-shell {
                 flex-direction: column !important;
-                padding-bottom: 54px !important; /* Espaço para não cobrir com a bottom-nav */
-                height: calc(100vh - 46px) !important;
+                flex: 1 1 0% !important;
+                height: auto !important;
+                min-height: 0 !important;
+                padding-bottom: calc(54px + var(--safe-bottom)) !important; /* Espaço para não cobrir com a bottom-nav */
                 overflow: hidden !important;
             }
 
@@ -1294,14 +1341,29 @@
             }
 
             .ticker-textarea {
-                font-size: 14px !important; /* Previne auto-zoom indesejado no iOS */
+                font-size: 16px !important; /* Previne auto-zoom indesejado no iOS Safari (regra >= 16px) */
                 height: 44px !important;
                 padding: 6px 8px !important;
             }
 
             .ticker-input-bar .pixel-btn {
                 padding: 8px 10px !important;
-                font-size: 8.5px !important;
+                font-size: 9px !important;
+            }
+
+            /* Autocomplete de Mencao @dot Acessivel no Mobile */
+            .mention-autocomplete-dropdown {
+                left: 8px !important;
+                right: 8px !important;
+                width: auto !important;
+                max-width: calc(100% - 16px) !important;
+                bottom: calc(100% + 6px) !important;
+            }
+
+            .mention-item {
+                padding: 12px 10px !important;
+                min-height: 44px !important;
+                font-size: 12px !important;
             }
 
             /* Otimizações do Live Canvas Mobile */
@@ -1315,7 +1377,7 @@
 
             .canvas-tab {
                 padding: 6px 8px !important;
-                font-size: 7.5px !important;
+                font-size: 8px !important;
                 flex-shrink: 0 !important;
             }
 
@@ -1392,7 +1454,7 @@
 
             .dialog-footer .pixel-btn {
                 padding: 8px 12px !important;
-                font-size: 8.5px !important;
+                font-size: 9px !important;
             }
 
             /* Toasts no Mobile */
@@ -1483,7 +1545,7 @@
             pointer-events: auto;
             background: var(--paper-sheet);
             border: 2px solid var(--border-default);
-            box-shadow: 4px 4px 0px #000000;
+            box-shadow: var(--shadow-md);
             padding: 10px 12px;
             display: flex;
             flex-direction: column;
@@ -1565,7 +1627,7 @@
         .pixel-dialog-box {
             background: var(--paper-sheet);
             border: 3px solid var(--border-accent);
-            box-shadow: 8px 8px 0px #000000;
+            box-shadow: var(--shadow-lg);
             width: 440px;
             max-width: 90vw;
             display: flex;
@@ -1635,7 +1697,7 @@
             position: fixed;
             background: var(--paper-sheet);
             border: 2px solid var(--border-strong);
-            box-shadow: 4px 4px 0px #000000;
+            box-shadow: var(--shadow-md);
             z-index: 100010;
             display: none;
             flex-direction: column;
@@ -1799,6 +1861,1019 @@
             border: 1px solid currentColor;
         }
 
+        /* Surface Switcher Global (Pixel Paper UI) */
+        .surface-switcher {
+            display: inline-flex;
+            align-items: center;
+            background: var(--paper-surface-recessed, #0b0e12);
+            border: 1px solid var(--border-default, #283340);
+            padding: 2px;
+            gap: 2px;
+        }
+        .surface-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 9px;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--ink-muted, #64748b);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .surface-tab:hover {
+            color: var(--ink-primary, #f1f5f9);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .surface-tab.active {
+            color: var(--phosphor-green, #33ff66);
+            background: rgba(51, 255, 102, 0.08);
+            border-color: rgba(51, 255, 102, 0.4);
+            font-weight: 700;
+        }
+        .surface-tab .tab-idx {
+            font-family: var(--font-pixel, 'Silkscreen', monospace);
+            font-size: 8px;
+            opacity: 0.7;
+        }
+        .surface-tab.active .tab-idx {
+            opacity: 1;
+            color: var(--phosphor-green, #33ff66);
+        }
+        .surface-tab .tab-chord {
+            font-size: 8px;
+            padding: 1px 4px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border-default, #283340);
+            color: var(--ink-muted, #64748b);
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+        }
+        @media (max-width: 1440px) {
+            .brand-title {
+                display: none !important;
+            }
+            .header-telemetry .telemetry-chip:nth-child(3) {
+                display: none !important;
+            }
+        }
+        @media (max-width: 1200px) {
+            .brand-badge {
+                display: none !important;
+            }
+            .header-telemetry .telemetry-chip:nth-child(4) {
+                display: none !important;
+            }
+            #btn-canvas-toggle {
+                display: none !important;
+            }
+            .surface-tab .tab-chord {
+                display: none !important;
+            }
+        }
+        @media (max-width: 992px) {
+            .header-telemetry {
+                display: none !important;
+            }
+            .surface-tab .tab-chord {
+                display: none !important;
+            }
+        }
+        /* =====================================================================
+           COMPONENTES PIXEL PAPER UI: ONBOARDING, PATCH NOTES E PWA
+           ===================================================================== */
+
+        /* 1. Backdrop Modal com Dithering Mecânico */
+        .pixel-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background-color: rgba(4, 6, 8, 0.88);
+            background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
+            background-size: 4px 4px;
+            z-index: 100010;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+            animation: modalSnapIn 0.08s steps(2);
+        }
+
+        @keyframes modalSnapIn {
+            0% { transform: scale(0.97); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 2. Onboarding: Ficha Catalográfica Tátil (--px: 2px) */
+        .pixel-catalog-card {
+            background-color: var(--paper-sheet);
+            border: 3px solid var(--border-strong);
+            box-shadow: var(--shadow-lg);
+            width: 820px;
+            max-width: calc(100vw - 32px);
+            max-height: calc(100vh - 48px);
+            max-height: calc(100dvh - 48px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-image: 
+                linear-gradient(to right, var(--grid-color-fine) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color-fine) 1px, transparent 1px);
+            background-size: 16px 16px, 16px 16px;
+            box-sizing: border-box;
+        }
+
+        .catalog-tab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            background-color: var(--paper-surface-recessed);
+            border-bottom: 2px solid var(--border-default);
+            padding: 0 12px;
+            position: relative;
+            height: 38px;
+        }
+
+        .catalog-tab-notch {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: var(--paper-sheet);
+            border: 2px solid var(--border-strong);
+            border-bottom: none;
+            padding: 6px 16px;
+            transform: translateY(2px);
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            letter-spacing: 0.05em;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        .catalog-tab-badge {
+            color: var(--blueprint-cyan);
+        }
+
+        .catalog-tab-arch {
+            color: var(--ink-muted);
+            font-size: 8px;
+            border-left: 1px solid var(--border-default);
+            padding-left: 10px;
+        }
+
+        .catalog-tab-close {
+            background: transparent;
+            border: 1px solid var(--border-default);
+            color: var(--ink-secondary);
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            padding: 3px 8px;
+            cursor: pointer;
+            transition: transform 0.05s steps(1);
+            margin-bottom: 6px;
+        }
+
+        .catalog-tab-close:hover {
+            border-color: var(--stamp-danger);
+            color: var(--stamp-danger);
+        }
+
+        .catalog-head-block {
+            padding: 14px 20px 10px 20px;
+            border-bottom: 1px dashed var(--border-default);
+            background-color: rgba(11, 14, 18, 0.6);
+        }
+
+        .catalog-meta-line {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--ink-muted);
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .catalog-main-title {
+            font-family: var(--font-pixel);
+            font-size: 14px;
+            color: var(--ink-main);
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+
+        .catalog-lead-text {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ink-secondary);
+            line-height: 1.4;
+        }
+
+        .catalog-stepper {
+            display: flex;
+            border-bottom: 2px solid var(--border-default);
+            background-color: var(--paper-surface-recessed);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .catalog-stepper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .stepper-tab {
+            flex: 1;
+            min-width: 130px;
+            padding: 10px 8px;
+            background: transparent;
+            border: none;
+            border-right: 1px solid var(--border-default);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: background 0.05s steps(1);
+            text-align: center;
+        }
+
+        .stepper-tab:last-child {
+            border-right: none;
+        }
+
+        .stepper-tab .step-num {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--ink-muted);
+        }
+
+        .stepper-tab .step-label {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-secondary);
+            letter-spacing: 0.04em;
+        }
+
+        .stepper-tab:hover {
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        .stepper-tab.active {
+            background-color: var(--paper-sheet);
+            border-top: 3px solid var(--blueprint-cyan);
+            padding-top: 7px;
+        }
+
+        .stepper-tab.active .step-num {
+            color: var(--blueprint-cyan);
+            font-weight: bold;
+        }
+
+        .stepper-tab.active .step-label {
+            color: var(--ink-main);
+        }
+
+        .catalog-progress-bar {
+            display: flex;
+            height: 4px;
+            background-color: var(--paper-surface-recessed);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .matrix-cell {
+            flex: 1;
+            background-color: var(--border-subtle);
+            border-right: 1px solid var(--paper-sheet);
+        }
+
+        .matrix-cell:last-child {
+            border-right: none;
+        }
+
+        .matrix-cell.fill {
+            background-color: var(--blueprint-cyan);
+            box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .catalog-body-area {
+            padding: 18px 20px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 270px;
+        }
+
+        .catalog-step-pane {
+            display: none;
+        }
+
+        .catalog-step-pane.active {
+            display: block;
+            animation: stepSnap 0.06s steps(1);
+        }
+
+        @keyframes stepSnap {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .step-pane-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+        }
+
+        .step-section-tag {
+            color: var(--thermal-amber);
+            letter-spacing: 0.05em;
+        }
+
+        .step-counter-badge {
+            color: var(--ink-muted);
+        }
+
+        .step-heading {
+            font-family: var(--font-pixel);
+            font-size: 12px;
+            color: var(--ink-main);
+            margin-bottom: 8px;
+            letter-spacing: 0.03em;
+        }
+
+        .step-paragraph {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--ink-secondary);
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .concept-item {
+            background-color: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            padding: 12px;
+        }
+
+        .concept-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--phosphor-green);
+            margin-bottom: 6px;
+        }
+
+        .concept-desc {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ink-secondary);
+            line-height: 1.4;
+        }
+
+        .pixel-callout {
+            background-color: var(--paper-surface-recessed);
+            border-left: 3px solid var(--blueprint-cyan);
+            padding: 10px 14px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ink-secondary);
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .pixel-callout.amber {
+            border-left-color: var(--thermal-amber);
+        }
+
+        .pixel-callout.green {
+            border-left-color: var(--phosphor-green);
+        }
+
+        .pixel-callout .callout-label {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-main);
+            flex-shrink: 0;
+        }
+
+        .cli-reference-table {
+            border: 1px solid var(--border-default);
+            margin-bottom: 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+        .cli-row {
+            display: grid;
+            grid-template-columns: 80px 110px 1fr;
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--border-subtle);
+            align-items: center;
+        }
+
+        .cli-row:last-child {
+            border-bottom: none;
+        }
+
+        .cli-head {
+            background-color: var(--paper-surface-recessed);
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+        }
+
+        .cmd-code {
+            color: var(--phosphor-green);
+            font-weight: bold;
+        }
+
+        .cmd-arg {
+            color: var(--thermal-amber);
+        }
+
+        .keyboard-tip-line {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--ink-muted);
+        }
+
+        kbd {
+            background-color: var(--paper-surface-recessed);
+            border: 1px solid var(--border-strong);
+            color: var(--blueprint-cyan);
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            padding: 2px 5px;
+            box-shadow: 1px 1px 0 #000;
+        }
+
+        .triptych-preview-diagram {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .zone-box {
+            background-color: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .zone-box.central {
+            border-color: var(--blueprint-cyan);
+        }
+
+        .zone-name {
+            display: block;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--blueprint-cyan);
+            margin-bottom: 4px;
+        }
+
+        .zone-info {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--ink-secondary);
+            line-height: 1.3;
+        }
+
+        .hitl-mechanism-box {
+            background-color: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .hitl-step-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .flow-node {
+            flex: 1;
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .flow-node .node-badge {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--thermal-amber);
+        }
+
+        .flow-node .node-text {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--ink-secondary);
+        }
+
+        .flow-arrow {
+            font-family: var(--font-pixel);
+            color: var(--ink-muted);
+        }
+
+        .shortcuts-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .sc-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            padding: 6px 10px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ink-secondary);
+        }
+
+        .catalog-footer-block {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background-color: var(--paper-surface-recessed);
+            border-top: 2px solid var(--border-default);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .catalog-rod-hole-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .catalog-rod-hole {
+            width: 16px;
+            height: 16px;
+            background-color: var(--paper-base);
+            border: 2px solid var(--border-strong);
+            border-radius: 50%;
+            box-shadow: inset 2px 2px 0px #000000;
+        }
+
+        .catalog-rod-tag {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .catalog-footer-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .catalog-checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .catalog-checkbox-container input {
+            display: none;
+        }
+
+        .pixel-checkbox-box {
+            width: 12px;
+            height: 12px;
+            background-color: var(--paper-sheet);
+            border: 2px solid var(--border-strong);
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .catalog-checkbox-container input:checked + .pixel-checkbox-box {
+            background-color: var(--blueprint-cyan);
+            box-shadow: inset 2px 2px 0px #000000;
+        }
+
+        .checkbox-label-text {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+            letter-spacing: 0.04em;
+        }
+
+        .catalog-button-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-phosphor {
+            background: #064e3b !important;
+            border-color: var(--phosphor-green) !important;
+            color: var(--phosphor-green) !important;
+        }
+
+        .btn-phosphor:hover {
+            background: #047857 !important;
+            color: #ffffff !important;
+        }
+
+        /* 3. Patch Notes / Changelog Modal */
+        .pixel-patchnotes-box {
+            width: 820px;
+            max-width: calc(100vw - 32px);
+            max-height: calc(100vh - 48px);
+            max-height: calc(100dvh - 48px);
+            background-color: var(--paper-sheet);
+            border: 3px solid var(--border-accent);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .patchnotes-header-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background-color: var(--paper-surface-recessed);
+            border-bottom: 2px solid var(--border-default);
+            gap: 16px;
+        }
+
+        .patchnotes-sys-tag {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--blueprint-cyan);
+            margin-bottom: 4px;
+        }
+
+        .patchnotes-main-title {
+            font-family: var(--font-pixel);
+            font-size: 14px;
+            color: var(--ink-main);
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+
+        .patchnotes-meta-bar {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--ink-muted);
+            display: flex;
+            gap: 6px;
+        }
+
+        .meta-separator {
+            color: var(--border-strong);
+        }
+
+        .stamp-patchnotes {
+            padding: 2px;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .rubber-stamp.stamp-approved {
+            color: var(--phosphor-green);
+            border: 3px solid var(--phosphor-green);
+            transform: rotate(2.5deg);
+            background-image: radial-gradient(var(--phosphor-green) 15%, transparent 16%);
+            background-size: 4px 4px;
+        }
+
+        .rubber-stamp .stamp-inner {
+            border: 1px solid currentColor;
+            padding: 4px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(7, 9, 12, 0.9);
+        }
+
+        .rubber-stamp .stamp-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            font-weight: bold;
+        }
+
+        .rubber-stamp .stamp-sub {
+            font-family: var(--font-mono);
+            font-size: 7px;
+            letter-spacing: 0.04em;
+        }
+
+        .rubber-stamp .stamp-hash {
+            font-family: var(--font-mono);
+            font-size: 6px;
+            color: var(--ink-muted);
+        }
+
+        .patchnotes-scrollable-body {
+            padding: 18px 20px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .patchnotes-category-section {
+            background-color: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            padding: 12px 16px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pixel-pill {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            letter-spacing: 0.06em;
+            padding: 3px 8px;
+            border: 2px solid currentColor;
+            user-select: none;
+            display: inline-block;
+        }
+
+        .pill-green {
+            background-color: #052e16;
+            border-color: #22c55e;
+            color: #33ff66;
+        }
+
+        .pill-cyan {
+            background-color: #082f49;
+            border-color: #0284c7;
+            color: #38bdf8;
+        }
+
+        .pill-red {
+            background-color: #450a0a;
+            border-color: #dc2626;
+            color: #ef4444;
+        }
+
+        .pill-amber {
+            background-color: #451a03;
+            border-color: #d97706;
+            color: #ffb830;
+        }
+
+        .category-summary {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--ink-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .patchnotes-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ink-secondary);
+            line-height: 1.5;
+        }
+
+        .patchnotes-list li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 6px;
+        }
+
+        .patchnotes-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .patchnotes-list li::before {
+            content: "■";
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 7px;
+            color: var(--border-accent);
+        }
+
+        .patchnotes-list strong {
+            color: var(--ink-main);
+            font-weight: 500;
+        }
+
+        .patchnotes-list code {
+            background-color: var(--paper-sheet);
+            border: 1px solid var(--border-subtle);
+            padding: 1px 4px;
+            color: var(--blueprint-cyan);
+            font-size: 10px;
+        }
+
+        .patchnotes-history-accordion {
+            border: 1px dashed var(--border-strong);
+            background-color: var(--paper-surface-recessed);
+        }
+
+        .history-summary {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-muted);
+            padding: 10px 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.05s steps(1);
+        }
+
+        .history-summary:hover {
+            color: var(--blueprint-cyan);
+        }
+
+        .history-content {
+            padding: 10px 14px 14px 14px;
+            border-top: 1px dashed var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-version-block {
+            border-left: 2px solid var(--border-default);
+            padding-left: 10px;
+        }
+
+        .history-ver-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            margin-bottom: 4px;
+        }
+
+        .ver-badge {
+            color: var(--ink-main);
+        }
+
+        .ver-type {
+            color: var(--ink-muted);
+        }
+
+        .history-ver-list {
+            list-style: square;
+            margin-left: 14px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--ink-secondary);
+            line-height: 1.4;
+        }
+
+        .patchnotes-footer-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background-color: var(--paper-surface-recessed);
+            border-top: 2px solid var(--border-default);
+        }
+
+        .patchnotes-footer-status {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+        }
+
+        /* 4. Componentes e Banner de Instalação PWA */
+        .pwa-header-btn {
+            background: #0284c7 !important;
+            border-color: #38bdf8 !important;
+            color: #ffffff !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pixel-pwa-banner {
+            position: fixed;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            left: 16px;
+            z-index: 100008;
+            width: 440px;
+            max-width: calc(100vw - 32px);
+            background-color: var(--paper-sheet);
+            border: 2px solid var(--blueprint-cyan);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            animation: modalSnapIn 0.08s steps(2);
+        }
+
+        .pwa-banner-tractor-feed {
+            height: 6px;
+            background-image: repeating-linear-gradient(to right, var(--paper-base) 0px, var(--paper-base) 4px, transparent 4px, transparent 8px);
+            background-color: var(--paper-surface-recessed);
+        }
+
+        .pwa-banner-body {
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pwa-banner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pwa-banner-tag {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--blueprint-cyan);
+            letter-spacing: 0.05em;
+        }
+
+        .pwa-banner-close-btn {
+            background: transparent;
+            border: 1px solid var(--border-default);
+            color: var(--ink-muted);
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+
+        .pwa-banner-close-btn:hover {
+            color: var(--stamp-danger);
+            border-color: var(--stamp-danger);
+        }
+
+        .pwa-banner-content {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .pwa-banner-icon {
+            width: 28px;
+            height: 28px;
+            color: var(--blueprint-cyan);
+            flex-shrink: 0;
+        }
+
+        .pwa-banner-title {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: var(--ink-main);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .pwa-banner-desc {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--ink-secondary);
+            line-height: 1.4;
+        }
+
+        .pwa-banner-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
     </style>
 </head>
 <body>
@@ -1813,9 +2888,28 @@
             <span class="brand-title">WORKSPACE TRIPTYCH (PIXEL PAPER UI)</span>
         </div>
 
+        <!-- Comutador Canônico de Superfícies de Produto -->
+        <nav class="surface-switcher" aria-label="Superficies de Produto">
+            <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
+                <span class="tab-idx">01</span>
+                <span class="tab-lbl">VISAO GERAL</span>
+                <span class="tab-chord">g h</span>
+            </a>
+            <a href="/app" class="surface-tab active" id="tab-workspace" title="Atalho: G W">
+                <span class="tab-idx">02</span>
+                <span class="tab-lbl">WORKSPACE</span>
+                <span class="tab-chord">g w</span>
+            </a>
+            <a href="/docs" target="_blank" rel="noopener" class="surface-tab" id="tab-docs" title="Atalho: G D (Abre em nova aba para preservar estado do workspace)">
+                <span class="tab-idx">03</span>
+                <span class="tab-lbl">DOCUMENTACAO</span>
+                <span class="tab-chord">g d</span>
+            </a>
+        </nav>
+
         <!-- Telemetria do Sistema Edge (Raspberry Pi 4B) -->
         <div class="header-telemetry">
-            <div class="telemetry-chip" title="Temperatura do SoC Broadcom">
+            <div class="telemetry-chip" title="Temperatura do Processador / SoC">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
                 <span class="chip-label">SOC:</span>
                 <span class="chip-value" id="val-temp">48.2 °C</span>
@@ -1839,9 +2933,15 @@
 
         <!-- Ações do Cabeçalho -->
         <div class="header-actions">
-            <a href="/guia" target="_blank" class="pixel-btn btn-cyan" style="text-decoration: none; display: inline-flex; align-items: center;" title="Abrir Guia Didático Completo">
-                [GUIA COMPLETO]
-            </a>
+            <button id="pixelPwaInstallBtn" class="pixel-btn pwa-header-btn pwa-install-trigger" style="display: none;" onclick="PiDotsUX.PWA.install()" title="Instalar aplicativo PWA no dispositivo">
+                <svg class="ui-icon" viewBox="0 0 16 16" fill="none" style="width: 12px; height: 12px;" shape-rendering="crispEdges">
+                    <rect x="2" y="1" width="12" height="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M5 14h6" stroke="currentColor" stroke-width="2"/>
+                    <path d="M8 11v3" stroke="currentColor" stroke-width="2"/>
+                    <path d="M8 4v4M6 6l2 2 2-2" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                <span>[INSTALAR PWA]</span>
+            </button>
             <button class="pixel-btn" onclick="toggleCanvasSplit()" id="btn-canvas-toggle">
                 [CANVAS: DIVIDIDO]
             </button>
@@ -1849,7 +2949,7 @@
                 [TEMA: DARK NOIR]
             </button>
             <button class="pixel-btn btn-cyan" onclick="toggleDrawer()">
-                [MANUAL TECNICO // MENU]
+                [MANUAL TECNICO]
             </button>
         </div>
     </header>
@@ -2011,7 +3111,7 @@
                                 <div class="inline-hitl-actions">
                                     <button class="pixel-btn btn-danger" onclick="resolveHitlQuick('REJEITADO')">[VETAR]</button>
                                     <button class="pixel-btn btn-success" onclick="resolveHitlQuick('HOMOLOGADO')">[HOMOLOGAR]</button>
-                                    <button class="pixel-btn btn-cyan" onclick="openHitlCanvas()">[ABRIR DOSSIE]</button>
+                                    <button class="pixel-btn btn-cyan" onclick="openHitlCanvas()">[INSPECIONAR ACAO]</button>
                                 </div>
                             </div>
 
@@ -2041,10 +3141,10 @@
                     <div id="mentionItemsList"></div>
                 </div>
 
-                <span class="ticker-prompt-sign">PIDOTS@RPI4:&gt;</span>
+                <span class="ticker-prompt-sign">PIDOTS@EDGE:&gt;</span>
                 <textarea class="ticker-textarea" id="instructionInput" placeholder="Digite uma instrucao ou mencione @dot (Enter para transmitir)..." onkeydown="handleInputKey(event)" oninput="handleMentionInput(event)"></textarea>
                 <button class="pixel-btn btn-cyan" onclick="transmitInstruction()">
-                    [TRANSMITIR ORDEM]
+                    [TRANSMITIR COMANDO]
                 </button>
             </div>
         </main>
@@ -2125,7 +3225,7 @@
 
 ## 1. Edge Core Topology
 - Framework: FastAPI + uvloop (Single Worker Process)
-- Target Hardware: Raspberry Pi 4B (4GB ARM64 Cortex-A72)
+- Target Hardware: Dispositivos de Borda &amp; SBCs (Benchmark: Raspberry Pi 4B 4GB ARM64 Cortex-A72)
 - Memory RSS Ceiling: Rigorosamente abaixo de 300MB
 - Storage Engine: SQLite WAL mode com synchronous=NORMAL
 - PRAGMAs: cache_size=-64000 (64MB em RAM), wal_autocheckpoint=1000
@@ -2252,7 +3352,7 @@
                             <div class="rubber-stamp stamp-approved" id="stampApproveVisual">
                                 <div class="stamp-inner">
                                     <span class="stamp-title">HOMOLOGADO</span>
-                                    <span class="stamp-sub">ORDEM OK</span>
+                                    <span class="stamp-sub">COMANDO OK</span>
                                     <span style="font-size: 8px;">9F2A-WAL</span>
                                 </div>
                             </div>
@@ -2388,7 +3488,7 @@
                                     <td>Tailwind / Shadcn Padrao</td>
                                     <td>WebGL / Canvas Fluido GPU</td>
                                     <td>Dark High-Contrast xAI</td>
-                                    <td style="color: var(--blueprint-cyan);"><strong>Pixel Paper UI (Zero Emojis)</strong></td>
+                                    <td style="color: var(--blueprint-cyan);"><strong>Pixel Paper UI (Estetica 1-Bit Tatica)</strong></td>
                                 </tr>
                                 <tr class="matrix-highlight-row">
                                     <td><strong>INFERENCIA</strong></td>
@@ -2401,7 +3501,7 @@
                         </table>
 
                         <div style="background: var(--paper-surface-recessed); border: 1px dashed var(--border-default); padding: 8px; font-size: 10px; color: var(--ink-muted); line-height: 1.5;">
-                            <strong>SINTESE EXECUTIVA:</strong> O piDots absorve a co-criacao documental do openDots, a transparencia de raciocinio do grokDots e o refinamento do museDots, eliminando custos de nuvem e operando localmente no Raspberry Pi 4B sob < 300MB de RAM.
+                            <strong>SINTESE EXECUTIVA:</strong> O piDots absorve a co-criacao documental do openDots, a transparencia de raciocinio do grokDots e o refinamento do museDots, eliminando custos de nuvem e operando localmente em hardware de borda (SBCs / Mini PCs, benchmark: Raspberry Pi 4B) sob &lt; 300MB de RAM.
                         </div>
                     </div>
                 </div>
@@ -2415,7 +3515,7 @@
     <aside class="retractable-drawer" id="retractableDrawer">
         <header class="drawer-header">
             <span class="drawer-title">MANUAL OPERACIONAL // GUIA TECNICO</span>
-            <button class="pixel-btn" onclick="toggleDrawer()">[FECHAR X]</button>
+            <button class="pixel-btn" onclick="toggleDrawer()">[FECHAR]</button>
         </header>
         
         <div class="drawer-search-box">
@@ -2425,14 +3525,14 @@
         <div class="drawer-content" id="drawerContentList">
             <div class="guide-step">
                 <div class="step-num">PASSO 01 // ARQUITETURA TRIPTYCH</div>
-                <div class="step-heading">LAYOUT INSPIRADO EM OPENDOTS & MUSEDOTS</div>
+                <div class="step-heading">LAYOUT INSPIRADO EM OPENDOTS &amp; MUSEDOTS</div>
                 <div class="step-body">
                     A tela organiza-se em 3 paineis: Sidebar esquerda (Dots e Spaces), Centro (bobina de teletipo conversacional) e Direita (Canvas de artefatos, telemetria e governanca).
                 </div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 02 // COMANDOS DE TERMINAL & CLI</div>
+                <div class="step-num">PASSO 02 // COMANDOS DE TERMINAL &amp; CLI</div>
                 <div class="step-heading">INICIALIZACAO E STATUS LOCAL</div>
                 <div class="step-body">
                     Execute <code>pidots status</code> para inspecionar memoria e banco SQLite WAL. Para servir a aplicacao: <code>pidots serve --host 0.0.0.0 --port 8000</code>.
@@ -2440,7 +3540,7 @@
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 03 // PRESERVACAO FLASH & SQLITE WAL</div>
+                <div class="step-num">PASSO 03 // PRESERVACAO FLASH &amp; SQLITE WAL</div>
                 <div class="step-heading">PRAGMAS CALIBRADOS PARA EDGE</div>
                 <div class="step-body">
                     O modo WAL com <code>synchronous=NORMAL</code> e <code>wal_autocheckpoint=1000</code> previne desgastes prematuros no cartao MicroSD ou SSD USB, garantindo escrita confiavel sem pausas no event loop.
@@ -2451,14 +3551,20 @@
                 <div class="step-num">PASSO 04 // GOVERNANCA HUMAN-IN-THE-LOOP</div>
                 <div class="step-heading">APROVACAO FORENSE DE COMANDOS</div>
                 <div class="step-body">
-                    Comandos de destruicao de arquivos (como <code>rm -rf</code>) ou elevacao de privilégios sao bloqueados automaticamente. A aprovacao requer destravar a trava de seguranca e carimbar a ordem.
+                    Comandos de destruicao de arquivos (como <code>rm -rf</code>) ou elevacao de privilégios sao bloqueados automaticamente. A aprovacao requer destravar a trava de seguranca e carimbar a aprovacao da acao.
                 </div>
             </div>
 
-            <div style="padding: 12px; margin-top: 14px; border: 1px solid var(--blueprint-cyan); background: rgba(56, 189, 248, 0.08); text-align: center;">
-                <a href="/guia" target="_blank" style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); text-decoration: none; display: block; line-height: 1.5;">
-                    [ACESSAR GUIA DIDATICO COMPLETO EM TELA CHEIA -&gt;]
-                </a>
+            <div style="padding: 12px; margin-top: 14px; border: 1px solid var(--border-default); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 8px;">
+                <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); letter-spacing: 0.05em; text-transform: uppercase;">INTERFACES REST DO NO EDGE:</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <a href="/api/docs" target="_blank" class="pixel-btn btn-cyan" style="flex: 1; justify-content: center; text-decoration: none;" title="Abrir Documentacao OpenAPI Interativa">
+                        [SWAGGER REST /api/docs]
+                    </a>
+                    <a href="/api/openapi.json" target="_blank" class="pixel-btn" style="flex: 1; justify-content: center; text-decoration: none;" title="Abrir Contrato OpenAPI em JSON Puro">
+                        [CONTRATO JSON]
+                    </a>
+                </div>
             </div>
         </div>
     </aside>
@@ -2491,13 +3597,18 @@
     <footer class="mission-footer">
         <div class="footer-status-pill">
             <span class="status-dot"></span>
-            PIDOTS CORE ATIVO // RASPBERRY PI 4B (4GB ARM64)
+            PIDOTS CORE ATIVO // NO DE BORDA ARM64 (REF: RPI4 4GB)
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="pixel-btn" onclick="PiDotsUX.Onboarding.open()" title="Rever Tour Operacional de Primeiro Acesso" style="padding: 2px 6px; font-size: 8px;">
+                [TOUR OPERACIONAL]
+            </button>
+            <button class="pixel-btn" onclick="PiDotsUX.PatchNotes.open()" title="Exibir Notas de Atualização e Changelog" style="padding: 2px 6px; font-size: 8px;">
+                [PATCH NOTES // V1.1.0]
+            </button>
         </div>
         <div>
-            CANAL: DUAL-PANE SPLIT VIEW // BOBINA + LIVE CANVAS
-        </div>
-        <div>
-            DESENVOLVIDO POR LYON CHRISTOPHER (2026) // ZERO EMOJIS
+            DESENVOLVIDO POR LYON CHRISTOPHER (2026) // DESIGN SYSTEM PIXEL PAPER UI
         </div>
     </footer>
 
@@ -2572,7 +3683,7 @@
                     message: message,
                     isPrompt: false,
                     showCancel: true,
-                    confirmLabel: '[CONFIRMAR ORDEM]',
+                    confirmLabel: '[CONFIRMAR COMANDO]',
                     cancelLabel: '[CANCELAR]',
                     onConfirm: () => {
                         if (onConfirm) onConfirm();
@@ -2713,6 +3824,16 @@
                     case 'docs':
                         toggleDrawer();
                         break;
+                    case 'tour':
+                        if (window.PiDotsUX && PiDotsUX.Onboarding) {
+                            PiDotsUX.Onboarding.open();
+                        }
+                        break;
+                    case 'changelog':
+                        if (window.PiDotsUX && PiDotsUX.PatchNotes) {
+                            PiDotsUX.PatchNotes.open();
+                        }
+                        break;
                 }
             },
 
@@ -2762,17 +3883,68 @@
             }
         });
 
+        // Atalhos de Teclado Globais do Console Operacional (Correspondentes ao Menu de Contexto)
         window.addEventListener('keydown', (e) => {
+            // Tecla ESC: Fecha menus, modais e gavetas
             if (e.key === 'Escape') {
                 PixelSystem.closeContextMenu();
                 PixelSystem.closeDialog(false);
+                return;
             }
+
+            // Tecla Enter no dialogo de confirmacao
             if (e.key === 'Enter') {
                 const backdrop = document.getElementById('pixelDialogBackdrop');
                 if (backdrop && backdrop.classList.contains('active')) {
                     e.preventDefault();
                     PixelSystem.confirmDialog();
+                    return;
                 }
+            }
+
+            // F1: Manual Operacional (evita Ajuda padrao do navegador)
+            if (e.key === 'F1') {
+                e.preventDefault();
+                PixelSystem.contextAction('docs');
+                return;
+            }
+
+            // Alt+I: Inspecionar / Focar Artefato no Live Canvas
+            if (e.altKey && (e.key === 'i' || e.key === 'I')) {
+                e.preventDefault();
+                PixelSystem.contextAction('inspect');
+                return;
+            }
+
+            // Alt+H: Abrir Dossie de Governanca HITL
+            if (e.altKey && (e.key === 'h' || e.key === 'H')) {
+                e.preventDefault();
+                PixelSystem.contextAction('hitl');
+                return;
+            }
+
+            // Ctrl+S / Cmd+S: Gravar Revisao SQLite (evita Salvar Pagina do navegador)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                PixelSystem.contextAction('save');
+                return;
+            }
+
+            // Ctrl+L: Limpar Bobina de Chat / Teletipo
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'l' || e.key === 'L')) {
+                const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+                if (tag !== 'input') {
+                    e.preventDefault();
+                    PixelSystem.contextAction('clear');
+                    return;
+                }
+            }
+
+            // F11: Alternar Split / Maximizacao do Canvas
+            if (e.key === 'F11') {
+                e.preventDefault();
+                PixelSystem.contextAction('split');
+                return;
             }
         });
 
@@ -3278,7 +4450,7 @@
                     if (approveStamp) approveStamp.style.transform = 'rotate(2.5deg) scale(1.15)';
                     if (rejectStamp) rejectStamp.style.opacity = '0.3';
                     setTimeout(() => {
-                        PixelSystem.toast('HOMOLOGADO: Ordem oficial autenticada no SQLite WAL! Despachando para Bubblewrap.', 'success');
+                        PixelSystem.toast('HOMOLOGADO: Acao oficial autenticada no SQLite WAL! Despachando para Bubblewrap.', 'success');
                         if (approveStamp) approveStamp.style.transform = 'rotate(2.5deg) scale(1.0)';
                     }, 200);
                 } else {
@@ -3344,7 +4516,7 @@
                             <span>[CADERNO DE RACIOCINIO - AG-UI STREAM]</span>
                             <span class="reasoning-state-badge">[-] COLAPSAR</span>
                         </div>
-                        <div class="reasoning-content" id="${thoughtId}" style="font-family: var(--font-mono); font-size: 11px; white-space: pre-wrap;">Iniciando ciclo de raciocinio assincrono no Raspberry Pi 4B...</div>
+                        <div class="reasoning-content" id="${thoughtId}" style="font-family: var(--font-mono); font-size: 11px; white-space: pre-wrap;">Iniciando ciclo de raciocinio assincrono no nó de borda local...</div>
                     </section>
                     <section class="slip-output">
                         <p class="slip-text" id="${contentId}"><span class="pixel-cursor">█</span></p>
@@ -3483,7 +4655,7 @@
             } else {
                 PixelSystem.confirm(
                     'Vetar Acao Critica',
-                    'Confirma o veto e cancelamento desta ordem na fila de governanca?',
+                    'Confirma o veto e cancelamento desta solicitacao na fila de governanca?',
                     () => {
                         openHitlCanvas();
                         PiDotsAPI.resolveHitl(false);
@@ -3639,7 +4811,7 @@
 
         // Carregamento de Artefatos no Canvas
         const artifactDocs = {
-            'architecture_spec.md': `# piDots Architecture Specification v3.0\n\n## 1. Edge Core Topology\n- Framework: FastAPI + uvloop (Single Worker)\n- Target: Raspberry Pi 4B (4GB ARM64)\n- Memory RSS Ceiling: < 300MB\n- Storage Engine: SQLite WAL mode with synchronous=NORMAL`,
+            'architecture_spec.md': `# piDots Architecture Specification v3.0\n\n## 1. Edge Core Topology\n- Framework: FastAPI + uvloop (Single Worker)\n- Target: Hardware de Borda / SBCs ARM64 & x86_64 (Benchmark: Raspberry Pi 4B)\n- Memory RSS Ceiling: < 300MB\n- Storage Engine: SQLite WAL mode with synchronous=NORMAL`,
             'sqlite_guide.md': `# Calibracao de SQLite WAL em Memoria Flash\n\n1. PRAGMA journal_mode = WAL;\n2. PRAGMA synchronous = NORMAL;\n3. PRAGMA cache_size = -64000;\n4. PRAGMA wal_autocheckpoint = 1000;\n5. PRAGMA busy_timeout = 5000;\n\nElimina pausas de I/O e desgaste de blocos flash no MicroSD.`,
             'fibonacci.py': `import sys\n\ndef fib(n: int) -> int:\n    if n <= 1: return n\n    return fib(n - 1) + fib(n - 2)\n\nif __name__ == '__main__':\n    print(f'Fib(8) = {fib(8)}')`
         };
@@ -3728,7 +4900,7 @@
                     'Homologar Acao Critica',
                     'Deseja autorizar o despacho do comando [rm -rf /workspace/scratch_build_cache/*] para o sandbox Bubblewrap?',
                     () => {
-                        PixelSystem.toast('ORDEM HOMOLOGADA: Acao autorizada pelo operador! Despachando para Bubblewrap.', 'success');
+                        PixelSystem.toast('COMANDO HOMOLOGADO: Acao autorizada pelo operador! Despachando para Bubblewrap.', 'success');
                         openHitlCanvas();
                         resolveHitlFull('HOMOLOGADO');
                     }
@@ -3738,7 +4910,7 @@
                     'Vetar Acao Critica',
                     'Confirma o cancelamento e descarte desta solicitacao da fila de governanca?',
                     () => {
-                        PixelSystem.toast('ORDEM VETADA: Acao cancelada e removida da fila de governanca.', 'danger');
+                        PixelSystem.toast('COMANDO VETADO: Acao cancelada e removida da fila de governanca.', 'danger');
                         openHitlCanvas();
                         resolveHitlFull('REJEITADO');
                     }
@@ -3755,7 +4927,7 @@
                 approveStamp.style.transform = 'rotate(2.5deg) scale(1.15)';
                 rejectStamp.style.opacity = '0.3';
                 setTimeout(() => {
-                    PixelSystem.toast('HOMOLOGADO: Ordem autenticada pelo operador lyon christopher! Executando no sandbox.', 'success');
+                    PixelSystem.toast('HOMOLOGADO: Acao homologada pelo operador lyon christopher! Executando no sandbox.', 'success');
                     approveStamp.style.transform = 'rotate(2.5deg) scale(1.0)';
                 }, 200);
             } else {
@@ -3906,7 +5078,7 @@
             userSlip.className = 'ticker-slip';
             userSlip.innerHTML = `
                 <header class="slip-header">
-                    <span class="actor-stamp stamp-user">[USR] OPERADOR // ORDEM</span>
+                    <span class="actor-stamp stamp-user">[USR] OPERADOR // INSTRUCAO</span>
                     <span>${new Date().toISOString()}</span>
                     <span>SEQ# 000${seqCounter++}</span>
                 </header>
@@ -3929,7 +5101,7 @@
         }
 
         function clearTickerStream() {
-            document.getElementById('tickerScroll').innerHTML = '<div style="color: var(--ink-muted); font-size: 11px; padding: 12px;">[BOBINA DE TELETIPO REINICIADA // AGUARDANDO NOVAS ORDENS]</div>';
+            document.getElementById('tickerScroll').innerHTML = '<div style="color: var(--ink-muted); font-size: 11px; padding: 12px;">[BOBINA DE TELETIPO REINICIADA // AGUARDANDO NOVAS INSTRUCOES]</div>';
         }
 
         // Terminal Sandbox Simulação
@@ -3951,6 +5123,55 @@
         function escapeHtml(str) {
             return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
+
+        // Leitura de comando injetado via URL deep link (ex: /app?inject_cmd=...)
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const injectCmd = urlParams.get('inject_cmd');
+            if (injectCmd) {
+                const input = document.getElementById('instructionInput');
+                if (input) {
+                    input.value = decodeURIComponent(injectCmd);
+                    input.focus();
+                    if (window.PixelSystem && PixelSystem.toast) {
+                        PixelSystem.toast('Instrucao tecnica injetada da documentacao pronta para despacho.', 'info');
+                    }
+                }
+            }
+        });
+
+        // Navegacao Global por Teclado (Go-to Chords: g h, g w, g d)
+        (function() {
+            let lastKeyTime = 0;
+            let pendingPrefix = false;
+
+            window.addEventListener('keydown', function(e) {
+                const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+                if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) return;
+                if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+                const key = e.key.toLowerCase();
+                const now = Date.now();
+
+                if (pendingPrefix && (now - lastKeyTime < 1000)) {
+                    pendingPrefix = false;
+                    if (key === 'h' || key === 'v') {
+                        window.location.href = '/';
+                    } else if (key === 'w' || key === 'a') {
+                        window.location.href = '/app';
+                    } else if (key === 'd' || key === 'g') {
+                        window.location.href = '/docs';
+                    }
+                    return;
+                }
+
+                if (key === 'g') {
+                    pendingPrefix = true;
+                    lastKeyTime = now;
+                    setTimeout(() => { pendingPrefix = false; }, 1000);
+                }
+            });
+        })();
     </script>
 
     <!-- =======================================================================
@@ -4007,10 +5228,906 @@
             <span>[6] MANUAL OPERACIONAL</span>
             <span class="context-menu-shortcut">F1</span>
         </div>
+        <div class="context-menu-item" onclick="PixelSystem.contextAction('tour')">
+            <span>[7] GUIA DE PRIMEIRO ACESSO</span>
+            <span class="context-menu-shortcut">TOUR</span>
+        </div>
+        <div class="context-menu-item" onclick="PixelSystem.contextAction('changelog')">
+            <span>[8] NOTAS DE ATUALIZACAO</span>
+            <span class="context-menu-shortcut">PATCH</span>
+        </div>
     </div>
 
     <!-- 4. Tooltip Customizada Flutuante -->
     <div id="pixelTooltip"></div>
+
+    <!-- =======================================================================
+         5. MODAL DE ONBOARDING DE PRIMEIRO ACESSO (ESTILO FICHA CATALOGRAFICA)
+         ======================================================================= -->
+    <div id="pixelOnboardingModal" class="pixel-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle" style="display: none;">
+        <div class="pixel-catalog-card" id="pixelCatalogCard">
+            
+            <!-- Aba Superior Chanfrada da Ficha Catalografica -->
+            <header class="catalog-tab-header">
+                <div class="catalog-tab-notch">
+                    <span class="catalog-tab-badge">FICHA TECNICA // REG: DOT-SYS-001</span>
+                    <span class="catalog-tab-arch">SBC ARM64 // REF: PI 4B</span>
+                </div>
+                <button class="catalog-tab-close" onclick="PiDotsUX.Onboarding.close(false)" aria-label="Fechar tour operacional">[X]</button>
+            </header>
+
+            <!-- Cabecalho Principal da Ficha -->
+            <section class="catalog-head-block">
+                <div class="catalog-meta-line">
+                    <span>SERVICO: PIDOTS WORKSPACE OPERACIONAL</span>
+                    <span>STATUS: PRONTO PARA INICIALIZACAO</span>
+                    <span>CANAL: CONSOLE TACTICAL V1.1.0</span>
+                </div>
+                <h2 class="catalog-main-title" id="onboardingTitle">PIDOTS OPERATIONAL CONSOLE // TOUR DE INICIACAO</h2>
+                <p class="catalog-lead-text">
+                    Manual sintetico de operacao tatica para desenvolvedores e operadores de IA em hardware restrito.
+                </p>
+            </section>
+
+            <!-- Indicador de Passos / Stepper Interativo -->
+            <nav class="catalog-stepper" aria-label="Navegacao dos passos de iniciacao">
+                <button class="stepper-tab active" data-step="1" onclick="PiDotsUX.Onboarding.goToStep(1)">
+                    <span class="step-num">[01/05]</span>
+                    <span class="step-label">CONCEITOS</span>
+                </button>
+                <button class="stepper-tab" data-step="2" onclick="PiDotsUX.Onboarding.goToStep(2)">
+                    <span class="step-num">[02/05]</span>
+                    <span class="step-label">COMANDOS</span>
+                </button>
+                <button class="stepper-tab" data-step="3" onclick="PiDotsUX.Onboarding.goToStep(3)">
+                    <span class="step-num">[03/05]</span>
+                    <span class="step-label">LIVE CANVAS</span>
+                </button>
+                <button class="stepper-tab" data-step="4" onclick="PiDotsUX.Onboarding.goToStep(4)">
+                    <span class="step-num">[04/05]</span>
+                    <span class="step-label">GOVERNANCA HITL</span>
+                </button>
+                <button class="stepper-tab" data-step="5" onclick="PiDotsUX.Onboarding.goToStep(5)">
+                    <span class="step-num">[05/05]</span>
+                    <span class="step-label">ATALHOS</span>
+                </button>
+            </nav>
+
+            <!-- Barra de Progresso Matricial de Pixel -->
+            <div class="catalog-progress-bar" aria-hidden="true">
+                <div class="matrix-cell fill" id="stepCell1"></div>
+                <div class="matrix-cell" id="stepCell2"></div>
+                <div class="matrix-cell" id="stepCell3"></div>
+                <div class="matrix-cell" id="stepCell4"></div>
+                <div class="matrix-cell" id="stepCell5"></div>
+            </div>
+
+            <!-- Painel de Conteudo Deslizante (5 Passos) -->
+            <main class="catalog-body-area">
+                
+                <!-- PASSO 01: CONCEITOS -->
+                <article class="catalog-step-pane active" id="onboardingPane1">
+                    <div class="step-pane-header">
+                        <span class="step-section-tag">SECAO 01 // FUNDAMENTOS DE BORDA</span>
+                        <span class="step-counter-badge">ETAPA 01 DE 05</span>
+                    </div>
+                    <h3 class="step-heading">ARQUITETURA DE COWORKER AUTONOMO EM HARDWARE DE BORDA</h3>
+                    <p class="step-paragraph">
+                        O piDots transforma dispositivos de borda (SBCs ARM64 como o Raspberry Pi 4B) em estacoes de trabalho inteligentes com persistencia e economia de recursos:
+                    </p>
+                    <div class="concept-grid">
+                        <div class="concept-item">
+                            <div class="concept-title">[1] LOOP REACT OTIMIZADO</div>
+                            <div class="concept-desc">Ciclo rigoroso de Raciocinio, Acao e Observacao com descarte cirurgico de contexto obsoleto.</div>
+                        </div>
+                        <div class="concept-item">
+                            <div class="concept-title">[2] PERSISTENCIA SQLITE WAL</div>
+                            <div class="concept-desc">Todas as revisoes de codigo e sessoes sao salvas localmente em SQLite com Write-Ahead Logging, imunes a cortes de energia.</div>
+                        </div>
+                        <div class="concept-item">
+                            <div class="concept-title">[3] TETO ESTRITO DE RECURSOS</div>
+                            <div class="concept-desc">O console impoe buffer circular de 150 nos DOM na bobina de chat e memoria RAM contida em menos de 180MB para o runtime web.</div>
+                        </div>
+                    </div>
+                    <div class="pixel-callout">
+                        <span class="callout-label">[DIRETRIZ DE ENGENHARIA]:</span>
+                        <span>Zero dependencias pesadas no navegador. Toda a telemetria grafica e renderizada atraves de elementos SVG puros com crispEdges.</span>
+                    </div>
+                </article>
+
+                <!-- PASSO 02: COMANDOS -->
+                <article class="catalog-step-pane" id="onboardingPane2" style="display: none;">
+                    <div class="step-pane-header">
+                        <span class="step-section-tag">SECAO 02 // SINTAXE DE CONTROLE</span>
+                        <span class="step-counter-badge">ETAPA 02 DE 05</span>
+                    </div>
+                    <h3 class="step-heading">COMANDOS DE BARRA E MENCOES DINAMICAS @DOT</h3>
+                    <p class="step-paragraph">
+                        O console operacional oferece uma barra unificada na base da tela para despachar rotinas de agentes e coordenar dialogos multi-bot:
+                    </p>
+                    <div class="cli-reference-table">
+                        <div class="cli-row cli-head">
+                            <span>SINTAXE</span>
+                            <span>PARAMETRO</span>
+                            <span>FUNCAO OPERACIONAL NO SISTEMA</span>
+                        </div>
+                        <div class="cli-row">
+                            <span class="cmd-code">@dot</span>
+                            <span class="cmd-arg">&lt;mensagem&gt;</span>
+                            <span>Direciona mensagem a um agente especifico (@coder, @auditor, @edge).</span>
+                        </div>
+                        <div class="cli-row">
+                            <span class="cmd-code">/plan</span>
+                            <span class="cmd-arg">&lt;objetivo&gt;</span>
+                            <span>Decompoe missao em DAG estruturado com checkpoints obrigatorios.</span>
+                        </div>
+                        <div class="cli-row">
+                            <span class="cmd-code">/pack</span>
+                            <span class="cmd-arg">&lt;id_skill&gt;</span>
+                            <span>Compila uma pasta de trabalho em DotPack transferivel e estatico.</span>
+                        </div>
+                        <div class="cli-row">
+                            <span class="cmd-code">/hitl</span>
+                            <span class="cmd-arg">[listar]</span>
+                            <span>Abre imediatamente o dossie de governanca humana para acoes em espera.</span>
+                        </div>
+                    </div>
+                    <div class="keyboard-tip-line">
+                        <span>DICA DE DESPACHO:</span> Pressione <kbd>Enter</kbd> para enviar instrucao, <kbd>Shift + Enter</kbd> para nova linha e digite <kbd>@</kbd> para autocomplete de coworkers.
+                    </div>
+                </article>
+
+                <!-- PASSO 03: LIVE CANVAS -->
+                <article class="catalog-step-pane" id="onboardingPane3" style="display: none;">
+                    <div class="step-pane-header">
+                        <span class="step-section-tag">SECAO 03 // AMBIENTE DE TRABALHO</span>
+                        <span class="step-counter-badge">ETAPA 03 DE 05</span>
+                    </div>
+                    <h3 class="step-heading">LAYOUT TRIPTYCH E O LIVE CANVAS EM TEMPO REAL</h3>
+                    <p class="step-paragraph">
+                        A tela e dividida em tres zonas ortogonais para maximizar a visibilidade operacional sem navegacao de abas ocultas:
+                    </p>
+                    <div class="triptych-preview-diagram">
+                        <div class="zone-box">
+                            <span class="zone-name">[ESQUERDA] ESPACOS</span>
+                            <p class="zone-info">Workspaces isolados, historico de revisoes no SQLite e selecao de modelos de IA.</p>
+                        </div>
+                        <div class="zone-box central">
+                            <span class="zone-name">[CENTRO] TELETIPO</span>
+                            <p class="zone-info">Bobina continua de chat matricial com caderno de raciocinio interno dos agentes.</p>
+                        </div>
+                        <div class="zone-box">
+                            <span class="zone-name">[DIREITA] LIVE CANVAS</span>
+                            <p class="zone-info">Editor de artefatos vivos, visualizador de diffs, codigo e telemetria Broadcom.</p>
+                        </div>
+                    </div>
+                    <div class="pixel-callout">
+                        <span class="callout-label">[MODO SPLIT / FULLSCREEN]:</span>
+                        <span>Pressione <kbd>F11</kbd> para expandir o Live Canvas para largura maxima quando for inspecionar grandes arquivos de configuracao.</span>
+                    </div>
+                </article>
+
+                <!-- PASSO 04: GOVERNANCA HITL -->
+                <article class="catalog-step-pane" id="onboardingPane4" style="display: none;">
+                    <div class="step-pane-header">
+                        <span class="step-section-tag">SECAO 04 // PROTOCOLO DE SEGURANCA</span>
+                        <span class="step-counter-badge">ETAPA 04 DE 05</span>
+                    </div>
+                    <h3 class="step-heading">HUMAN-IN-THE-LOOP & TRAVA MECANICA DE SEGURANCA</h3>
+                    <p class="step-paragraph">
+                        Comandos de alto risco (exclusao recursiva, gravacao em /etc ou escrita fora do workspace) sao congelados compulsoriamente na fila de governanca:
+                    </p>
+                    <div class="hitl-mechanism-box">
+                        <div class="hitl-step-flow">
+                            <div class="flow-node">
+                                <span class="node-badge">[1] QUARENTENA</span>
+                                <span class="node-text">O agente sinaliza risco e bloqueia a thread de execucao.</span>
+                            </div>
+                            <div class="flow-arrow">&gt;&gt;</div>
+                            <div class="flow-node">
+                                <span class="node-badge">[2] TRAVA MECANICA</span>
+                                <span class="node-text">Operador deve destravar o interruptor fisico digital.</span>
+                            </div>
+                            <div class="flow-arrow">&gt;&gt;</div>
+                            <div class="flow-node">
+                                <span class="node-badge">[3] CARIMBO</span>
+                                <span class="node-text">Aplicacao formal de [HOMOLOGADO] ou [VETADO].</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pixel-callout amber">
+                        <span class="callout-label">[REGRA DE OURO]:</span>
+                        <span>Nenhum comando destrutivo e executado sem aprovacao explicita e auditavel pelo operador humano. Zero automacoes cegas.</span>
+                    </div>
+                </article>
+
+                <!-- PASSO 05: ATALHOS -->
+                <article class="catalog-step-pane" id="onboardingPane5" style="display: none;">
+                    <div class="step-pane-header">
+                        <span class="step-section-tag">SECAO 05 // PRODUTIVIDADE OPERACIONAL</span>
+                        <span class="step-counter-badge">ETAPA 05 DE 05</span>
+                    </div>
+                    <h3 class="step-heading">MATRIZ DE ATALHOS RAPIDOS E NAVEGACAO POR TECLADO</h3>
+                    <p class="step-paragraph">
+                        Toda a interface foi projetada para ser operada sem mouse, atendendo a terminais fisicos e conexoes remotas:
+                    </p>
+                    <div class="shortcuts-matrix">
+                        <div class="sc-item"><kbd>Alt + I</kbd><span>Inspecionar e focar artefato no Live Canvas</span></div>
+                        <div class="sc-item"><kbd>Ctrl + S</kbd><span>Gravar revisao ativa no banco de dados SQLite</span></div>
+                        <div class="sc-item"><kbd>Alt + H</kbd><span>Abrir dossie de governanca humana (HITL)</span></div>
+                        <div class="sc-item"><kbd>Ctrl + L</kbd><span>Limpar visualizacao da bobina de teletipo</span></div>
+                        <div class="sc-item"><kbd>F1</kbd><span>Manual operacional completo e documentacao</span></div>
+                        <div class="sc-item"><kbd>ESC</kbd><span>Fechar modais, dialogos e cancelar operacao</span></div>
+                    </div>
+                    <div class="pixel-callout green">
+                        <span class="callout-label">[SISTEMA PRONTO]:</span>
+                        <span>O console operacional do piDots esta totalmente carregado e sincronizado com os workers locais. Bom turno operacional.</span>
+                    </div>
+                </article>
+
+            </main>
+
+            <!-- Rodape da Ficha Catalografica com Controles e Ilho de Fixacao -->
+            <footer class="catalog-footer-block">
+                <div class="catalog-rod-hole-wrap" title="Orificio de retencao mecanica do fichario">
+                    <div class="catalog-rod-hole"></div>
+                    <span class="catalog-rod-tag">GUIA DE RETENCAO</span>
+                </div>
+
+                <div class="catalog-footer-controls">
+                    <label class="catalog-checkbox-container">
+                        <input type="checkbox" id="onboardingDoNotShowAgain">
+                        <span class="pixel-checkbox-box"></span>
+                        <span class="checkbox-label-text">NAO EXIBIR NOVAMENTE AO INICIAR</span>
+                    </label>
+                    
+                    <div class="catalog-button-group">
+                        <button class="pixel-btn" id="btnOnboardingSkip" onclick="PiDotsUX.Onboarding.close(true)">
+                            [PULAR INTRODUCAO]
+                        </button>
+                        <button class="pixel-btn" id="btnOnboardingPrev" onclick="PiDotsUX.Onboarding.prevStep()" disabled>
+                            [PASSO ANTERIOR]
+                        </button>
+                        <button class="pixel-btn btn-cyan" id="btnOnboardingNext" onclick="PiDotsUX.Onboarding.nextStep()">
+                            [PROXIMO PASSO]
+                        </button>
+                        <button class="pixel-btn btn-phosphor" id="btnOnboardingFinish" onclick="PiDotsUX.Onboarding.finish()" style="display: none;">
+                            [CONCLUIR TOUR & INICIAR]
+                        </button>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- =======================================================================
+         6. MODAL DE PATCH NOTES / CHANGELOG DA VERSAO ATIVA
+         ======================================================================= -->
+    <div id="pixelPatchNotesModal" class="pixel-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="patchNotesTitle" style="display: none;">
+        <div class="pixel-dialog-box pixel-patchnotes-box" id="pixelPatchNotesBox">
+            
+            <!-- Cabecalho de Versao e Carimbo Fisico -->
+            <header class="patchnotes-header-block">
+                <div class="patchnotes-header-left">
+                    <div class="patchnotes-sys-tag">PIDOTS // SISTEMA OPERACIONAL DE AGENTES AUTONOMOS</div>
+                    <h2 class="patchnotes-main-title" id="patchNotesTitle">NOTAS DE ATUALIZACAO - VERSAO 1.1.0</h2>
+                    <div class="patchnotes-meta-bar">
+                        <span class="meta-item" id="patchNotesBuildTag">BUILD: 20261012-ARM64</span>
+                        <span class="meta-separator">//</span>
+                        <span class="meta-item" id="patchNotesCommitTag">COMMIT: 9F2A1C</span>
+                        <span class="meta-separator">//</span>
+                        <span class="meta-item">CANAL: ESTAVEL</span>
+                    </div>
+                </div>
+                
+                <div class="patchnotes-header-right">
+                    <div class="rubber-stamp stamp-approved stamp-patchnotes">
+                        <div class="stamp-inner">
+                            <span class="stamp-title">RECEM APLICADO</span>
+                            <span class="stamp-sub" id="patchNotesStampDate">2026-10-12 // 04:00 UTC</span>
+                            <span class="stamp-hash" id="patchNotesStampHash">SHA256: 9F2A1C</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Corpo das Notas de Atualizacao com 4 Pilulas de Alto Contraste -->
+            <div class="patchnotes-scrollable-body" id="patchNotesScrollBody">
+                
+                <!-- SECAO 1: PILULA VERDE [INCLUIDO / NOVO] -->
+                <section class="patchnotes-category-section">
+                    <div class="category-header">
+                        <span class="pixel-pill pill-green">[INCLUIDO / NOVO]</span>
+                        <span class="category-summary">RECURSOS INEDITOS DE INTERFACE E BORDA</span>
+                    </div>
+                    <ul class="patchnotes-list" id="patchListIncluded">
+                        <li><strong>Onboarding Tatil em Ficha Catalografica:</strong> Modal de 5 passos com navegacao por abas ortogonais, memorizacao de estado e atalhos globais de teclado.</li>
+                        <li><strong>Integracao e Suporte PWA Nativo:</strong> Captura transparente do evento beforeinstallprompt, banner retratil em teletipo e execucao standalone offline.</li>
+                        <li><strong>Changelog Central com Persistencia:</strong> Sistema unificado de notas de versao integrado ao armazenamento local do navegador e historico retroativo.</li>
+                        <li><strong>Monitor de Telemetria SVG crispEdges:</strong> Marcador estatico e curva de carga para frequencia e temperatura termica da CPU Broadcom.</li>
+                    </ul>
+                </section>
+
+                <!-- SECAO 2: PILULA CIANO [AJUSTADO / MELHORADO] -->
+                <section class="patchnotes-category-section">
+                    <div class="category-header">
+                        <span class="pixel-pill pill-cyan">[AJUSTADO / MELHORADO]</span>
+                        <span class="category-summary">REFATORACOES, DESEMPENHO E ERGONOMIA</span>
+                    </div>
+                    <ul class="patchnotes-list" id="patchListAdjusted">
+                        <li><strong>Teto Estrito de DOM (150 Nos):</strong> Otimizacao do buffer circular de slips da bobina de teletipo, estabilizando o uso de memoria no dispositivo.</li>
+                        <li><strong>Hitbox Tatil de 48x48px:</strong> Ampliacao da area fisica de toque em botoes interativos sem distorcer o alinhamento de pixel art.</li>
+                        <li><strong>Sincronizacao ao Vivo do Live Canvas:</strong> Atualizacao parcial de documentos sem necessidade de recarregar toda a interface.</li>
+                        <li><strong>Fisica Mecanica Padronizada:</strong> Unificacao das microinteracoes em funcoes steps(1) e steps(2) com duracao menor que 50ms.</li>
+                    </ul>
+                </section>
+
+                <!-- SECAO 3: PILULA VERMELHA [REMOVIDO / DEPRECIADO] -->
+                <section class="patchnotes-category-section">
+                    <div class="category-header">
+                        <span class="pixel-pill pill-red">[REMOVIDO / DEPRECIADO]</span>
+                        <span class="category-summary">ELIMINACAO DE CARGAS PESADAS E APIS OBSOLETAS</span>
+                    </div>
+                    <ul class="patchnotes-list" id="patchListRemoved">
+                        <li><strong>Descarte de Bibliotecas Graficas Externas:</strong> Removidos Chart.js e pacotes pesados em favor de graficos matriciais construidos com SVG nativo.</li>
+                        <li><strong>Eliminacao de Caixas de Dialogo Nativas:</strong> Descontinuado o uso de alert(), confirm() e prompt() do navegador.</li>
+                        <li><strong>Remocao de Filtros de Desfoque (backdrop-filter):</strong> Eliminados filtros gaussianos que causavam engasgos de composicao grafica no ARM64.</li>
+                    </ul>
+                </section>
+
+                <!-- SECAO 4: PILULA AMBAR [SEGURANCA & BORDA] -->
+                <section class="patchnotes-category-section">
+                    <div class="category-header">
+                        <span class="pixel-pill pill-amber">[SEGURANCA & BORDA]</span>
+                        <span class="category-summary">BLINDAGEM OPERACIONAL E GOVERNANCA FORENSE</span>
+                    </div>
+                    <ul class="patchnotes-list" id="patchListSecurity">
+                        <li><strong>Trava Mecanica de Dois Estagios:</strong> Exigencia de desarme de chave de protecao antes da homologacao de comandos criticos no dossie HITL.</li>
+                        <li><strong>Isolamento de Sandbox Bubblewrap:</strong> Execucao estrita de ferramentas de terminal com bloqueio de leitura de chaves e certificados raiz.</li>
+                        <li><strong>Sanitizacao Estrita de Payload:</strong> Validacao formal de esquemas no gateway de mensageria prevenindo injecao de comandos em prompts multi-bot.</li>
+                    </ul>
+                </section>
+
+                <!-- HISTORICO RETRATIL DE VERSOES ANTERIORES -->
+                <details class="patchnotes-history-accordion" id="patchNotesHistoryAccordion">
+                    <summary class="history-summary">
+                        <span>[+] HISTORICO // VERSOES ANTERIORES DO SISTEMA (V1.0.1, V1.0.0)</span>
+                    </summary>
+                    <div class="history-content" id="patchNotesHistoryContent">
+                        <div class="history-version-block">
+                            <div class="history-ver-head">
+                                <span class="ver-badge">VERSAO 1.0.1 // 2026-10-11</span>
+                                <span class="ver-type">[HOTFIXES]</span>
+                            </div>
+                            <ul class="history-ver-list">
+                                <li>Correcao de travamento esporadico no bloqueio de escrita do SQLite WAL em operacoes concorrentes.</li>
+                                <li>Ajuste fino de insets de seguranca para navegadores moveis (Dynamic Island e barras de gestos).</li>
+                            </ul>
+                        </div>
+                        <div class="history-version-block">
+                            <div class="history-ver-head">
+                                <span class="ver-badge">VERSAO 1.0.0 // 2026-10-10</span>
+                                <span class="ver-type">[RELEASE INAUGURAL]</span>
+                            </div>
+                            <ul class="history-ver-list">
+                                <li>Lancamento do console triptych oficial para agentes autonomos piDots.</li>
+                                <li>Implementacao do roteador de mensageria com suporte a mencao @dot e dossie HITL.</li>
+                                <li>Engine de renderizacao Pixel Paper UI e integracao com modelos LLM locais e em nuvem.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+
+            <!-- Rodape com Botao de Reconhecimento -->
+            <footer class="patchnotes-footer-block">
+                <div class="patchnotes-footer-status">
+                    <span>ESTADO: GRAVACAO AUTOMATICA NO LOCALSTORAGE</span>
+                </div>
+                <button class="pixel-btn btn-cyan" id="btnPatchNotesAcknowledge" onclick="PiDotsUX.PatchNotes.acknowledge()">
+                    [ENTENDIDO / FECHAR]
+                </button>
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- =======================================================================
+         7. BANNER RETRATIL DE PROMOCAO PWA
+         ======================================================================= -->
+    <aside id="pixelPwaInstallBanner" class="pixel-pwa-banner" style="display: none;" role="region" aria-label="Notificacao de Instalacao PWA">
+        <div class="pwa-banner-tractor-feed"></div>
+        <div class="pwa-banner-body">
+            <div class="pwa-banner-header">
+                <span class="pwa-banner-tag">[PWA // EXECUCAO NATIVA EM BORDA]</span>
+                <button class="pwa-banner-close-btn" onclick="PiDotsUX.PWA.dismissBanner()" aria-label="Dispensar banner de instalacao">[X]</button>
+            </div>
+            <div class="pwa-banner-content">
+                <div class="pwa-banner-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges">
+                        <rect x="3" y="2" width="18" height="15"/>
+                        <path d="M8 21h8M12 17v4"/>
+                        <path d="M12 6v6M9 9l3 3 3-3"/>
+                    </svg>
+                </div>
+                <div class="pwa-banner-text">
+                    <h4 class="pwa-banner-title">CONSOLE OPERACIONAL DISPONIVEL PARA INSTALACAO NATIVA</h4>
+                    <p class="pwa-banner-desc">
+                        Execute o piDots em tela cheia isolada com cache offline SQLite WAL de borda e zero atrito de navegador.
+                    </p>
+                </div>
+            </div>
+            <div class="pwa-banner-actions">
+                <button class="pixel-btn" onclick="PiDotsUX.PWA.dismissBanner()">[LEMBRAR MAIS TARDE]</button>
+                <button class="pixel-btn btn-cyan" onclick="PiDotsUX.PWA.install()">[INSTALAR APLICATIVO AGORA]</button>
+            </div>
+        </div>
+        <div class="pwa-banner-tractor-feed"></div>
+    </aside>
+
+    <!-- =======================================================================
+         8. CONTROLADOR JAVASCRIPT PIDOTSUX (ONBOARDING, CHANGELOG E PWA)
+         ======================================================================= -->
+    <script>
+    const PiDotsUX = (function() {
+        // ---------------------------------------------------------------------
+        // MODULO 1: ONBOARDING / GUIA DE PRIMEIRO ACESSO (FICHA CATALOGRAFICA)
+        // ---------------------------------------------------------------------
+        const Onboarding = {
+            currentStep: 1,
+            totalSteps: 5,
+            STORAGE_KEY: 'pidots_onboarding_completed',
+
+            init() {
+                const completed = localStorage.getItem(this.STORAGE_KEY);
+                if (completed !== 'true') {
+                    // Abre o onboarding no primeiro acesso apos pequeno delay para a UI assentar
+                    setTimeout(() => {
+                        this.open();
+                    }, 400);
+                }
+            },
+
+            open() {
+                const modal = document.getElementById('pixelOnboardingModal');
+                if (!modal) return;
+                this.currentStep = 1;
+                this.updateUI();
+                modal.style.display = 'flex';
+                this.bindKeyboard();
+            },
+
+            close(skipped = false) {
+                const modal = document.getElementById('pixelOnboardingModal');
+                if (modal) modal.style.display = 'none';
+                this.unbindKeyboard();
+
+                const chk = document.getElementById('onboardingDoNotShowAgain');
+                if (skipped || (chk && chk.checked)) {
+                    localStorage.setItem(this.STORAGE_KEY, 'true');
+                }
+            },
+
+            finish() {
+                localStorage.setItem(this.STORAGE_KEY, 'true');
+                const modal = document.getElementById('pixelOnboardingModal');
+                if (modal) modal.style.display = 'none';
+                this.unbindKeyboard();
+                if (window.PixelSystem && PixelSystem.toast) {
+                    PixelSystem.toast('Tour concluido com sucesso. Bem-vindo ao console piDots!', 'success');
+                }
+            },
+
+            goToStep(step) {
+                if (step < 1 || step > this.totalSteps) return;
+                this.currentStep = step;
+                this.updateUI();
+            },
+
+            nextStep() {
+                if (this.currentStep < this.totalSteps) {
+                    this.currentStep++;
+                    this.updateUI();
+                } else {
+                    this.finish();
+                }
+            },
+
+            prevStep() {
+                if (this.currentStep > 1) {
+                    this.currentStep--;
+                    this.updateUI();
+                }
+            },
+
+            updateUI() {
+                // Atualiza abas do stepper
+                const tabs = document.querySelectorAll('.stepper-tab');
+                tabs.forEach((tab) => {
+                    const stepNum = parseInt(tab.getAttribute('data-step'), 10);
+                    if (stepNum === this.currentStep) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+
+                // Atualiza celulas da barra matricial
+                for (let i = 1; i <= this.totalSteps; i++) {
+                    const cell = document.getElementById(`stepCell${i}`);
+                    if (cell) {
+                        if (i <= this.currentStep) {
+                            cell.classList.add('fill');
+                        } else {
+                            cell.classList.remove('fill');
+                        }
+                    }
+                }
+
+                // Atualiza paineis de conteudo
+                for (let i = 1; i <= this.totalSteps; i++) {
+                    const pane = document.getElementById(`onboardingPane${i}`);
+                    if (pane) {
+                        if (i === this.currentStep) {
+                            pane.classList.add('active');
+                            pane.style.display = 'block';
+                        } else {
+                            pane.classList.remove('active');
+                            pane.style.display = 'none';
+                        }
+                    }
+                }
+
+                // Atualiza visibilidade dos botoes
+                const prevBtn = document.getElementById('btnOnboardingPrev');
+                const nextBtn = document.getElementById('btnOnboardingNext');
+                const finishBtn = document.getElementById('btnOnboardingFinish');
+
+                if (prevBtn) prevBtn.disabled = (this.currentStep === 1);
+
+                if (this.currentStep === this.totalSteps) {
+                    if (nextBtn) nextBtn.style.display = 'none';
+                    if (finishBtn) finishBtn.style.display = 'inline-flex';
+                } else {
+                    if (nextBtn) nextBtn.style.display = 'inline-flex';
+                    if (finishBtn) finishBtn.style.display = 'none';
+                }
+            },
+
+            _handleKey(e) {
+                const modal = document.getElementById('pixelOnboardingModal');
+                if (!modal || modal.style.display === 'none') return;
+
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    Onboarding.nextStep();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    Onboarding.prevStep();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (Onboarding.currentStep === Onboarding.totalSteps) {
+                        Onboarding.finish();
+                    } else {
+                        Onboarding.nextStep();
+                    }
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    Onboarding.close(false);
+                }
+            },
+
+            bindKeyboard() {
+                window.addEventListener('keydown', this._handleKey);
+            },
+
+            unbindKeyboard() {
+                window.removeEventListener('keydown', this._handleKey);
+            }
+        };
+
+        // ---------------------------------------------------------------------
+        // MODULO 2: CHANGELOG E NOTAS DE ATUALIZACAO AUTOMATICA
+        // ---------------------------------------------------------------------
+        const PatchNotes = {
+            STORAGE_KEY: 'pidots_last_seen_version',
+            activeVersion: '1.1.0',
+            dataCache: null,
+
+            async init() {
+                try {
+                    const res = await fetch('/api/changelog');
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    this.dataCache = data;
+                    this.activeVersion = data.current_version || '1.1.0';
+
+                    const lastSeen = localStorage.getItem(this.STORAGE_KEY);
+                    // Se a versao em disco for diferente da versao vista pelo usuario, abre o modal
+                    if (lastSeen !== this.activeVersion) {
+                        // Aguarda o onboarding se estiver ativo
+                        const onboardingDone = localStorage.getItem('pidots_onboarding_completed');
+                        const delay = (onboardingDone !== 'true') ? 3000 : 800;
+                        setTimeout(() => {
+                            this.open();
+                        }, delay);
+                    }
+                } catch (err) {
+                    console.warn('[piDots UX] Falha ao consultar endpoint de changelog:', err);
+                }
+            },
+
+            open() {
+                const modal = document.getElementById('pixelPatchNotesModal');
+                if (!modal) return;
+
+                if (this.dataCache && this.dataCache.patch_notes) {
+                    const pn = this.dataCache.patch_notes;
+                    const titleElem = document.getElementById('patchNotesTitle');
+                    if (titleElem) titleElem.textContent = pn.title || `NOTAS DE ATUALIZACAO - VERSAO ${this.activeVersion}`;
+
+                    const buildElem = document.getElementById('patchNotesBuildTag');
+                    if (buildElem && this.dataCache.build) buildElem.textContent = `BUILD: ${this.dataCache.build}`;
+
+                    const commitElem = document.getElementById('patchNotesCommitTag');
+                    if (commitElem && this.dataCache.commit_hash) commitElem.textContent = `COMMIT: ${this.dataCache.commit_hash}`;
+
+                    const stampDate = document.getElementById('patchNotesStampDate');
+                    if (stampDate && this.dataCache.release_date) stampDate.textContent = `${this.dataCache.release_date} // 04:00 UTC`;
+
+                    const stampHash = document.getElementById('patchNotesStampHash');
+                    if (stampHash && this.dataCache.commit_hash) stampHash.textContent = `SHA256: ${this.dataCache.commit_hash}`;
+
+                    // Preenche listas categorizadas se fornecidas
+                    const cats = pn.categories || {};
+                    this._fillList('patchListIncluded', cats.included);
+                    this._fillList('patchListAdjusted', cats.adjusted);
+                    this._fillList('patchListRemoved', cats.removed);
+                    this._fillList('patchListSecurity', cats.security_and_edge);
+                }
+
+                modal.style.display = 'flex';
+            },
+
+            _fillList(elementId, items) {
+                const ul = document.getElementById(elementId);
+                if (!ul || !items || !Array.isArray(items) || items.length === 0) return;
+                ul.innerHTML = items.map((item) => `<li>${item}</li>`).join('');
+            },
+
+            acknowledge() {
+                localStorage.setItem(this.STORAGE_KEY, this.activeVersion);
+                const modal = document.getElementById('pixelPatchNotesModal');
+                if (modal) modal.style.display = 'none';
+                if (window.PixelSystem && PixelSystem.toast) {
+                    PixelSystem.toast(`Atualizacao v${this.activeVersion} reconhecida.`, 'info');
+                }
+            }
+        };
+
+        // ---------------------------------------------------------------------
+        // MODULO 3: PWA & SERVICE WORKER CONTROLLER
+        // ---------------------------------------------------------------------
+        const PWA = {
+            deferredInstallPrompt: null,
+            newWorkerWaiting: null,
+
+            init() {
+                this.setupOfflineWatcher();
+                this.registerServiceWorker();
+                this.setupInstallPromptCapture();
+                this.setupIOSInstallHint();
+            },
+
+            registerServiceWorker() {
+                if (!('serviceWorker' in navigator)) return;
+
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then((registration) => {
+                            if (registration.waiting) {
+                                this.newWorkerWaiting = registration.waiting;
+                                this.showUpdateBanner();
+                            }
+
+                            registration.addEventListener('updatefound', () => {
+                                const installingWorker = registration.installing;
+                                if (!installingWorker) return;
+
+                                installingWorker.addEventListener('statechange', () => {
+                                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        this.newWorkerWaiting = installingWorker;
+                                        this.showUpdateBanner();
+                                    }
+                                });
+                            });
+                        })
+                        .catch((err) => {
+                            console.warn('[piDots PWA] Falha no registro do Service Worker:', err);
+                        });
+
+                    let refreshing = false;
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (!refreshing) {
+                            refreshing = true;
+                            window.location.reload();
+                        }
+                    });
+                });
+            },
+
+            showUpdateBanner() {
+                if (document.getElementById('pwaUpdateBanner')) return;
+
+                const banner = document.createElement('div');
+                banner.id = 'pwaUpdateBanner';
+                banner.setAttribute('role', 'alert');
+                banner.style.cssText = `
+                    position: fixed;
+                    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+                    right: 16px;
+                    z-index: 100015;
+                    background: #11161d;
+                    border: 2px solid #38bdf8;
+                    box-shadow: 4px 4px 0px #000000;
+                    padding: 10px 14px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    font-family: 'JetBrains Mono', monospace;
+                    font-size: 11px;
+                    color: #f1f5f9;
+                `;
+
+                banner.innerHTML = `
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #38bdf8;"></span>
+                    <span>NOVA VERSAO DO PIDOTS PRONTA</span>
+                    <button id="pwaReloadBtn" class="pixel-btn btn-cyan" style="padding: 4px 8px; font-size: 9px;">[REINICIAR]</button>
+                    <button id="pwaDismissBtn" class="pixel-btn" style="padding: 4px 6px; font-size: 9px;">[X]</button>
+                `;
+
+                document.body.appendChild(banner);
+
+                document.getElementById('pwaReloadBtn').addEventListener('click', () => {
+                    if (this.newWorkerWaiting) {
+                        this.newWorkerWaiting.postMessage({ type: 'SKIP_WAITING' });
+                    }
+                });
+
+                document.getElementById('pwaDismissBtn').addEventListener('click', () => {
+                    banner.remove();
+                });
+            },
+
+            setupInstallPromptCapture() {
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    this.deferredInstallPrompt = e;
+                    this.showInstallUI();
+                });
+
+                window.addEventListener('appinstalled', () => {
+                    this.deferredInstallPrompt = null;
+                    this.hideInstallUI();
+                    if (window.PixelSystem && PixelSystem.toast) {
+                        PixelSystem.toast('piDots Edge Console instalado com sucesso!', 'success');
+                    }
+                });
+            },
+
+            showInstallUI() {
+                const btn = document.getElementById('pixelPwaInstallBtn');
+                if (btn) btn.style.display = 'inline-flex';
+
+                const bannerDismissed = sessionStorage.getItem('pidots_pwa_banner_dismissed');
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+                if (!bannerDismissed && !isStandalone) {
+                    const banner = document.getElementById('pixelPwaInstallBanner');
+                    if (banner) banner.style.display = 'flex';
+                }
+            },
+
+            hideInstallUI() {
+                const btn = document.getElementById('pixelPwaInstallBtn');
+                if (btn) btn.style.display = 'none';
+
+                const banner = document.getElementById('pixelPwaInstallBanner');
+                if (banner) banner.style.display = 'none';
+            },
+
+            async install() {
+                if (!this.deferredInstallPrompt) {
+                    if (window.PixelSystem && PixelSystem.toast) {
+                        PixelSystem.toast('Instalacao disponivel no menu do navegador ou ja instalada.', 'info');
+                    }
+                    return;
+                }
+                this.deferredInstallPrompt.prompt();
+                const { outcome } = await this.deferredInstallPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('[piDots PWA] Instalacao aceita pelo operador.');
+                }
+                this.deferredInstallPrompt = null;
+                this.hideInstallUI();
+            },
+
+            dismissBanner() {
+                const banner = document.getElementById('pixelPwaInstallBanner');
+                if (banner) banner.style.display = 'none';
+                sessionStorage.setItem('pidots_pwa_banner_dismissed', 'true');
+            },
+
+            setupIOSInstallHint() {
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                const isStandalone = window.navigator.standalone === true;
+
+                if (isIOS && !isStandalone) {
+                    const btn = document.getElementById('pixelPwaInstallBtn');
+                    if (btn) {
+                        btn.style.display = 'inline-flex';
+                        btn.onclick = () => {
+                            alert('Instalacao no iOS Safari:\n1. Toque no botao Compartilhar (icone de quadrado com seta para cima)\n2. Selecione "Adicionar a Tela de Inicio"');
+                        };
+                    }
+                }
+            },
+
+            setupOfflineWatcher() {
+                function updateNetworkStatus() {
+                    const isOnline = navigator.onLine;
+                    let badge = document.getElementById('networkStatusBadge');
+                    if (!badge) {
+                        badge = document.createElement('div');
+                        badge.id = 'networkStatusBadge';
+                        badge.style.cssText = `
+                            position: fixed;
+                            top: calc(8px + env(safe-area-inset-top, 0px));
+                            right: 16px;
+                            z-index: 9999;
+                            font-family: 'JetBrains Mono', monospace;
+                            font-size: 10px;
+                            padding: 3px 8px;
+                            border: 1px solid #ffb830;
+                            display: none;
+                            background: #07090c;
+                            color: #ffb830;
+                        `;
+                        document.body.appendChild(badge);
+                    }
+
+                    if (!isOnline) {
+                        badge.style.display = 'block';
+                        badge.textContent = '[MODO OFFLINE // CACHE LOCAL ATIVO]';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+
+                window.addEventListener('online', updateNetworkStatus);
+                window.addEventListener('offline', updateNetworkStatus);
+                updateNetworkStatus();
+            }
+        };
+
+        return {
+            Onboarding: Onboarding,
+            PatchNotes: PatchNotes,
+            PWA: PWA,
+            init() {
+                this.Onboarding.init();
+                this.PatchNotes.init();
+                this.PWA.init();
+            }
+        };
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        PiDotsUX.init();
+    });
+    </script>
 
 </body>
 </html>

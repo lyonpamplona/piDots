@@ -8,7 +8,7 @@ import httpx
 import asyncio
 import random
 import logging
-from typing import Any, AsyncGenerator
+from typing import Any
 from ..config import settings
 
 logger = logging.getLogger("pidots.provider")
@@ -16,6 +16,11 @@ logger = logging.getLogger("pidots.provider")
 
 class ProviderAuthError(RuntimeError):
     """Erro irrecuperável de autenticação ou credencial no provedor de IA (HTTP 401/403)."""
+    pass
+
+
+class ProviderEndpointError(RuntimeError):
+    """Erro de rota ou parâmetros inválidos no provedor de IA (HTTP 400/404)."""
     pass
 
 
@@ -120,7 +125,17 @@ class OpenAIUniversalProvider:
                     await asyncio.sleep(wait_time)
                     continue
 
-                # Demais erros HTTP inesperados (400, 404, etc.)
+                # Falhas irrecuperáveis de rota inexistente ou requisição rejeitada (400, 404)
+                if response.status_code in (400, 404):
+                    err_msg = (
+                        f"Endpoint ou modelo não encontrado no gateway (HTTP {response.status_code}): "
+                        f"verifique AI_BASE_URL ({self.base_url}) e AI_MODEL ({target_model}). "
+                        f"Resposta do gateway: {response.text[:200]}"
+                    )
+                    logger.error("%s", err_msg)
+                    raise ProviderEndpointError(err_msg)
+
+                # Demais erros HTTP inesperados
                 logger.error("Erro retornado pelo provedor: HTTP %d - %s", response.status_code, response.text[:200])
                 response.raise_for_status()
 

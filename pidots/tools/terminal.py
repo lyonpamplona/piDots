@@ -4,14 +4,11 @@ Suporta isolamento via Bubblewrap (bwrap) com fallback resiliente para Subproces
 """
 
 import os
-import sys
 import uuid
-import shlex
 import asyncio
 import logging
 from datetime import datetime, timezone
 from typing import Any
-from pathlib import Path
 
 from ..config import settings
 from ..storage.db import get_db
@@ -105,8 +102,8 @@ class TerminalSandbox:
             if proc:
                 try:
                     proc.kill()
-                except Exception:
-                    pass
+                except Exception as kill_err:
+                    logger.debug("Falha ao interromper processo após timeout: %s", kill_err)
             exit_code = -1
             stdout_b = b""
             stderr_b = f"Erro: Timeout de execução excedido ({timeout_seconds}s).".encode("utf-8")

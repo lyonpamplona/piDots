@@ -1,9 +1,9 @@
 # piDots — Manual Operacional e Guia de Produção 24/7
 
-**Projeto:** piDots (Motor Otimizado de AI Coworkers Persistentes para Raspberry Pi 4B)  
+**Projeto:** piDots (Motor Otimizado de AI Coworkers Persistentes para Hardware de Borda)  
 **Autor e Criador:** lyon christopher  
 **Assistente:** Logger  
-**Ambiente Alvo:** Raspberry Pi 4B (4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
+**Ambiente Alvo:** Computacao de Borda e SBCs (Benchmark de Referencia: Raspberry Pi 4B 4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
 **Versão:** 1.0.0 (Produção Estável)  
 
 ---
@@ -70,7 +70,7 @@ O piDots aplica a política **Deny-by-Default** para qualquer ação potencialme
 
 ### 3.2 Resolução de Solicitações HITL
 As solicitações podem ser resolvidas de três formas:
-1. **Pelo Console Web SPA:** No cartão interativo exibido na interface raiz (`GET /`).
+1. **Pelo Console Web SPA:** No cartao interativo de governanca acessivel no Console Operacional (`GET /app`, `/workspace` ou pelo atalho `Alt+H`).
 2. **Via API REST:**
    ```bash
    curl -X POST http://localhost:8000/api/hitl/<APPROVAL_ID>/resolve \
@@ -246,22 +246,47 @@ O orquestrador de canais (`ChannelOrchestrator`) monitora a propagacao de mensag
 
 ## 9. Baterias de Testes e Validacao em Producao
 
-Para validar as novas capacidades de colaboracao e mensageria apos atualizacoes de codigo:
+Para validar a integridade de todas as capacidades do piDots apos atualizacoes de codigo ou migracoes de hardware:
 
 ```bash
 cd /mnt/storage/piDots
 
-# 1. Validar orquestracao multi-bot, delegacao isolada e Dynamic Tool Pruning
+# 1. Testes de infraestrutura fundamental (banco, sandboxing, I/O)
+python3 scripts/test_phase1.py
+python3 scripts/test_phase2.py
+python3 scripts/test_phase3.py
+python3 scripts/test_phase4.py
+python3 scripts/test_phase5.py
+
+# 2. Validar orquestracao multi-bot, delegacao isolada e Dynamic Tool Pruning
 python3 scripts/test_phase6_multibot.py
 
-# 2. Validar agendamento proativo Dot Heartbeat e diretriz HEARTBEAT_OK
+# 3. Validar agendamento proativo Dot Heartbeat e diretriz HEARTBEAT_OK
 python3 scripts/test_phase7_scheduler.py
 
-# 3. Validar gateway de mensageria, canais tematicos e trava anti-recursao
+# 4. Validar gateway de mensageria, canais tematicos e trava anti-recursao
 python3 scripts/test_phase8_messaging.py
 
-# 4. Validar resiliencia integral (Fases 1 a 4: tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
+# 5. Validar Memoria Hierarquica MemGPT (Core Memory, Archival FTS5 + 64d Trigram)
+python3 scripts/test_phase9_memory.py
+
+# 6. Validar Self-Healing Harness e Two-Stage Planning (Goals & Milestones)
+python3 scripts/test_phase10_self_healing_planner.py
+
+# 7. Validar Conselho Consultivo e Deliberacao Dialetica Tripartite
+python3 scripts/test_phase11_council_debate.py
+
+# 8. Validar Shared Knowledge Space e Templates Dot Packs v1.0
+python3 scripts/test_phase12_shared_space_dot_packs.py
+
+# 9. Validar Triggers de Hardware Edge e Manutencao Noturna do MicroSD
+python3 scripts/test_phase13_edge_triggers_maintenance.py
+
+# 10. Validar resiliencia integral (Tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
 python3 scripts/test_resilience_phases.py
+
+# 11. Teste de estresse concorrente sob condicoes extremas de borda
+python3 scripts/stress_test.py
 ```
 Todos os scripts reportam o consumo real de memoria RSS (mantendo-se < 100 MB de RAM) e asseguram a integridade do banco SQLite WAL.
 
@@ -432,14 +457,152 @@ unzip -l workspace_dot-dev-core.zip
 
 ---
 
-## 14. Console Web SPA Oficial e Componentes de Interface
+## 14. Console Web SPA Oficial, Topologia de Rotas e Operacao via Teclado
 
-O console oficial do piDots opera na porta 8000 (`http://localhost:8000/`) e oferece:
-- **Design System Pixel Paper UI:** Interface tatica minimalista com contraste marcante (Dark Noir e Blueprint), visual de papel milimetrado e zero emojis.
+O console oficial do piDots opera na porta 8000 na rota canonica `http://localhost:8000/app` (com alias `http://localhost:8000/workspace`) e oferece:
+- **Design System Pixel Paper UI:** Interface tatica minimalista com contraste marcante (Dark Noir e Blueprint), visual de papel milimetrado, tipografia tecnica crisp e estetica retro minimalista de 1-bit.
 - **Identidade e Logotipo Oficial:** Logotipo vetorial servido via rota oficial `/icon.svg` com headers de cache HTTP de 24 horas (`Cache-Control: public, max-age=86400`).
-- **Telemetria de Hardware em Tempo Real:** Indicadores integrados de CPU Broadcom, RAM, temperatura do silicio e status do SQLite WAL.
+- **Telemetria de Hardware em Tempo Real:** Indicadores integrados de SoC/CPU, RAM, temperatura do silicio e status do SQLite WAL.
 - **Visualizador de Diffs Integrado:** Na aba SPACES, o botao `[VER DIFFS]` aciona a comparacao visual das revisoes armazenadas em `space_revisions` com carimbos analogicos de status.
 - **Governanca no Feed:** Alertas de solicitacoes pendentes de comandos de risco com botoes táteis de homologacao e veto forense.
-- **Landing Page Institucional:** Disponivel na rota `/apresentacao`, projetada para alta conversao sob a estetica Pixel Paper UI com calculadora de ROI e comparativo de custos Edge vs Nuvem.
-- **Guia Didatico do Operador:** Disponivel na rota `/guia`, estruturado em estilo passo a passo com drawer lateral retratil, campo de busca dinamica e layout de largura total responsivo.
-- **Roteamento Consolidado:** Todas as interfaces compartilham a mesma estetica visual unificada e consistente em producao.
+- **Landing Page de Onboarding:** Servida na raiz `/` (com redirecionamento 308 de `/apresentacao`), com calculadora interativa de ROI e comparativo de custos Edge vs Nuvem.
+- **Guia Didatico do Operador:** Servido na rota canonica `/docs` (com redirecionamento 308 de `/guia`), estruturado em estilo passo a passo com drawer lateral retratil, Omnisearch Ctrl+K e Mini API Tester.
+- **OpenAPI Swagger UI:** Interface nativa do FastAPI desacoplada em `/api/docs` com esquema bruto em `/api/openapi.json`.
+
+### 14.1 Navegacao Cruzada Rapida via Chords Globais
+Transicao instantanea sem necessidade de mouse a partir de qualquer superficie:
+
+| Chord Sequencial | Destino | Descricao |
+| :--- | :--- | :--- |
+| `g` seguido de `h` | `GET /` | Go Home: Landing Page de Apresentacao e Onboarding |
+| `g` seguido de `w` | `GET /app` | Go Workspace: Console Operacional SPA / Estacao de Trabalho |
+| `g` seguido de `d` | `GET /docs` | Go Docs: Guia Didatico e Referencia Tecnica |
+
+### 14.2 Atalhos de Alta Produtividade do Console SPA
+Para agilizar o fluxo operacional diario do operador:
+
+| Atalho de Teclado | Acao Executada | Comportamento no Sistema |
+| :--- | :--- | :--- |
+| `Alt+I` | Inspecionar Artefato | Foca e expande o artefato ativo no Live Canvas |
+| `Ctrl+S` / `Cmd+S` | Gravar Revisao | Grava revisao atomica do documento em Spaces no SQLite WAL |
+| `Alt+H` | Dossie HITL | Foca e abre o modal de governanca de aprovacao humana |
+| `F11` | Alternar Canvas | Alterna entre visualizacao dividida (split) e maximizada do canvas |
+| `Ctrl+L` | Limpar Teletipo | Limpa mensagens visuais da bobina do teletipo/chat local |
+| `F1` | Manual Operacional | Abre a gaveta lateral retratil com o manual tecnico |
+
+---
+
+## 15. Operacao da Memoria Hierarquica (Padrao MemGPT / Letta)
+
+### 15.1 Inspecionar Blocos de Core Memory no SQLite WAL
+A Core Memory mantem os blocos fixos residentes in-context para cada Dot:
+```bash
+sqlite3 /mnt/storage/piDots/data/pidots.db \
+  "SELECT dot_id, block_name, length(content) as chars_used, max_chars, updated_at FROM agent_core_memory_blocks;"
+```
+
+### 15.2 Inspecionar Archival Memories com Busca FTS5
+Para consultar o acervo duradouro de memorias de um Dot via ranking BM25:
+```bash
+sqlite3 /mnt/storage/piDots/data/pidots.db \
+  "SELECT a.id, a.dot_id, a.content, f.rank FROM archival_memories a JOIN archival_memories_fts f ON a.id = f.id WHERE archival_memories_fts MATCH 'MicroSD OR thermal' ORDER BY f.rank LIMIT 5;"
+```
+
+---
+
+## 16. Exportacao e Importacao de Dot Packs Portaveis (v1.0)
+
+Os Dot Packs permitem migrar e instanciar agentes especialistas completos entre diferentes Raspberry Pis sem reinstalar dependencias.
+
+### 16.1 Exportar Manifesto Dot Pack
+```bash
+# Exporta manifesto JSON completo de um Dot especializado
+curl -s http://localhost:8000/api/dots/dot-coder/export-pack > /mnt/storage/piDots/dot_coder_pack.json
+
+# Inspeciona o cabecalho do manifesto exportado
+head -n 25 /mnt/storage/piDots/dot_coder_pack.json
+```
+
+### 16.2 Importar Dot Pack Atomicamente
+```bash
+# Instancia atomicamente o agente com seu workspace fisico, Core Memory e memórias duradouras
+curl -s -X POST http://localhost:8000/api/dots/import-pack \
+  -H "Content-Type: application/json" \
+  -d @/mnt/storage/piDots/dot_coder_pack.json
+```
+
+---
+
+## 17. Monitoramento de Triggers de Hardware Edge (BCM2711)
+
+O piDots supervisiona ativamente a saude do silicio e do armazenamento flash para operacao Always-On estavel.
+
+### 17.1 Consultar Telemetria e Triggers em Tempo Real
+```bash
+curl -s http://localhost:8000/api/edge/triggers | jq .
+```
+Exemplo de resposta operacional:
+```json
+{
+  "status": "OK",
+  "device": "Linux Edge Node (Ref: RPi4 ARM64)",
+  "metrics": {
+    "temperature_celsius": 48.5,
+    "disk": {
+      "free_gb": 19.29,
+      "free_percent": 67.38
+    },
+    "ram": {
+      "total_mb": 3795.7,
+      "available_mb": 2355.2,
+      "free_percent": 62.05
+    },
+    "load_average": {
+      "load_1m": 0.42,
+      "load_5m": 0.38,
+      "load_15m": 0.25
+    }
+  },
+  "triggered_count": 0,
+  "triggered_events": [],
+  "is_throttled": false
+}
+```
+
+### 17.2 Acoes em Caso de Status WARNING ou CRITICAL
+- **`THERMAL_EXCEEDED` (Temperatura $\ge 72°C$):** O sistema ativa throttle automatico nas filas de inferencia. Verifique a ventilacao passiva/ativa do Raspberry Pi.
+- **`DISK_LOW_SPACE` (Espaco livre no MicroSD $< 10\%$):** Dispare imediatamente a rotina de manutencao noturna (Seção 18) para purgar mensagens antigas e truncar o WAL.
+
+---
+
+## 18. Rotina de Manutencao Noturna e Preservacao do MicroSD
+
+A manutencao do SQLite WAL preserva as celulas de memoria flash do cartao MicroSD e mantem tempos de resposta estaveis.
+
+### 18.1 Disparar Manutencao Noturna Manual via API REST
+```bash
+curl -s -X POST http://localhost:8000/api/edge/maintenance \
+  -H "Content-Type: application/json" \
+  -d '{"days_threshold": 7, "create_backup": true}' | jq .
+```
+O retorno confirma:
+- Truncamento síncrono do WAL (`PRAGMA wal_checkpoint(TRUNCATE)`), zerando o arquivo `-wal`.
+- Consolidacao de turnos com mais de 7 dias na tabela `episodic_memories` e poda das mensagens brutas em `messages`.
+- Geracao de backup atomico consistente em `data/backups/pidots_backup_TIMESTAMP.db` via `VACUUM INTO`.
+- Atualizacao de estatisticas dos indices SQLite via `PRAGMA optimize` e `ANALYZE`.
+
+### 18.2 Agendar Manutencao Noturna Diaria Autonoma (03:00 UTC)
+Cadastre a tarefa proativa no escalonador in-process do piDots:
+```bash
+curl -s -X POST http://localhost:8000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dot_id": "dot-auditor",
+    "task_name": "Manutencao Noturna MicroSD",
+    "cron_expr": "0 3 * * *",
+    "action_prompt": "Execute a ferramenta edge_maintenance_run com days_threshold=7 e create_backup=true para preservar a saude do cartao MicroSD.",
+    "target_channel_type": "internal"
+  }' | jq .
+```
+Apos cadastrada, o `EdgeScheduler` executara a rotina de compactacao automaticamente todas as noites as 03:00 sem intervencao do operador.
+

@@ -1,12 +1,12 @@
 # piDots
 
-**Edge AI Coworker Persistente para Hardware Restrito (Raspberry Pi 4B 4GB ARM64)**
+**Edge AI Coworker Persistente para Computacao de Borda (SBCs, ARM64 / x86_64, Benchmark: Raspberry Pi 4B)**
 
 [Português](README.md) | [English](README_EN.md)
 
 ![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-3776AB?style=flat&logo=python&logoColor=white)
 ![Arch](https://img.shields.io/badge/Architecture-ARM64%20%7C%20x86__64-informational?style=flat&logo=arm&logoColor=white)
-![Hardware](https://img.shields.io/badge/Target-Raspberry%20Pi%204B%20(4GB)-C51A4A?style=flat&logo=raspberrypi&logoColor=white)
+![Hardware](https://img.shields.io/badge/Target-Edge%20SBCs%20%7C%20ARM64%20%7C%20x86__64-C51A4A?style=flat&logo=raspberrypi&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose%20v2-2496ED?style=flat&logo=docker&logoColor=white)
 ![Storage](https://img.shields.io/badge/Storage-SQLite%20WAL-003B57?style=flat&logo=sqlite&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
@@ -15,7 +15,7 @@
 
 ## Visao Geral
 
-O **piDots** e uma plataforma de agentes autonomos persistentes (AI Coworkers) desenvolvida especificamente para operar 24/7 em hardware de borda com recursos estritamente limitados, tendo como alvo primario o **Raspberry Pi 4B com 4GB de RAM (ARM64)**.
+O **piDots** e uma plataforma de agentes autonomos persistentes (AI Coworkers) desenvolvida especificamente para operar 24/7 em computacao de borda e dispositivos restritos (SBCs, Mini PCs e servidores compactos), tendo o **Raspberry Pi 4B com 4GB de RAM (ARM64)** como benchmark de referencia.
 
 Inspirado nos conceitos de agentes autonomos do OpenDots corporativo, o piDots foi reestruturado e otimizado como um monólito modular assincrono de alta performance. Ele elimina dependencias pesadas de navegadores Chromium headless, conteineres pesados de bancos vetoriais e orquestradores em Node.js, alcancando uma pegada de memoria operacional inferior a **50 MB de RAM** em idle e menos de **150 MB** sob execucao simultanea de multiplos agentes.
 
@@ -53,11 +53,16 @@ pidots/
 ├── core/
 │   ├── __init__.py
 │   ├── agent.py         # Motor ReAct assincrono com Dynamic Tool Pruning e AG-UI
+│   ├── council.py       # Conselho Consultivo e debate dialetico tripartite
+│   ├── dot_pack.py      # Empacotamento, exportacao e importacao portavel de Dot Packs v1.0
+│   ├── edge_triggers.py # Triggers de hardware edge (SoC Broadcom BCM2711, MicroSD e RAM)
 │   ├── hitl.py          # Governanca Human-in-the-Loop com retencao e aprovacao
 │   ├── messaging_gateway.py # Gateway unificado de mensageria e barramento de canais
 │   ├── notifier.py      # Notificador HTTP e alertas externos
 │   ├── orchestrator.py  # Orquestrador Multi-Bot (Supervisor, Handoff, mencoes @dot)
-│   ├── scheduler.py     # Motor proativo Dot Heartbeat com calculo via croniter
+│   ├── planner.py       # Planejamento em dois estagios (Goals, Milestones e Checkpoints)
+│   ├── scheduler.py     # Motor proativo Dot Heartbeat com calculo via croniter e circuit breaker
+│   ├── self_healing.py  # Self-Healing Harness e diagnostico cirurgico de tracebacks
 │   └── state.py         # Modelos de eventos do protocolo AG-UI e estados de sessao
 ├── providers/
 │   ├── __init__.py
@@ -65,12 +70,15 @@ pidots/
 ├── storage/
 │   ├── __init__.py
 │   ├── db.py            # SQLite WAL calibrado para microSD e migracoes idempotentes
+│   ├── maintenance.py   # Manutencao noturna autonoma, WAL checkpoint TRUNCATE e VACUUM INTO
+│   ├── memory_manager.py # Memoria hierarquica MemGPT (Core Memory, Archival FTS5 + 64d)
+│   ├── shared_space.py  # Espaco de conhecimento compartilhado entre bots na thread
 │   ├── spaces_manager.py # Workspaces isolados, versionamento e diffs unificados
 │   └── vector_store.py  # Memoria vetorial KNN em disco com hashing CRC32
 └── tools/
     ├── __init__.py
     ├── file_ops.py      # Operacoes atomicas de leitura, escrita e listagem em disco
-    ├── registry.py      # Registro centralizado com Dynamic Tool Pruning
+    ├── registry.py      # Registro centralizado de 23 ferramentas com Dynamic Tool Pruning
     ├── terminal.py      # Executor shell isolado via Bubblewrap ou subprocesso seguro
     └── web_reader.py    # Extrator semantico web assincrono com Trafilatura
 ```
@@ -120,6 +128,33 @@ O motor central do piDots implementa um protocolo unificado de resiliencia de po
   - *EdgeScheduler:* Registra o status `FAILED` com sumario tecnico real no SQLite, eliminando falsos positivos de sucesso.
   - *MessagingGateway:* Devolve retorno amigavel claro para canais externos (`[FALHA OPERACIONAL]`).
   - *MultiBotOrchestrator:* Marca a subtarefa em `agent_handoffs` como `FAILED`, registra alerta interno na thread pai e retorna feedback estruturado `{'success': False, 'error': ...}` para permitir replanejamento pelo supervisor.
+
+### 5. Memoria Hierarquica Autonoma (Padrao MemGPT / Letta)
+O modulo `pidots/storage/memory_manager.py` disponibiliza memoria em 3 camadas gerida pelo proprio Dot via Function Calling nativo:
+- **Core Memory In-Context (`<core_memory>`):** Blocos fixos de memoria residente injetados diretamente no system prompt com teto rigido de caracteres contra overflow: `human` (dados do usuario), `persona` (identidade do agente) e `active_context` (foco da missao).
+- **Ferramentas de Auto-Edicao:** `core_memory_append` e `core_memory_replace` permitem ao Dot aprender e atualizar sua propria identidade sem comandos do operador.
+- **Archival Memory Duradoura com Busca Hibrida:** Fatos e documentacoes gravados em `archival_memories` e indexados sincronamente na Virtual Table SQLite FTS5 (`archival_memories_fts`). Combina ranking BM25 com projecao vetorial esparsa 64d (baseada em hashing de trigramas e ativacao semantica), com as ferramentas `archival_memory_insert` e `archival_memory_search`.
+- **Recall Memory:** A ferramenta `recall_memory_search` permite consultar conversas anteriores na mesma thread sem poluir o contexto com turnos brutos.
+
+### 6. Self-Healing Harness e Planejamento em Dois Estagios (Goals & Milestones)
+- **Self-Healing Harness (`pidots/core/self_healing.py`):** Inspeciona resultados de shell e scripts Python. Ao detectar falhas de execucao, disseca o traceback bruto, identifica o arquivo, a linha e o tipo da excecao, emitindo o evento AG-UI `self_healing:triggered` e fornecendo diagnostico com recomendacao tecnica de correcao via ferramenta `execute_and_verify`.
+- **Two-Stage Planning (`pidots/core/planner.py`):** Modela metas (`goals`) e marcos operacionais (`milestones`) persistidos no SQLite. O agente cria planos (`plan_create`), atualiza o status de cada marco com evidencias tecnicas (`plan_update_step`) e consulta o progresso percentual (`plan_get_status`), com formatacao XML automatica `<execution_plan>`.
+
+### 7. Conselho Consultivo e Debate Dialetico Multi-Bot
+O modulo `pidots/core/council.py` implementa deliberacao dialetica formal entre especialistas cognitivos:
+- **Papéis do Conselho:** Propositor (`@coder` formula proposta tecnica), Auditor Critico (`@auditor` faz revisao adversarial de riscos) e Supervisor Geral (`@supervisor` sintetiza o veredito executivo).
+- **Isolamento em Fitas de Carbono:** As rodadas intermediarias de debate sao gravadas com `visibility: 'internal'`. Somente a resolucao final e publicada no feed com o cabecalho `[CONSELHO CONSULTIVO - RESOLUCAO FINAL]`.
+- **Trava de Seguranca:** Teto maximo rigido de 3 rodadas de debate para conter custos e memoria, com consumo medido inferior a 53 MB de RAM.
+- **Ferramenta Nativa:** Invocacao direta via `run_council_debate`.
+
+### 8. Espaco de Conhecimento Compartilhado e Dot Packs Portaveis
+- **Shared Knowledge Space (`pidots/storage/shared_space.py`):** Quadro colaborativo indexado por `(thread_id, topic_key)` na tabela `thread_shared_notes`. Permite gravacao (`shared_space_write`), leitura (`shared_space_read`) e sobrescrita colaborativa entre bots na mesma thread, com formatacao XML `<shared_knowledge_space>`.
+- **Dot Packs v1.0 (`pidots/core/dot_pack.py`):** Formato portavel de manifesto JSON que empacota definicoes do Dot, arquetipo, ferramentas, blocos de Core Memory, memórias duradouras e arquivos de workspace. Exportacao via `GET /api/dots/{dot_id}/export-pack` e importacao atomica via `POST /api/dots/import-pack`.
+
+### 9. Triggers de Hardware Edge e Manutencao Noturna do MicroSD
+- **Triggers Orientados a Eventos de Hardware (`pidots/core/edge_triggers.py`):** Monitora temperatura do SoC Broadcom BCM2711 via sysfs Linux (`/sys/class/thermal/thermal_zone0/temp`), espaco livre no MicroSD e memoria RAM livre. Emite alertas proativos e ativa throttle automatico caso a temperatura ultrapasse 72°C ou o espaco em disco seja inferior a 10%. Endpoint: `GET /api/edge/triggers`.
+- **Rotina de Manutencao Noturna Autonoma (`pidots/storage/maintenance.py`):** Executa `PRAGMA wal_checkpoint(TRUNCATE)` para esvaziar o arquivo WAL, consolida e poda mensagens brutas antigas (> 7 dias) na tabela `episodic_memories`, gera backups atomicos seguros via `VACUUM INTO` em conexao isolada (`isolation_level=None`) e atualiza indices com `PRAGMA optimize`. Endpoint: `POST /api/edge/maintenance`.
+
 
 ---
 
@@ -305,14 +340,22 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 
 | Metodo | Endpoint | Descricao |
 | :--- | :--- | :--- |
-| `GET` | `/` | Console operacional oficial SPA/PWA em Pixel Paper UI (Dark Noir e Blueprint) |
-| `GET` | `/apresentacao` | Landing page oficial de alta conversao em Pixel Paper UI |
-| `GET` | `/guia` | Guia operacional didatico com drawer lateral retratil e busca integrada |
+| `GET` | `/` | Landing page oficial de apresentacao e onboarding em Pixel Paper UI |
+| `GET` | `/app` | Console operacional oficial SPA/PWA em Pixel Paper UI (Dark Noir e Blueprint) |
+| `GET` | `/workspace` | Alias operacional canonico para a estacao de trabalho SPA/PWA (`/app`) |
+| `GET` | `/docs` | Guia didatico canonico com busca client-side (Ctrl+K), drawer retratil e API tester |
+| `GET` | `/api/docs` | Swagger UI interativo OpenAPI desacoplado para desenvolvedores |
+| `GET` | `/api/openapi.json` | Esquema OpenAPI 3.0 estruturado em JSON bruto |
+| `GET` | `/apresentacao` | Redirecionamento permanente HTTP 308 (RFC 7538) para a raiz `/` |
+| `GET` | `/guia` | Redirecionamento permanente HTTP 308 (RFC 7538) para `/docs` |
+| `GET` | `/console` | Redirecionamento permanente HTTP 308 (RFC 7538) para `/app` |
 | `GET` | `/relatorio` | Relatorio tecnico de viabilidade de engenharia e benchmarks |
 | `GET` | `/health` | Telemetria de hardware (temperatura SoC, RAM, status SQLite WAL) |
-| `GET` | `/manifest.json` | Manifesto PWA para instalacao em dispositivos moveis e desktop |
+| `GET` | `/manifest.json` | Manifesto PWA para instalacao em dispositivos moveis e desktop (`start_url: /app`) |
 | `GET` | `/icon.svg` | Logotipo vetorial oficial em formato SVG com cache prolongado |
 | `GET` | `/api/dots` | Listagem de AI Coworkers com arquetipos e status |
+| `GET` | `/api/dots/{id}/export-pack` | Exportacao portavel do manifesto DotPack v1.0 (persona, memorias, workspace) |
+| `POST` | `/api/dots/import-pack` | Importacao atomica de novos agentes a partir de arquivo de DotPack |
 | `POST` | `/api/threads` | Criacao de thread de conversacao duravel |
 | `GET` | `/api/threads/{id}/messages` | Historico de mensagens com metadados multi-ator e visibilidade |
 | `POST` | `/api/threads/{id}/runs` | Ciclo autonomo do Dot com streaming SSE (Protocolo AG-UI v1.0) |
@@ -328,6 +371,8 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 | `GET` | `/api/workspaces/{dot_id}/export.zip` | Exportacao do workspace completo do Dot em ZIP (com fallback de Spaces) |
 | `GET` | `/api/tasks` | Listagem de tarefas proativas agendadas (Dot Heartbeats) |
 | `POST` | `/api/tasks` | Criacao de nova tarefa proativa com expressao cron |
+| `GET` | `/api/edge/triggers` | Telemetria de triggers de hardware (temperatura SoC, MicroSD livre, RAM livre) |
+| `POST` | `/api/edge/maintenance` | Disparo sob demanda da rotina de manutencao noturna (WAL checkpoint e backup) |
 | `GET` | `/api/channels` | Listagem de salas tematicas com contagem de mensagens |
 | `POST` | `/api/channels` | Criacao de nova sala tematica colaborativa |
 | `GET` | `/api/channels/{id}/messages` | Mensagens recentes da sala tematica com limite parametrizavel |
@@ -346,13 +391,34 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 ---
 
 ### Console Operacional Web SPA e Design System Pixel Paper UI
-O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida diretamente na rota raiz (`http://localhost:8000/`), projetada sob o design system **Pixel Paper UI**:
-- **Estetica Pixel Paper UI:** Visual tatico inspirado em teletipos tecnicos, fichas catalograficas e papel milimetrado com alta densidade de informacoes e zero emojis.
+O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota canonica `/app` (ou `/workspace`), projetada sob o design system **Pixel Paper UI**:
+- **Estetica Pixel Paper UI:** Visual tatico inspirado em teletipos tecnicos, fichas catalograficas e papel milimetrado com alta densidade de informacoes, tipografia tecnica crisp e estetica retro minimalista de 1-bit.
 - **Logotipo Vetorial Oficial:** Marca de identidade do piDots servida via `/icon.svg` com nos interconectados em verde (#10b981) e ciano (#38bdf8).
 - **Sistema de 26 Icones SVGs Tecnicos:** Iconografia uniforme (`stroke-width: 2`, `stroke-linecap: round`) em telemetria, abas do workspace, secoes da sidebar e botoes de acao.
 - **Visualizador de Diffs e Versionamento:** Inspecao lado a lado de alteracoes em arquivos persistidos no SQLite WAL com carimbos analogicos de status.
 - **Governanca Interativa HITL:** Cartoes de aprovacao e veto forense de comandos com registro de auditoria e carimbos de estado.
 - **Streaming de Raciocinio AG-UI:** Exibicao token a token de pensamentos e chamadas de ferramentas.
+
+#### Navegacao Cruzada via Chords Globais de Teclado
+Para transicao instantanea entre as superficies do sistema sem necessidade de mouse:
+
+| Chord Sequencial | Superficie de Destino | Descricao |
+| :--- | :--- | :--- |
+| `g` seguido de `h` | `/` | Go Home: Landing Page Oficial e Onboarding |
+| `g` seguido de `w` | `/app` | Go Workspace: Console Operacional SPA / Estacao de Trabalho |
+| `g` seguido de `d` | `/docs` | Go Docs: Guia Didatico e Referencia Tecnica |
+
+#### Atalhos de Alta Produtividade do Console SPA
+Operacao tática de terminal e gerenciamento sem atrito:
+
+| Atalho | Acao Operacional | Descricao |
+| :--- | :--- | :--- |
+| `Alt+I` | Inspecionar Artefato | Foca e expande o artefato ativo no Live Canvas |
+| `Ctrl+S` / `Cmd+S` | Gravar Revisao | Grava revisao atomica do documento em Spaces no SQLite WAL |
+| `Alt+H` | Dossie HITL | Foca e abre o modal de governanca de aprovacao humana |
+| `F11` | Alternar Canvas | Alterna entre visualizacao dividida (split) e maximizada do canvas |
+| `Ctrl+L` | Limpar Teletipo | Limpa mensagens visuais da bobina do teletipo/chat local |
+| `F1` | Manual Operacional | Abre a gaveta lateral retratil com o manual tecnico |
 
 ---
 
@@ -387,12 +453,20 @@ python3 scripts/test_phase7_scheduler.py
 # Teste do gateway de mensageria, webhooks e canais colaborativos
 python3 scripts/test_phase8_messaging.py
 
-# Teste de resiliencia integral (Fases 1 a 4: tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
+# Testes do plano de expansao de borda (Fases 1 a 5)
+python3 scripts/test_phase9_memory.py               # Memoria Hierarquica (Core Memory, Archival FTS5, 64d)
+python3 scripts/test_phase10_self_healing_planner.py # Self-Healing Harness e Two-Stage Planning
+python3 scripts/test_phase11_council_debate.py       # Conselho Consultivo e Debate Tripartite
+python3 scripts/test_phase12_shared_space_dot_packs.py # Shared Knowledge Space e Dot Packs v1.0
+python3 scripts/test_phase13_edge_triggers_maintenance.py # Triggers de Hardware e Manutencao MicroSD
+
+# Teste de resiliencia integral (Tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
 python3 scripts/test_resilience_phases.py
 
 # Teste de carga e concorrencia sob estresse (Edge Stress Test)
 python3 scripts/stress_test.py
 ```
+
 
 ---
 
@@ -414,16 +488,24 @@ python3 scripts/stress_test.py
 │   ├── main.py                      # Servidor FastAPI, endpoints REST e streaming SSE
 │   ├── core/                        # Ciclo ReAct, multi-bot, scheduler e mensageria
 │   │   ├── agent.py                 # Ciclo de execucao autonomo do agente com Tool Pruning
+│   │   ├── council.py               # Conselho Consultivo e debate dialetico tripartite
+│   │   ├── dot_pack.py              # Empacotamento, exportacao e importacao de Dot Packs v1.0
+│   │   ├── edge_triggers.py         # Triggers de hardware edge (SoC, MicroSD e RAM)
 │   │   ├── hitl.py                  # Interceptacao e gestao de acoes de alto risco
 │   │   ├── messaging_gateway.py     # Gateway unificado de mensageria e barramento de canais
 │   │   ├── notifier.py              # Notificacoes e webhooks externos
 │   │   ├── orchestrator.py          # Orquestrador Multi-Bot e delegacao de subtarefas
+│   │   ├── planner.py               # Planejamento em dois estagios (Goals e Milestones)
 │   │   ├── scheduler.py             # Escalonador proativo Dot Heartbeat via croniter
+│   │   ├── self_healing.py          # Self-Healing Harness e diagnostico de tracebacks
 │   │   └── state.py                 # Gestao de estado e contexto de sessao
 │   ├── providers/                   # Adaptadores de modelos de linguagem (LLM/SLM)
 │   │   └── openai_client.py         # Provedor universal compativel com protocolo OpenAI
 │   ├── storage/                     # Persistencia em SQLite WAL e busca vetorial
 │   │   ├── db.py                    # Gerenciamento de conexao e esquemas de dados
+│   │   ├── maintenance.py           # Manutencao noturna autonoma e compactacao WAL
+│   │   ├── memory_manager.py        # Memoria hierarquica MemGPT (Core, Archival FTS5)
+│   │   ├── shared_space.py          # Espaco de conhecimento compartilhado entre bots
 │   │   ├── spaces_manager.py        # Versionamento de arquivos e diffs
 │   │   └── vector_store.py          # Motor vetorial KNN otimizado com CRC32
 │   └── tools/                       # Ferramentas executaveis do agente

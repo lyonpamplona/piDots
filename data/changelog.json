@@ -1,0 +1,59 @@
+{
+  "system": "piDots",
+  "app_name": "piDots Edge Console",
+  "current_version": "1.1.0",
+  "release_date": "2026-10-12",
+  "build": "20261012-ARM64",
+  "commit_hash": "9F2A1C",
+  "channel": "stable",
+  "patch_notes": {
+    "version": "1.1.0",
+    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.1.0",
+    "summary": "Implementacao do Guia de Primeiro Acesso em Ficha Catalografica, Suporte PWA 100% Instalavel com WebAPK, Changelog Unificado e Otimizacoes de Borda.",
+    "categories": {
+      "included": [
+        "Onboarding Tatil em Ficha Catalografica: modal interativo de 5 etapas com navegacao por abas ortogonais, memorizacao de conclusao e atalhos globais de teclado.",
+        "Integracao e Suporte PWA Nativo: geracao de icones PNG rasterizados com supersampling Lanczos para WebAPK e Apple Touch Icon, captura transparente de beforeinstallprompt e execucao standalone offline.",
+        "Changelog Central com Persistencia: sistema unificado de notas de versao integrado ao armazenamento local do navegador e historico retroativo.",
+        "Monitor de Telemetria SVG crispEdges: renderizacao nativa de curvas de carga e temperatura sem frameworks pesados de terceiros."
+      ],
+      "adjusted": [
+        "Teto Estrito de DOM (150 Nos): otimizacao do buffer circular de slips da bobina de teletipo, estabilizando o consumo de memoria em hardware restrito.",
+        "Hitbox Tatil de 48x48px: ampliacao da area fisica de toque em botoes interativos sem distorcer o alinhamento de pixel art.",
+        "Sincronizacao ao Vivo do Live Canvas: atualizacao incremental de documentos sem necessidade de recarregar a tela.",
+        "Fisica Mecanica Padronizada: unificacao das microinteracoes em funcoes steps(1) e steps(2) com duracao menor que 50ms."
+      ],
+      "removed": [
+        "Descarte de Bibliotecas Graficas Externas: eliminados Chart.js e pacotes pesados em favor de graficos matriciais construidos com SVG nativo.",
+        "Eliminacao de Caixas de Dialogo Nativas: descontinuado o uso de alert(), confirm() e prompt() do navegador em prol de modais Pixel Paper UI.",
+        "Remocao de Filtros de Desfoque (backdrop-filter): eliminados filtros gaussianos que causavam engasgos de renderizacao em chips ARM64."
+      ],
+      "security_and_edge": [
+        "Trava Mecanica de Dois Estagios: exigencia de desarme de chave de protecao antes da homologacao de comandos criticos no dossie HITL.",
+        "Isolamento de Sandbox Bubblewrap: execucao estrita de ferramentas de terminal com bloqueio de leitura de chaves e certificados do sistema.",
+        "Sanitizacao Estrita de Payload: validacao formal de esquemas no gateway de mensageria prevenindo injecao de comandos em prompts multi-bot."
+      ]
+    }
+  },
+  "history": [
+    {
+      "version": "1.0.1",
+      "release_date": "2026-10-11",
+      "type": "HOTFIXES",
+      "highlights": [
+        "Correcao de travamento esporadico no bloqueio de escrita do SQLite WAL em operacoes concorrentes.",
+        "Ajuste fino de insets de seguranca para navegadores moveis (Dynamic Island e barras de gestos)."
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "release_date": "2026-10-10",
+      "type": "RELEASE INAUGURAL",
+      "highlights": [
+        "Lancamento do console triptych oficial para agentes autonomos piDots.",
+        "Implementacao do roteador de mensageria com suporte a mencao @dot e dossie HITL.",
+        "Engine de renderizacao Pixel Paper UI e integracao com modelos LLM locais e em nuvem."
+      ]
+    }
+  ]
+}

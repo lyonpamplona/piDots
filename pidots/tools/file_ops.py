@@ -8,7 +8,6 @@ import uuid
 import tempfile
 import logging
 from typing import Any
-from pathlib import Path
 from datetime import datetime, timezone
 
 from ..config import settings

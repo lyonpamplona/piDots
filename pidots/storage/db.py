@@ -259,6 +259,74 @@ CREATE INDEX IF NOT EXISTS idx_milestones_goal ON milestones(goal_id, order_inde
 CREATE INDEX IF NOT EXISTS idx_tasks_due ON scheduled_tasks(is_active, next_run_at, backoff_until);
 CREATE INDEX IF NOT EXISTS idx_channel_msgs ON channel_messages(channel_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_channel_members ON channel_members(channel_id);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_episodic_dot_thread ON episodic_memories(dot_id, thread_id);
+CREATE INDEX IF NOT EXISTS idx_episodic_created_at ON episodic_memories(created_at);
+
+
+-- Memória Autônoma Hierárquica (Padrão MemGPT / Letta)
+CREATE TABLE IF NOT EXISTS agent_core_memory_blocks (
+    id TEXT PRIMARY KEY,
+    dot_id TEXT NOT NULL,
+    block_name TEXT NOT NULL, -- 'human', 'persona', 'active_context'
+    content TEXT NOT NULL DEFAULT '',
+    max_chars INTEGER DEFAULT 2000,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(dot_id, block_name),
+    FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS archival_memories (
+    id TEXT PRIMARY KEY,
+    dot_id TEXT NOT NULL,
+    content TEXT NOT NULL,
+    tags_json TEXT DEFAULT '[]',
+    vector_json TEXT, -- Projeção vetorial determinística compacta de 64 floats
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
+);
+
+CREATE VIRTUAL TABLE IF NOT EXISTS archival_memories_fts USING fts5(
+    id UNINDEXED,
+    dot_id UNINDEXED,
+    content,
+    tags,
+    tokenize = 'porter unicode61'
+);
+
+CREATE TRIGGER IF NOT EXISTS trg_archival_insert AFTER INSERT ON archival_memories BEGIN
+    INSERT INTO archival_memories_fts (id, dot_id, content, tags)
+    VALUES (new.id, new.dot_id, new.content, new.tags_json);
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_archival_delete AFTER DELETE ON archival_memories BEGIN
+    DELETE FROM archival_memories_fts WHERE id = old.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_archival_update AFTER UPDATE ON archival_memories BEGIN
+    DELETE FROM archival_memories_fts WHERE id = old.id;
+    INSERT INTO archival_memories_fts (id, dot_id, content, tags)
+    VALUES (new.id, new.dot_id, new.content, new.tags_json);
+END;
+
+CREATE INDEX IF NOT EXISTS idx_core_mem_dot ON agent_core_memory_blocks(dot_id);
+CREATE INDEX IF NOT EXISTS idx_archival_dot ON archival_memories(dot_id, created_at);
+
+-- Espaço de Conhecimento Compartilhado entre Bots (Shared Knowledge Space)
+CREATE TABLE IF NOT EXISTS thread_shared_notes (
+    id TEXT PRIMARY KEY,
+    thread_id TEXT NOT NULL,
+    dot_id TEXT NOT NULL,
+    topic_key TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(thread_id, topic_key),
+    FOREIGN KEY(thread_id) REFERENCES threads(id) ON DELETE CASCADE,
+    FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_shared_notes_thread ON thread_shared_notes(thread_id, topic_key);
 """
 
 
@@ -304,7 +372,82 @@ async def _apply_schema_migrations(db: aiosqlite.Connection) -> None:
     if "backoff_until" not in tasks_cols:
         await db.execute("ALTER TABLE scheduled_tasks ADD COLUMN backoff_until TIMESTAMP;")
 
+    # 5. Tabelas e Gatilhos de Memória Autônoma Hierárquica
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS agent_core_memory_blocks (
+            id TEXT PRIMARY KEY,
+            dot_id TEXT NOT NULL,
+            block_name TEXT NOT NULL,
+            content TEXT NOT NULL DEFAULT '',
+            max_chars INTEGER DEFAULT 2000,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(dot_id, block_name),
+            FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
+        );
+    """)
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS archival_memories (
+            id TEXT PRIMARY KEY,
+            dot_id TEXT NOT NULL,
+            content TEXT NOT NULL,
+            tags_json TEXT DEFAULT '[]',
+            vector_json TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
+        );
+    """)
+    await db.execute("""
+        CREATE VIRTUAL TABLE IF NOT EXISTS archival_memories_fts USING fts5(
+            id UNINDEXED,
+            dot_id UNINDEXED,
+            content,
+            tags,
+            tokenize = 'porter unicode61'
+        );
+    """)
+    await db.execute("""
+        CREATE TRIGGER IF NOT EXISTS trg_archival_insert AFTER INSERT ON archival_memories BEGIN
+            INSERT INTO archival_memories_fts (id, dot_id, content, tags)
+            VALUES (new.id, new.dot_id, new.content, new.tags_json);
+        END;
+    """)
+    await db.execute("""
+        CREATE TRIGGER IF NOT EXISTS trg_archival_delete AFTER DELETE ON archival_memories BEGIN
+            DELETE FROM archival_memories_fts WHERE id = old.id;
+        END;
+    """)
+    await db.execute("""
+        CREATE TRIGGER IF NOT EXISTS trg_archival_update AFTER UPDATE ON archival_memories BEGIN
+            DELETE FROM archival_memories_fts WHERE id = old.id;
+            INSERT INTO archival_memories_fts (id, dot_id, content, tags)
+            VALUES (new.id, new.dot_id, new.content, new.tags_json);
+        END;
+    """)
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_core_mem_dot ON agent_core_memory_blocks(dot_id);")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_archival_dot ON archival_memories(dot_id, created_at);")
+
+    # 5. Tabela de Conhecimento Compartilhado entre Bots (Shared Knowledge Space)
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS thread_shared_notes (
+            id TEXT PRIMARY KEY,
+            thread_id TEXT NOT NULL,
+            dot_id TEXT NOT NULL,
+            topic_key TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(thread_id, topic_key),
+            FOREIGN KEY(thread_id) REFERENCES threads(id) ON DELETE CASCADE,
+            FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
+        );
+    """)
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_shared_notes_thread ON thread_shared_notes(thread_id, topic_key);")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_episodic_dot_thread ON episodic_memories(dot_id, thread_id);")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_episodic_created_at ON episodic_memories(created_at);")
+
     await db.commit()
+
 
 
 async def init_edge_database(db_path: str | None = None) -> None:
@@ -332,6 +475,22 @@ async def init_edge_database(db_path: str | None = None) -> None:
 
         # Execução das migrações idempotentes de colunas
         await _apply_schema_migrations(db)
+
+        # Inicialização idempotente de Dot e Thread padrão para integridade relacional de Foreign Keys
+        await db.execute("""
+            INSERT OR IGNORE INTO dots (
+                id, name, role, system_prompt, model, workspace_path, archetype, avatar_stamp
+            ) VALUES (
+                'dot-dev-core', 'Dev Core', 'Engenheiro de Software & Arquiteto Edge',
+                'Você é o Dev Core, assistente técnico de desenvolvimento e infraestrutura.',
+                'qwen3.8-27b', 'workspaces/dot-dev-core', 'general', 'DOT'
+            );
+        """)
+        await db.execute("""
+            INSERT OR IGNORE INTO threads (id, dot_id, title, status)
+            VALUES ('default-thread', 'dot-dev-core', 'Sessão Padrão', 'idle');
+        """)
+        await db.commit()
     logger.info("Banco SQLite Edge inicializado com sucesso em modo WAL com migrações.")
 
 

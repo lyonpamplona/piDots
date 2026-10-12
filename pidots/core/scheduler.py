@@ -11,7 +11,6 @@ from datetime import datetime, timezone, timedelta
 from typing import Any
 from croniter import croniter
 
-from ..config import settings
 from ..storage.db import get_db
 from ..providers.openai_client import OpenAIUniversalProvider
 from .agent import DotAgent
@@ -334,15 +333,28 @@ async def heartbeat_worker_loop(
 ) -> None:
     """
     Loop assíncrono perpétuo de background do scheduler.
-    Varre tarefas devidas a cada N segundos e as executa concorrentemente sem duplicações.
+    Varre tarefas devidas a cada N segundos e as executa concorrentemente sem duplicações,
+    além de monitorar periodicamente limites térmicos e de disco do Raspberry Pi 4B.
     """
     logger.info("Scheduler Proativo (Dot Heartbeat) iniciado (intervalo: %ds).", check_interval_seconds)
+    hardware_check_ticks = 0
+
     while True:
         try:
             due_tasks = await EdgeScheduler.get_due_tasks()
             for task in due_tasks:
                 if not EdgeScheduler.is_running(task["id"]):
                     asyncio.create_task(execute_proactive_task(task, ai_provider))
+
+            # Monitoramento proativo de triggers de hardware a cada ~60 segundos
+            hardware_check_ticks += 1
+            if hardware_check_ticks >= max(1, 60 // check_interval_seconds):
+                hardware_check_ticks = 0
+                try:
+                    from .edge_triggers import EdgeHardwareTriggers
+                    await EdgeHardwareTriggers.evaluate_and_alert(notify_hitl=True)
+                except Exception as hw_err:
+                    logger.debug("Falha na checagem de triggers de hardware no heartbeat: %s", str(hw_err))
 
             await asyncio.sleep(check_interval_seconds)
         except asyncio.CancelledError:
@@ -351,3 +363,4 @@ async def heartbeat_worker_loop(
         except Exception as e:
             logger.error("Erro inesperado no loop do Heartbeat: %s", str(e), exc_info=True)
             await asyncio.sleep(check_interval_seconds)
+

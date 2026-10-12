@@ -10,7 +10,6 @@ import uuid
 import zlib
 import logging
 from typing import Any
-from datetime import datetime
 from .db import get_db
 
 logger = logging.getLogger("pidots.storage.vector")
