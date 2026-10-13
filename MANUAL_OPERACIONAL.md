@@ -4,7 +4,7 @@
 **Autor e Criador:** lyon christopher  
 **Assistente:** Logger  
 **Ambiente Alvo:** Computacao de Borda e SBCs (Benchmark de Referencia: Raspberry Pi 4B 4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
-**Versão:** 1.2.0 (Produção Estável — Edição Soberana Bilíngue & Escrita Humana)  
+**Versão:** 1.4.0 (Produção Estável — Reestruturação Ergonômica, Squad Central & Três Modos de Operação)  
 
 ---
 
@@ -63,12 +63,22 @@ docker compose down
 O piDots aplica a política **Deny-by-Default** para qualquer ação potencialmente destrutiva disparada por um agente.
 
 ### 3.1 Classificação de Risco
-- **LOW:** Comandos de leitura e consultas seguras (`ls`, `cat`, `python3 script.py`). Execução liberada de forma autônoma.
-- **MEDIUM:** Operações com redirecionamento de saída (`>`, `>>`, `tee`).
+- **LOW:** Comandos de leitura e consultas seguras (`ls`, `cat`, `python3 script.py`) e comandos com descarte inofensivo de erros (`2>/dev/null`, `2>&1`, `>/dev/null`). Execução liberada de forma autônoma sem travar o operador.
+- **MEDIUM:** Operações com redirecionamento real de escrita para arquivos em disco (`> arquivo`, `>> arquivo`, `tee`).
 - **HIGH:** Exclusão de arquivos (`file_delete`), criação de skills persistentes.
 - **CRITICAL:** Comandos shell perigosos (`rm -rf`, `mkfs`, `dd`, `chmod`, `sudo`, `curl | bash`, `reboot`, `shutdown`). A execução é **imediatamente bloqueada** até a decisão do operador.
 
-### 3.2 Resolução de Solicitações HITL
+### 3.2 Transparência no Teletipo e Notificação no Chat
+Ao reter uma ação para governança HITL (`awaiting_hitl`), o motor do piDots grava automaticamente uma mensagem explicativa de papel `assistant` na thread ativa do SQLite WAL:
+```text
+[GOVERNANCA HITL // ACAO RETIDA]
+O agente '<dot_id>' solicitou a acao '<tool_name>' (Risco: <risk>), que requer autorizacao expressa do operador humano.
+ID de Aprovacao: <approval_id>
+Instrucao: Homologue a execucao na aba de governanca HITL ou via comando /hitl.
+```
+Isso elimina o silêncio aparente do chat e orienta o operador de forma transparente.
+
+### 3.3 Resolução de Solicitações HITL
 As solicitações podem ser resolvidas de três formas:
 1. **Pelo Console Web SPA:** No cartao interativo de governanca acessivel no Console Operacional (`GET /app`, `/workspace` ou pelo atalho `Alt+H`).
 2. **Via API REST:**
@@ -483,11 +493,13 @@ Para agilizar o fluxo operacional diario do operador:
 
 | Atalho de Teclado | Acao Executada | Comportamento no Sistema |
 | :--- | :--- | :--- |
+| `Tecla /` | Autocomplete Popover | Dispara menu suspenso de 30 Slash Commands com busca fuzzy no teletipo |
+| `Alt+B` | Sidebar Adaptativa | Alterna overlay sob demanda da barra lateral no Triptico (1024px-1440px) |
 | `Alt+I` | Inspecionar Artefato | Foca e expande o artefato ativo no Live Canvas |
 | `Ctrl+S` / `Cmd+S` | Gravar Revisao | Grava revisao atomica do documento em Spaces no SQLite WAL |
 | `Alt+H` | Dossie HITL | Foca e abre o modal de governanca de aprovacao humana |
 | `F11` | Alternar Canvas | Alterna entre visualizacao dividida (split) e maximizada do canvas |
-| `Ctrl+L` | Limpar Teletipo | Limpa mensagens visuais da bobina do teletipo/chat local |
+| `Ctrl+L` | Limpar Teletipo | Limpa mensagens visuais da bobina do teletipo/chat local (/clear) |
 | `F1` | Manual Operacional | Abre a gaveta lateral retratil com o manual tecnico |
 
 ### 14.3 Guia Rapido dos 30 Slash Commands no Teletipo
@@ -610,7 +622,7 @@ Exemplo de resposta operacional:
 ```
 
 ### 17.2 Ações em Caso de Alerta WARNING ou CRITICAL
-- **`THERMAL_EXCEEDED` (Temperatura no SoC >= 72 °C):** O sistema reduz preventivamente o ritmo de execução para evitar sobreaquecimento da placa. Verifique a ventilação passiva ou ativa do seu Raspberry Pi.
+- **`THERMAL_EXCEEDED` (Temperatura no SoC >= 78 °C):** O sistema reduz preventivamente o ritmo de execução para evitar sobreaquecimento da placa (calibrado para a faixa de operação do Raspberry Pi 4B sem cooler ativo). Verifique a ventilação passiva ou ativa do seu Raspberry Pi.
 - **`DISK_LOW_SPACE` (Espaço livre no cartão MicroSD < 10%):** Dispare imediatamente a rotina de manutenção noturna (Seção 18) para purgar mensagens antigas e truncar o arquivo WAL.
 
 ---
@@ -649,7 +661,7 @@ Apos cadastrada, o `EdgeScheduler` executara a rotina de compactacao automaticam
 
 ## 19. Homologacao Operacional de Internacionalizacao (i18n), Locales e Changelog
 
-Com o subsistema de internacionalizacao bilingue nativo (PT/EN) e versionamento SemVer v1.2.0 ativo, o operador pode validar a integridade dos dicionarios e dos endpoints de borda.
+Com o subsistema de internacionalizacao bilingue nativo (PT/EN) e versionamento SemVer v1.3.0 ativo, o operador pode validar a integridade dos dicionarios e dos endpoints de borda.
 
 ### 19.1 Inspecao dos Endpoints de Traducao e Changelog via cURL
 ```bash
@@ -662,8 +674,8 @@ curl -s -i http://localhost:8000/data/locales/en.json | head -n 15
 # Validar cabecalhos de cache de borda do script i18n
 curl -s -i http://localhost:8000/static/pidots-i18n.js | grep -E "HTTP/|content-type|cache-control"
 
-# Validar integridade da API de Changelog e Patch Notes SemVer v1.2.0
-curl -s http://localhost:8000/api/changelog | jq '{version: .current_version, released_at: .released_at, total_notes: (.notes | length)}'
+# Validar integridade da API de Changelog e Patch Notes SemVer v1.3.0
+curl -s http://localhost:8000/api/changelog | jq '{version: .current_version, release_date: .release_date, patch_notes: .patch_notes.title}'
 ```
 
 ### 19.2 Validacao Automatizada de Paridade Estrutural dos Dicionarios
@@ -697,3 +709,27 @@ else:
     print(f'[OK] Paridade estrita confirmada: {len(pt_flat)} chaves folha sincronizadas entre PT e EN.')
 "
 ```
+
+---
+
+## 20. Validacao Operacional da API de Spaces e do Triptico Adaptativo
+
+Com o subsistema de Spaces conectado dinamicamente ao Live Canvas e o Triptico Adaptativo ativo no console SPA (`/app`), o operador pode validar a integridade dos endpoints de documentos versionados:
+
+### 20.1 Inspecao da API de Spaces via cURL
+```bash
+# Listar todos os documentos persistidos em Spaces
+curl -s http://localhost:8000/api/spaces | jq .
+
+# Gravar uma nova revisao de documento via API REST
+curl -s -X POST http://localhost:8000/api/spaces \
+  -H "Content-Type: application/json" \
+  -d '{"filename": "relatorio_termico.md", "content": "# Relatorio Termico Edge\nTemperatura nominal: 44.8 C"}' | jq .
+
+# Obter o historico de revisoes e calculo de diff unificado
+curl -s http://localhost:8000/api/spaces/relatorio_termico.md/revisions | jq .
+```
+
+### 20.2 Checklist de Verificacao da Interface Triptico
+1. **Em Telas de 1024px a 1440px:** A coluna da esquerda colapsa automaticamente e pode ser expandida via `Alt+B` ou clique no botao `[PAINEL]`, sem espremer o teletipo.
+2. **Em Telas Mobile (< 640px):** O Surface Switcher permanece em linha unica de 44px (`[01 VIS] [02 APP] [03 DOC]`), e ao tocar no input de comando com teclado virtual aberto, a classe `keyboard-open` e ativada sem quebrar a visualizacao.

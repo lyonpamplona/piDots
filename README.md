@@ -159,7 +159,22 @@ O módulo `pidots/core/council.py` implementa deliberação dialética formal en
 - **Micro-Motor Vanilla JS (`static/pidots-i18n.js`):** Alternância instantânea de idioma (< 10ms) sem frameworks pesados ou consumo extra de RAM, com detecção e persistência segura em `localStorage.getItem('pidots_lang')`.
 - **Dicionários Atômicos JSON (`data/locales/pt.json` e `data/locales/en.json`):** Dicionários semânticos servidos com cache de borda e fallback defensivo inteligente.
 - **Mutação Estrita via textContent:** Mecanismo declarativo baseado em atributos `data-i18n` e `data-i18n-attr`, com imunidade total a injeções de script (XSS).
-- **Onboarding e Patch Notes SemVer v1.2.0:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
+- **Onboarding e Patch Notes SemVer v1.3.0:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
+
+### 11. Protocolo Unificado de Slash Commands (/), Triptico Adaptativo e Resiliencia Mobile (v1.3.0)
+- **Catalogo Completo de 30 Slash Commands:** Comandos categorizados em 6 grupos operacionais (Sistema, Agentes, Memoria, Tarefas, Borda, Exportacao), invocados com `/` no teletipo. Comandos locais (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) executam instantaneamente no cliente (< 16ms) com zero chamadas externas e zero consumo de tokens.
+- **Motor de Autocomplete Popover em Vanilla JS:** Componente ultraleve (< 10KB) com busca fuzzy em memoria, navegacao ciclica por setas (ArrowUp/ArrowDown), autocompletar com Tab/Enter, fechamento por Esc e tolerancia a falhas via distancia Levenshtein.
+- **Recibos Tatis de Teletipo (Slash Receipt Slip):** Emissao de comprovantes com timestamp UTC, identificador sequencial `SEQ#`, picote serrilhado e teto estrito de 150 nos DOM para estabilidade de memoria sob operacao continua.
+- **Triptico Adaptativo do Workspace (1024px-1440px):** Layout inteligente que colapsa a barra lateral esquerda sob demanda em uma gaveta de 260px com backdrop, preservando a visibilidade da bobina de teletipo (largura util elevada de 202px para > 750px) e mantendo o Live Canvas em split 50/50.
+- **Telemetria Consolidada Edge Pulse Chip:** Linha unica de alta densidade no cabecalho (`[EDGE // 48.2 °C // 118 MB // WAL ATIVO // HITL 0]`), economizando mais de 360px de espaco horizontal.
+- **Engine Mobile window.visualViewport & Touch WCAG 2.2:** Deteccao automatica de abertura de teclado virtual que oculta barras inferiores, mantem a rolagem suave do input no iOS Safari e Android Chrome, e garante tap targets minimos de 44px (WCAG 2.2 AA).
+
+### 12. Novo Tour Spotlight Interativo In-Context e Onboarding FTUE de Alto Desempenho (v1.5.0)
+- **Motor PiDotsTourEngine em Vanilla JS (< 12KB):** Substituicao completa de modais estaticos por um sistema de ancoragem espacial in-context no DOM real. Utiliza `box-shadow: 0 0 0 9999px rgba(7, 9, 12, 0.84)` em camada de composicao direta da GPU, demandando < 1% de CPU no Raspberry Pi 4B e zero dependencias externas.
+- **Cinco Etapas Canonicas de Capacitacao:** Guia pratico cobrindo o Squad Central de Especialistas, o Terminal de Comandos & Teletipo, o Comutador de Modo Foco (Zen vs 50/50), o Live Canvas & Diffs e a Gaveta Tecnica (F1).
+- **Comando de Barra `/tour`:** Permite rever o tour a qualquer momento ou reinicia-lo do zero via `/tour reset`.
+- **Acionamento Tatico na Gaveta Tecnica e Context Menu:** Card dedicado `[REVER GUIA OPERACIONAL SPOTLIGHT]` dentro da central F1 / `[SISTEMA]` e atalho rapido com botao direito do mouse.
+- **Disparo Automatico no Primeiro Acesso:** Detecta novos operadores via `localStorage.getItem('pidots_tour_completed')` e dispara suavemente com 600ms de desacoplamento apos o assentamento do cockpit.
 
 ---
 
@@ -361,7 +376,7 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 | `GET` | `/icon.svg` | Logotipo vetorial oficial em formato SVG com cache prolongado |
 | `GET` | `/static/pidots-i18n.js` | Micro-motor Vanilla JS de internacionalizacao client-side |
 | `GET` | `/data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
-| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.2.0) |
+| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.3.0) |
 | `GET` | `/api/dots` | Listagem de AI Coworkers com arquetipos e status |
 | `GET` | `/api/dots/{id}/export-pack` | Exportacao portavel do manifesto DotPack v1.0 (persona, memorias, workspace) |
 | `POST` | `/api/dots/import-pack` | Importacao atomica de novos agentes a partir de arquivo de DotPack |
@@ -403,12 +418,17 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota canonica `/app` (ou `/workspace`), projetada sob o design system **Pixel Paper UI**:
 - **Estetica Pixel Paper UI:** Visual tatico inspirado em teletipos tecnicos, fichas catalograficas e papel milimetrado com alta densidade de informacoes, tipografia tecnica crisp e estetica retro minimalista de 1-bit.
 - **Logotipo Vetorial Oficial:** Marca de identidade do piDots servida via `/icon.svg` com nos interconectados em verde (#10b981) e ciano (#38bdf8).
-- **Sistema de 26 Icones SVGs Tecnicos:** Iconografia uniforme (`stroke-width: 2`, `stroke-linecap: round`) em telemetria, abas do workspace, secoes da sidebar e botoes de acao.
+- **Tres Modos de Operacao Ergonomicos:**
+  - *Modo 1: Criacao 50/50:* Chat de teletipo e Live Canvas lado a lado para trabalho ativo de geracao e edicao de codigo e documentos.
+  - *Modo 2: Foco Zen (Claude Code / Linear):* Barra lateral e canvas recolhidos, centralizando o chat com largura calibrada (880px) para leitura contínua e raciocínio profundo.
+  - *Modo 3: Painel Tecnico & Gestao:* Telemetria de hardware (SoC/RAM/WAL), configuracao de provedores e sandbox acessiveis sob demanda via gaveta tecnica (F1 / `[SISTEMA]` ou `/telemetry`).
+- **Squad Central de Especialistas:** Interface despoluida exibindo apenas os 4 coworkers essenciais (Supervisor, Dev Assistant, Muse e Auditor), eliminando a sobrecarga de dezenas de agentes residuais.
+- **Teletipo e Input Desobstruidos:** Remocao das calhas laterais de 20px (40px totais) do trator de papel e do prefixo rigido no input, concedendo maxima largura util de leitura e digitacao.
 - **Visualizador de Diffs e Versionamento:** Inspecao lado a lado de alteracoes em arquivos persistidos no SQLite WAL com carimbos analogicos de status.
-- **Governanca Interativa HITL:** Cartoes de aprovacao e veto forense de comandos com registro de auditoria e carimbos de estado.
+- **Governanca Interativa HITL Just-in-Time:** Cartoes de aprovacao e veto forense exibidos apenas quando ha acoes retidas, com persistencia de logs de seguranca.
 - **Streaming de Raciocinio AG-UI:** Exibicao token a token de pensamentos e chamadas de ferramentas.
 - **Onboarding Walkthrough Guiado:** Esteira interativa de 5 passos para novos operadores com retencao de conclusao no cliente e reabertura via atalho F1.
-- **Central de Patch Notes SemVer (v1.2.0):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
+- **Central de Patch Notes SemVer (v1.4.0):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
 
 #### Navegacao Cruzada via Chords Globais de Teclado
 Para transicao instantanea entre as superficies do sistema sem necessidade de mouse:
@@ -424,12 +444,14 @@ Operacao tática de terminal e gerenciamento sem atrito:
 
 | Atalho | Acao Operacional | Descricao |
 | :--- | :--- | :--- |
+| `Tecla /` | Autocomplete Popover | Dispara menu de 30 Slash Commands com busca fuzzy no teletipo |
+| `Alt+B` / `Ctrl+B` | Alternar Sidebar | Alterna visibilidade da barra lateral de coworkers e spaces |
 | `Alt+I` | Inspecionar Artefato | Foca e expande o artefato ativo no Live Canvas |
 | `Ctrl+S` / `Cmd+S` | Gravar Revisao | Grava revisao atomica do documento em Spaces no SQLite WAL |
 | `Alt+H` | Dossie HITL | Foca e abre o modal de governanca de aprovacao humana |
 | `F11` | Alternar Canvas | Alterna entre visualizacao dividida (split) e maximizada do canvas |
 | `Ctrl+L` | Limpar Teletipo | Limpa mensagens visuais da bobina do teletipo/chat local |
-| `F1` | Manual Operacional | Abre a gaveta lateral retratil com o manual tecnico |
+| `F1` | Painel Tecnico / Ajuda | Abre a gaveta retratil com telemetria, atalhos e manual |
 
 #### Protocolo Unificado de Slash Commands (/)
 O Console SPA incorpora um motor de comandos iniciados por barra (`/`) para execucao direta de acoes operacionais e controle de borda:
@@ -440,7 +462,7 @@ O Console SPA incorpora um motor de comandos iniciados por barra (`/`) para exec
 
 | Categoria | Comandos Principais | Exemplos de Uso |
 | :--- | :--- | :--- |
-| **Sistema & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/onboarding`, `/changelog` | `/telemetry`, `/theme noir`, `/lang en`, `/clear chat` |
+| **Sistema & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/tour`, `/onboarding`, `/changelog` | `/tour`, `/tour reset`, `/telemetry`, `/theme noir` |
 | **Agentes & Multi-Bot** | `/dots`, `/handoff`, `/council`, `/delegate`, `/archetype`, `/tools` | `/dots`, `/handoff dot-researcher`, `/council analise termica` |
 | **Memoria & Conhecimento** | `/memory`, `/archival`, `/shared`, `/spaces`, `/diff` | `/archival SQLite WAL`, `/spaces analise.md`, `/diff` |
 | **Tarefas & Heartbeat** | `/tasks`, `/cron`, `/run-task` | `/tasks`, `/cron listar`, `/run-task task-001` |
@@ -452,7 +474,7 @@ O Console SPA incorpora um motor de comandos iniciados por barra (`/`) para exec
 ## Governanca e Seguranca
 
 ### Human-in-the-Loop (HITL)
-Comandos com potencial destrutivo (como exclusoes recursivas, alteracoes de permissoes `chmod/chown`, comandos `sudo`, ou gravacoes em arquivos criticos do sistema) sao interceptados automaticamente pelo motor de governanca. A execucao e retida em estado pendente ate que um operador humano aprove explicitamente a acao via interface web ou CLI (`pidots hitl approve`).
+Comandos com potencial destrutivo (como exclusões recursivas, alterações de permissões `chmod/chown`, comandos `sudo`, ou gravações e redirecionamentos para arquivos em disco `> / >> / tee`) são interceptados automaticamente pelo motor de governança. A execução é retida em estado pendente (`awaiting_hitl`) e uma mensagem explicativa de papel `assistant` é gravada diretamente na conversa com o ID da aprovação e instruções de homologação via interface web (`/app` ou `Alt+H`) ou comando `/hitl`. Comandos com descartes inofensivos de erros (`2>/dev/null`, `2>&1`) executam de forma autônoma sem travar o operador.
 
 ### Sandbox com Bubblewrap
 Para evitar violacoes de integridade no sistema hospedeiro, o executor de comandos utiliza o Bubblewrap (`bwrap`) nativo do Linux. Os processos sao isolados em namespaces de sistema de arquivos e processos restritos, impedindo o acesso nao autorizado a diretorios fora do workspace alocado para o agente.
@@ -507,7 +529,7 @@ python3 scripts/stress_test.py
 ├── ARCHITECTURE.md                  # Especificacao detalhada de arquitetura e I/O
 ├── CONTRIBUTING.md                  # Diretrizes para contribuicao tecnica ao projeto
 ├── data/                            # Dados estaticos, changelog e dicionarios de localizacao
-│   ├── changelog.json               # Historico de versoes e notas de atualizacao SemVer v1.2.0
+│   ├── changelog.json               # Historico de versoes e notas de atualizacao SemVer v1.3.0
 │   └── locales/                     # Dicionarios de internacionalizacao atomicos (i18n)
 │       ├── en.json                  # Dicionario de termos em Ingles Tecnico
 │       └── pt.json                  # Dicionario de termos em Portugues do Brasil

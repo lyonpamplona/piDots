@@ -159,7 +159,22 @@ The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 - **Vanilla JS Micro-Engine (`static/pidots-i18n.js`):** Instant language switching (< 10ms) without bloated frontend frameworks or memory overhead, persisting preference safely in `localStorage.getItem('pidots_lang')`.
 - **Atomic JSON Dictionaries (`data/locales/pt.json` and `data/locales/en.json`):** Semantic edge localization dictionaries with proactive stale-while-revalidate caching and graceful fallbacks.
 - **Strict textContent DOM Mutation:** Declarative attribute bindings via `data-i18n` and `data-i18n-attr`, guaranteeing complete immunity against cross-site scripting (XSS).
-- **Interactive Onboarding & SemVer v1.2.0 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
+- **Interactive Onboarding & SemVer v1.3.0 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
+
+### 11. Unified Slash Commands Protocol (/), Adaptive Triptych & Mobile Resilience (v1.3.0)
+- **Comprehensive 30 Slash Commands Catalog:** Commands structured across 6 operational domains (System, Agents, Memory, Tasks, Edge, Export), triggered with `/` in the teletype. Local commands (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) execute client-side in under 16ms with zero LLM API calls and zero token consumption.
+- **Vanilla JS Autocomplete Popover Engine:** Lightweight client-side engine (< 10KB) providing in-memory fuzzy search, cyclic arrow key navigation (ArrowUp/ArrowDown), Tab/Enter completion, Escape dismissal, and Levenshtein fault-tolerance.
+- **Tactile Teletype Slips (Slash Receipt Slip):** Receipts generated with UTC timestamps, sequential `SEQ#` audit tags, jagged perforation lines, and an enforced DOM ceiling of 150 nodes to avoid memory leaks.
+- **Adaptive Workspace Triptych (1024px-1440px):** Responsive 3-column layout collapsing the left sidebar on-demand into an overlaid 260px drawer with backdrop, expanding useful teletype width from 202px to > 750px while keeping the Live Canvas in a 50/50 split.
+- **Consolidated Edge Pulse Chip Telemetry:** High-density single-line header monitor (`[EDGE // 48.2 °C // 118 MB // WAL ACTIVE // HITL 0]`), conserving over 360px of horizontal viewport real estate.
+- **Mobile window.visualViewport Engine & WCAG 2.2 Touch Targets:** Automatic virtual keyboard detection concealing bottom navigation bars, preserving smooth input scrolling on iOS Safari and Android Chrome, and guaranteeing 44px minimum tap targets (WCAG 2.2 AA).
+
+### 12. High-Performance In-Context Spotlight Tour & FTUE Onboarding (v1.5.0)
+- **Vanilla JS PiDotsTourEngine (< 12KB):** Completely replaces static blocking modals with an in-context spotlight anchoring system in the live DOM. Uses single-layer `box-shadow: 0 0 0 9999px rgba(7, 9, 12, 0.84)` composited directly on the GPU, requiring < 1% CPU on the Raspberry Pi 4B and zero third-party dependencies.
+- **Five Canonical Walkthrough Steps:** Practical interactive guide spotlighting the Central Agent Squad, Command Terminal & Teletipo, Workspace Focus Switcher (Zen vs 50/50), Live Canvas & Diffs, and System Drawer (F1).
+- **Slash Command `/tour`:** Allows revisiting the walkthrough anytime or resetting operator state via `/tour reset`.
+- **System Drawer & Context Menu Integration:** Dedicated card `[REVER GUIA OPERACIONAL SPOTLIGHT]` in the F1 drawer and rapid context menu shortcut.
+- **First-Time Access Auto-Trigger:** Automatically detects new operators via `localStorage.getItem('pidots_tour_completed')` with a smooth 600ms boot decoupling delay.
 
 ---
 
@@ -361,7 +376,7 @@ The application exposes endpoints for external integration with Server-Sent Even
 | `GET` | `/icon.svg` | Official vector SVG icon with 24-hour cache headers |
 | `GET` | `/static/pidots-i18n.js` | Client-side Vanilla JS internationalization micro-engine |
 | `GET` | `/data/locales/{lang}.json` | Atomic bilingual localization dictionaries (PT/EN) with edge caching |
-| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.2.0) |
+| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.3.0) |
 | `GET` | `/api/dots` | List all registered AI Coworkers with archetypes and status |
 | `GET` | `/api/dots/{id}/export-pack` | Portable DotPack v1.0 export (persona, memory stores, and workspace files) |
 | `POST` | `/api/dots/import-pack` | Atomic import of AI Coworker packages from DotPack manifest |
@@ -403,12 +418,17 @@ The application exposes endpoints for external integration with Server-Sent Even
 piDots includes a native dark-mode SPA/PWA interface served on the canonical path `/app` (or `/workspace`), engineered under the **Pixel Paper UI** design system:
 - **Pixel Paper UI Aesthetics:** Tactical visual style inspired by technical teletypes, library catalog cards, and graph paper with high density, crisp technical typography, and 1-bit minimalist retro aesthetics.
 - **Official Vector Logo:** piDots identity branding served via `/icon.svg` with interconnected nodes in green (#10b981) and cyan (#38bdf8).
-- **26 Technical SVG Icons System:** Consistent iconography (`stroke-width: 2`, `stroke-linecap: round`) across telemetry, workspace tabs, sidebar sections, and action triggers.
+- **Three Ergonomic Operational Modes:**
+  - *Mode 1: 50/50 Creation:* Side-by-side teletype chat and Live Canvas for simultaneous coding, artifact generation, and document review.
+  - *Mode 2: Zen Focus (Claude Code / Linear style):* Collapsed sidebar and canvas, centering chat at an optimal 880px width for deep reading and continuous thought.
+  - *Mode 3: Technical Management Panel:* On-demand access to hardware telemetry (SoC/RAM/WAL), LLM settings, and bubblewrap sandbox via the retractable drawer (F1 / `[SISTEMA]` or `/telemetry`).
+- **Core Specialist Squad:** Clean interface displaying only the 4 essential coworkers (Supervisor, Dev Assistant, Muse, and Auditor), eliminating the clutter of dozens of test bots.
+- **Unobstructed Teletype & Input:** Removed 20px tractor-feed margins (40px reclaimed) and rigid command prompt sign, granting maximum horizontal width for reading and drafting.
 - **Diff Viewer and Versioning:** Side-by-side inspection of file modifications persisted in SQLite WAL with analog status stamps.
-- **Interactive HITL Governance:** Forensic approval and veto cards for commands with audit trail logging and state stamps.
+- **Just-in-Time Interactive HITL Governance:** Forensic approval and veto cards rendered only when actions are held, preserving security audit trails.
 - **AG-UI Reasoning Streaming:** Progressive token-by-token display of agent thoughts and tool calls.
 - **Guided Onboarding Walkthrough:** Five-step interactive onboarding flow for first-time operators with client persistence and instant F1 replay.
-- **SemVer v1.2.0 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
+- **SemVer v1.4.0 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
 
 #### Cross-Surface Navigation via Global Keyboard Chords
 Instant, zero-friction transition between system surfaces without requiring a mouse:
@@ -424,12 +444,14 @@ Tactical terminal and artifact operations without interface friction:
 
 | Shortcut | Operational Action | Description |
 | :--- | :--- | :--- |
+| `Key /` | Autocomplete Popover | Triggers catalog of 30 Slash Commands with fuzzy search in teletype |
+| `Alt+B` / `Ctrl+B` | Toggle Sidebar | Toggles visibility of coworkers and spaces sidebar |
 | `Alt+I` | Inspect Artifact | Focuses and expands active artifact in Live Canvas |
 | `Ctrl+S` / `Cmd+S` | Save Revision | Persists atomic document revision in Spaces to SQLite WAL |
 | `Alt+H` | HITL Dossier | Focuses and opens Human-in-the-Loop governance approval card |
 | `F11` | Toggle Canvas | Toggles between split view and maximized canvas view |
-| `Ctrl+L` | Clear Teletype | Clears local screen messages from active teletype spool |
-| `F1` | Operational Manual | Opens retractable side drawer with technical operator manual |
+| `Ctrl+L` | Clear Teletype | Clears local screen messages from active teletype spool (/clear) |
+| `F1` | Technical Panel / Help | Opens retractable side drawer with telemetry, shortcuts, and manual |
 
 #### Unified Slash Commands (/) Protocol
 The Operational SPA Console features a native slash command (`/`) engine designed for rapid execution and direct edge hardware control:
@@ -440,7 +462,7 @@ The Operational SPA Console features a native slash command (`/`) engine designe
 
 | Category | Primary Commands | Usage Examples |
 | :--- | :--- | :--- |
-| **System & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/onboarding`, `/changelog` | `/telemetry`, `/theme blueprint`, `/lang pt`, `/clear chat` |
+| **System & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/tour`, `/onboarding`, `/changelog` | `/tour`, `/tour reset`, `/telemetry`, `/theme blueprint` |
 | **Agents & Multi-Bot** | `/dots`, `/handoff`, `/council`, `/delegate`, `/archetype`, `/tools` | `/dots`, `/handoff dot-researcher`, `/council thermal analysis` |
 | **Memory & Knowledge** | `/memory`, `/archival`, `/shared`, `/spaces`, `/diff` | `/archival SQLite WAL`, `/spaces analysis.md`, `/diff` |
 | **Tasks & Heartbeat** | `/tasks`, `/cron`, `/run-task` | `/tasks`, `/cron list`, `/run-task task-001` |
@@ -452,7 +474,7 @@ The Operational SPA Console features a native slash command (`/`) engine designe
 ## Governance and Security
 
 ### Human-in-the-Loop (HITL)
-Commands with destructive potential (such as recursive file deletion, permission modifications with `chmod/chown`, `sudo` execution, or modifications to critical system paths) are intercepted by the governance engine. Execution is suspended in a pending state until a human operator explicitly approves the action via the web dashboard or CLI (`pidots hitl approve`).
+Commands with destructive potential (such as recursive file deletion, permission modifications with `chmod/chown`, `sudo` execution, or disk file write redirections `> / >> / tee`) are automatically intercepted by the governance engine. Execution is suspended in a pending state (`awaiting_hitl`) and an explanatory message is directly persisted in the active conversation thread with the approval ID and homologation instructions via the web interface (`/app` or `Alt+H`) or the `/hitl` slash command. Safe inspection commands with harmless stream discards (`2>/dev/null`, `2>&1`) execute autonomously without blocking the operator.
 
 ### Bubblewrap Sandboxing
 To protect host integrity, command execution is sandboxed using native Linux Bubblewrap (`bwrap`). Processes run within isolated filesystem namespaces and restricted process trees, preventing unauthorized access outside the designated agent workspace.
@@ -507,7 +529,7 @@ python3 scripts/stress_test.py
 ├── ARCHITECTURE.md                  # In-depth architectural and I/O specifications
 ├── CONTRIBUTING.md                  # Technical contribution guidelines
 ├── data/                            # Static application data, changelog, and localization dictionaries
-│   ├── changelog.json               # SemVer v1.2.0 release history and categorized update notes
+│   ├── changelog.json               # SemVer v1.3.0 release history and categorized update notes
 │   └── locales/                     # Atomic internationalization dictionaries (i18n)
 │       ├── en.json                  # English localization terms
 │       └── pt.json                  # Brazilian Portuguese localization terms

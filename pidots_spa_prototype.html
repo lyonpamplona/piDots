@@ -539,27 +539,36 @@
             background: var(--paper-surface);
         }
 
-        /* Estrutura de Bobina com Furos de Trator Laterais */
+        /* Estrutura da Bobina de Papel Central (Chat Despoluído) */
         .ticker-rail-wrapper {
-            display: grid;
-            grid-template-columns: 20px 1fr 20px;
+            display: flex;
+            flex-direction: column;
             flex: 1;
             overflow: hidden;
             background: var(--paper-sheet);
+            width: 100%;
         }
 
         .tractor-feed {
-            background-color: var(--paper-surface-recessed);
-            border-right: 1px solid var(--border-subtle);
-            background-image: radial-gradient(var(--border-default) 38%, transparent 39%);
-            background-size: 20px 24px;
-            background-repeat: repeat-y;
-            background-position: center;
+            display: none !important;
         }
 
-        .tractor-feed.feed-right {
-            border-right: none;
+        /* Modo 2: Foco Zen (Inspirado em Claude Code & Linear) */
+        .triptych-shell.mode-focus-zen aside.left-sidebar {
+            display: none !important;
+        }
+
+        .triptych-shell.mode-focus-zen aside.right-canvas {
+            display: none !important;
+        }
+
+        .triptych-shell.mode-focus-zen main.center-ticker-column {
+            max-width: 880px;
+            margin: 0 auto;
+            width: 100%;
             border-left: 1px solid var(--border-subtle);
+            border-right: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
         }
 
         /* Tiras de Papel Térmico */
@@ -898,10 +907,7 @@
         }
 
         .perforation-label {
-            font-family: var(--font-pixel);
-            font-size: 6px;
-            color: var(--ink-muted);
-            letter-spacing: 0.05em;
+            display: none !important;
         }
 
         /* Barra de Entrada de Comandos */
@@ -915,10 +921,7 @@
         }
 
         .ticker-prompt-sign {
-            font-family: var(--font-pixel);
-            font-size: 10px;
-            color: var(--blueprint-cyan);
-            user-select: none;
+            display: none !important;
         }
 
         .ticker-textarea {
@@ -3195,74 +3198,405 @@
             justify-content: flex-end;
             gap: 8px;
         }
+
+        /* =====================================================================
+           MOTOR DE TOUR SPOTLIGHT INTERATIVO // PIXEL PAPER UI
+           ESPECIFICACAO TECNICA DE BORDA ARM64 // ZERO BLUR // ZERO EMOJIS
+           ===================================================================== */
+
+        /* 1. Camada de Overlay Global e Caixa de Foco do Spotlight */
+        .pixel-tour-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99980;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.12s steps(2);
+        }
+
+        .pixel-tour-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Moldura e Orifício Translúcido com Contorno Crisp de 2px e Pulso Ciano */
+        .pixel-tour-target-box {
+            position: fixed;
+            z-index: 99985;
+            pointer-events: none;
+            box-sizing: border-box;
+            border: 2px solid var(--blueprint-cyan);
+            box-shadow: 0 0 0 9999px rgba(7, 9, 12, 0.84);
+            transition: top 0.15s cubic-bezier(0, 0, 0.2, 1),
+                        left 0.15s cubic-bezier(0, 0, 0.2, 1),
+                        width 0.15s cubic-bezier(0, 0, 0.2, 1),
+                        height 0.15s cubic-bezier(0, 0, 0.2, 1);
+            will-change: top, left, width, height;
+        }
+
+        .pixel-tour-target-box::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border: 2px dashed var(--blueprint-cyan);
+            opacity: 0.6;
+            animation: pixelTourPulse 1.2s steps(2) infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pixelTourPulse {
+            0% {
+                opacity: 0.2;
+                transform: scale(0.99);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.01);
+            }
+            100% {
+                opacity: 0.2;
+                transform: scale(0.99);
+            }
+        }
+
+        /* 2. Balão Flutuante Tático (.pixel-tour-popover) */
+        .pixel-tour-popover {
+            position: fixed;
+            z-index: 99990;
+            width: 360px;
+            max-width: calc(100vw - 24px);
+            background-color: var(--paper-sheet);
+            border: 2px solid var(--border-default);
+            box-shadow: 4px 4px 0px #000000;
+            color: var(--ink-main);
+            box-sizing: border-box;
+            opacity: 0;
+            visibility: hidden;
+            clip-path: polygon(
+                0 0,
+                calc(100% - 12px) 0,
+                100% 12px,
+                100% 100%,
+                0 100%
+            );
+            transition: opacity 0.15s steps(2),
+                        top 0.15s cubic-bezier(0, 0, 0.2, 1),
+                        left 0.15s cubic-bezier(0, 0, 0.2, 1);
+            will-change: top, left, opacity;
+        }
+
+        .pixel-tour-popover.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Chanfro decorativo superior estilo ficha catalográfica */
+        .pixel-tour-popover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: var(--blueprint-cyan);
+            clip-path: polygon(100% 0, 0 0, 100% 100%);
+            pointer-events: none;
+        }
+
+        /* Cabeçalho do Popover */
+        .pixel-tour-header {
+            padding: 10px 12px 8px 12px;
+            background: var(--paper-surface-recessed);
+            border-bottom: 2px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pixel-tour-tag {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--blueprint-cyan);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pixel-tour-step-counter {
+            background: #111a24;
+            border: 1px solid var(--blueprint-cyan);
+            padding: 1px 5px;
+            color: var(--blueprint-cyan);
+        }
+
+        .pixel-tour-btn-close {
+            background: transparent;
+            border: 1px solid var(--border-default);
+            color: var(--ink-muted);
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            padding: 2px 6px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .pixel-tour-btn-close:hover {
+            background: var(--border-default);
+            color: var(--ink-main);
+            border-color: var(--border-accent);
+        }
+
+        /* Corpo Técnico Didático */
+        .pixel-tour-body {
+            padding: 12px;
+            font-family: var(--font-mono);
+        }
+
+        .pixel-tour-title {
+            font-family: var(--font-pixel);
+            font-size: 11px;
+            color: var(--ink-main);
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+            letter-spacing: 0.4px;
+        }
+
+        /* Micro-passos Didáticos Estruturados */
+        .pixel-tour-steps-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .pixel-tour-chunk {
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            padding: 6px 8px;
+        }
+
+        .pixel-tour-chunk-label {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        .chunk-what .pixel-tour-chunk-label {
+            color: var(--blueprint-cyan);
+        }
+
+        .chunk-how .pixel-tour-chunk-label {
+            color: var(--phosphor-green);
+        }
+
+        .chunk-tip .pixel-tour-chunk-label {
+            color: var(--thermal-amber);
+        }
+
+        .pixel-tour-chunk-text {
+            font-size: 11px;
+            line-height: 1.5;
+            color: var(--ink-main);
+            margin: 0;
+        }
+
+        .pixel-tour-chunk-text kbd {
+            font-family: var(--font-mono);
+            background: #182029;
+            border: 1px solid #3d5168;
+            padding: 1px 4px;
+            font-size: 10px;
+            color: var(--blueprint-cyan);
+        }
+
+        /* Rodapé de Controle e Botões Táteis */
+        .pixel-tour-footer {
+            padding: 8px 12px;
+            background: var(--paper-surface-recessed);
+            border-top: 2px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .pixel-tour-footer-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .pixel-tour-footer-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pixel-tour-btn {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            padding: 5px 8px;
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-default);
+            color: var(--ink-main);
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+            transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
+            user-select: none;
+        }
+
+        .pixel-tour-btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #000;
+            border-color: var(--border-accent);
+        }
+
+        .pixel-tour-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #000;
+        }
+
+        .pixel-tour-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .pixel-tour-btn-ghost {
+            border-color: transparent;
+            background: transparent;
+            color: var(--ink-muted);
+            box-shadow: none;
+        }
+
+        .pixel-tour-btn-ghost:hover {
+            border-color: var(--border-default);
+            background: #11161d;
+            color: var(--ink-secondary);
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .pixel-tour-btn-primary {
+            background: #0d2838;
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+        }
+
+        .pixel-tour-btn-finish {
+            background: #0d2e1a;
+            border-color: var(--phosphor-green);
+            color: var(--phosphor-green);
+        }
+
+        /* 3. Setas Indicadoras Ortogonais (Carets) Crisp em 4 Direções */
+        .pixel-tour-caret {
+            position: absolute;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        /* Caret Top: Popover está abaixo do elemento, seta aponta para cima */
+        .pixel-tour-popover[data-placement="bottom"] .pixel-tour-caret {
+            top: -10px;
+            left: 24px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 10px solid var(--border-default);
+        }
+
+        /* Caret Bottom: Popover está acima do elemento, seta aponta para baixo */
+        .pixel-tour-popover[data-placement="top"] .pixel-tour-caret {
+            bottom: -10px;
+            left: 24px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid var(--border-default);
+        }
+
+        /* Caret Left: Popover está à direita do elemento, seta aponta para esquerda */
+        .pixel-tour-popover[data-placement="right"] .pixel-tour-caret {
+            left: -10px;
+            top: 24px;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 10px solid var(--border-default);
+        }
+
+        /* Caret Right: Popover está à esquerda do elemento, seta aponta para direita */
+        .pixel-tour-popover[data-placement="left"] .pixel-tour-caret {
+            right: -10px;
+            top: 24px;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 10px solid var(--border-default);
+        }
+
+        /* Responsividade em Dispositivos Móveis (< 768px) */
+        @media (max-width: 768px) {
+            .pixel-tour-popover {
+                width: calc(100vw - 20px) !important;
+                max-width: calc(100vw - 20px) !important;
+                left: 10px !important;
+                bottom: 10px !important;
+                top: auto !important;
+                clip-path: none !important;
+            }
+            .pixel-tour-caret {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- CABEÇALHO TÉCNICO GLOBAL (TOP BAR) -->
+    <!-- CABEÇALHO OPERACIONAL MINIMALISTA (TOP BAR) -->
     <header class="mission-header">
-        <div class="header-brand">
-            <button class="pixel-btn" onclick="toggleSidebar()" title="Ocultar/Exibir Navegador de Dots">
+        <div class="header-brand" style="display: flex; align-items: center; gap: 8px;">
+            <button class="pixel-btn" onclick="toggleSidebar()" title="Alternar Barra Lateral (Atalho: Ctrl+B)">
                 [PAINEL]
             </button>
-            <span class="brand-badge">PIDOTS // V1.3.0</span>
-            <span class="brand-title">WORKSPACE TRIPTYCH (PIXEL PAPER UI)</span>
+            <span class="brand-badge" style="font-weight: bold; color: var(--blueprint-cyan);">PIDOTS</span>
+            <span class="header-breadcrumb-agent" id="headerBreadcrumbAgent" style="font-size: 11px; color: var(--ink-main); display: flex; align-items: center; gap: 4px;">
+                <span style="color: var(--ink-muted);">//</span>
+                <span id="headerActiveAgentName">Dev Assistant</span>
+            </span>
         </div>
 
-        <!-- Comutador Canônico de Superfícies de Produto -->
-        <nav class="surface-switcher" aria-label="Superficies de Produto">
-            <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
-                <span class="tab-idx">01</span>
-                <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
-                <span class="tab-chord">g h</span>
-            </a>
-            <a href="/app" class="surface-tab active" id="tab-workspace" title="Atalho: G W">
-                <span class="tab-idx">02</span>
-                <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
-                <span class="tab-chord">g w</span>
-            </a>
-            <a href="/docs" target="_blank" rel="noopener" class="surface-tab" id="tab-docs" title="Atalho: G D (Abre em nova aba para preservar estado do workspace)">
-                <span class="tab-idx">03</span>
-                <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
-                <span class="tab-chord">g d</span>
-            </a>
-        </nav>
-
-        <!-- Telemetria do Sistema Edge Consolidada (Compact Pulse Chip) -->
-        <div class="header-telemetry" id="headerTelemetryCluster" title="Telemetria do Nó Edge (ARM64 // SQLite WAL)">
-            <div class="edge-pulse-chip">
-                <span class="pulse-dot" aria-hidden="true"></span>
-                <span class="chip-part">EDGE</span>
-                <span class="chip-sep">//</span>
-                <span class="chip-part" id="val-temp">48.2 °C</span>
-                <span class="chip-sep">//</span>
-                <span class="chip-part" id="val-ram">118 MB</span>
-                <span class="chip-sep desktop-only">//</span>
-                <span class="chip-part desktop-only" id="val-wal">WAL ATIVO</span>
-                <span class="chip-sep">//</span>
-                <span class="chip-part" id="val-hitl">HITL 0</span>
-            </div>
-        </div>
-
-        <!-- Ações do Cabeçalho -->
-        <div class="header-actions">
-            <button id="pixelPwaInstallBtn" class="pixel-btn pwa-header-btn pwa-install-trigger" style="display: none;" onclick="PiDotsUX.PWA.install()" title="Instalar aplicativo PWA no dispositivo">
-                <svg class="ui-icon" viewBox="0 0 16 16" fill="none" style="width: 12px; height: 12px;" shape-rendering="crispEdges">
-                    <rect x="2" y="1" width="12" height="10" stroke="currentColor" stroke-width="2"/>
-                    <path d="M5 14h6" stroke="currentColor" stroke-width="2"/>
-                    <path d="M8 11v3" stroke="currentColor" stroke-width="2"/>
-                    <path d="M8 4v4M6 6l2 2 2-2" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                <span data-i18n="nav.pwa_install">[INSTALAR PWA]</span>
+        <!-- Centro: Ação Rápida de Nova Conversa e Comutador de Modos -->
+        <div class="header-center-controls" style="display: flex; align-items: center; gap: 8px;">
+            <button class="pixel-btn btn-cyan" onclick="startNewConversation()" title="Iniciar Nova Conversa Limpa (Atalho: Ctrl+N)">
+                [+ NOVA CONVERSA]
             </button>
-            <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
+            <button class="pixel-btn" id="btnToggleMode" onclick="toggleWorkspaceMode()" title="Alternar entre Modo Foco (Zen) e Modo Criação (Split 50/50)">
+                <span id="labelWorkspaceMode">[MODO FOCO]</span>
+            </button>
+        </div>
+
+        <!-- Lado Direito: Micro-Indicador de Nó Edge e Menu de Sistema -->
+        <div class="header-actions" style="display: flex; align-items: center; gap: 6px;">
+            <button class="pixel-btn" id="edgePulseSummaryBtn" onclick="openSystemDrawer()" title="Clique para abrir telemetria de silício e configurações (F1)" style="font-size: 10px;">
+                <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--phosphor-green); border-radius: 50%; margin-right: 4px;"></span>
+                <span id="val-compact-node">ARM64 // 78°C</span>
+            </button>
+            <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" title="Alternar Idioma [PT | EN]">
                 [PT | EN]
             </button>
-            <button class="pixel-btn" onclick="toggleCanvasSplit()" id="btn-canvas-toggle" title="Alternar visibilidade do Canvas">
-                <span data-i18n="nav.split_canvas">[CANVAS]</span>
+            <button class="pixel-btn" onclick="toggleTheme()" id="btn-theme-toggle" title="Alternar Tema Visual">
+                [TEMA]
             </button>
-            <button class="pixel-btn" onclick="toggleTheme()" id="btn-theme-toggle" title="Alternar tema visual">
-                <span data-i18n="nav.theme">[TEMA]</span>
+            <button class="pixel-btn" onclick="openSystemDrawer()" id="btn-system-drawer" title="Painel Técnico de Gestão (F1)">
+                [SISTEMA]
             </button>
         </div>
     </header>
@@ -3320,41 +3654,26 @@
                 </div>
             </div>
 
-            <!-- Seção 3: Fila Rápida HITL -->
-            <div class="sidebar-section">
+            <!-- Seção 3: Fila Rápida HITL (Just-in-Time: Exibida apenas quando há ação retida) -->
+            <div class="sidebar-section" id="hitlSidebarSection" style="display: none;">
                 <div class="sidebar-title">
                     <span style="display: flex; align-items: center; gap: 4px;">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                         GOVERNANCA HITL
                     </span>
-                    <span style="color: var(--thermal-amber);">RETIDO</span>
+                    <span style="color: var(--thermal-amber);" id="hitlSidebarCountBadge">RETIDO (1)</span>
                 </div>
 
                 <div id="hitlSidebarAlertContainer">
                     <div class="sidebar-hitl-alert" onclick="openHitlCanvas()">
                         <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber); margin-bottom: 2px;">
-                            GOVERNANCA FORENSE // WAL
+                            ACAO CRITICA RETIDA // WAL
                         </div>
                         <div style="font-size: 10px; color: var(--ink-secondary);" id="hitlSidebarDesc">
                             Nenhuma acao retida no momento.
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Seção 4: Telemetria Resumida do SBC -->
-            <div class="sidebar-section" style="margin-top: auto;">
-                <div class="sidebar-title">
-                    <span>PLATAFORMA EDGE</span>
-                    <span style="color: var(--phosphor-green);">RPI4-ARM64</span>
-                </div>
-                <div style="font-size: 10px; color: var(--ink-secondary); line-height: 1.6;">
-                    SoC: BCM2711 Quad-Core<br>
-                    Kernel: Linux 6.6 aarch64<br>
-                    Banco: SQLite 3.45 (WAL Mode)<br>
-                    Inferencia: qwen3.8-27b
-                </div>
-                
             </div>
         </aside>
 
@@ -3372,10 +3691,8 @@
                 </div>
             </div>
 
-            <!-- Área da Bobina de Papel com Furos de Trator Laterais -->
+            <!-- Área da Bobina de Papel Central (Chat) -->
             <div class="ticker-rail-wrapper">
-                <div class="tractor-feed feed-left" aria-hidden="true"></div>
-
                 <div class="ticker-scroll-area" id="tickerScroll">
                     
                     <!-- Fita 01: Mensagem de Boas-Vindas do Sistema -->
@@ -3389,8 +3706,6 @@
                             <p class="slip-text" data-i18n="console.welcome_system">[SISTEMA] piDots pronto. Conexão local estabelecida com SQLite WAL. Modelo ativo: qwen3.8-27b (Memória RSS: 52 MB).</p>
                         </section>
                         <footer class="slip-perforation">
-                            <span class="perforation-line"></span>
-                            <span class="perforation-label">PICOTE // DESTACAR</span>
                             <span class="perforation-line"></span>
                         </footer>
                     </article>
@@ -3435,14 +3750,10 @@
 
                         <footer class="slip-perforation">
                             <span class="perforation-line"></span>
-                            <span class="perforation-label">PICOTE // DESTACAR</span>
-                            <span class="perforation-line"></span>
                         </footer>
                     </article>
 
                 </div>
-
-                <div class="tractor-feed feed-right" aria-hidden="true"></div>
             </div>
 
             <!-- Barra Inferior de Entrada de Instrução com Suporte a Autocomplete @bot -->
@@ -3478,7 +3789,6 @@
                     </div>
                 </div>
 
-                <span class="ticker-prompt-sign">PIDOTS@EDGE:&gt;</span>
                 <textarea class="ticker-textarea" id="instructionInput" placeholder="Digite uma instrucao ou mencione @dot (Enter para transmitir)..." data-i18n-placeholder="console.input_placeholder" onkeydown="handleInputKey(event)" oninput="handleMentionInput(event)"></textarea>
                 <button class="pixel-btn btn-cyan" onclick="transmitInstruction()" data-i18n="console.send_btn">
                     [TRANSMITIR COMANDO]
@@ -3487,34 +3797,26 @@
         </main>
 
         <!-- -------------------------------------------------------------------
-             COLUNA 3: PAINEL DIREITO (LIVE CANVAS / ARTEFATOS / TELEMETRIA)
+             COLUNA 3: PAINEL DIREITO (LIVE CANVAS / ARTEFATOS / CRIAÇÃO)
              ------------------------------------------------------------------- -->
         <aside class="right-canvas" id="rightCanvas">
-            <!-- Abas do Canvas Superior -->
+            <!-- Abas do Canvas Superior (Purificado: Foco em Criação) -->
             <div class="canvas-tab-bar">
                 <button class="canvas-tab active" onclick="switchCanvasTab('canvas-artifact', this)">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                     <span>[ARTEFATO]</span>
                 </button>
-                <button class="canvas-tab" onclick="switchCanvasTab('canvas-telemetry', this)">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                    <span>[TELEMETRIA]</span>
+                <button class="canvas-tab" onclick="toggleDiffHighlight()" title="Comparar Diferenças e Histórico WAL">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    <span>[DIFFS]</span>
                 </button>
-                <button class="canvas-tab" onclick="switchCanvasTab('canvas-terminal', this)">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                    <span>[SANDBOX]</span>
-                </button>
-                <button class="canvas-tab" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria Forense e Carimbos HITL">
+                <button class="canvas-tab" id="canvasTabHitl" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria Forense e Carimbos HITL">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <span>[HITL]</span>
                 </button>
-                <button class="canvas-tab" onclick="switchCanvasTab('canvas-settings', this)" data-tooltip="Configuração de IA e Provedores com Hot-Reload">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                    <span>[CONFIG IA]</span>
-                </button>
-                <button class="canvas-tab" onclick="switchCanvasTab('canvas-matrix', this)" data-tooltip="Matriz Comparativa Dots (openDots, museDots, grokDots e piDots)">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                    <span>[MATRIZ]</span>
+                <button class="canvas-tab" onclick="openSystemDrawer()" data-tooltip="Painel Técnico, Telemetria e Sandbox sob Demanda (F1)">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    <span>[+ PAINEL TECNICO]</span>
                 </button>
 
                 <div class="canvas-controls">
@@ -3860,6 +4162,17 @@
         </div>
 
         <div class="drawer-content" id="drawerContentList">
+            <!-- RECURSO DIDÁTICO INTERATIVO SPOTLIGHT -->
+            <div style="padding: 12px; margin-bottom: 14px; border: 1px solid var(--blueprint-cyan); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 8px;">
+                <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); letter-spacing: 0.05em; text-transform: uppercase;">[RECURSO DIDÁTICO INTERATIVO]</div>
+                <div style="font-size: 11px; color: var(--ink-secondary); line-height: 1.4;">
+                    Deseja rever as 5 ferramentas fundamentais do console guiadas diretamente na interface real?
+                </div>
+                <button type="button" class="pixel-btn btn-cyan" onclick="toggleDrawer(); if (window.PiDotsTourEngine) PiDotsTourEngine.start();" style="width: 100%; justify-content: center;">
+                    [REVER GUIA OPERACIONAL SPOTLIGHT]
+                </button>
+            </div>
+
             <div class="guide-step">
                 <div class="step-num">PASSO 01 // ARQUITETURA TRIPTYCH</div>
                 <div class="step-heading">LAYOUT INSPIRADO EM OPENDOTS &amp; MUSEDOTS</div>
@@ -4162,7 +4475,9 @@
                         toggleDrawer();
                         break;
                     case 'tour':
-                        if (window.PiDotsUX && PiDotsUX.Onboarding) {
+                        if (window.PiDotsTourEngine) {
+                            PiDotsTourEngine.start();
+                        } else if (window.PiDotsUX && PiDotsUX.Onboarding) {
                             PiDotsUX.Onboarding.open();
                         }
                         break;
@@ -4478,7 +4793,7 @@
             // 3. Dots Coworkers (/api/dots)
             async loadDots() {
                 try {
-                    const res = await fetch('/api/dots');
+                    const res = await fetch('/api/dots?core_only=true');
                     if (!res.ok) return;
                     const dots = await res.json();
                     if (!dots || !dots.length) return;
@@ -4492,19 +4807,27 @@
                         const card = document.createElement('div');
                         card.className = `dot-card ${idx === 0 ? 'active' : ''}`;
                         card.onclick = () => this.selectDot(dot.id, card);
+                        
+                        // Badge arquetípico sutil
+                        let archetypeLabel = (dot.archetype || 'COWORKER').toUpperCase();
                         card.innerHTML = `
                             <div class="dot-card-header">
                                 <span class="dot-card-name">${escapeHtml(dot.name || dot.id)}</span>
-                                <span class="dot-card-status">${dot.is_active ? 'ATIVO' : 'IDLE'}</span>
+                                <span class="dot-card-status" style="font-size: 8px;">[${archetypeLabel}]</span>
                             </div>
-                            <div class="dot-card-role">${escapeHtml(dot.role || 'Edge Coworker')}</div>
+                            <div class="dot-card-role" style="font-size: 10px; color: var(--ink-secondary); margin-top: 2px;">${escapeHtml(dot.role || 'Edge Coworker')}</div>
                         `;
                         container.appendChild(card);
                     });
 
+                    // Seleciona o primeiro especialista ativo (Supervisor ou Dev)
                     this.activeDotId = dots[0].id;
+                    const activeAgentName = dots[0].name || dots[0].id;
                     const chEl = document.getElementById('activeDotChannel');
-                    if (chEl) chEl.textContent = `CANAL DE MISSAO // ${(dots[0].name || dots[0].id).toUpperCase()} (SESSAO ATIVA)`;
+                    if (chEl) chEl.textContent = `CANAL DE TRABALHO // ${activeAgentName.toUpperCase()}`;
+
+                    const headerAgentEl = document.getElementById('headerActiveAgentName');
+                    if (headerAgentEl) headerAgentEl.textContent = activeAgentName;
 
                 } catch (e) {
                     console.warn('Erro ao carregar Dots:', e);
@@ -4519,6 +4842,8 @@
                 const dot = this.dotsCache.find(d => d.id === dotId);
                 const chEl = document.getElementById('activeDotChannel');
                 if (chEl) chEl.textContent = `CANAL DE MISSAO // ${(dot ? (dot.name || dot.id) : dotId).toUpperCase()} (SESSAO ATIVA)`;
+                const breadcrumb = document.getElementById('headerActiveAgentName');
+                if (breadcrumb) breadcrumb.textContent = dot ? (dot.name || dot.id) : dotId;
 
                 // Recarrega Spaces e reinicia thread ativa para este Dot
                 this.activeThreadId = null;
@@ -4773,6 +5098,16 @@
                         }
                     }
 
+                    // Controle Just-in-Time: Exibe seção lateral de HITL apenas se houver ação pendente
+                    const hitlSection = document.getElementById('hitlSidebarSection');
+                    const hitlBadge = document.getElementById('hitlSidebarCountBadge');
+                    if (hitlSection) {
+                        hitlSection.style.display = pending.length > 0 ? 'block' : 'none';
+                    }
+                    if (hitlBadge) {
+                        hitlBadge.textContent = `RETIDO (${pending.length})`;
+                    }
+
                     // Se houver pendências, atualiza dossiê do Canvas
                     if (pending.length > 0) {
                         const item = pending[0];
@@ -4903,8 +5238,6 @@
                         <p class="slip-text" id="${contentId}"><span class="pixel-cursor">█</span></p>
                     </section>
                     <footer class="slip-perforation">
-                        <span class="perforation-line"></span>
-                        <span class="perforation-label">PICOTE // DESTACAR</span>
                         <span class="perforation-line"></span>
                     </footer>
                 `;
@@ -5241,6 +5574,58 @@
             if (backdrop) backdrop.classList.remove('open');
         }
 
+        // Abertura do Painel Técnico / Gaveta de Sistema
+        function openSystemDrawer() {
+            toggleDrawer();
+        }
+
+        // Controle de Layout: Alternar Modo de Trabalho (Modo Foco Zen vs Modo Criacao 50/50)
+        function toggleWorkspaceMode() {
+            const shell = document.querySelector('.triptych-shell');
+            const label = document.getElementById('labelWorkspaceMode');
+            if (!shell) return;
+            const isZen = shell.classList.toggle('mode-focus-zen');
+            if (isZen) {
+                if (label) label.textContent = '[MODO CRIACAO]';
+                if (window.PixelSystem && PixelSystem.toast) {
+                    PixelSystem.toast('Modo Foco Zen ativado: barra lateral e canvas recolhidos.', 'info');
+                }
+            } else {
+                if (label) label.textContent = '[MODO FOCO]';
+                if (window.PixelSystem && PixelSystem.toast) {
+                    PixelSystem.toast('Modo Criacao restaurado: visao ampla 50/50 com Canvas.', 'info');
+                }
+            }
+        }
+
+        // Ação Rápida: Iniciar Nova Conversa Limpa
+        function startNewConversation() {
+            const scrollArea = document.getElementById('tickerScroll');
+            const agentName = document.getElementById('headerActiveAgentName')?.textContent || 'Dev Assistant';
+            if (scrollArea) {
+                scrollArea.innerHTML = `
+                    <article class="ticker-slip">
+                        <header class="slip-header">
+                            <span class="slip-tag">SISTEMA // NOVA SESSAO</span>
+                            <span>${new Date().toISOString()}</span>
+                            <span>SEQ# 0001</span>
+                        </header>
+                        <section class="slip-output">
+                            <p class="slip-text">Nova conversa iniciada com <strong>${escapeHtml(agentName)}</strong>. Sessao anterior arquivada no SQLite WAL. O que vamos construir ou revisar agora?</p>
+                        </section>
+                    </article>
+                `;
+            }
+            const input = document.getElementById('instructionInput');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+            if (window.PixelSystem && PixelSystem.toast) {
+                PixelSystem.toast(`Nova conversa iniciada com ${agentName}.`, 'info');
+            }
+        }
+
         // Filtro em Tempo Real do Manual Técnico
         function filterDrawerContent(query) {
             const term = query.toLowerCase();
@@ -5255,7 +5640,13 @@
         function selectDot(dotId, el) {
             document.querySelectorAll('.dot-card').forEach(c => c.classList.remove('active'));
             if (el) el.classList.add('active');
-            document.getElementById('activeDotChannel').textContent = `CANAL DE MISSAO // ${dotId.toUpperCase()} (SESSAO ATIVA)`;
+            const channel = document.getElementById('activeDotChannel');
+            if (channel) channel.textContent = `CANAL DE MISSAO // ${dotId.toUpperCase()} (SESSAO ATIVA)`;
+            const breadcrumb = document.getElementById('headerActiveAgentName');
+            if (breadcrumb) {
+                const name = el ? (el.querySelector('.dot-card-name')?.textContent || dotId) : dotId;
+                breadcrumb.textContent = name;
+            }
         }
 
         // Carregamento de Artefatos no Canvas
@@ -5355,7 +5746,8 @@
                 { cmd: '/status', cat: 'sistema', args: '', exec: 'rest', desc: 'Apresenta resumo executivo dos coworkers ativos e conexoes.' },
                 { cmd: '/telemetry', cat: 'sistema', args: '', exec: 'rest', desc: 'Mede temperatura do SoC Broadcom, memoria RAM e carga.' },
                 { cmd: '/pwa', cat: 'sistema', args: '[status|update|cache-clear]', exec: 'client', desc: 'Inspeciona Service Worker e conformidade de cache offline.' },
-                { cmd: '/onboarding', cat: 'sistema', args: '', exec: 'client', desc: 'Reinicia o guia interativo de primeiro acesso ao console.' },
+                { cmd: '/tour', cat: 'sistema', args: '[reset]', exec: 'client', desc: 'Dispara o tour spotlight interativo do console operacional.' },
+                { cmd: '/onboarding', cat: 'sistema', args: '[reset]', exec: 'client', desc: 'Alias para o tour spotlight interativo de primeiro acesso.' },
                 { cmd: '/changelog', cat: 'sistema', args: '[versao]', exec: 'rest', desc: 'Consulta as notas oficiais de atualizacao do sistema.' },
 
                 // [AGENTES & MULTI-BOT]
@@ -5750,8 +6142,6 @@
                 </section>
                 <footer class="slip-perforation">
                     <span class="perforation-line"></span>
-                    <span class="perforation-label">PICOTE // DESTACAR</span>
-                    <span class="perforation-line"></span>
                 </footer>
             `;
 
@@ -6011,13 +6401,22 @@
                     break;
                 }
 
-                // 9. /onboarding
+                // 9. /tour e /onboarding
+                case '/tour':
                 case '/onboarding': {
-                    if (window.PiDotsUX && PiDotsUX.Onboarding && PiDotsUX.Onboarding.open) {
+                    if (window.PiDotsTourEngine) {
+                        if (args[0] === 'reset' || args[0] === 'redefinir') {
+                            PiDotsTourEngine.reset();
+                            renderSlashReceiptSlip(cmd, 'TOUR SPOTLIGHT REINICIADO', 'Marcador de conclusao apagado do storage e tour de 5 etapas reiniciado no console.', '[OK]');
+                        } else {
+                            PiDotsTourEngine.start();
+                            renderSlashReceiptSlip(cmd, 'TOUR SPOTLIGHT ACIONADO', 'Tour in-context ativo guiando as 5 ferramentas fundamentais do console.', '[OK]');
+                        }
+                    } else if (window.PiDotsUX && PiDotsUX.Onboarding && PiDotsUX.Onboarding.open) {
                         PiDotsUX.Onboarding.open();
-                        renderSlashReceiptSlip('/onboarding', 'PRIMEIRO ACESSO', 'Tour interativo de 5 passos acionado no console.', '[OK]');
+                        renderSlashReceiptSlip(cmd, 'PRIMEIRO ACESSO', 'Guia operacional acionado.', '[OK]');
                     } else {
-                        renderSlashReceiptSlip('/onboarding', 'AVISO', 'Modal de onboarding indisponivel.', '[AVISO]');
+                        renderSlashReceiptSlip(cmd, 'AVISO', 'Motor de tour indisponivel.', '[AVISO]');
                     }
                     break;
                 }
@@ -6701,8 +7100,6 @@
                 </section>
                 <footer class="slip-perforation">
                     <span class="perforation-line"></span>
-                    <span class="perforation-label">PICOTE // DESTACAR</span>
-                    <span class="perforation-line"></span>
                 </footer>
             `;
             scrollArea.appendChild(userSlip);
@@ -6843,8 +7240,8 @@
             <span class="context-menu-shortcut">F1</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('tour')">
-            <span>[7] GUIA DE PRIMEIRO ACESSO</span>
-            <span class="context-menu-shortcut">TOUR</span>
+            <span>[7] GUIA OPERACIONAL TOUR</span>
+            <span class="context-menu-shortcut">/TOUR</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('changelog')">
             <span>[8] NOTAS DE ATUALIZACAO</span>
@@ -6854,6 +7251,88 @@
 
     <!-- 4. Tooltip Customizada Flutuante -->
     <div id="pixelTooltip"></div>
+
+    <!-- =======================================================================
+         NOVO MOTOR DE TOUR SPOTLIGHT INTERATIVO (PIXEL PAPER UI)
+         ======================================================================= -->
+    <!-- Camada Fixa de Foco Spotlight com Recorte Espacial -->
+    <div id="pixelTourOverlay" class="pixel-tour-overlay" aria-hidden="true">
+        <div id="pixelTourTargetBox" class="pixel-tour-target-box"></div>
+    </div>
+
+    <!-- Balão Flutuante de Instruções Operacionais -->
+    <aside
+        id="pixelTourPopover"
+        class="pixel-tour-popover"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pixelTourTitle"
+        aria-describedby="pixelTourDescGroup"
+    >
+        <div class="pixel-tour-caret" aria-hidden="true"></div>
+        
+        <header class="pixel-tour-header">
+            <div class="pixel-tour-tag">
+                <span class="pixel-tour-step-counter" id="pixelTourStepIndicator">[ETAPA 01/05]</span>
+                <span id="pixelTourStepBadge">// SQUAD DE COWORKERS</span>
+            </div>
+            <button
+                type="button"
+                class="pixel-tour-btn-close"
+                id="pixelTourBtnClose"
+                title="Fechar tour operacional (Atalho: Esc)"
+                aria-label="Fechar tour operacional"
+            >[ESC]</button>
+        </header>
+
+        <div class="pixel-tour-body">
+            <h3 class="pixel-tour-title" id="pixelTourTitle">TÍTULO DA ETAPA</h3>
+            
+            <div class="pixel-tour-steps-group" id="pixelTourDescGroup">
+                <div class="pixel-tour-chunk chunk-what">
+                    <span class="pixel-tour-chunk-label">[O QUE É]</span>
+                    <p class="pixel-tour-chunk-text" id="pixelTourWhatText">-</p>
+                </div>
+                <div class="pixel-tour-chunk chunk-how">
+                    <span class="pixel-tour-chunk-label">[COMO USAR AGORA]</span>
+                    <p class="pixel-tour-chunk-text" id="pixelTourHowText">-</p>
+                </div>
+                <div class="pixel-tour-chunk chunk-tip">
+                    <span class="pixel-tour-chunk-label">[DICA DE ATALHO]</span>
+                    <p class="pixel-tour-chunk-text" id="pixelTourTipText">-</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="pixel-tour-footer">
+            <div class="pixel-tour-footer-left">
+                <button
+                    type="button"
+                    class="pixel-tour-btn pixel-tour-btn-ghost"
+                    id="pixelTourBtnSkip"
+                >[PULAR TOUR]</button>
+            </div>
+            <div class="pixel-tour-footer-right">
+                <button
+                    type="button"
+                    class="pixel-tour-btn"
+                    id="pixelTourBtnPrev"
+                    disabled
+                >[ANTERIOR]</button>
+                <button
+                    type="button"
+                    class="pixel-tour-btn pixel-tour-btn-primary"
+                    id="pixelTourBtnNext"
+                >[PRÓXIMO PASSO]</button>
+                <button
+                    type="button"
+                    class="pixel-tour-btn pixel-tour-btn-finish"
+                    id="pixelTourBtnFinish"
+                    style="display: none;"
+                >[CONCLUIR TOUR]</button>
+            </div>
+        </footer>
+    </aside>
 
     <!-- =======================================================================
          5. MODAL DE ONBOARDING DE PRIMEIRO ACESSO (ESTILO FICHA CATALOGRAFICA)
@@ -7295,29 +7774,440 @@
     </aside>
 
     <!-- =======================================================================
+         MOTOR JAVASCRIPT DE TOUR SPOTLIGHT INTERATIVO (PIXEL PAPER UI)
+         Compatibilidade: SBC ARM64 / Raspberry Pi 4B / Desktop / Mobile
+         Vanilla JS Puro (< 12KB) // ZERO EMOJIS // 60 FPS
+         ======================================================================= -->
+    <script>
+    const PiDotsTourEngine = (function() {
+        'use strict';
+
+        const STORAGE_KEY = 'pidots_tour_completed';
+        const PADDING = 6; // Margem de respiro ao redor do elemento em foco (px)
+
+        return {
+            currentIndex: -1,
+            isRunning: false,
+            rafId: null,
+            overlayEl: null,
+            targetBoxEl: null,
+            popoverEl: null,
+            elementsBound: false,
+
+            // -----------------------------------------------------------------
+            // 1. DEFINIÇÃO DAS 5 ETAPAS CANÔNICAS DO CONSOLE PIDOTS
+            // -----------------------------------------------------------------
+            steps: [
+                {
+                    elementSelector: '#dotsListContainer, #leftSidebar',
+                    title: 'SQUAD DE AGENTES COWORKERS',
+                    badge: '// SQUAD DE COWORKERS',
+                    placement: 'right',
+                    what: 'Barra lateral de agentes autônomos persistentes (Supervisores, Especialistas e Workers) gerenciados via SQLite WAL.',
+                    how: 'Clique no card de um Dot para alternar o especialista ativo e direcionar sua missão.',
+                    tip: 'Pressione <kbd>Ctrl+B</kbd> para alternar a barra lateral ou use o comando slash <kbd>/dots</kbd>.',
+                    beforeStep: function() {
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile && typeof setMobileView === 'function') {
+                            setMobileView('dots');
+                        }
+                        const shell = document.querySelector('.triptych-shell');
+                        if (shell && shell.classList.contains('mode-focus-zen')) {
+                            if (typeof toggleWorkspaceMode === 'function') toggleWorkspaceMode();
+                        }
+                        const sidebar = document.getElementById('leftSidebar');
+                        if (sidebar && sidebar.classList.contains('collapsed')) {
+                            if (typeof toggleSidebar === 'function') toggleSidebar();
+                        }
+                    }
+                },
+                {
+                    elementSelector: '.ticker-input-bar, #instructionInput',
+                    title: 'TERMINAL DE COMANDO E TELETIPO',
+                    badge: '// TELETIPO & COMANDO',
+                    placement: 'top',
+                    what: 'Terminal de emissão de missões com bobina matricial contínua e caderno de raciocínio interno dos Dots.',
+                    how: 'Digite <kbd>/</kbd> para abrir o catálogo de comandos rápidos ou <kbd>@</kbd> para chamar especialistas.',
+                    tip: 'Pressione <kbd>Enter</kbd> para transmitir a instrução ou <kbd>Shift+Enter</kbd> para quebrar linha.',
+                    beforeStep: function() {
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile && typeof setMobileView === 'function') {
+                            setMobileView('chat');
+                        }
+                        const input = document.getElementById('instructionInput');
+                        if (input) {
+                            try { input.focus(); } catch (e) {}
+                        }
+                    }
+                },
+                {
+                    elementSelector: '#btnToggleMode, .header-center-controls',
+                    title: 'MODOS DE CONCENTRAÇÃO E SESSÃO',
+                    badge: '// MODOS DE FOCO',
+                    placement: 'bottom',
+                    what: 'Comutador ergonômico para alternar entre visão dividida e concentração de fluxo contínuo.',
+                    how: 'Alterne entre o Modo Criação 50/50 (com Live Canvas aberto) e o Modo Foco Zen centrado.',
+                    tip: 'Clique em <kbd>[+ NOVA CONVERSA]</kbd> ou pressione <kbd>Ctrl+N</kbd> para abrir uma sessão limpa.',
+                    beforeStep: function() {
+                        window.scrollTo({ top: 0, behavior: 'instant' });
+                    }
+                },
+                {
+                    elementSelector: '#rightCanvas, #canvas-artifact',
+                    title: 'LIVE CANVAS E FICHAS SPACES',
+                    badge: '// LIVE CANVAS & DIFFS',
+                    placement: 'left',
+                    what: 'Prancheta técnica de visualização e edição em tempo real de código, documentos e especificações.',
+                    how: 'Inspecione entregas, visualize alterações no botão <kbd>[DIFFS]</kbd> e grave versões no SQLite WAL.',
+                    tip: 'Pressione <kbd>Alt+I</kbd> para inspecionar artefato ou <kbd>Ctrl+S</kbd> para gravar revisão no banco.',
+                    beforeStep: function() {
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile && typeof setMobileView === 'function') {
+                            setMobileView('canvas');
+                        }
+                        const shell = document.querySelector('.triptych-shell');
+                        if (shell && shell.classList.contains('mode-focus-zen')) {
+                            if (typeof toggleWorkspaceMode === 'function') toggleWorkspaceMode();
+                        }
+                        const canvas = document.getElementById('rightCanvas');
+                        if (canvas && canvas.classList.contains('collapsed')) {
+                            if (typeof toggleCanvasSplit === 'function') toggleCanvasSplit();
+                            else canvas.classList.remove('collapsed');
+                        }
+                        const tabs = document.querySelectorAll('.canvas-tab');
+                        if (tabs && tabs.length > 0 && typeof switchCanvasTab === 'function') {
+                            switchCanvasTab('canvas-artifact', tabs[0]);
+                        }
+                    }
+                },
+                {
+                    elementSelector: '#btn-system-drawer, #edgePulseSummaryBtn',
+                    title: 'TELEMETRIA DE SILÍCIO E AJUDA',
+                    badge: '// HARDWARE & MANUAL',
+                    placement: 'bottom',
+                    what: 'Central técnica com telemetria do nó ARM64 (temperatura, RAM, CPU), governança e manual operacional.',
+                    how: 'Monitore o consumo físico do Raspberry Pi 4B e configure chaves de provedor de IA com segurança.',
+                    tip: 'Pressione a tecla física <kbd>F1</kbd> a qualquer momento para abrir ou fechar a Gaveta Técnica.',
+                    beforeStep: function() {
+                        window.scrollTo({ top: 0, behavior: 'instant' });
+                    }
+                }
+            ],
+
+            // -----------------------------------------------------------------
+            // 2. INICIALIZAÇÃO DE ESTRUTURA E DOM
+            // -----------------------------------------------------------------
+            initDOM: function() {
+                this.overlayEl = document.getElementById('pixelTourOverlay');
+                this.targetBoxEl = document.getElementById('pixelTourTargetBox');
+                this.popoverEl = document.getElementById('pixelTourPopover');
+                this.bindEvents();
+            },
+
+            bindEvents: function() {
+                if (this.elementsBound) return;
+
+                const self = this;
+                const btnNext = document.getElementById('pixelTourBtnNext');
+                const btnPrev = document.getElementById('pixelTourBtnPrev');
+                const btnSkip = document.getElementById('pixelTourBtnSkip');
+                const btnClose = document.getElementById('pixelTourBtnClose');
+                const btnFinish = document.getElementById('pixelTourBtnFinish');
+
+                if (btnNext) btnNext.addEventListener('click', function() { self.next(); });
+                if (btnPrev) btnPrev.addEventListener('click', function() { self.prev(); });
+                if (btnSkip) btnSkip.addEventListener('click', function() { self.exit(false); });
+                if (btnClose) btnClose.addEventListener('click', function() { self.exit(false); });
+                if (btnFinish) btnFinish.addEventListener('click', function() { self.exit(true); });
+
+                // Atalhos de Teclado Operacionais
+                window.addEventListener('keydown', function(e) {
+                    if (!self.isRunning) return;
+
+                    if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        self.next();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        self.prev();
+                    } else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        self.exit(false);
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (self.currentIndex === self.steps.length - 1) {
+                            self.exit(true);
+                        } else {
+                            self.next();
+                        }
+                    }
+                });
+
+                // Suporte a Redimensionamento e Scroll com Debounce via requestAnimationFrame
+                const handleReposition = function() {
+                    if (!self.isRunning) return;
+                    if (self.rafId) cancelAnimationFrame(self.rafId);
+                    self.rafId = requestAnimationFrame(function() {
+                        self.repositionActiveStep();
+                    });
+                };
+
+                window.addEventListener('resize', handleReposition, { passive: true });
+                window.addEventListener('scroll', handleReposition, { passive: true });
+
+                this.elementsBound = true;
+            },
+
+            // -----------------------------------------------------------------
+            // 3. API PÚBLICA DE EXECUÇÃO
+            // -----------------------------------------------------------------
+            start: function(stepIndex) {
+                this.initDOM();
+                if (!this.overlayEl || !this.popoverEl) return;
+
+                // Fecha gaveta se estiver aberta para desobstruir tela
+                if (typeof closeDrawer === 'function') closeDrawer();
+
+                this.isRunning = true;
+                this.overlayEl.classList.add('active');
+                this.popoverEl.classList.add('active');
+                this.goToStep(typeof stepIndex === 'number' ? stepIndex : 0);
+            },
+
+            next: function() {
+                if (this.currentIndex < this.steps.length - 1) {
+                    this.goToStep(this.currentIndex + 1);
+                }
+            },
+
+            prev: function() {
+                if (this.currentIndex > 0) {
+                    this.goToStep(this.currentIndex - 1);
+                }
+            },
+
+            goToStep: function(index) {
+                if (index < 0 || index >= this.steps.length) return;
+                this.currentIndex = index;
+
+                const step = this.steps[index];
+
+                // Executa rotina de preparação de layout prévia
+                if (typeof step.beforeStep === 'function') {
+                    try {
+                        step.beforeStep();
+                    } catch (err) {
+                        console.warn('[PiDotsTourEngine] Erro no beforeStep:', err);
+                    }
+                }
+
+                // Atualiza textos e rótulos
+                const currentNum = String(index + 1).padStart(2, '0');
+                const totalNum = String(this.steps.length).padStart(2, '0');
+                
+                const stepIndicator = document.getElementById('pixelTourStepIndicator');
+                const stepBadge = document.getElementById('pixelTourStepBadge');
+                const titleEl = document.getElementById('pixelTourTitle');
+                const whatEl = document.getElementById('pixelTourWhatText');
+                const howEl = document.getElementById('pixelTourHowText');
+                const tipEl = document.getElementById('pixelTourTipText');
+
+                if (stepIndicator) stepIndicator.textContent = `[ETAPA ${currentNum}/${totalNum}]`;
+                if (stepBadge) stepBadge.textContent = step.badge;
+                if (titleEl) titleEl.textContent = step.title;
+                if (whatEl) whatEl.innerHTML = step.what;
+                if (howEl) howEl.innerHTML = step.how;
+                if (tipEl) tipEl.innerHTML = step.tip;
+
+                // Estado dos botões de controle
+                const btnPrev = document.getElementById('pixelTourBtnPrev');
+                const btnNext = document.getElementById('pixelTourBtnNext');
+                const btnFinish = document.getElementById('pixelTourBtnFinish');
+
+                if (btnPrev) btnPrev.disabled = (index === 0);
+
+                if (index === this.steps.length - 1) {
+                    if (btnNext) btnNext.style.display = 'none';
+                    if (btnFinish) btnFinish.style.display = 'inline-block';
+                } else {
+                    if (btnNext) btnNext.style.display = 'inline-block';
+                    if (btnFinish) btnFinish.style.display = 'none';
+                }
+
+                // Calcula coordenadas com micro-delay para acomodar mudanças no layout
+                const self = this;
+                setTimeout(function() {
+                    self.repositionActiveStep();
+                }, 50);
+            },
+
+            exit: function(completed) {
+                this.isRunning = false;
+                if (this.overlayEl) this.overlayEl.classList.remove('active');
+                if (this.popoverEl) this.popoverEl.classList.remove('active');
+
+                if (completed) {
+                    localStorage.setItem(STORAGE_KEY, 'true');
+                    if (window.PixelSystem && typeof window.PixelSystem.toast === 'function') {
+                        window.PixelSystem.toast('Tour operacional concluido com exito. Bom trabalho!', 'success');
+                    }
+                }
+            },
+
+            reset: function() {
+                localStorage.removeItem(STORAGE_KEY);
+                this.start(0);
+            },
+
+            // -----------------------------------------------------------------
+            // 4. MOTOR MATEMÁTICO DE POSICIONAMENTO E DETECÇÃO DE BORDAS
+            // -----------------------------------------------------------------
+            repositionActiveStep: function() {
+                if (!this.isRunning || this.currentIndex < 0) return;
+
+                const step = this.steps[this.currentIndex];
+                let targetEl = null;
+
+                // Suporte a seletores múltiplos separados por vírgula (fallback resiliente)
+                const selectors = step.elementSelector.split(',');
+                for (let i = 0; i < selectors.length; i++) {
+                    const found = document.querySelector(selectors[i].trim());
+                    if (found && found.offsetParent !== null) {
+                        targetEl = found;
+                        break;
+                    }
+                }
+
+                if (!targetEl) {
+                    this.positionFallbackCenter();
+                    return;
+                }
+
+                const rect = targetEl.getBoundingClientRect();
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+
+                // 4.1 Posiciona o Spotlight Target Box (orifício translúcido crisp)
+                const boxTop = Math.max(0, rect.top - PADDING);
+                const boxLeft = Math.max(0, rect.left - PADDING);
+                const boxWidth = Math.min(vw - boxLeft, rect.width + (PADDING * 2));
+                const boxHeight = Math.min(vh - boxTop, rect.height + (PADDING * 2));
+
+                if (this.targetBoxEl) {
+                    this.targetBoxEl.style.top = `${Math.round(boxTop)}px`;
+                    this.targetBoxEl.style.left = `${Math.round(boxLeft)}px`;
+                    this.targetBoxEl.style.width = `${Math.round(boxWidth)}px`;
+                    this.targetBoxEl.style.height = `${Math.round(boxHeight)}px`;
+                }
+
+                // 4.2 Em telas móveis (< 768px), o popover fica ancorado como bottom-sheet via CSS
+                if (vw <= 768) {
+                    if (this.popoverEl) {
+                        this.popoverEl.removeAttribute('data-placement');
+                    }
+                    return;
+                }
+
+                // 4.3 Posiciona o Balão Flutuante (Popover) com Flip Dinâmico
+                let placement = step.placement || 'bottom';
+                const popWidth = this.popoverEl.offsetWidth || 360;
+                const popHeight = this.popoverEl.offsetHeight || 300;
+                const GAP = 12; // Distância entre a caixa de foco e o popover (px)
+
+                let top = 0;
+                let left = 0;
+
+                // Algoritmo de inversão (flip) em caso de colisão de borda
+                if (placement === 'bottom' && (rect.bottom + GAP + popHeight > vh)) {
+                    if (rect.top - GAP - popHeight > 0) placement = 'top';
+                } else if (placement === 'top' && (rect.top - GAP - popHeight < 0)) {
+                    if (rect.bottom + GAP + popHeight < vh) placement = 'bottom';
+                } else if (placement === 'right' && (rect.right + GAP + popWidth > vw)) {
+                    if (rect.left - GAP - popWidth > 0) placement = 'left';
+                    else placement = 'bottom';
+                } else if (placement === 'left' && (rect.left - GAP - popWidth < 0)) {
+                    if (rect.right + GAP + popWidth < vw) placement = 'right';
+                    else placement = 'bottom';
+                }
+
+                // Cálculo de coordenadas com base na orientação final
+                switch (placement) {
+                    case 'bottom':
+                        top = rect.bottom + GAP;
+                        left = rect.left + (rect.width / 2) - (popWidth / 2);
+                        break;
+                    case 'top':
+                        top = rect.top - popHeight - GAP;
+                        left = rect.left + (rect.width / 2) - (popWidth / 2);
+                        break;
+                    case 'right':
+                        top = rect.top + (rect.height / 2) - (popHeight / 2);
+                        left = rect.right + GAP;
+                        break;
+                    case 'left':
+                        top = rect.top + (rect.height / 2) - (popHeight / 2);
+                        left = rect.left - popWidth - GAP;
+                        break;
+                }
+
+                // Restrição e Clamping Ortogonal Estrito aos limites da janela (Safe Zone)
+                const MARGIN = 12;
+                left = Math.max(MARGIN, Math.min(vw - popWidth - MARGIN, left));
+                top = Math.max(MARGIN, Math.min(vh - popHeight - MARGIN, top));
+
+                this.popoverEl.setAttribute('data-placement', placement);
+                this.popoverEl.style.top = `${Math.round(top)}px`;
+                this.popoverEl.style.left = `${Math.round(left)}px`;
+            },
+
+            positionFallbackCenter: function() {
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+                const popWidth = this.popoverEl ? (this.popoverEl.offsetWidth || 360) : 360;
+                const popHeight = this.popoverEl ? (this.popoverEl.offsetHeight || 300) : 300;
+
+                if (this.targetBoxEl) {
+                    this.targetBoxEl.style.top = '0px';
+                    this.targetBoxEl.style.left = '0px';
+                    this.targetBoxEl.style.width = '0px';
+                    this.targetBoxEl.style.height = '0px';
+                }
+
+                if (this.popoverEl) {
+                    this.popoverEl.removeAttribute('data-placement');
+                    this.popoverEl.style.top = `${Math.round((vh - popHeight) / 2)}px`;
+                    this.popoverEl.style.left = `${Math.round((vw - popWidth) / 2)}px`;
+                }
+            }
+        };
+    })();
+
+    // Exposição global para o console operacional
+    window.PiDotsTourEngine = PiDotsTourEngine;
+    </script>
+
+    <!-- =======================================================================
          8. CONTROLADOR JAVASCRIPT PIDOTSUX (ONBOARDING, CHANGELOG E PWA)
          ======================================================================= -->
     <script>
     const PiDotsUX = (function() {
         // ---------------------------------------------------------------------
-        // MODULO 1: ONBOARDING / GUIA DE PRIMEIRO ACESSO (FICHA CATALOGRAFICA)
+        // MODULO 1: ONBOARDING / GUIA DE PRIMEIRO ACESSO (REDIRECIONADO SPOTLIGHT)
         // ---------------------------------------------------------------------
         const Onboarding = {
             currentStep: 1,
             totalSteps: 5,
-            STORAGE_KEY: 'pidots_onboarding_completed',
+            STORAGE_KEY: 'pidots_tour_completed',
 
             init() {
-                const completed = localStorage.getItem(this.STORAGE_KEY);
-                if (completed !== 'true') {
-                    // Abre o onboarding no primeiro acesso apos pequeno delay para a UI assentar
-                    setTimeout(() => {
-                        this.open();
-                    }, 400);
-                }
+                // Delegado ao disparo automático do PiDotsTourEngine no DOMContentLoaded
             },
 
             open() {
+                if (window.PiDotsTourEngine) {
+                    window.PiDotsTourEngine.start(0);
+                    return;
+                }
                 const modal = document.getElementById('pixelOnboardingModal');
                 if (!modal) return;
                 this.currentStep = 1;
@@ -7776,6 +8666,15 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         PiDotsUX.init();
+
+        // Disparo automático do Novo Spotlight Tour no primeiro acesso ao console
+        setTimeout(() => {
+            const tourDone = localStorage.getItem('pidots_tour_completed');
+            if (tourDone !== 'true' && window.PiDotsTourEngine) {
+                console.log('[piDots] Primeiro acesso detectado. Acionando Spotlight Tour...');
+                window.PiDotsTourEngine.start(0);
+            }
+        }, 600);
     });
     </script>
     <!-- Micro-motor de Internacionalização Ultraleve piDots -->

@@ -273,6 +273,7 @@
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
             position: relative;
+            white-space: nowrap !important;
             transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
         }
 
@@ -2172,20 +2173,57 @@
                 display: none;
             }
         }
+        @media (max-width: 768px) {
+            .node-telemetry-badge {
+                display: none !important;
+            }
+        }
         @media (max-width: 640px) {
+            header.landing-header {
+                flex-wrap: nowrap !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+                gap: 4px !important;
+            }
+            .brand-unit {
+                gap: 6px !important;
+                flex-shrink: 0 !important;
+            }
+            .brand-unit .brand-title {
+                display: none !important;
+            }
             .surface-switcher {
-                width: 100%;
-                justify-content: stretch;
+                padding: 1px 2px !important;
+                gap: 2px !important;
+                display: inline-flex !important;
+                width: auto !important;
+                flex-shrink: 0 !important;
             }
             .surface-tab {
-                flex: 1;
-                justify-content: center;
-                padding: 6px 3px;
-                font-size: 10px;
-                gap: 4px;
+                padding: 4px 6px !important;
+                font-size: 8px !important;
+                flex: initial !important;
             }
+            .surface-tab .tab-chord {
+                display: none !important;
+            }
+            .surface-tab .tab-lbl {
+                display: none !important;
+            }
+            .surface-tab#tab-overview .tab-idx::after { content: " VIS"; }
+            .surface-tab#tab-workspace .tab-idx::after { content: " APP"; }
+            .surface-tab#tab-docs .tab-idx::after { content: " DOC"; }
             .node-telemetry-badge {
-                display: none;
+                display: none !important;
+            }
+            .header-actions {
+                gap: 4px !important;
+                flex-shrink: 0 !important;
+            }
+            .header-actions .pixel-btn {
+                padding: 4px 6px !important;
+                font-size: 8px !important;
+                min-height: 32px !important;
             }
         }
     </style>
@@ -2353,7 +2391,7 @@
 
                 <!-- Visualizador 1: Terminal ReAct Interativo -->
                 <div class="sim-viewport" id="heroSimViewport">
-                    <div class="sim-line prefix">[BOOT] piDots Edge Core v1.2.0 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
+                    <div class="sim-line prefix">[BOOT] piDots Edge Core v1.3.0 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
                     <div class="sim-line">[03:14:00] <span style="color: var(--ink-muted);">HEARTBEAT-DAEMON //</span> Checagem periodica: <span style="color: var(--phosphor-green);">HEARTBEAT_OK [Filtro de silêncio ativo: 0 tokens consumidos]</span></div>
                     <div class="sim-line" style="color: var(--blueprint-cyan);">[INFO] Selecione um dos comandos rapidos abaixo ou digite seu comando no prompt:</div>
                 </div>
@@ -2382,6 +2420,7 @@
                 <!-- Barra de Comandos Pré-programados Clicáveis -->
                 <div class="sim-chips-bar">
                     <span class="sim-chips-label">COMANDOS RAPIDOS:</span>
+                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('slash_telemetry')">[/telemetry // SENSORES EM SUB-16MS]</button>
                     <button type="button" class="sim-chip" onclick="executeSimulatedOrder('audit_flash')">[@dot-coder // AUDITAR FLASH &amp; RAM]</button>
                     <button type="button" class="sim-chip" onclick="executeSimulatedOrder('council_debate')">[@conselho // DELIBERAR ARQUITETURA]</button>
                     <button type="button" class="sim-chip" onclick="executeSimulatedOrder('self_healing')">[@self-healing // REPARAR SCRIPT SHELL]</button>
@@ -2878,6 +2917,40 @@
                         Monitoramento: Temperatura SoC (/sys), Disco Flash e RAM livre<br>
                         Preservacao: PRAGMA wal_checkpoint(TRUNCATE) &amp; VACUUM INTO<br>
                         Consolidacao: Poda automatica de mensagens &gt; 7 dias em memorias episodicas
+                    </div>
+                </article>
+
+                <!-- Pilar 13: Protocolo Unificado de Slash Commands & Recibos Tatis -->
+                <article class="feature-card">
+                    <header class="feature-top">
+                        <span class="feature-num">PILAR 13</span>
+                        <span class="feature-badge" style="color: var(--blueprint-cyan);">SLASH COMMANDS (/)</span>
+                    </header>
+                    <h3 class="feature-title">Protocolo Unificado de Slash Commands &amp; Recibos Tatis</h3>
+                    <p class="feature-desc">
+                        Controle operacional cirurgico de alta velocidade. O piDots integra um catalogo de 30 Slash Commands organizados em 6 categorias funcionais, disparados com a tecla '/' no teletipo. Acoes locais (como /clear, /theme, /lang, /telemetry) executam no cliente em menos de 16ms com zero consumo de tokens. O motor Vanilla JS conta com busca fuzzy em memoria, navegacao ciclica por setas, autocompletar com Tab/Enter, tolerancia a falhas via distancia Levenshtein e emissao de recibos tatis na bobina de papel com teto circular de 150 nos DOM.
+                    </p>
+                    <div class="feature-code-box">
+                        Catalogo: 30 comandos em 6 categorias (Sistema, Agentes, Memoria, Tarefas, Borda, Export)<br>
+                        Motor: Vanilla JS &lt; 10KB com busca fuzzy, Levenshtein e zero bibliotecas pesadas<br>
+                        Latencia: Sub-16ms com zero chamadas externas de LLM e zero consumo de tokens
+                    </div>
+                </article>
+
+                <!-- Pilar 14: Triptico Adaptativo do Workspace & Telemetria Edge Pulse -->
+                <article class="feature-card">
+                    <header class="feature-top">
+                        <span class="feature-num">PILAR 14</span>
+                        <span class="feature-badge" style="color: var(--phosphor-green);">TRIPTICO ADAPTATIVO</span>
+                    </header>
+                    <h3 class="feature-title">Triptico Adaptativo do Workspace &amp; Telemetria Edge Pulse</h3>
+                    <p class="feature-desc">
+                        Ergonomia extrema em qualquer dispositivo, de notebooks de 1366px a smartphones compactos. Em telas intermediarias (1024px-1440px), o layout colapsa a barra lateral em uma gaveta sob demanda de 260px, elevando a largura util do chat de 202px para mais de 750px sem espremer o Live Canvas. No cabecalho, o Edge Pulse Chip consolida sensores de silicio, memoria RAM, integridade do SQLite WAL e status HITL em uma linha unica ultra-densa. No mobile, a engine window.visualViewport oculta barras fixas ao abrir o teclado virtual, preservando a visibilidade da digitacao e garantindo tap targets de 44px WCAG 2.2 AA.
+                    </p>
+                    <div class="feature-code-box">
+                        Workspace: Triptico adaptativo com overlay sob demanda e canvas em split 50/50<br>
+                        Cabecalho: Edge Pulse Chip condensado poupando mais de 360px de espaco util<br>
+                        Mobile-First: window.visualViewport inteligente e conformidade WCAG 2.2 AA (44px)
                     </div>
                 </article>
             </div>
@@ -3937,7 +4010,7 @@
                 <a href="/" class="pixel-btn btn-cyan" data-i18n="nav.overview">[01 // VISAO GERAL]</a>
                 <a href="/app" class="pixel-btn btn-green" data-i18n="nav.workspace">[02 // WORKSPACE]</a>
                 <a href="/docs" class="pixel-btn" data-i18n="nav.docs">[03 // DOCUMENTACAO]</a>
-                <a href="/api/changelog" class="pixel-btn" target="_blank" title="Consultar Changelog v1.2.0">[PATCH NOTES // V1.2.0]</a>
+                <a href="/api/changelog" class="pixel-btn" target="_blank" title="Consultar Changelog v1.3.0">[PATCH NOTES // V1.3.0]</a>
                 <button class="pixel-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
                     <span>[VOLTAR AO TOPO]</span>
@@ -4423,6 +4496,24 @@
                     if (statusText) statusText.innerText = 'PULSO OPERACIONAL NOMINAL // 0 TOKENS';
                 }, 800);
 
+            } else if (type === 'slash_telemetry') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /telemetry</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line" style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); margin-top: 4px;">=== [RECIBO DE SLASH COMMAND // LOCAL CLIENT-SIDE &lt; 16MS] ===</div>`;
+                    vp.innerHTML += `<div class="sim-line" style="background: rgba(56, 189, 248, 0.08); border-left: 3px solid var(--blueprint-cyan); padding: 6px; font-family: var(--font-mono); font-size: 11px;">
+[COMANDO] /telemetry | STATUS: SUCESSO | LATENCIA: 4ms | CONSUMO TOKENS: 0<br>
+[CPU SOC]  Broadcom BCM2711 ARM64: [========..] 44.8 C (Nominal &lt; 72 C)<br>
+[RAM RSS]  64.2 MB / 3840 MB:      [=.........] 1.6% em uso fisico<br>
+[FLASH]    Particao MicroSD:       [===.......] 32% ocupado (14GB livres)<br>
+[STORAGE]  SQLite WAL Checkpoint:  Sincronizado | Conexoes ativas: 3
+</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'SLASH COMMAND EXECUTADO LOCALMENTE // 0 TOKENS';
+                    showToast('Comando /telemetry executado em 4ms sem consumo de tokens!', 'info');
+                }, 150);
+
             } else if (type === 'hitl_danger') {
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @dot-coder executar rm -rf /etc/systemd/system/pidots.service</div>`;
                 vp.scrollTop = vp.scrollHeight;
@@ -4451,6 +4542,25 @@
             vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; ${text}</div>`;
             input.value = '';
             vp.scrollTop = vp.scrollHeight;
+
+            if (text.startsWith('/')) {
+                const cmd = text.split(' ')[0].toLowerCase();
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line" style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); margin-top: 4px;">=== [RECIBO DE SLASH COMMAND // INTERCEPTACAO LOCAL] ===</div>`;
+                    if (cmd === '/clear') {
+                        vp.innerHTML = `<div class="sim-line prefix">[BOOT] piDots Edge Core v1.3.0 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
+                        <div class="sim-line" style="color: var(--phosphor-green);">[RECIBO] Bobina de teletipo limpa cirurgicamente via comando /clear (0 tokens consumidos).</div>`;
+                        showToast('Teletipo limpo via /clear', 'info');
+                    } else if (cmd === '/telemetry') {
+                        executeSimulatedOrder('slash_telemetry');
+                    } else {
+                        vp.innerHTML += `<div class="sim-line success">[RECIBO] Comando ${cmd} executado no cliente em sub-16ms | 0 tokens gastos | Sessao intacta.</div>`;
+                        showToast(`Slash command ${cmd} executado localmente!`, 'info');
+                    }
+                    vp.scrollTop = vp.scrollHeight;
+                }, 120);
+                return;
+            }
 
             setTimeout(() => {
                 vp.innerHTML += `<div class="sim-line thought">[CADERNO DE RACIOCINIO // AG-UI]<br>Analisando intencao semantica... Roteando comando atraves da poda dinamica de ferramentas...</div>`;

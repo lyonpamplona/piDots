@@ -280,7 +280,7 @@
             cursor: pointer;
             user-select: none;
             transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
-            white-space: nowrap;
+            white-space: nowrap !important;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
             position: relative;
@@ -1550,20 +1550,55 @@
         }
         @media (max-width: 768px) {
             .node-telemetry-badge {
-                display: none;
+                display: none !important;
             }
         }
         @media (max-width: 640px) {
+            header.guide-header {
+                flex-wrap: nowrap !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+                gap: 4px !important;
+            }
+            .brand-unit {
+                gap: 6px !important;
+                flex-shrink: 0 !important;
+            }
+            .brand-unit .brand-title {
+                display: none !important;
+            }
             .surface-switcher {
-                width: 100%;
-                justify-content: stretch;
+                padding: 1px 2px !important;
+                gap: 2px !important;
+                display: inline-flex !important;
+                width: auto !important;
+                flex-shrink: 0 !important;
             }
             .surface-tab {
-                flex: 1;
-                justify-content: center;
-                padding: 6px 3px;
-                font-size: 10px;
-                gap: 4px;
+                padding: 4px 6px !important;
+                font-size: 8px !important;
+                flex: initial !important;
+            }
+            .surface-tab .tab-chord {
+                display: none !important;
+            }
+            .surface-tab .tab-lbl {
+                display: none !important;
+            }
+            .surface-tab#tab-overview .tab-idx::after { content: " VIS"; }
+            .surface-tab#tab-workspace .tab-idx::after { content: " APP"; }
+            .surface-tab#tab-docs .tab-idx::after { content: " DOC"; }
+            .node-telemetry-badge {
+                display: none !important;
+            }
+            .header-actions {
+                gap: 4px !important;
+                flex-shrink: 0 !important;
+            }
+            .header-actions .pixel-btn {
+                padding: 4px 6px !important;
+                font-size: 8px !important;
+                min-height: 32px !important;
             }
         }
     </style>
@@ -2435,6 +2470,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                         <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); margin-bottom: 6px; letter-spacing: 0.05em;">ROTAS REST DISPONIVEIS PARA DISPARO:</div>
                         <div class="api-tester-chips">
                             <button class="api-chip-btn active" onclick="selecionarEndpointApi('GET', '/health', '')">[GET /health]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/spaces', '')">[GET /api/spaces]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots', '')">[GET /api/dots]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tasks', '')">[GET /api/tasks]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/channels', '')">[GET /api/channels]</button>
@@ -2516,11 +2552,13 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                                 <span class="brand-badge">AGILIDADE TATICA</span>
                             </div>
                             <p class="pixel-card-body" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 6px;">
+                                <span><code>Tecla /</code> : Abrir menu Autocomplete Popover de Slash Commands no teletipo.</span>
+                                <span><code>Alt + B</code> : Alternar gaveta da Sidebar no Triptico Adaptativo (1024px-1440px).</span>
                                 <span><code>Alt + I</code> : Focar e inspecionar artefato ativo no Live Canvas.</span>
                                 <span><code>Ctrl/Cmd + S</code> : Gravar revisao atomica do arquivo em Spaces.</span>
                                 <span><code>Alt + H</code> : Abrir modal de governanca HITL pendente.</span>
                                 <span><code>F11</code> : Alternar visualizacao split/maximizada do canvas.</span>
-                                <span><code>Ctrl + L</code> : Limpar bobina de chat do teletipo local.</span>
+                                <span><code>Ctrl + L</code> : Limpar bobina de chat do teletipo local (/clear).</span>
                                 <span><code>F1</code> : Abrir manual tecnico na gaveta lateral retratil.</span>
                             </p>
                         </article>
@@ -3019,7 +3057,7 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                                 <span class="brand-badge">THERMAL THROTTLE</span>
                             </div>
                             <p class="pixel-card-body">
-                                Leitura direta em tempo real via <code>/sys/class/thermal/thermal_zone0/temp</code>. Se a temperatura ultrapassar 72°C (configuravel), o sistema ativa throttle automatico e despacha alertas proativos via HITL para proteger o SoC contra thermal throttling de hardware.
+                                Leitura direta em tempo real via <code>/sys/class/thermal/thermal_zone0/temp</code>. Se a temperatura ultrapassar 78°C (configuravel via <code>THERMAL_LIMIT_CELSIUS</code>), o sistema ativa throttle automatico e despacha alertas proativos via HITL para proteger o SoC contra thermal throttling de hardware.
                             </p>
                         </article>
 
@@ -3069,7 +3107,7 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                             <text x="160" y="40" fill="#ffb830" font-family="'Silkscreen', monospace" font-size="8" text-anchor="middle">SOVEREIGN HARDWARE GUARD</text>
                             <text x="160" y="65" fill="#f1f5f9" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="bold" text-anchor="middle">Broadcom BCM2711 SoC</text>
                             <text x="160" y="80" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">/sys/class/thermal/thermal_zone0</text>
-                            <text x="160" y="98" fill="#ef4444" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">SE TEMP &gt; 72°C -&gt; THROTTLE &amp; ALERTA HITL</text>
+                            <text x="160" y="98" fill="#ef4444" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">SE TEMP &gt; 78°C -&gt; THROTTLE &amp; ALERTA HITL</text>
 
                             <!-- Divisor Central -->
                             <path d="M320 25 V115" stroke="#283340" stroke-width="2" stroke-dasharray="4 2"/>
@@ -3301,10 +3339,16 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                                     <td>Inspeciona modo standalone do PWA, atualiza Service Worker e limpa cache.</td>
                                 </tr>
                                 <tr>
-                                    <td><code>/onboarding</code></td>
-                                    <td><code>/onboarding</code></td>
+                                    <td><code>/tour</code></td>
+                                    <td><code>/tour [reset]</code></td>
                                     <td>Cliente (UX)</td>
-                                    <td>Dispara tour guiado interativo de 5 etapas para novos operadores do console.</td>
+                                    <td>Dispara o tour spotlight interativo in-context de 5 etapas para capacitar o operador.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/onboarding</code></td>
+                                    <td><code>/onboarding [reset]</code></td>
+                                    <td>Cliente (UX)</td>
+                                    <td>Alias para o tour spotlight interativo in-context no console operacional.</td>
                                 </tr>
                                 <tr>
                                     <td><code>/changelog</code></td>

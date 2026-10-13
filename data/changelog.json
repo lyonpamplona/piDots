@@ -1,45 +1,77 @@
 {
   "system": "piDots",
   "app_name": "piDots Edge Console",
-  "current_version": "1.3.0",
-  "release_date": "2026-10-12",
-  "build": "20261012-ARM64",
-  "commit_hash": "e8f4a19",
+  "current_version": "1.5.0",
+  "release_date": "2026-10-13",
+  "build": "20261013-ARM64",
+  "commit_hash": "e8f1b2c",
   "channel": "stable",
   "patch_notes": {
-    "version": "1.3.0",
-    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.3.0",
-    "summary": "Protocolo Unificado de Slash Commands (/): Catalogo completo de 30 comandos em 6 categorias funcionais, motor de autocomplete popover em Vanilla JS, recibos de teletipo tatis e integracao profunda com o SQLite WAL e hardware de borda.",
+    "version": "1.5.0",
+    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.5.0",
+    "summary": "Novo Tour Spotlight Interativo In-Context & Onboarding FTUE de Alto Desempenho: Substituicao de modais estaticos por orificio iluminado em hardware real (box-shadow global de camada unica), 5 passos canonicos de capacitacao motora, suporte a teclado (Setas/Enter/Esc), comando /tour integrado e auto-disparo inteligente no primeiro acesso.",
     "categories": {
       "included": [
-        "Motor Frontend de Slash Commands: Invocacao instantanea via tecla '/', filtragem fuzzy em memoria, navegacao ciclica por setas (ArrowUp/ArrowDown), autocompletar com Tab/Enter e fechamento por Esc.",
-        "Catalogo Completo de 30 Comandos: 10 de Sistema & UI, 6 de Agentes & Multi-Bot, 5 de Memoria & Conhecimento, 3 de Tarefas & Heartbeat, 4 de Governanca & Borda e 2 de Exportacao & Dados.",
-        "Recibos Tatis de Teletipo (Slash Receipt Slip): Geracao de slips com cabecalho de sistema, timestamp ISO UTC, numero sequencial de auditoria SEQ#, picote serrilhado e teto estrito de 150 nos DOM.",
-        "Tolerancia a Falhas via Levenshtein: Algoritmo de distancia de edicao sugerindo comandos aproximados ('Voce quis dizer: /comando?') para erros de digitacao do operador.",
-        "Exportacao Direta no Navegador (/export): Baixa instantaneamente o historico do teletipo ou o documento ativo do Live Canvas em Markdown sem intermediarios."
+        "Motor de Tour Spotlight In-Context (PiDotsTourEngine): Ancoragem tatica no DOM real sem bloqueio de tela, recortando os elementos de trabalho com contorno pulsante ciano (--blueprint-cyan).",
+        "Cinco Etapas Canonicas de Capacitacao: Squad Central de Agentes, Terminal de Comando & Teletipo, Comutador de Modo Foco, Live Canvas & Diffs e Telemetria / Gaveta Tecnica (F1).",
+        "Comando de Barra /tour e /onboarding: Acionamento imediato no teletipo com suporte a parametro 'reset' para reiniciar o ciclo do operador.",
+        "Acionamento Tatico na Gaveta Tecnica: Card interativo [REVER GUIA OPERACIONAL SPOTLIGHT] integrado na central F1 / [SISTEMA] e atalho no menu de contexto.",
+        "Auto-Disparo Inteligente com Desacoplamento: Inicializacao suave de 600ms no primeiro acesso do operador baseada em localStorage.getItem('pidots_tour_completed')."
       ],
       "adjusted": [
-        "Interceptacao de Baixa Latencia no Chat: Comandos iniciados por '/' executam localmente no cliente em menos de 16ms, sem chamada desnecessaria a LLM e com zero consumo de tokens.",
-        "Integracao Harmoniosa com Mencao @dot: Coexistencia sem atrito entre o autocomplete de agentes (@) e o autocomplete de comandos (/)."
+        "Eliminacao do Modal Estatico de Onboarding: Descontinuacao do modal opaco que cobria 90% da tela sem permitir visualizar os botoes e ferramentas reais.",
+        "Geometria Pixel Paper UI com Clamping Ortogonal: Balão de instruções flutuante com chanfro tático, flip inteligente de borda e protecao contra overflow na viewport.",
+        "Responsividade Mobile Integrada: Adaptacao automatica para bottom-sheet flutuante em telas < 768px com acionamento previo de abas (setMobileView)."
       ],
       "removed": [
-        "Eliminacao de Rotinas Dispersas: Centralizacao de acoes operacionais (manutencao, telemetria, diff, backup) em comandos de barra de alta velocidade."
+        "Eliminacao de Dependencias Externas de Tour: Zero bibliotecas de terceiros (dispensando pacotes como Intro.js, Driver.js ou Shepherd de 40KB+).",
+        "Remocao de Filtros Computacionais Pesados: Eliminado qualquer uso de backdrop-filter: blur, garantindo consumo de CPU < 1% no Raspberry Pi 4B ARM64."
       ],
       "security_and_edge": [
-        "Zero Chamadas de LLM para Comandos Locais: Economia de banda e ciclos de inferencia do processador Cortex-A72.",
-        "Sanitizacao Rigorosa e Imunidade XSS: Todas as interpolacoes utilizam escapeHtml estrito e mutacao estruturada no DOM."
+        "Renderizacao por Camada de Composicao Direta: Efeito de recorte obtido via box-shadow solido infinito sem layouts sincronizados repetitivos (zero layout thrashing).",
+        "Validacao Sintatica Estrita com Node.js: Cobertura total de testes de sintaxe em 100% dos blocos de script, assegurando conformidade e estabilidade operacional."
       ]
     }
   },
   "history": [
     {
+      "version": "1.4.0",
+      "release_date": "2026-10-13",
+      "type": "MINOR RELEASE",
+      "highlights": [
+        "Reestruturacao ergonomica, Squad Central de 4 bots essenciais (Supervisor, Dev, Muse, Auditor).",
+        "Tres modos de operacao (Criacao 50/50, Foco Zen em 880px e Painel Tecnico sob demanda).",
+        "Remocao de furos de trator e linhas de picote repetitivas, liberando largura util de leitura."
+      ]
+    },
+    {
+      "version": "1.3.1",
+      "release_date": "2026-10-13",
+      "type": "PATCH RELEASE",
+      "highlights": [
+        "Governanca HITL transparente no chat sem retencao silenciosa.",
+        "Sanitizacao de redirecionamentos 2>/dev/null em inspecoes de shell.",
+        "Calibracao do teto termico para 78C e gateway OpenRouter estabilizado."
+      ]
+    },
+    {
+      "version": "1.3.0",
+      "release_date": "2026-10-12",
+      "type": "MINOR RELEASE",
+      "highlights": [
+        "Protocolo Unificado de Slash Commands (/) com 30 comandos operacionais em 6 categorias.",
+        "Motor de autocomplete popover em Vanilla JS e recibos de teletipo (Slash Receipt Slip).",
+        "Triptico responsivo com colapso de sidebar sob demanda (Alt+B) e Edge Pulse Chip."
+      ]
+    },
+    {
       "version": "1.2.0",
       "release_date": "2026-10-12",
       "type": "MINOR RELEASE",
       "highlights": [
-        "Micro-Motor i18n Vanilla JS bilingue nativo [PT | EN] com troca in-memory.",
-        "Humanizacao radical de voz e tom de engenharia (anti-AI-slop e cadencia Gary Provost).",
-        "Restauração gramatical culta e unificacao de topologia GitHub."
+        "Micro-motor i18n Vanilla JS com comutacao ultraleve [PT | EN].",
+        "Dicionarios data/locales/pt.json e en.json com cache estatico resiliente.",
+        "Humanizacao radical de voz e eliminacao de cliches de AI slop."
       ]
     },
     {
@@ -49,7 +81,6 @@
       "highlights": [
         "Onboarding Tatil em Ficha Catalografica com stepper de 5 etapas.",
         "Suporte PWA nativo 100% instalavel com WebAPK e Service Worker resiliente.",
-        "Changelog central e modal de Patch Notes com persistencia em localStorage.",
         "Monitor de telemetria SVG crispEdges sem bibliotecas graficas externas."
       ]
     },
@@ -58,8 +89,8 @@
       "release_date": "2026-10-11",
       "type": "HOTFIXES",
       "highlights": [
-        "Correcao de travamento esporadico no bloqueio de escrita do SQLite WAL em operacoes concorrentes.",
-        "Ajuste fino de insets de seguranca para navegadores moveis (Dynamic Island e barras de gestos)."
+        "Correcao de travamento esporadico no bloqueio de escrita do SQLite WAL.",
+        "Ajuste fino de insets de seguranca para navegadores moveis."
       ]
     },
     {
@@ -68,8 +99,8 @@
       "type": "RELEASE INAUGURAL",
       "highlights": [
         "Lancamento do console triptych oficial para agentes autonomos piDots.",
-        "Implementacao do roteador de mensageria com suporte a mencao @dot e dossie HITL.",
-        "Engine de renderizacao Pixel Paper UI e integracao com modelos LLM locais e em nuvem."
+        "Roteador de mensageria com suporte a mencao @dot e dossie HITL.",
+        "Engine de renderizacao Pixel Paper UI e integracao LLM."
       ]
     }
   ]

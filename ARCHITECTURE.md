@@ -356,7 +356,7 @@ A informacao foi organizada para eliminar colisoes entre navegacao de produto, o
 | **Esquema OpenAPI JSON** | `GET /api/openapi.json` | Contrato formal OpenAPI 3.0 estruturado em JSON |
 | **Dicionarios de Locale** | `GET /data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
 | **Micro-Motor i18n JS** | `GET /static/pidots-i18n.js` | Micro-motor Vanilla JS de traducao dinamica client-side |
-| **Changelog e Patch Notes** | `GET /api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.2.0) |
+| **Changelog e Patch Notes** | `GET /api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.3.0) |
 | **Service Worker PWA** | `GET /sw.js` | Service Worker com cache defensivo v5 para operacao offline |
 | **Redirecionamentos RFC 7538** | `/apresentacao`, `/guia`, `/console` | Redirecionamentos permanentes HTTP 308 preservando compatibilidade retroativa |
 
@@ -371,21 +371,24 @@ As interfaces integram o **Surface Switcher**, um cabeçalho técnico flutuante 
 
 ### 12.3 Atalhos de Alta Produtividade do Console SPA
 Para operar 24/7 sem dependencia de mouse:
+- `Tecla /`: Disparar Autocomplete Popover com catalogo de 30 Slash Commands e busca fuzzy no teletipo.
+- `Alt+B`: Alternar gaveta sob demanda da Sidebar no Triptico Adaptativo (1024px-1440px) com backdrop.
 - `Alt+I`: Inspecionar artefato ativo no Live Canvas.
 - `Ctrl+S` / `Cmd+S`: Gravar revisao atomica do documento em Spaces no SQLite WAL (com `preventDefault` para interceptar a gravacao padrao do browser).
 - `Alt+H`: Abrir e focar o dossie de governanca HITL pendente.
 - `F11`: Alternar entre visualizacao dividida (split) e maximizada do canvas (com supressao do fullscreen nativo).
-- `Ctrl+L`: Limpar mensagens visuais da bobina do teletipo/chat local.
+- `Ctrl+L`: Limpar mensagens visuais da bobina do teletipo/chat local (/clear).
 - `F1`: Abrir gaveta retratil com o manual operacional tecnico.
 
 ### 12.4 Engenharia e Resiliencia Mobile-First para Hardware de Borda
 As interfaces foram calibradas para dispositivos moveis (iOS Safari e Android Chrome) operados remotamente via tuneis Cloudflared:
-1. **Controle de Teclado Virtual no Android:** Meta viewport configurada com `interactive-widget=resizes-content`, instruindo o motor Blink a redimensionar dinamicamente a viewport visual em vez de sobrepor inputs ou colapsar o scroll.
+1. **Engine window.visualViewport para Teclado Virtual:** O console monitora ativamente `window.visualViewport.addEventListener('resize')`. Quando a altura visível cai mais de 150px em relacao a `window.innerHeight`, a classe `keyboard-open` e injetada no `document.body`, ocultando a barra inferior `.mobile-bottom-nav` e preservando a rolagem nativa para o campo `#instructionInput` sem sobreposicoes indesejadas.
 2. **Protecao Anti-Zoom no iOS Safari:** Regra CSS global `font-size: 16px !important` em todos os elementos de input de texto e buscas, impedindo o disparo de zoom automatico destrutivo da Apple que quebra layouts responsivos fixos.
 3. **Viewport Dinamico (100dvh):** Uso de `min-height: 100dvh` (Dynamic Viewport Height) com fallback para `100vh`, acomodando com precisao o surgimento e recolhimento das barras de navegacao de navegadores moveis.
 4. **Respeito a Safe Areas:** Utilizacao de `env(safe-area-inset-top)` e `env(safe-area-inset-bottom)` nos cabecalhos e na barra de navegacao inferior (`.mobile-bottom-nav`), garantindo compatibilidade com Dynamic Island e Home Indicators do iOS.
-5. **Tap Targets Acessiveis:** Areas minimas de toque de 44x44px em botoes e icones com feedback haptico sutil via `navigator.vibrate` em navegadores compativeis.
-6. **Estetica Pixel Paper UI:** Visual tatico inspirado em teletipos tecnicos, fichas catalograficas e papel milimetrado com alta densidade de informacoes, tipografia tecnica crisp, ausencia de filtros graficos pesados e catalogo uniforme de 26 icones SVGs tecnicos. Buffer circular de DOM mantido em 150 nos para prevenir exaustao de memoria em navegadores de borda.
+5. **Tap Targets Acessiveis (WCAG 2.2 AA):** Areas minimas de toque de 44x44px em botoes e icones com feedback haptico sutil via `navigator.vibrate` em navegadores compativeis.
+6. **Surface Switcher Compacto em Linha Unica:** Em viewports moveis (< 640px), as abas adotam notacao compacta (`[01 VIS]`, `[02 APP]`, `[03 DOC]`), preservando a linha unica de 44px do cabecalho com `flex-wrap: nowrap !important` e eliminando saltos de layout.
+7. **Estetica Pixel Paper UI:** Visual tatico inspirado em teletipos tecnicos, fichas catalograficas e papel milimetrado com alta densidade de informacoes, tipografia tecnica crisp, ausencia de filtros graficos pesados e catalogo uniforme de 26 icones SVGs tecnicos. Buffer circular de DOM mantido em 150 nos para prevenir exaustao de memoria em navegadores de borda.
 
 ### 12.5 Arquitetura do Micro-Motor de Internacionalização (i18n) e Localização de Borda
 
@@ -464,6 +467,13 @@ O Console Operacional incorpora um motor lexico e despachador assincrono de coma
 2. **Buffer Circular de DOM (150 Nós):** A funcao `renderSlashReceiptSlip` integra-se a `enforceDomCeiling`, garantindo que recibos antigos sejam purgados do DOM de forma FIFO estrita, mantendo a pegada de memoria RAM estavel em hardware restrito.
 3. **Levenshtein Fault Tolerance:** Algoritmo de distancia de edicao com limite `max_distance <= 3` integrado, sugerindo correcoes imediatas quando erros tipograficos ocorrem.
 4. **Isolamento de Escopo e XSS:** Todo texto dinamico e parametro fornecido pelo operador passa por `escapeHtml()` antes da montagem estrutural dos recibos.
+
+### 12.7 Triptico Adaptativo do Workspace (1024px-1440px) e Telemetria Edge Pulse
+
+Para solucionar a compressao lateral de interface em notebooks de resolucoes medias (1024px a 1440px), o Workspace adota uma topologia adaptativa de 3 colunas:
+1. **Colapso Sob Demanda da Sidebar:** Em telas entre 1024px e 1440px, a coluna esquerda (canais e Dots) colapsa automaticamente, funcionando como gaveta flutuante sob demanda de 260px com backdrop acionada via `Alt+B` ou clique no botao `[PAINEL]`. Isso eleva a largura util do teletipo de 202px para mais de 750px, mantendo o Live Canvas aberto lado a lado sem espremer a leitura do operador.
+2. **Edge Pulse Chip de Telemetria:** Substitui a multiplicidade de chips dispersos no cabecalho por uma pílula tecnica única de alta densidade (`[EDGE // 48.2 °C // 118 MB // WAL ATIVO // HITL 0]`), economizando mais de 360px de espaco horizontal no topo da tela.
+3. **Canvas Responsivo com Split Dinamico:** O editor de documentos Spaces ajusta sua largura em proporcao 50/50 em desktops e pode ser expandido em tela cheia com a tecla `F11`.
 
 ---
 

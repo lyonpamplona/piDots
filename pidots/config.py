@@ -87,7 +87,7 @@ class Settings(BaseSettings):
         description="Habilitar checagem térmica no SoC Broadcom do Raspberry Pi 4B"
     )
     thermal_limit_celsius: float = Field(
-        default=72.0,
+        default=78.0,
         description="Temperatura limite em °C antes de ativar backoff térmico"
     )
 

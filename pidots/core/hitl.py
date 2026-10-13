@@ -51,8 +51,9 @@ class HITLManager:
             for pattern in DANGEROUS_COMMAND_PATTERNS:
                 if re.search(pattern, cmd_text, re.IGNORECASE):
                     return True, "CRITICAL"
-            # Comandos com escrita ou redirecionamento fora de controle
-            if any(token in cmd_text for token in [">", ">>", "tee"]):
+            # Remove redirecionamentos inofensivos de descarte de stream (/dev/null, 2>&1) antes de verificar escrita
+            sanitized_cmd = re.sub(r"(?:[12]?>|&>)\s*/dev/null|2>&1", "", cmd_text)
+            if any(token in sanitized_cmd for token in [">", ">>", "tee"]):
                 return True, "MEDIUM"
 
         return False, "LOW"

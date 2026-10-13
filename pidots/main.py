@@ -230,7 +230,7 @@ async def lifespan(app: FastAPI):
     await app.state.http_client.aclose()
 
 
-APP_VERSION = "1.3.0"
+APP_VERSION = "1.5.0"
 
 app = FastAPI(
     title="piDots Edge Core",
@@ -288,10 +288,32 @@ async def health_check():
 
 
 @app.get("/api/dots")
-async def list_dots():
-    """Lista todos os AI coworkers (Dots) registrados."""
+async def list_dots(core_only: bool = True):
+    """Lista AI coworkers (Dots) registrados. Por padrão retorna o Squad Central enxuto."""
     async with get_db() as db:
-        cursor = await db.execute("SELECT id, name, role, model, workspace_path, is_active, archetype, avatar_stamp FROM dots")
+        if core_only:
+            cursor = await db.execute(
+                """
+                SELECT id, name, role, model, workspace_path, is_active, archetype, avatar_stamp, is_core
+                FROM dots
+                WHERE is_core = 1
+                ORDER BY CASE id
+                    WHEN 'dot-supervisor' THEN 1
+                    WHEN 'dev-assistant' THEN 2
+                    WHEN 'dot-muse' THEN 3
+                    WHEN 'dot-auditor' THEN 4
+                    ELSE 5
+                END
+                """
+            )
+        else:
+            cursor = await db.execute(
+                """
+                SELECT id, name, role, model, workspace_path, is_active, archetype, avatar_stamp, is_core
+                FROM dots
+                ORDER BY is_core DESC, name ASC
+                """
+            )
         rows = await cursor.fetchall()
         return [dict(row) for row in rows]
 

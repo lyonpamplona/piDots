@@ -54,6 +54,12 @@ class ToolRegistry:
             return {"error": f"Ferramenta '{name}' não encontrada no registro."}
         try:
             handler = self._handlers[name]
+            # Assegura que arguments seja sempre um dicionário válido
+            if arguments is None:
+                arguments = {}
+            else:
+                arguments = dict(arguments)
+
             # Injeta argumentos contextuais conforme a ferramenta
             if name in (
                 "execute_shell_command", "execute_and_verify", "workspace_read_file", "workspace_write_file", "workspace_list_files",
@@ -89,6 +95,9 @@ class ToolRegistry:
                     arguments["dot_id"] = dot_id
 
             return await handler(**arguments)
+        except TypeError as te:
+            logger.warning("Argumentos incompletos ou inválidos para a ferramenta %s: %s", name, str(te))
+            return {"error": f"Argumentos incompletos para a ferramenta '{name}': {str(te)}"}
         except Exception as e:
             logger.error("Erro ao executar ferramenta %s: %s", name, str(e), exc_info=True)
             return {"error": f"Exceção durante a execução de {name}: {str(e)}"}

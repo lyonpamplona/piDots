@@ -211,7 +211,13 @@ class DotAgent:
 
             # Caso 1: O modelo requisitou chamadas de ferramentas
             if tool_calls:
-                # Adiciona mensagem do assistente contendo as chamadas de ferramentas
+                # Provedores que suportam apenas single tool-call por turno (ex: Llama no OpenRouter)
+                if len(tool_calls) > 1:
+                    logger.info("Modelo requisitou %d chamadas de ferramentas simultâneas. Executando a primeira para compatibilidade com o gateway de inferência.", len(tool_calls))
+                    tool_calls = [tool_calls[0]]
+                    msg["tool_calls"] = tool_calls
+
+                # Adiciona mensagem do assistente contendo a chamada de ferramenta
                 messages.append(msg)
 
                 for call in tool_calls:
@@ -243,6 +249,24 @@ class DotAgent:
                                 "risk_level": risk
                             }
                         }
+                        # Persiste aviso transparente no chat para evitar silêncio aparente
+                        hitl_notice = (
+                            f"[GOVERNANCA HITL // ACAO RETIDA]\n"
+                            f"O agente '{self.dot_id}' solicitou a acao '{fn_name}' (Risco: {risk}), "
+                            f"que requer autorizacao expressa do operador humano.\n"
+                            f"ID de Aprovacao: {approval_id}\n"
+                            f"Instrucao: Homologue a execucao na aba de governanca HITL ou via comando /hitl."
+                        )
+                        async with get_db() as db:
+                            await db.execute(
+                                """
+                                INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                                VALUES (?, ?, 'assistant', ?, ?, 'dot', 'public', ?)
+                                """,
+                                (str(uuid.uuid4()), thread_id, hitl_notice, self.dot_id, hitl_notice)
+                            )
+                            await db.commit()
+
                         # Interrompe o run até aprovação humana
                         yield {
                             "event": "run:finished",
