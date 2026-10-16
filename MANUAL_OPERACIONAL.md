@@ -4,7 +4,7 @@
 **Autor e Criador:** lyon christopher  
 **Assistente:** Logger  
 **Ambiente Alvo:** Computacao de Borda e SBCs (Benchmark de Referencia: Raspberry Pi 4B 4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
-**Versão:** 1.4.0 (Produção Estável — Reestruturação Ergonômica, Squad Central & Três Modos de Operação)  
+**Versão:** 1.5.0 (Produção Estável — Spotlight Tour, Squad Central, Governança HITL e Três Modos de Operação)  
 
 ---
 
@@ -515,7 +515,8 @@ O operador de borda pode controlar o no diretamente pelo teletipo do console dig
 - `/status`: Panorama operacional de coworkers instalados e coworker em foco.
 - `/telemetry`: Exibe barras em ASCII 1-bit de Temperatura SoC BCM2711, RAM, Disco e Load Avg.
 - `/pwa [status|update|cache-clear]`: Inspeciona modo standalone do PWA e atualiza o Service Worker.
-- `/onboarding`: Dispara o tour interativo de 5 passos para novos operadores.
+- `/tour [reset]`: Dispara o motor de Tour Spotlight interativo guiando as funções do cockpit passo a passo no primeiro acesso; com 'reset' reinicia a flag de FTUE.
+- `/onboarding`: Alias canônico para execução do tour guiado do sistema (/tour).
 - `/changelog [versao]`: Consulta `/api/changelog` e exibe notas da versao SemVer ativa.
 
 #### 2. Agentes & Multi-Bot

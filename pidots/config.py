@@ -12,14 +12,12 @@ import os
 
 
 def _resolve_default_db_path() -> str:
-    """Resolve o caminho padrão do banco com fallback para portabilidade entre hosts e CI."""
+    """Resolve o caminho padrao do banco com fallback para portabilidade entre hosts e CI."""
     env_val = os.getenv("SQLITE_DB_PATH")
     if env_val:
         return env_val
     root = Path(__file__).resolve().parent.parent
-    if (root / "data").exists():
-        return str(root / "data" / "pidots.db")
-    return str(Path.cwd() / "data" / "pidots.db")
+    return str(root / "data" / "pidots.db")
 
 
 def _resolve_default_workspaces_root() -> str:
@@ -28,9 +26,7 @@ def _resolve_default_workspaces_root() -> str:
     if env_val:
         return env_val
     root = Path(__file__).resolve().parent.parent
-    if (root / "workspaces").exists():
-        return str(root / "workspaces")
-    return str(Path.cwd() / "workspaces")
+    return str(root / "workspaces")
 
 
 class Settings(BaseSettings):
@@ -114,11 +110,16 @@ class Settings(BaseSettings):
         default="",
         description="Chave de autenticação (apikey) para a Evolution API"
     )
+    evolution_instance: str = Field(
+        default="pidots",
+        description="Identificador da instancia na Evolution API para envio de mensagens WhatsApp"
+    )
 
     def ensure_directories(self) -> None:
         """Garante que os diretórios necessários existam no disco."""
         db_dir = Path(self.sqlite_db_path).parent
         db_dir.mkdir(parents=True, exist_ok=True)
+        (db_dir / "backups").mkdir(parents=True, exist_ok=True)
         Path(self.workspaces_root).mkdir(parents=True, exist_ok=True)
 
     def update_ai_params(

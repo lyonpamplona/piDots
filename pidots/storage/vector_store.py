@@ -6,6 +6,7 @@ Projetado para operar consumindo menos de 4MB de RAM no Raspberry Pi 4B.
 
 import math
 import json
+import re
 import uuid
 import zlib
 import logging
@@ -27,8 +28,7 @@ class VectorStore:
         Usa zlib.crc32 para estabilidade total entre processos e reinicializações de contêiner.
         """
         vec = [0.0] * VECTOR_DIM
-        cleaned = text.lower().strip()
-        words = cleaned.split()
+        words = re.findall(r"\w+", text.lower())
 
         if not words:
             return vec
@@ -104,7 +104,7 @@ class VectorStore:
         return inserted
 
     @classmethod
-    async def search(cls, query: str, top_k: int = 3, threshold: float = 0.25) -> list[dict[str, Any]]:
+    async def search(cls, query: str, top_k: int = 3, threshold: float = 0.25, dot_id: str | None = None) -> list[dict[str, Any]]:
         """
         Realiza busca semântica KNN no acervo de documentos indexados.
         """
@@ -112,13 +112,18 @@ class VectorStore:
         matches = []
 
         async with get_db() as db:
-            cursor = await db.execute(
-                """
+            sql = """
                 SELECT e.id, e.space_id, e.chunk_text, e.vector_json, s.filename, s.title
                 FROM document_embeddings e
                 JOIN spaces s ON e.space_id = s.id
-                """
-            )
+            """
+            params = []
+            if dot_id:
+                sql += " WHERE s.dot_id = ?"
+                params.append(dot_id)
+            sql += " ORDER BY e.created_at DESC LIMIT 200"
+
+            cursor = await db.execute(sql, tuple(params))
             rows = await cursor.fetchall()
 
         for row in rows:

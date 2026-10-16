@@ -10,6 +10,7 @@ import json
 import logging
 from typing import Any
 
+from ..config import settings
 from ..storage.db import get_db
 from ..providers.openai_client import OpenAIUniversalProvider
 
@@ -133,6 +134,34 @@ class MultiBotOrchestrator:
 
         handoff_id = str(uuid.uuid4())
         async with get_db() as db:
+            # Valida se o Dot de destino existe e está ativo
+            cur_target = await db.execute(
+                "SELECT id FROM dots WHERE id = ? AND is_active = 1",
+                (target_dot_id,)
+            )
+            if not await cur_target.fetchone():
+                return {
+                    "success": False,
+                    "worker_dot_id": target_dot_id,
+                    "error": f"Dot especialista '{target_dot_id}' não encontrado ou inativo."
+                }
+
+            # Garante que source_dot_id e thread_id existam para evitar IntegrityError
+            await db.execute(
+                """
+                INSERT OR IGNORE INTO dots (id, name, role, system_prompt, model, workspace_path)
+                VALUES (?, ?, 'Supervisor', 'Agente coordenador.', ?, ?)
+                """,
+                (source_dot_id, source_dot_id, settings.ai_model, f"{settings.workspaces_root}/{source_dot_id}")
+            )
+            await db.execute(
+                """
+                INSERT OR IGNORE INTO threads (id, dot_id, title, status)
+                VALUES (?, ?, 'Sessão de Delegação', 'running')
+                """,
+                (thread_id, source_dot_id)
+            )
+
             await db.execute(
                 """
                 INSERT INTO agent_handoffs (
@@ -189,10 +218,35 @@ class MultiBotOrchestrator:
                     worker_status = event_data.get("status", "completed")
                     worker_error = event_data.get("error", "")
 
+            if worker_status == "awaiting_hitl":
+                async with get_db() as db:
+                    await db.execute(
+                        """
+                        UPDATE agent_handoffs
+                        SET status = 'AWAITING_HITL',
+                            result_summary = 'Subtarefa aguardando aprovação humana (HITL)',
+                            completed_at = NULL
+                        WHERE id = ?
+                        """,
+                        (handoff_id,)
+                    )
+                    await db.commit()
+                return {
+                    "success": False,
+                    "status": "awaiting_hitl",
+                    "worker_dot_id": target_dot_id,
+                    "handoff_id": handoff_id,
+                    "error": "A subtarefa solicitou uma ação de risco que aguarda homologação do operador humano (HITL)."
+                }
+
             # Se o worker falhou na execução ou inferência
             if worker_status == "failed":
                 err_desc = worker_error or "Falha desconhecida na execução da subtarefa"
                 async with get_db() as db:
+                    await db.execute(
+                        "UPDATE threads SET status = 'error', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                        (isolated_thread_id,)
+                    )
                     await db.execute(
                         """
                         UPDATE agent_handoffs
@@ -225,7 +279,7 @@ class MultiBotOrchestrator:
 
             async with get_db() as db:
                 cursor = await db.execute(
-                    "SELECT content FROM messages WHERE thread_id = ? AND role = 'assistant' ORDER BY created_at DESC LIMIT 1",
+                    "SELECT content FROM messages WHERE thread_id = ? AND role = 'assistant' ORDER BY created_at DESC, rowid DESC LIMIT 1",
                     (isolated_thread_id,)
                 )
                 row = await cursor.fetchone()
@@ -235,8 +289,12 @@ class MultiBotOrchestrator:
             if not worker_response:
                 worker_response = "Subtarefa concluída sem saída textual."
 
-            # Atualiza o status do handoff
+            # Atualiza o status da subthread isolada e do handoff
             async with get_db() as db:
+                await db.execute(
+                    "UPDATE threads SET status = 'completed', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    (isolated_thread_id,)
+                )
                 await db.execute(
                     """
                     UPDATE agent_handoffs
@@ -271,6 +329,10 @@ class MultiBotOrchestrator:
             logger.error("Falha ao executar subtarefa delegada para %s: %s", target_dot_id, str(e), exc_info=True)
             async with get_db() as db:
                 await db.execute(
+                    "UPDATE threads SET status = 'error', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    (isolated_thread_id,)
+                )
+                await db.execute(
                     "UPDATE agent_handoffs SET status = 'FAILED', result_summary = ? WHERE id = ?",
                     (f"Erro: {str(e)}", handoff_id)
                 )
@@ -291,6 +353,31 @@ class MultiBotOrchestrator:
         """
         logger.info("Transferência de liderança (Handoff): %s -> %s na thread %s", source_dot_id, target_dot_id, thread_id)
         async with get_db() as db:
+            cur_target = await db.execute(
+                "SELECT id FROM dots WHERE id = ? AND is_active = 1",
+                (target_dot_id,)
+            )
+            if not await cur_target.fetchone():
+                return {
+                    "success": False,
+                    "error": f"Dot especialista '{target_dot_id}' não encontrado ou inativo."
+                }
+
+            await db.execute(
+                """
+                INSERT OR IGNORE INTO dots (id, name, role, system_prompt, model, workspace_path)
+                VALUES (?, ?, 'Supervisor', 'Agente coordenador.', ?, ?)
+                """,
+                (source_dot_id, source_dot_id, settings.ai_model, f"{settings.workspaces_root}/{source_dot_id}")
+            )
+            await db.execute(
+                """
+                INSERT OR IGNORE INTO threads (id, dot_id, title, status)
+                VALUES (?, ?, 'Sessão de Handoff', 'idle')
+                """,
+                (thread_id, target_dot_id)
+            )
+
             # Atualiza dot_id e primary_dot_id da thread para o novo líder
             await db.execute(
                 "UPDATE threads SET dot_id = ?, primary_dot_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",

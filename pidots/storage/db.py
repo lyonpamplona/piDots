@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS dots (
     avatar_stamp TEXT DEFAULT 'DOT',
     allowed_tools_json TEXT DEFAULT '[]',
     is_active INTEGER DEFAULT 1,
+    is_core INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -262,6 +263,8 @@ CREATE INDEX IF NOT EXISTS idx_channel_members ON channel_members(channel_id);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
 CREATE INDEX IF NOT EXISTS idx_episodic_dot_thread ON episodic_memories(dot_id, thread_id);
 CREATE INDEX IF NOT EXISTS idx_episodic_created_at ON episodic_memories(created_at);
+CREATE INDEX IF NOT EXISTS idx_tool_runs_dot ON tool_runs(dot_id);
+CREATE INDEX IF NOT EXISTS idx_tool_runs_created ON tool_runs(created_at);
 
 
 -- Memória Autônoma Hierárquica (Padrão MemGPT / Letta)
@@ -295,18 +298,18 @@ CREATE VIRTUAL TABLE IF NOT EXISTS archival_memories_fts USING fts5(
 );
 
 CREATE TRIGGER IF NOT EXISTS trg_archival_insert AFTER INSERT ON archival_memories BEGIN
-    INSERT INTO archival_memories_fts (id, dot_id, content, tags)
-    VALUES (new.id, new.dot_id, new.content, new.tags_json);
+    INSERT INTO archival_memories_fts (rowid, id, dot_id, content, tags)
+    VALUES (new.rowid, new.id, new.dot_id, new.content, new.tags_json);
 END;
 
 CREATE TRIGGER IF NOT EXISTS trg_archival_delete AFTER DELETE ON archival_memories BEGIN
-    DELETE FROM archival_memories_fts WHERE id = old.id;
+    DELETE FROM archival_memories_fts WHERE rowid = old.rowid;
 END;
 
 CREATE TRIGGER IF NOT EXISTS trg_archival_update AFTER UPDATE ON archival_memories BEGIN
-    DELETE FROM archival_memories_fts WHERE id = old.id;
-    INSERT INTO archival_memories_fts (id, dot_id, content, tags)
-    VALUES (new.id, new.dot_id, new.content, new.tags_json);
+    DELETE FROM archival_memories_fts WHERE rowid = old.rowid;
+    INSERT INTO archival_memories_fts (rowid, id, dot_id, content, tags)
+    VALUES (new.rowid, new.id, new.dot_id, new.content, new.tags_json);
 END;
 
 CREATE INDEX IF NOT EXISTS idx_core_mem_dot ON agent_core_memory_blocks(dot_id);
@@ -332,7 +335,7 @@ CREATE INDEX IF NOT EXISTS idx_shared_notes_thread ON thread_shared_notes(thread
 
 async def _apply_schema_migrations(db: aiosqlite.Connection) -> None:
     """Aplica migrações idempotentes de colunas em tabelas existentes."""
-    # 1. Tabela dots: colunas para arquétipos, carimbo e catálogo de ferramentas
+    # 1. Tabela dots: colunas para arquétipos, carimbo, catálogo de ferramentas e flag is_core
     cursor = await db.execute("PRAGMA table_info(dots);")
     dots_cols = {row["name"] for row in await cursor.fetchall()}
     if "archetype" not in dots_cols:
@@ -341,6 +344,13 @@ async def _apply_schema_migrations(db: aiosqlite.Connection) -> None:
         await db.execute("ALTER TABLE dots ADD COLUMN avatar_stamp TEXT DEFAULT 'DOT';")
     if "allowed_tools_json" not in dots_cols:
         await db.execute("ALTER TABLE dots ADD COLUMN allowed_tools_json TEXT DEFAULT '[]';")
+    if "is_core" not in dots_cols:
+        await db.execute("ALTER TABLE dots ADD COLUMN is_core INTEGER DEFAULT 0;")
+
+    # Garante que os agentes do Squad Central estejam marcados como is_core = 1
+    await db.execute(
+        "UPDATE dots SET is_core = 1 WHERE id IN ('dot-supervisor', 'dev-assistant', 'dot-muse', 'dot-auditor', 'dot-dev-core', 'dot-coder');"
+    )
 
     # 2. Tabela threads: colunas para orquestração multi-bot
     cursor = await db.execute("PRAGMA table_info(threads);")
@@ -372,82 +382,38 @@ async def _apply_schema_migrations(db: aiosqlite.Connection) -> None:
     if "backoff_until" not in tasks_cols:
         await db.execute("ALTER TABLE scheduled_tasks ADD COLUMN backoff_until TIMESTAMP;")
 
-    # 5. Tabelas e Gatilhos de Memória Autônoma Hierárquica
-    await db.execute("""
-        CREATE TABLE IF NOT EXISTS agent_core_memory_blocks (
-            id TEXT PRIMARY KEY,
-            dot_id TEXT NOT NULL,
-            block_name TEXT NOT NULL,
-            content TEXT NOT NULL DEFAULT '',
-            max_chars INTEGER DEFAULT 2000,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(dot_id, block_name),
-            FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
-        );
-    """)
-    await db.execute("""
-        CREATE TABLE IF NOT EXISTS archival_memories (
-            id TEXT PRIMARY KEY,
-            dot_id TEXT NOT NULL,
-            content TEXT NOT NULL,
-            tags_json TEXT DEFAULT '[]',
-            vector_json TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
-        );
-    """)
-    await db.execute("""
-        CREATE VIRTUAL TABLE IF NOT EXISTS archival_memories_fts USING fts5(
-            id UNINDEXED,
-            dot_id UNINDEXED,
-            content,
-            tags,
-            tokenize = 'porter unicode61'
-        );
-    """)
+    # 5. Índices de auditoria de execução de ferramentas
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_tool_runs_dot ON tool_runs(dot_id);")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_tool_runs_created ON tool_runs(created_at);")
+
+    # 6. Recriação segura e explícita dos triggers FTS5 com new.rowid
+    await db.execute("DROP TRIGGER IF EXISTS trg_archival_insert;")
+    await db.execute("DROP TRIGGER IF EXISTS trg_archival_delete;")
+    await db.execute("DROP TRIGGER IF EXISTS trg_archival_update;")
     await db.execute("""
         CREATE TRIGGER IF NOT EXISTS trg_archival_insert AFTER INSERT ON archival_memories BEGIN
-            INSERT INTO archival_memories_fts (id, dot_id, content, tags)
-            VALUES (new.id, new.dot_id, new.content, new.tags_json);
+            INSERT INTO archival_memories_fts (rowid, id, dot_id, content, tags)
+            VALUES (new.rowid, new.id, new.dot_id, new.content, new.tags_json);
         END;
     """)
     await db.execute("""
         CREATE TRIGGER IF NOT EXISTS trg_archival_delete AFTER DELETE ON archival_memories BEGIN
-            DELETE FROM archival_memories_fts WHERE id = old.id;
+            DELETE FROM archival_memories_fts WHERE rowid = old.rowid;
         END;
     """)
     await db.execute("""
         CREATE TRIGGER IF NOT EXISTS trg_archival_update AFTER UPDATE ON archival_memories BEGIN
-            DELETE FROM archival_memories_fts WHERE id = old.id;
-            INSERT INTO archival_memories_fts (id, dot_id, content, tags)
-            VALUES (new.id, new.dot_id, new.content, new.tags_json);
+            DELETE FROM archival_memories_fts WHERE rowid = old.rowid;
+            INSERT INTO archival_memories_fts (rowid, id, dot_id, content, tags)
+            VALUES (new.rowid, new.id, new.dot_id, new.content, new.tags_json);
         END;
     """)
-    await db.execute("CREATE INDEX IF NOT EXISTS idx_core_mem_dot ON agent_core_memory_blocks(dot_id);")
-    await db.execute("CREATE INDEX IF NOT EXISTS idx_archival_dot ON archival_memories(dot_id, created_at);")
-
-    # 5. Tabela de Conhecimento Compartilhado entre Bots (Shared Knowledge Space)
-    await db.execute("""
-        CREATE TABLE IF NOT EXISTS thread_shared_notes (
-            id TEXT PRIMARY KEY,
-            thread_id TEXT NOT NULL,
-            dot_id TEXT NOT NULL,
-            topic_key TEXT NOT NULL,
-            content TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(thread_id, topic_key),
-            FOREIGN KEY(thread_id) REFERENCES threads(id) ON DELETE CASCADE,
-            FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
-        );
-    """)
-    await db.execute("CREATE INDEX IF NOT EXISTS idx_shared_notes_thread ON thread_shared_notes(thread_id, topic_key);")
-    await db.execute("CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);")
-    await db.execute("CREATE INDEX IF NOT EXISTS idx_episodic_dot_thread ON episodic_memories(dot_id, thread_id);")
-    await db.execute("CREATE INDEX IF NOT EXISTS idx_episodic_created_at ON episodic_memories(created_at);")
+    try:
+        await db.execute("INSERT INTO archival_memories_fts(archival_memories_fts) VALUES('rebuild');")
+    except Exception as e:
+        logger.debug("Rebuild FTS5 ignorado ou sem registros: %s", e)
 
     await db.commit()
-
 
 
 async def init_edge_database(db_path: str | None = None) -> None:
@@ -476,16 +442,84 @@ async def init_edge_database(db_path: str | None = None) -> None:
         # Execução das migrações idempotentes de colunas
         await _apply_schema_migrations(db)
 
-        # Inicialização idempotente de Dot e Thread padrão para integridade relacional de Foreign Keys
-        await db.execute("""
+        # Inicialização idempotente do Squad Central e Thread padrão para integridade relacional
+        default_model = settings.ai_model
+        core_squad = [
+            (
+                "dot-supervisor",
+                "Supervisor Geral",
+                "Orquestrador de Missões & Governança",
+                "Você é o Supervisor Geral do piDots. Coordene missões, delegue subtarefas para especialistas e zele pela governança de borda.",
+                default_model,
+                "workspaces/dot-supervisor",
+                "supervisor",
+                "SUP",
+                1
+            ),
+            (
+                "dev-assistant",
+                "Dev Assistant",
+                "Engenheiro Full Stack & Automação",
+                "Você é o Dev Assistant, especialista em desenvolvimento de software, scripts Python, Shell e automação de borda no Raspberry Pi 4B.",
+                default_model,
+                "workspaces/dev-assistant",
+                "coder",
+                "DEV",
+                1
+            ),
+            (
+                "dot-coder",
+                "Dev Coder",
+                "Especialista em Desenvolvimento & Refatoração",
+                "Você é o Dev Coder, especialista em desenvolvimento de software, algoritmos e refatoração de código.",
+                default_model,
+                "workspaces/dot-coder",
+                "coder",
+                "COD",
+                1
+            ),
+            (
+                "dot-muse",
+                "Muse Documentador",
+                "Arquiteto de Documentação & Redator Técnico",
+                "Você é o Muse, especialista em documentação técnica clara, síntese de conhecimento e organização de artefatos em Spaces.",
+                default_model,
+                "workspaces/dot-muse",
+                "writer",
+                "MUS",
+                1
+            ),
+            (
+                "dot-auditor",
+                "Auditor Crítico",
+                "Especialista em Segurança, Code Review & Hardening",
+                "Você é o Auditor Crítico do piDots. Inspecione código, comandos shell, limites térmicos e segurança operacional.",
+                default_model,
+                "workspaces/dot-auditor",
+                "auditor",
+                "AUD",
+                1
+            ),
+            (
+                "dot-dev-core",
+                "Dev Core",
+                "Engenheiro de Software & Arquiteto Edge",
+                "Você é o Dev Core, assistente técnico de desenvolvimento e infraestrutura.",
+                default_model,
+                "workspaces/dot-dev-core",
+                "coder",
+                "COR",
+                1
+            ),
+        ]
+        await db.executemany(
+            """
             INSERT OR IGNORE INTO dots (
-                id, name, role, system_prompt, model, workspace_path, archetype, avatar_stamp
-            ) VALUES (
-                'dot-dev-core', 'Dev Core', 'Engenheiro de Software & Arquiteto Edge',
-                'Você é o Dev Core, assistente técnico de desenvolvimento e infraestrutura.',
-                'qwen3.8-27b', 'workspaces/dot-dev-core', 'general', 'DOT'
-            );
-        """)
+                id, name, role, system_prompt, model, workspace_path, archetype, avatar_stamp, is_core
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+            """,
+            core_squad
+        )
         await db.execute("""
             INSERT OR IGNORE INTO threads (id, dot_id, title, status)
             VALUES ('default-thread', 'dot-dev-core', 'Sessão Padrão', 'idle');
@@ -498,11 +532,14 @@ async def init_edge_database(db_path: str | None = None) -> None:
 async def get_db(db_path: str | None = None) -> AsyncGenerator[aiosqlite.Connection, None]:
     """
     Gerenciador de contexto assíncrono para obter conexões leves ao SQLite.
-    Garante foreign keys ativas e busy_timeout de 5000ms contra bloqueios de concorrência.
+    Garante foreign keys ativas, busy_timeout de 5000ms e pragmas de preservação flash.
     """
     path = db_path or settings.sqlite_db_path
     async with aiosqlite.connect(path) as conn:
         conn.row_factory = aiosqlite.Row
         await conn.execute("PRAGMA foreign_keys = ON;")
         await conn.execute("PRAGMA busy_timeout = 5000;")
+        await conn.execute("PRAGMA synchronous = NORMAL;")
+        await conn.execute("PRAGMA cache_size = -16000;")
+        await conn.execute("PRAGMA temp_store = MEMORY;")
         yield conn

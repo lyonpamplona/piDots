@@ -5,6 +5,7 @@ arquétipos e ferramentas permitidas em manifestos portáveis JSON.
 """
 
 import os
+import re
 import json
 import uuid
 import logging
@@ -109,7 +110,8 @@ class DotPackManager:
         if not dot_info.get("name"):
             return {"success": False, "error": "Campo 'name' obrigatório no manifesto do Dot."}
 
-        target_dot_id = override_id or dot_info.get("id") or f"dot-{uuid.uuid4().hex[:6]}"
+        raw_dot_id = override_id or dot_info.get("id") or f"dot-{uuid.uuid4().hex[:6]}"
+        target_dot_id = re.sub(r"[^\w\-_.]", "_", str(raw_dot_id).strip()).strip(".") or f"dot-{uuid.uuid4().hex[:6]}"
         name = dot_info["name"]
         role = dot_info.get("role", "Operador de Borda")
         archetype = dot_info.get("archetype", "general")
@@ -118,8 +120,11 @@ class DotPackManager:
         model = dot_info.get("model", "qwen3.8-27b")
         allowed_tools = dot_info.get("allowed_tools", [])
 
-        # Garante criação do workspace
-        workspace_path = os.path.join(settings.workspaces_root, target_dot_id)
+        # Garante criação segura do workspace
+        workspaces_root = os.path.realpath(settings.workspaces_root)
+        workspace_path = os.path.realpath(os.path.join(workspaces_root, target_dot_id))
+        if os.path.commonpath([workspaces_root, workspace_path]) != workspaces_root:
+            return {"success": False, "error": "Identificador de Dot inválido."}
         os.makedirs(workspace_path, exist_ok=True)
 
         async with get_db() as db:
@@ -159,12 +164,18 @@ class DotPackManager:
                     (block_id, target_dot_id, block_name, content)
                 )
 
-            # 3. Restaura memórias arquivísticas (com cálculo de projeção e FTS5)
+            # 3. Restaura memórias arquivísticas sem duplicar entradas existentes
             from ..storage.memory_manager import compute_compact_embedding
             archival_list = pack_data.get("archival_memories", [])
             for mem in archival_list:
                 m_content = mem.get("content", "").strip()
                 if not m_content:
+                    continue
+                cur_dup = await db.execute(
+                    "SELECT id FROM archival_memories WHERE dot_id = ? AND content = ? LIMIT 1",
+                    (target_dot_id, m_content)
+                )
+                if await cur_dup.fetchone():
                     continue
                 m_tags = mem.get("tags", [])
                 m_id = str(uuid.uuid4())

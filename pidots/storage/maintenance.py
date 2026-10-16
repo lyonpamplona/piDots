@@ -74,7 +74,9 @@ class EdgeMaintenanceManager:
             dest.unlink()
 
         safe_path_str = str(dest).replace("'", "''")
-        async with aiosqlite.connect(settings.sqlite_db_path, isolation_level=None) as db:
+        async with aiosqlite.connect(settings.sqlite_db_path, isolation_level=None, timeout=5.0) as db:
+            cur_p = await db.execute("PRAGMA busy_timeout = 5000;")
+            await cur_p.close()
             cur = await db.execute(f"VACUUM INTO '{safe_path_str}';")
             await cur.close()
 
@@ -94,14 +96,26 @@ class EdgeMaintenanceManager:
 
     @classmethod
     async def optimize_database(cls) -> dict[str, Any]:
-        """Executa PRAGMA optimize e ANALYZE para atualizar índices estatísticos do query planner."""
+        """Executa PRAGMA optimize para atualizar seletivamente estatísticas do query planner e podar tool_runs antigas."""
+        deleted_tool_runs = 0
         async with get_db() as db:
+            # Poda registros de auditoria de ferramentas com mais de 30 dias para poupar MicroSD
+            try:
+                cur = await db.execute("DELETE FROM tool_runs WHERE created_at <= datetime('now', '-30 days');")
+                deleted_tool_runs = cur.rowcount if cur.rowcount is not None and cur.rowcount >= 0 else 0
+            except Exception as e:
+                logger.debug("Poda de tool_runs ignorada: %s", e)
+
+            # PRAGMA optimize executa ANALYZE internamente apenas nas tabelas necessárias, evitando desgaste cego do flash
             await db.execute("PRAGMA optimize;")
-            await db.execute("ANALYZE;")
             await db.commit()
 
-        logger.info("Otimização de índices e estatísticas SQLite concluída com sucesso.")
-        return {"success": True, "timestamp": datetime.now(timezone.utc).isoformat()}
+        logger.info("Otimização de índices e estatísticas SQLite concluída com sucesso. Tool runs podadas: %d", deleted_tool_runs)
+        return {
+            "success": True,
+            "pruned_tool_runs": deleted_tool_runs,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
 
     @classmethod
     async def consolidate_old_episodes(
@@ -114,6 +128,7 @@ class EdgeMaintenanceManager:
         na tabela episodic_memories e remove com segurança as mensagens brutas podadas,
         poupando espaço em blocos flash do MicroSD.
         """
+        days_threshold = max(1, int(days_threshold))
         async with get_db() as db:
             # 1. Busca mensagens antigas agrupadas por thread
             if dot_id:

@@ -18,9 +18,10 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
+from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .config import settings
@@ -28,6 +29,7 @@ from .storage.db import init_edge_database, get_db
 from .storage import SpacesManager, VectorStore
 from .core.hitl import HITLManager
 from .core.agent import DotAgent
+from .core.edge_triggers import EdgeHardwareTriggers
 from .providers.openai_client import OpenAIUniversalProvider
 
 logger = logging.getLogger("pidots.main")
@@ -130,41 +132,30 @@ class StaticPageManager:
 
 
 HTML_SEARCH_DIRS = [
+    Path(__file__).resolve().parent.parent / "pages",
     Path(__file__).resolve().parent.parent,
+    Path("/app/pages"),
     Path("/app"),
+    Path.cwd() / "pages",
     Path.cwd()
 ]
-page_manager = StaticPageManager(search_dirs=HTML_SEARCH_DIRS)
+EdgeAssetManager = StaticPageManager
+page_manager = EdgeAssetManager(search_dirs=HTML_SEARCH_DIRS)
 
 
 def get_soc_temperature() -> float:
-    """Lê a temperatura do SoC Broadcom BCM2711 no Raspberry Pi 4B."""
-    thermal_path = "/sys/class/thermal/thermal_zone0/temp"
-    if os.path.exists(thermal_path):
-        try:
-            with open(thermal_path, "r") as f:
-                return round(float(f.read().strip()) / 1000.0, 1)
-        except Exception:
-            return 45.0
-    return 45.0
+    """Delega leitura térmica unificada para EdgeHardwareTriggers."""
+    return EdgeHardwareTriggers.get_soc_temperature()
 
 
 def get_memory_info() -> dict:
-    """Lê memória RAM diretamente de /proc/meminfo sem bibliotecas externas."""
-    try:
-        meminfo = {}
-        with open("/proc/meminfo", "r") as f:
-            for line in f:
-                parts = line.split(":")
-                if len(parts) == 2:
-                    meminfo[parts[0].strip()] = parts[1].strip()
-        total_kb = int(meminfo.get("MemTotal", "0 kB").split()[0])
-        avail_kb = int(meminfo.get("MemAvailable", "0 kB").split()[0])
-        used_mb = round((total_kb - avail_kb) / 1024, 1)
-        total_mb = round(total_kb / 1024, 1)
-        return {"total_mb": total_mb, "used_mb": used_mb, "available_mb": round(avail_kb / 1024, 1)}
-    except Exception:
-        return {"total_mb": 3700.0, "used_mb": 850.0, "available_mb": 2850.0}
+    """Delega leitura de memória RAM unificada para EdgeHardwareTriggers."""
+    ram = EdgeHardwareTriggers.get_ram_metrics()
+    return {
+        "total_mb": ram["total_mb"],
+        "used_mb": ram["used_mb"],
+        "available_mb": ram["available_mb"]
+    }
 
 
 async def periodic_wal_checkpoint(interval_seconds: int = 900):
@@ -220,13 +211,23 @@ async def lifespan(app: FastAPI):
     )
 
     # Pré-carregamento dos documentos HTML em memória RAM para latência ultra-baixa e preservação de I/O MicroSD
-    for page in ("pidots_apresentacao_pixel_paper.html", "pidots_spa_prototype.html", "pidots_guia.html", "relatorio_estudo_pidots.html"):
+    pages_to_preload = (
+        "landing.html",
+        "app.html",
+        "docs.html",
+        "relatorio.html"
+    )
+    for page in pages_to_preload:
         page_manager.preload(page)
 
     yield
 
     heartbeat_task.cancel()
     checkpoint_task.cancel()
+    from .core.messaging_gateway import MessagingGateway, ChannelOrchestrator
+    await MessagingGateway.cancel_pending_tasks()
+    await ChannelOrchestrator.cancel_pending_tasks()
+    await asyncio.gather(heartbeat_task, checkpoint_task, return_exceptions=True)
     await app.state.http_client.aclose()
 
 
@@ -264,6 +265,14 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     return response
+
+
+# Montagem de Assets Estáticos Desacoplados (CSS, JS e Recursos)
+static_asset_dir = Path(__file__).resolve().parent.parent / "static"
+if not static_asset_dir.exists():
+    static_asset_dir = Path.cwd() / "static"
+if static_asset_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(static_asset_dir)), name="static")
 
 
 
@@ -350,7 +359,7 @@ async def import_dot_pack_endpoint(payload: ImportDotPackPayload):
 async def list_pending_hitl():
     """Lista solicitações de aprovação humana pendentes."""
     async with get_db() as db:
-        cursor = await db.execute("SELECT * FROM hitl_approvals WHERE status = 'PENDING'")
+        cursor = await db.execute("SELECT * FROM hitl_approvals WHERE status = 'PENDING' ORDER BY requested_at DESC")
         rows = await cursor.fetchall()
         return [dict(row) for row in rows]
 
@@ -365,6 +374,9 @@ async def create_thread(payload: CreateThreadPayload):
     """Cria uma nova thread de conversação durável."""
     thread_id = str(uuid.uuid4())
     async with get_db() as db:
+        cursor = await db.execute("SELECT id FROM dots WHERE id = ?", (payload.dot_id,))
+        if not await cursor.fetchone():
+            raise HTTPException(status_code=404, detail=f"Dot '{payload.dot_id}' não encontrado.")
         await db.execute(
             "INSERT INTO threads (id, dot_id, title) VALUES (?, ?, ?)",
             (thread_id, payload.dot_id, payload.title)
@@ -380,7 +392,7 @@ async def get_thread_messages(thread_id: str):
         cursor = await db.execute(
             """
             SELECT id, role, content, actor_id, actor_type, visibility, thought_log, created_at
-            FROM messages WHERE thread_id = ? ORDER BY created_at ASC
+            FROM messages WHERE thread_id = ? ORDER BY created_at ASC, rowid ASC
             """,
             (thread_id,)
         )
@@ -518,7 +530,6 @@ async def download_space_doc(space_id: str):
     doc = await SpacesManager.get_document(space_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Documento não encontrado.")
-    from fastapi.responses import Response
     return Response(
         content=doc["content"],
         media_type="text/plain; charset=utf-8",
@@ -650,13 +661,22 @@ async def update_ai_settings(payload: AISettingsUpdatePayload):
         max_retries=payload.max_retries,
         timeout_seconds=payload.timeout_seconds
     )
-    # Atualiza a instância compartilhada do provedor de inferência
-    app.state.ai_provider = OpenAIUniversalProvider(
-        base_url=settings.ai_base_url,
-        api_key=settings.ai_api_key,
-        default_model=settings.ai_model,
-        http_client=app.state.http_client
-    )
+    # Atualiza os atributos in-place da instância compartilhada para que background workers (ex: heartbeat_worker_loop)
+    # enxerguem as novas credenciais/URL imediatamente sem perder a referência
+    provider = getattr(app.state, "ai_provider", None)
+    if provider is not None:
+        provider.base_url = settings.ai_base_url.rstrip("/")
+        provider.api_key = settings.ai_api_key
+        provider.default_model = settings.ai_model
+        provider.max_retries = settings.ai_max_retries
+        provider.timeout = settings.ai_timeout_seconds
+    else:
+        app.state.ai_provider = OpenAIUniversalProvider(
+            base_url=settings.ai_base_url,
+            api_key=settings.ai_api_key,
+            default_model=settings.ai_model,
+            http_client=getattr(app.state, "http_client", None)
+        )
     return {"status": "success", "message": "Parâmetros de IA atualizados a quente."}
 
 
@@ -723,6 +743,11 @@ class AddChannelMemberPayload(BaseModel):
 @app.post("/api/webhooks/incoming/{dot_id}")
 async def handle_generic_incoming_webhook(dot_id: str, payload: GenericIncomingWebhookPayload):
     """Webhook genérico universal para envio de mensagens a um Dot por APIs, scripts ou CI/CD."""
+    async with get_db() as db:
+        cur = await db.execute("SELECT id FROM dots WHERE id = ? AND is_active = 1", (dot_id,))
+        if not await cur.fetchone():
+            raise HTTPException(status_code=404, detail=f"Dot '{dot_id}' não encontrado ou inativo.")
+
     unified_msg = UnifiedIncomingMessage(
         platform="generic_webhook",
         sender_id=payload.sender_id,
@@ -746,6 +771,11 @@ async def handle_generic_incoming_webhook(dot_id: str, payload: GenericIncomingW
 @app.post("/api/webhooks/telegram/{dot_id}")
 async def handle_telegram_webhook(dot_id: str, request: Request):
     """Recebe webhooks oficiais de mensagens da API de bots do Telegram."""
+    async with get_db() as db:
+        cur = await db.execute("SELECT id FROM dots WHERE id = ? AND is_active = 1", (dot_id,))
+        if not await cur.fetchone():
+            raise HTTPException(status_code=404, detail=f"Dot '{dot_id}' não encontrado ou inativo.")
+
     try:
         body = await request.json()
     except Exception:
@@ -781,6 +811,11 @@ async def handle_telegram_webhook(dot_id: str, request: Request):
 @app.post("/api/webhooks/whatsapp/{dot_id}")
 async def handle_whatsapp_webhook(dot_id: str, request: Request):
     """Recebe webhooks de mensagens da Evolution API ou Baileys (WhatsApp)."""
+    async with get_db() as db:
+        cur = await db.execute("SELECT id FROM dots WHERE id = ? AND is_active = 1", (dot_id,))
+        if not await cur.fetchone():
+            raise HTTPException(status_code=404, detail=f"Dot '{dot_id}' não encontrado ou inativo.")
+
     try:
         body = await request.json()
     except Exception:
@@ -792,6 +827,9 @@ async def handle_whatsapp_webhook(dot_id: str, request: Request):
         return {"status": "ignored", "reason": "Mensagem enviada pelo próprio bot"}
 
     remote_jid = key.get("remoteJid", "")
+    if not remote_jid or remote_jid == "status@broadcast":
+        return {"status": "ignored", "reason": "Status broadcast ou remoteJid ausente"}
+
     push_name = data.get("pushName", "WhatsApp User")
 
     message_content = data.get("message", {})
@@ -842,18 +880,21 @@ async def list_channels():
 @app.post("/api/channels")
 async def create_channel(payload: CreateChannelPayload):
     """Cria uma nova sala temática de equipe no SQLite WAL."""
-    channel_id = payload.name.lower().strip().replace(" ", "-").replace("#", "")
+    import re
+    channel_id = re.sub(r"[^a-z0-9_\-]", "", payload.name.lower().strip().replace(" ", "-"))
+    if not channel_id:
+        raise HTTPException(status_code=400, detail="Nome de canal inválido.")
     async with get_db() as db:
         try:
             await db.execute(
                 "INSERT INTO channels (id, name, description) VALUES (?, ?, ?)",
-                (channel_id, payload.name, payload.description)
+                (channel_id, payload.name.strip(), payload.description)
             )
             await db.commit()
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Canal já existe ou dados inválidos: {e}")
 
-    return {"id": channel_id, "name": payload.name, "description": payload.description}
+    return {"id": channel_id, "name": payload.name.strip(), "description": payload.description}
 
 
 @app.get("/api/channels/{channel_id}/messages")
@@ -865,7 +906,7 @@ async def get_channel_messages(channel_id: str, limit: int = 50):
             SELECT id, channel_id, author_type, author_id, content, hop_count, created_at
             FROM channel_messages
             WHERE channel_id = ?
-            ORDER BY created_at ASC
+            ORDER BY created_at ASC, rowid ASC
             LIMIT ?
             """,
             (channel_id, limit)
@@ -921,7 +962,6 @@ class EdgeMaintenancePayload(BaseModel):
 @app.get("/api/edge/triggers")
 async def get_edge_hardware_triggers():
     """Retorna o status em tempo real dos triggers de hardware (SoC Broadcom, MicroSD, RAM)."""
-    from .core.edge_triggers import EdgeHardwareTriggers
     report = EdgeHardwareTriggers.check_triggers()
     return report
 
@@ -1005,13 +1045,22 @@ def render_pidots_icon_png(size: int = 192, maskable: bool = False) -> bytes:
     return buf.getvalue()
 
 
-# Cache de memória estático para performance instantânea no ARM64 (< 1ms)
-PNG_ICONS_CACHE = {
-    "192": render_pidots_icon_png(192, maskable=False),
-    "512": render_pidots_icon_png(512, maskable=False),
-    "192_maskable": render_pidots_icon_png(192, maskable=True),
-    "512_maskable": render_pidots_icon_png(512, maskable=True),
-}
+# Cache de memória preguiçoso (lazy-loaded) para não penalizar o startup da CLI no ARM64
+PNG_ICONS_CACHE: Dict[str, bytes] = {}
+
+
+def get_cached_icon(key: str) -> bytes:
+    """Retorna o ícone PNG rasterizado, gerando-o sob demanda na primeira requisição."""
+    if key not in PNG_ICONS_CACHE:
+        specs = {
+            "192": (192, False),
+            "512": (512, False),
+            "192_maskable": (192, True),
+            "512_maskable": (512, True),
+        }
+        size, maskable = specs.get(key, (192, False))
+        PNG_ICONS_CACHE[key] = render_pidots_icon_png(size, maskable=maskable)
+    return PNG_ICONS_CACHE[key]
 
 
 @app.get("/icon.svg")
@@ -1028,7 +1077,7 @@ async def get_app_icon():
 async def get_app_icon_192():
     """Serve o ícone oficial PNG 192x192 para Android WebAPK e Apple Touch Icon."""
     return Response(
-        content=PNG_ICONS_CACHE["192"],
+        content=get_cached_icon("192"),
         media_type="image/png",
         headers={"Cache-Control": "public, max-age=604800, immutable"}
     )
@@ -1038,7 +1087,7 @@ async def get_app_icon_192():
 async def get_app_icon_512():
     """Serve o ícone oficial PNG 512x512 para instalação e splash screen nativa."""
     return Response(
-        content=PNG_ICONS_CACHE["512"],
+        content=get_cached_icon("512"),
         media_type="image/png",
         headers={"Cache-Control": "public, max-age=604800, immutable"}
     )
@@ -1048,7 +1097,7 @@ async def get_app_icon_512():
 async def get_app_icon_maskable_192():
     """Serve o ícone oficial PNG adaptativo com Safe Zone de 80% (192x192)."""
     return Response(
-        content=PNG_ICONS_CACHE["192_maskable"],
+        content=get_cached_icon("192_maskable"),
         media_type="image/png",
         headers={"Cache-Control": "public, max-age=604800, immutable"}
     )
@@ -1058,7 +1107,7 @@ async def get_app_icon_maskable_192():
 async def get_app_icon_maskable_512():
     """Serve o ícone oficial PNG adaptativo com Safe Zone de 80% (512x512)."""
     return Response(
-        content=PNG_ICONS_CACHE["512_maskable"],
+        content=get_cached_icon("512_maskable"),
         media_type="image/png",
         headers={"Cache-Control": "public, max-age=604800, immutable"}
     )
@@ -1150,11 +1199,12 @@ async def get_pwa_manifest():
 async def get_service_worker():
     """Retorna o Service Worker com ciclo de vida controlado, cache resiliente e suporte offline."""
     sw_code = """
-const CACHE_NAME = 'pidots-cache-v5';
+const CACHE_NAME = 'pidots-cache-v7';
 const CORE_STATIC_ASSETS = [
     '/app',
     '/',
     '/docs',
+    '/relatorio',
     '/manifest.json',
     '/icon.svg',
     '/icon-192.png',
@@ -1163,10 +1213,30 @@ const CORE_STATIC_ASSETS = [
     '/icon-maskable-512.png',
     '/data/locales/pt.json',
     '/data/locales/en.json',
-    '/static/pidots-i18n.js'
+    '/static/css/tokens.css',
+    '/static/css/reset.css',
+    '/static/css/layout.css',
+    '/static/css/components.css',
+    '/static/css/mobile.css',
+    '/static/css/spa.css',
+    '/static/css/landing.css',
+    '/static/css/docs.css',
+    '/static/css/relatorio.css',
+    '/static/js/core/scroll-lock.js',
+    '/static/js/core/pixel-system.js',
+    '/static/js/core/pidots-i18n.js',
+    '/static/js/spa/pidots-api.js',
+    '/static/js/spa/slash-commands.js',
+    '/static/js/spa/tour-engine.js',
+    '/static/js/spa/pidots-ux.js',
+    '/static/js/spa/app-init.js',
+    '/static/js/landing/landing.js',
+    '/static/js/docs/docs.js',
+    '/static/js/docs/relatorio.js'
 ];
 
 self.addEventListener('install', (event) => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return Promise.allSettled(
@@ -1184,9 +1254,8 @@ self.addEventListener('activate', (event) => {
             return Promise.all(
                 keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
             );
-        })
+        }).then(() => self.clients.claim())
     );
-    self.clients.claim();
 });
 
 self.addEventListener('message', (event) => {
@@ -1196,6 +1265,11 @@ self.addEventListener('message', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+    // 0. Ignora métodos não-GET (POST/PUT/DELETE não podem ser armazenados na Cache API)
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
     // 1. Chamadas a API ou endpoints de telemetria e health: bypass total de cache
     if (event.request.url.includes('/api/') || event.request.url.includes('/health')) {
         event.respondWith(
@@ -1312,8 +1386,10 @@ async def get_locale_dictionary(lang: str):
 
 @app.get("/static/pidots-i18n.js")
 async def get_i18n_script():
-    """Serve o micro-motor Vanilla JS de internacionalização com cache estático."""
-    script_path = Path(__file__).resolve().parent.parent / "static" / "pidots-i18n.js"
+    """Serve o micro-motor Vanilla JS de internacionalização com cache estático (rota de retrocompatibilidade)."""
+    script_path = Path(__file__).resolve().parent.parent / "static" / "js" / "core" / "pidots-i18n.js"
+    if not script_path.exists():
+        script_path = Path(__file__).resolve().parent.parent / "static" / "pidots-i18n.js"
     if not script_path.exists():
         raise HTTPException(status_code=404, detail="Script i18n não encontrado")
     return Response(
@@ -1330,7 +1406,7 @@ async def get_i18n_script():
 @app.api_route("/", methods=["GET", "HEAD"], response_class=Response)
 async def serve_landing_presentation(request: Request):
     """Serve a Landing Page Oficial de Apresentação e Onboarding do piDots em Pixel Paper UI."""
-    return page_manager.serve("pidots_apresentacao_pixel_paper.html", request)
+    return page_manager.serve("landing.html", request)
 
 
 @app.api_route("/app", methods=["GET", "HEAD"], response_class=Response)
@@ -1338,19 +1414,19 @@ async def serve_landing_presentation(request: Request):
 @app.api_route("/app/{path:path}", methods=["GET", "HEAD"], response_class=Response)
 async def serve_spa_console(request: Request, path: str = ""):
     """Serve o Console Operacional SPA dos Agentes (100% Funcional e reativo)."""
-    return page_manager.serve("pidots_spa_prototype.html", request)
+    return page_manager.serve("app.html", request)
 
 
 @app.api_route("/docs", methods=["GET", "HEAD"], response_class=Response)
 async def serve_canonical_guide(request: Request):
     """Serve o Guia Didático Operacional e Documentação Oficial em Pixel Paper UI."""
-    return page_manager.serve("pidots_guia.html", request)
+    return page_manager.serve("docs.html", request)
 
 
 @app.api_route("/relatorio", methods=["GET", "HEAD"], response_class=Response)
 async def serve_study_report(request: Request):
     """Serve o relatório completo de estudo e viabilidade."""
-    return page_manager.serve("relatorio_estudo_pidots.html", request)
+    return page_manager.serve("relatorio.html", request)
 
 
 @app.api_route("/apresentacao", methods=["GET", "HEAD"])

@@ -36,16 +36,13 @@ services:
       - ./data:/app/data
       # Espaço de trabalho dos Dots
       - ./workspaces:/app/workspaces
-      # Sincronização de código e frontend
+      # Sincronização de código e frontend modular
       - ./pidots:/app/pidots
+      - ./pages:/app/pages
       - ./static:/app/static
-      - ./pidots_spa_prototype.html:/app/pidots_spa_prototype.html
-      - ./pidots_apresentacao_pixel_paper.html:/app/pidots_apresentacao_pixel_paper.html
-      - ./pidots_guia.html:/app/pidots_guia.html
-      - ./relatorio_estudo_pidots.html:/app/relatorio_estudo_pidots.html
       # Proteção do MicroSD: /tmp em memória volátil (tmpfs)
     tmpfs:
-      - /tmp:rw,noexec,nosuid,size=64m
+      - /tmp:rw,nosuid,size=64m
     logging: *edge-logging
     deploy:
       resources:

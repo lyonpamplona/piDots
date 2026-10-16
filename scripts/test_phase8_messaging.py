@@ -195,14 +195,17 @@ async def run_phase8_tests():
         post_data = resp_post.json()
         assert post_data["status"] == "dispatched"
 
-        # Aguarda breve momento para o despacho assíncrono
-        await asyncio.sleep(0.5)
+        # Polling determinístico aguardando a persistência da mensagem
+        messages = []
+        for _ in range(30):
+            resp_msgs = await client.get(f"/api/channels/{channel_id}/messages")
+            if resp_msgs.status_code == 200:
+                messages = resp_msgs.json()
+                if len(messages) >= 1:
+                    break
+            await asyncio.sleep(0.1)
 
-        # Consulta as mensagens do canal
-        resp_msgs = await client.get(f"/api/channels/{channel_id}/messages")
-        assert resp_msgs.status_code == 200, f"Falha ao obter mensagens: {resp_msgs.text}"
-        messages = resp_msgs.json()
-        assert len(messages) >= 1
+        assert len(messages) >= 1, "Falha: nenhuma mensagem encontrada no canal após polling!"
         print(f"[OK] Mensagens listadas no canal com sucesso. Total recuperado: {len(messages)}")
 
         # F. Teste de Trava Anti-Recursão do ChannelOrchestrator

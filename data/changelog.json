@@ -2,34 +2,43 @@
   "system": "piDots",
   "app_name": "piDots Edge Console",
   "current_version": "1.5.0",
-  "release_date": "2026-10-13",
-  "build": "20261013-ARM64",
-  "commit_hash": "e8f1b2c",
+  "release_date": "2026-10-16",
+  "build": "20261016-ARM64",
+  "commit_hash": "f4c9a1d",
   "channel": "stable",
   "patch_notes": {
     "version": "1.5.0",
     "title": "NOTAS DE ATUALIZACAO // VERSAO 1.5.0",
-    "summary": "Novo Tour Spotlight Interativo In-Context & Onboarding FTUE de Alto Desempenho: Substituicao de modais estaticos por orificio iluminado em hardware real (box-shadow global de camada unica), 5 passos canonicos de capacitacao motora, suporte a teclado (Setas/Enter/Esc), comando /tour integrado e auto-disparo inteligente no primeiro acesso.",
+    "summary": "Consolidacao Soberana do piDots: Desacoplamento Completo da Camada Frontend em Pages e Assets Modulares (CSS/JS), Motor EdgeAssetManager com In-Memory Preload e ETag (HTTP 304), Service Worker v7, Tour Spotlight Interativo In-Context e Auditoria Integral de Seguranca.",
     "categories": {
       "included": [
+        "Desacoplamento Completo do Frontend: Monolitos divididos em pages/ semanticas limpas (-86% no console SPA), 9 folhas de estilo em static/css/ e 11 modulos JavaScript em static/js/.",
+        "EdgeAssetManager no FastAPI: Pre-carregamento total de documentos em memoria RAM com ETag SHA-256 (HTTP 304 Not Modified) e pre-compressao Gzip (-76.7% de reducao de payload).",
+        "Service Worker v7 (pidots-cache-v7): Esteira offline completa cobrindo toda a arvore modular de CSS e JS com transicao suave e purga automatica do cache legado v6.",
         "Motor de Tour Spotlight In-Context (PiDotsTourEngine): Ancoragem tatica no DOM real sem bloqueio de tela, recortando os elementos de trabalho com contorno pulsante ciano (--blueprint-cyan).",
         "Cinco Etapas Canonicas de Capacitacao: Squad Central de Agentes, Terminal de Comando & Teletipo, Comutador de Modo Foco, Live Canvas & Diffs e Telemetria / Gaveta Tecnica (F1).",
-        "Comando de Barra /tour e /onboarding: Acionamento imediato no teletipo com suporte a parametro 'reset' para reiniciar o ciclo do operador.",
-        "Acionamento Tatico na Gaveta Tecnica: Card interativo [REVER GUIA OPERACIONAL SPOTLIGHT] integrado na central F1 / [SISTEMA] e atalho no menu de contexto.",
-        "Auto-Disparo Inteligente com Desacoplamento: Inicializacao suave de 600ms no primeiro acesso do operador baseada em localStorage.getItem('pidots_tour_completed')."
+        "Comandos de Barra /tour e /onboarding: Acionamento imediato no teletipo com suporte a parametro 'reset' para reiniciar o ciclo do operador."
       ],
       "adjusted": [
-        "Eliminacao do Modal Estatico de Onboarding: Descontinuacao do modal opaco que cobria 90% da tela sem permitir visualizar os botoes e ferramentas reais.",
-        "Geometria Pixel Paper UI com Clamping Ortogonal: Balão de instruções flutuante com chanfro tático, flip inteligente de borda e protecao contra overflow na viewport.",
-        "Responsividade Mobile Integrada: Adaptacao automatica para bottom-sheet flutuante em telas < 768px com acionamento previo de abas (setMobileView)."
+        "Correcao no Loop de Agente: Envolvimento de run_thread em try/finally garantindo reversao para idle mesmo com desconexoes SSE do cliente; remocao de poda cega de chamadas de ferramentas paralelas; e persistencia no SQLite WAL de chamadas e respostas de tools para continuidade de contexto.",
+        "Calculo Matematico de Relevancia Hibrida: Remocao de piso artificial de 0.5 em memory_manager.py quando nao ha correspondencia textual BM25 ou projecao vetorial.",
+        "Resiliencia em Deliberacoes: Tratamento explicito de status awaiting_hitl no conselho consultivo (council.py) e na delegacao de subtarefas (orchestrator.py), impedindo que retencoes sejam tratadas como conclusoes.",
+        "Otimizacao de Flash MicroSD: Remocao de ANALYZE redundante pos-optimize e inclusao de poda de tool_runs com mais de 30 dias em maintenance.py.",
+        "Circuit Breaker e Timeout: Eliminacao de sono desnecessario na tentativa terminal de retry e enriquecimento de mensagens de erro em openai_client.py.",
+        "Retencao Forte de Tarefas Assincronas: Conjunto _background_tasks em MessagingGateway impedindo descarte prematuro de corrotinas pelo Garbage Collector."
       ],
       "removed": [
-        "Eliminacao de Dependencias Externas de Tour: Zero bibliotecas de terceiros (dispensando pacotes como Intro.js, Driver.js ou Shepherd de 40KB+).",
-        "Remocao de Filtros Computacionais Pesados: Eliminado qualquer uso de backdrop-filter: blur, garantindo consumo de CPU < 1% no Raspberry Pi 4B ARM64."
+        "Eliminacao Definitiva dos Monolitos Legados da Raiz: pidots_spa_prototype.html, pidots_apresentacao_pixel_paper.html, pidots_guia.html e relatorio_estudo_pidots.html salvaguardados em data/backups/monoliths_v150/ e substituidos pelas paginas modulares em pages/.",
+        "Saneamento de Codigo Morto e Orfaos: Removidos ~1.000 linhas de HTML/CSS de modais legados, pasta scratch/ e 10 diretorios orfaos residuais em workspaces/.",
+        "Expurgo de Bots Efemeros de Testes: 46 registros de bots temporarios expurgados de data/pidots.db, mantendo o Squad Central 100% limpo.",
+        "Eliminacao de Redundancias: Arquivo duplicado static/pidots-i18n.js removido da raiz de static/, mantendo o modulo modular estatico em static/js/core/."
       ],
       "security_and_edge": [
-        "Renderizacao por Camada de Composicao Direta: Efeito de recorte obtido via box-shadow solido infinito sem layouts sincronizados repetitivos (zero layout thrashing).",
-        "Validacao Sintatica Estrita com Node.js: Cobertura total de testes de sintaxe em 100% dos blocos de script, assegurando conformidade e estabilidade operacional."
+        "Blindagem Anti-SSRF Hop-by-Hop: Desativacao de follow_redirects cego em web_reader.py e validacao rigorosa de cada salto de redirecionamento contra faixas de rede privada/loopback.",
+        "Protecao Anti-Symlink Traversal: Inspecao realpath/commonpath em export_workspace_zip de spaces_manager.py impedindo inclusao de symlinks fora do workspace no arquivo ZIP.",
+        "Teto de Memoria em Operacoes de Arquivo: Limite de 10MB em read_file e remocao garantida de arquivos temporarios via try/finally em write_file.",
+        "Sanitizacao Rigorosa Contra XSS: Tratamento de entradas do operador via String(str ?? '').replace com escape estrito de HTML e aspas.",
+        "Isolamento Sandbox Robusto: Adicionadas flags --dev /dev e --proc /proc com os.killpg em subprocessos bwrap para evitar processos zumbis."
       ]
     }
   },

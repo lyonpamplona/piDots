@@ -38,15 +38,16 @@ class CouncilOrchestrator:
                 status = ev_data.get("status", "completed")
                 error_msg = ev_data.get("error", "")
 
-        if status == "failed":
-            return "", False, error_msg or "Falha no ciclo do agente"
+        if status in ("failed", "awaiting_hitl"):
+            err = error_msg or ("Ação retida por governança HITL aguardando autorização do operador humano" if status == "awaiting_hitl" else "Falha no ciclo do agente")
+            return "", False, err
 
         async with get_db() as db:
             cursor = await db.execute(
                 """
                 SELECT content FROM messages
                 WHERE thread_id = ? AND role = 'assistant' AND visibility != 'internal'
-                ORDER BY created_at DESC LIMIT 1
+                ORDER BY created_at DESC, rowid DESC LIMIT 1
                 """,
                 (subthread_id,)
             )
@@ -57,7 +58,7 @@ class CouncilOrchestrator:
             # Fallback se não houver mensagem pública explícita
             async with get_db() as db:
                 cursor = await db.execute(
-                    "SELECT content FROM messages WHERE thread_id = ? AND role = 'assistant' ORDER BY created_at DESC LIMIT 1",
+                    "SELECT content FROM messages WHERE thread_id = ? AND role = 'assistant' ORDER BY created_at DESC, rowid DESC LIMIT 1",
                     (subthread_id,)
                 )
                 row = await cursor.fetchone()
@@ -160,7 +161,8 @@ class CouncilOrchestrator:
                 thread_id=thread_id,
                 failed_dot_id=resolved_proponent,
                 supervisor_dot_id=resolved_supervisor,
-                error_msg=prop_err
+                error_msg=prop_err,
+                subthreads=[prop_subthread]
             )
 
         # Registra a proposta como Fita de Carbono (mensagem interna) na thread principal
@@ -203,7 +205,8 @@ class CouncilOrchestrator:
                 thread_id=thread_id,
                 failed_dot_id=resolved_critic,
                 supervisor_dot_id=resolved_supervisor,
-                error_msg=crit_err
+                error_msg=crit_err,
+                subthreads=[prop_subthread, critic_subthread]
             )
 
         # Registra a crítica como Fita de Carbono interna
@@ -218,11 +221,11 @@ class CouncilOrchestrator:
         )
 
         # ======================================================================
-        # ETAPA 3 (Opcional): Rodada de Réplica se rounds > 1
+        # ETAPA 3 (Opcional): Rodadas Iterativas de Réplica e Tréplica se rounds > 1
         # ======================================================================
-        if total_rounds > 1:
+        for round_idx in range(2, total_rounds + 1):
             replica_prompt = (
-                f"[CONSELHO CONSULTIVO - RÉPLICA DO PROPOSITOR]\n"
+                f"[CONSELHO CONSULTIVO - RÉPLICA DO PROPOSITOR (RODADA {round_idx}/{total_rounds})]\n"
                 f"O auditor @{resolved_critic} fez as seguintes observações críticas à sua proposta:\n"
                 f"{critic_output}\n\n"
                 "Ajuste sua proposta ou refute os pontos levantados antes da decisão do supervisor."
@@ -234,7 +237,8 @@ class CouncilOrchestrator:
                     thread_id=thread_id,
                     failed_dot_id=resolved_proponent,
                     supervisor_dot_id=resolved_supervisor,
-                    error_msg=rep_err
+                    error_msg=rep_err,
+                    subthreads=[prop_subthread, critic_subthread]
                 )
             proponent_output = replica_output
 
@@ -245,7 +249,36 @@ class CouncilOrchestrator:
                 target_dot_id=resolved_supervisor,
                 visibility="internal",
                 role="assistant",
-                content=f"[CONSELHO - RÉPLICA DE @{resolved_proponent}]:\n{proponent_output}"
+                content=f"[CONSELHO - RÉPLICA DE @{resolved_proponent} (RODADA {round_idx})]:\n{proponent_output}"
+            )
+
+            # Tréplica do Crítico para fechamento do ciclo dialético simétrico
+            treplica_prompt = (
+                f"[CONSELHO CONSULTIVO - TRÉPLICA DO AUDITOR CRÍTICO (RODADA {round_idx}/{total_rounds})]\n"
+                f"O propositor @{resolved_proponent} apresentou a seguinte réplica/ajuste:\n"
+                f"{proponent_output}\n\n"
+                "Emita sua avaliação de auditoria sobre a réplica (aprovação final ou ressalvas remanescentes)."
+            )
+            treplica_output, trep_ok, trep_err = await cls._execute_turn(critic_agent, critic_subthread, treplica_prompt)
+            if not trep_ok:
+                return await cls._fail_council(
+                    handoff_id=handoff_id,
+                    thread_id=thread_id,
+                    failed_dot_id=resolved_critic,
+                    supervisor_dot_id=resolved_supervisor,
+                    error_msg=trep_err,
+                    subthreads=[prop_subthread, critic_subthread]
+                )
+            critic_output = treplica_output
+
+            await MultiBotOrchestrator.record_message(
+                thread_id=thread_id,
+                actor_id=resolved_critic,
+                actor_type="dot",
+                target_dot_id=resolved_supervisor,
+                visibility="internal",
+                role="assistant",
+                content=f"[CONSELHO - TRÉPLICA DE @{resolved_critic} (RODADA {round_idx})]:\n{critic_output}"
             )
 
         # ======================================================================
@@ -277,7 +310,8 @@ class CouncilOrchestrator:
                 thread_id=thread_id,
                 failed_dot_id=resolved_supervisor,
                 supervisor_dot_id=resolved_supervisor,
-                error_msg=sup_err
+                error_msg=sup_err,
+                subthreads=[prop_subthread, critic_subthread, sup_subthread]
             )
 
         # Monta a resolução pública consolidada
@@ -299,7 +333,7 @@ class CouncilOrchestrator:
             content=public_resolution
         )
 
-        # Atualiza a tabela agent_handoffs para COMPLETED
+        # Atualiza a tabela agent_handoffs e subthreads para COMPLETED
         summary_excerpt = f"Conselho concluído: {supervisor_output[:300]}"
         async with get_db() as db:
             await db.execute(
@@ -311,6 +345,10 @@ class CouncilOrchestrator:
                 WHERE id = ?
                 """,
                 (summary_excerpt, handoff_id)
+            )
+            await db.execute(
+                "UPDATE threads SET status = 'completed', updated_at = CURRENT_TIMESTAMP WHERE id IN (?, ?, ?)",
+                (prop_subthread, critic_subthread, sup_subthread)
             )
             await db.commit()
 
@@ -339,7 +377,8 @@ class CouncilOrchestrator:
         thread_id: str,
         failed_dot_id: str,
         supervisor_dot_id: str,
-        error_msg: str
+        error_msg: str,
+        subthreads: list[str] | None = None
     ) -> dict[str, Any]:
         """Interrompe a deliberação em caso de falha cognitiva e atualiza status no banco de dados."""
         err_desc = error_msg or "Falha de inferência durante a deliberação"
@@ -356,6 +395,12 @@ class CouncilOrchestrator:
                 """,
                 (f"Falha de @{failed_dot_id}: {err_desc[:400]}", handoff_id)
             )
+            if subthreads:
+                for st_id in subthreads:
+                    await db.execute(
+                        "UPDATE threads SET status = 'error', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                        (st_id,)
+                    )
             await db.commit()
 
         from .orchestrator import MultiBotOrchestrator
@@ -383,21 +428,22 @@ class CouncilOrchestrator:
         critic: str,
         supervisor: str
     ) -> tuple[str, str, str]:
-        """Garante que os IDs dos Dots existam no SQLite; caso contrário, usa os dots cadastrados."""
+        """Garante que os IDs dos Dots existam no SQLite priorizando o Squad Central."""
         async with get_db() as db:
-            cursor = await db.execute("SELECT id FROM dots WHERE is_active = 1")
+            cursor = await db.execute("SELECT id, is_core FROM dots WHERE is_active = 1 ORDER BY is_core DESC, name ASC")
             rows = await cursor.fetchall()
-            active_ids = {r["id"] for r in rows}
+            active_ids = [r["id"] for r in rows]
+            active_set = set(active_ids)
 
         def pick_fallback(preferred: str, fallback_candidates: list[str]) -> str:
-            if preferred in active_ids:
+            if preferred in active_set:
                 return preferred
             for cand in fallback_candidates:
-                if cand in active_ids:
+                if cand in active_set:
                     return cand
-            return list(active_ids)[0] if active_ids else "dot-dev-core"
+            return active_ids[0] if active_ids else "dot-dev-core"
 
-        r_proponent = pick_fallback(proponent, ["dot-coder", "dot-dev-core", "dev-assistant"])
+        r_proponent = pick_fallback(proponent, ["dot-coder", "dev-assistant", "dot-dev-core"])
         r_critic = pick_fallback(critic, ["dot-auditor", "dot-resilience-tester", "dev-assistant"])
         r_supervisor = pick_fallback(supervisor, ["dot-supervisor", "dot-dev-core", "dev-assistant"])
 

@@ -18,7 +18,10 @@ venv/
 env/
 
 # 4. Dados Persistentes do Host (Montados via Volume Docker no docker-compose)
-data/
+data/*
+!data/locales/
+!data/locales/*.json
+!data/changelog.json
 *.db
 *.db-wal
 *.db-shm
@@ -43,8 +46,6 @@ scripts/
 
 # 8. Documentação Interna e Relatórios Extensos
 MANUAL_OPERACIONAL.md
-relatorio_*.html
-!relatorio_estudo_pidots.html
 *.md
 !README.md
 

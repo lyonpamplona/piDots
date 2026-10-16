@@ -27,13 +27,30 @@ class DotAgent:
     def __init__(
         self,
         dot_id: str,
-        provider: OpenAIUniversalProvider,
+        provider: OpenAIUniversalProvider | None = None,
         tool_registry: ToolRegistry | None = None
     ) -> None:
         self.dot_id = dot_id
-        self.provider = provider
+        if provider is None:
+            from ..providers.openai_client import OpenAIUniversalProvider
+            self.provider = OpenAIUniversalProvider()
+        else:
+            self.provider = provider
         self.tools = tool_registry or default_tool_registry
         self.max_iterations = settings.max_iterations_per_goal
+
+    @staticmethod
+    async def _update_thread_status(thread_id: str, status: str) -> None:
+        """Atualiza o estado de ciclo de vida da thread no SQLite."""
+        try:
+            async with get_db() as db:
+                await db.execute(
+                    "UPDATE threads SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    (status, thread_id)
+                )
+                await db.commit()
+        except Exception as e:
+            logger.debug("Falha ao atualizar status da thread %s para %s: %s", thread_id, status, e)
 
     async def run_thread(
         self,
@@ -47,6 +64,23 @@ class DotAgent:
         run_id = str(uuid.uuid4())
         start_time = datetime.now(timezone.utc)
 
+        # Garante idempotência da thread antes de atualizar status
+        try:
+            async with get_db() as db:
+                await db.execute(
+                    """
+                    INSERT OR IGNORE INTO threads (id, dot_id, title, status)
+                    VALUES (?, ?, ?, 'running')
+                    """,
+                    (thread_id, self.dot_id, f"Thread {thread_id[:16]}")
+                )
+                await db.commit()
+        except Exception as th_err:
+            logger.debug("Falha ao garantir thread antes do run: %s", th_err)
+
+        # Atualiza a thread para running no SQLite
+        await self._update_thread_status(thread_id, "running")
+
         yield {
             "event": "run:started",
             "data": {
@@ -57,304 +91,368 @@ class DotAgent:
             }
         }
 
-        # 1. Carrega dados do Dot e histórico do SQLite
-        dot_info, messages = await self._load_context(thread_id, user_message)
-        if not dot_info:
+        is_hitl = False
+        try:
+            # 1. Carrega dados do Dot e histórico do SQLite
+            dot_info, messages = await self._load_context(thread_id, user_message)
+            if not dot_info:
+                yield {
+                    "event": "run:finished",
+                    "data": {
+                        "run_id": run_id,
+                        "status": "failed",
+                        "final_response": "",
+                        "error": f"Dot '{self.dot_id}' não encontrado."
+                    }
+                }
+                return
+
+            # Poda Dinâmica de Ferramentas (Dynamic Tool Pruning)
+            allowed_tools_raw = dot_info.get("allowed_tools_json")
+            allowed_tools = None
+            if allowed_tools_raw:
+                try:
+                    allowed_tools = json.loads(allowed_tools_raw) if isinstance(allowed_tools_raw, str) else allowed_tools_raw
+                except Exception:
+                    allowed_tools = None
+
+            tool_defs = self.tools.get_tool_definitions(allowed_tools if allowed_tools else None)
+            iteration = 0
+            final_response_text = ""
+
+            # 2. Loop de raciocínio multi-turn (teto estrito de iterações)
+            while iteration < self.max_iterations:
+                iteration += 1
+                yield {
+                    "event": "thought:delta",
+                    "data": {
+                        "run_id": run_id,
+                        "iteration": iteration,
+                        "thought": f"Analisando contexto e formulando resposta (Passo {iteration}/{self.max_iterations})..."
+                    }
+                }
+
+                try:
+                    # Chamada com Circuit Breaker ao provedor OpenAI-compatível
+                    response = await self.provider.chat_completion(
+                        messages=messages,
+                        tools=tool_defs if tool_defs else None,
+                        model=dot_info["model"]
+                    )
+                except ProviderAuthError as auth_err:
+                    err_msg = str(auth_err)
+                    logger.error("Falha de autenticação com provedor de IA: %s", err_msg)
+                    
+                    # Persiste mensagem interna de diagnóstico no SQLite WAL
+                    diag_msg_id = str(uuid.uuid4())
+                    async with get_db() as db:
+                        await db.execute(
+                            """
+                            INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                            VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
+                            """,
+                            (diag_msg_id, thread_id, f"[FALHA DE AUTENTICAÇÃO]: {err_msg}", self.dot_id, err_msg)
+                        )
+                        await db.commit()
+
+                    yield {
+                        "event": "thought:delta",
+                        "data": {"run_id": run_id, "error": err_msg}
+                    }
+                    yield {
+                        "event": "run:finished",
+                        "data": {
+                            "run_id": run_id,
+                            "status": "failed",
+                            "final_response": "",
+                            "error": err_msg,
+                            "error_type": "auth_error"
+                        }
+                    }
+                    return
+                except ProviderEndpointError as endp_err:
+                    err_msg = str(endp_err)
+                    logger.error("Falha de endpoint/modelo com provedor de IA: %s", err_msg)
+
+                    # Persiste mensagem interna de diagnóstico no SQLite WAL
+                    diag_msg_id = str(uuid.uuid4())
+                    async with get_db() as db:
+                        await db.execute(
+                            """
+                            INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                            VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
+                            """,
+                            (diag_msg_id, thread_id, f"[FALHA DE ENDPOINT]: {err_msg}", self.dot_id, err_msg)
+                        )
+                        await db.commit()
+
+                    yield {
+                        "event": "thought:delta",
+                        "data": {"run_id": run_id, "error": err_msg}
+                    }
+                    yield {
+                        "event": "run:finished",
+                        "data": {
+                            "run_id": run_id,
+                            "status": "failed",
+                            "final_response": "",
+                            "error": err_msg,
+                            "error_type": "endpoint_error"
+                        }
+                    }
+                    return
+                except Exception as e:
+                    err_msg = str(e)
+                    logger.error("Erro na chamada de inferência: %s", err_msg)
+                    
+                    # Persiste mensagem interna de diagnóstico no SQLite WAL
+                    diag_msg_id = str(uuid.uuid4())
+                    async with get_db() as db:
+                        await db.execute(
+                            """
+                            INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                            VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
+                            """,
+                            (diag_msg_id, thread_id, f"[FALHA DE INFERÊNCIA]: {err_msg}", self.dot_id, err_msg)
+                        )
+                        await db.commit()
+
+                    yield {
+                        "event": "thought:delta",
+                        "data": {"run_id": run_id, "error": f"Falha de conexão com provedor: {err_msg}"}
+                    }
+                    yield {
+                        "event": "run:finished",
+                        "data": {
+                            "run_id": run_id,
+                            "status": "failed",
+                            "final_response": "",
+                            "error": err_msg,
+                            "error_type": "transient_error"
+                        }
+                    }
+                    return
+
+                choice = response.get("choices", [{}])[0]
+                msg = choice.get("message", {})
+                content = msg.get("content") or ""
+                tool_calls = msg.get("tool_calls", [])
+
+                if content:
+                    final_response_text += content
+                    yield {
+                        "event": "thought:delta",
+                        "data": {"run_id": run_id, "content_chunk": content}
+                    }
+
+                # Caso 1: O modelo requisitou chamadas de ferramentas
+                if tool_calls:
+                    # Adiciona mensagem do assistente contendo as chamadas de ferramenta
+                    messages.append(msg)
+
+                    # Persiste a mensagem do assistente com tool_calls no SQLite WAL
+                    try:
+                        assistant_call_msg_id = str(uuid.uuid4())
+                        async with get_db() as db:
+                            await db.execute(
+                                """
+                                INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log, tool_calls_json)
+                                VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?, ?)
+                                """,
+                                (assistant_call_msg_id, thread_id, content or "", self.dot_id, content or "", json.dumps(tool_calls, ensure_ascii=False))
+                            )
+                            await db.commit()
+                    except Exception as save_err:
+                        logger.debug("Falha ao salvar chamada de ferramenta do assistente: %s", save_err)
+
+                    for call in tool_calls:
+                        call_id = call.get("id", str(uuid.uuid4()))
+                        func = call.get("function", {})
+                        fn_name = func.get("name")
+                        try:
+                            args = json.loads(func.get("arguments", "{}"))
+                        except Exception:
+                            args = {}
+
+                        # Validação de Governança Human-in-the-Loop
+                        serialized_args = json.dumps(args)
+                        requires_hitl, risk = HITLManager.requires_approval(fn_name, serialized_args)
+                        if requires_hitl and not await HITLManager.has_prior_approval(
+                            dot_id=self.dot_id,
+                            thread_id=thread_id,
+                            action_type=fn_name,
+                            payload=serialized_args
+                        ):
+                            approval_id = await HITLManager.create_approval_request(
+                                dot_id=self.dot_id,
+                                thread_id=thread_id,
+                                action_type=fn_name,
+                                payload=serialized_args,
+                                risk_level=risk
+                            )
+                            yield {
+                                "event": "hitl:approval_required",
+                                "data": {
+                                    "run_id": run_id,
+                                    "approval_id": approval_id,
+                                    "tool_name": fn_name,
+                                    "arguments": args,
+                                    "risk_level": risk
+                                }
+                            }
+                            # Persiste aviso transparente no chat para evitar silêncio aparente
+                            hitl_notice = (
+                                f"[GOVERNANCA HITL // ACAO RETIDA]\n"
+                                f"O agente '{self.dot_id}' solicitou a acao '{fn_name}' (Risco: {risk}), "
+                                f"que requer autorizacao expressa do operador humano.\n"
+                                f"ID de Aprovacao: {approval_id}\n"
+                                f"Instrucao: Homologue a execucao na aba de governanca HITL ou via comando /hitl."
+                            )
+                            async with get_db() as db:
+                                await db.execute(
+                                    """
+                                    INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                                    VALUES (?, ?, 'assistant', ?, ?, 'dot', 'public', ?)
+                                    """,
+                                    (str(uuid.uuid4()), thread_id, hitl_notice, self.dot_id, hitl_notice)
+                                )
+                                await db.commit()
+
+                            # Interrompe o run retendo status awaiting_hitl
+                            is_hitl = True
+                            await self._update_thread_status(thread_id, "awaiting_hitl")
+                            yield {
+                                "event": "run:finished",
+                                "data": {"run_id": run_id, "status": "awaiting_hitl"}
+                            }
+                            return
+
+                        # Execução segura da ferramenta
+                        yield {
+                            "event": "tool:called",
+                            "data": {"run_id": run_id, "call_id": call_id, "name": fn_name, "arguments": args}
+                        }
+
+                        t_start = datetime.now(timezone.utc)
+                        tool_result = await self.tools.execute_tool(
+                            fn_name,
+                            args,
+                            dot_id=self.dot_id,
+                            thread_id=thread_id,
+                            provider=self.provider
+                        )
+                        t_duration = int((datetime.now(timezone.utc) - t_start).total_seconds() * 1000)
+
+                        # Persiste auditoria em tool_runs para ferramentas gerais (terminal possui gravação própria)
+                        if fn_name != "execute_shell_command":
+                            try:
+                                async with get_db() as db:
+                                    res_str = json.dumps(tool_result, ensure_ascii=False) if isinstance(tool_result, (dict, list)) else str(tool_result)
+                                    err_str = str(tool_result.get("error", "")) if isinstance(tool_result, dict) else ""
+                                    await db.execute(
+                                        """
+                                        INSERT INTO tool_runs (id, dot_id, tool_name, arguments_json, exit_code, stdout_text, stderr_text, duration_ms)
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                                        """,
+                                        (
+                                            call_id,
+                                            self.dot_id,
+                                            fn_name,
+                                            json.dumps(args, ensure_ascii=False),
+                                            1 if err_str else 0,
+                                            res_str[:10000],
+                                            err_str[:10000],
+                                            t_duration
+                                        )
+                                    )
+                                    await db.commit()
+                            except Exception as audit_err:
+                                logger.debug("Falha ao registrar auditoria em tool_runs para %s: %s", fn_name, audit_err)
+
+                        yield {
+                            "event": "tool:result",
+                            "data": {
+                                "run_id": run_id,
+                                "call_id": call_id,
+                                "name": fn_name,
+                                "result": tool_result,
+                                "duration_ms": t_duration
+                            }
+                        }
+
+                        # Se a ferramenta acionou Self-Healing Harness, emite evento de diagnóstico
+                        if isinstance(tool_result, dict) and tool_result.get("self_healing_details"):
+                            healing_info = tool_result["self_healing_details"]
+                            yield {
+                                "event": "self_healing:triggered",
+                                "data": {
+                                    "run_id": run_id,
+                                    "call_id": call_id,
+                                    "tool_name": fn_name,
+                                    "error_type": healing_info.get("error_type"),
+                                    "target_file": healing_info.get("target_file"),
+                                    "target_line": healing_info.get("target_line"),
+                                    "diagnosis": healing_info.get("diagnosis")
+                                }
+                            }
+
+                        # Registra resultado no contexto
+                        tool_content_str = json.dumps(tool_result, ensure_ascii=False) if isinstance(tool_result, (dict, list)) else str(tool_result)
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": call_id,
+                            "name": fn_name,
+                            "content": tool_content_str
+                        })
+
+                        # Persiste o retorno da ferramenta no SQLite WAL
+                        try:
+                            tool_msg_id = str(uuid.uuid4())
+                            async with get_db() as db:
+                                await db.execute(
+                                    """
+                                    INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
+                                    VALUES (?, ?, 'tool', ?, ?, 'dot', 'internal')
+                                    """,
+                                    (tool_msg_id, thread_id, tool_content_str, self.dot_id)
+                                )
+                                await db.commit()
+                        except Exception as save_err:
+                            logger.debug("Falha ao salvar retorno de ferramenta no SQLite: %s", save_err)
+
+                    # Continua o loop para a próxima iteração com os resultados das ferramentas
+                    continue
+
+                # Caso 2: Resposta finalizada sem ferramentas
+                break
+
+            # 3. Salva resposta final do assistente no banco SQLite WAL
+            if final_response_text:
+                msg_id = str(uuid.uuid4())
+                async with get_db() as db:
+                    await db.execute(
+                        """
+                        INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
+                        VALUES (?, ?, 'assistant', ?, ?, 'dot', 'public')
+                        """,
+                        (msg_id, thread_id, final_response_text, self.dot_id)
+                    )
+                    await db.commit()
+
             yield {
                 "event": "run:finished",
                 "data": {
                     "run_id": run_id,
-                    "status": "failed",
-                    "final_response": "",
-                    "error": f"Dot '{self.dot_id}' não encontrado."
+                    "status": "completed",
+                    "iterations": iteration,
+                    "duration_seconds": round((datetime.now(timezone.utc) - start_time).total_seconds(), 2),
+                    "final_response": final_response_text,
+                    "error": None
                 }
             }
-            return
-
-        # Poda Dinâmica de Ferramentas (Dynamic Tool Pruning)
-        allowed_tools_raw = dot_info.get("allowed_tools_json")
-        allowed_tools = None
-        if allowed_tools_raw:
-            try:
-                allowed_tools = json.loads(allowed_tools_raw) if isinstance(allowed_tools_raw, str) else allowed_tools_raw
-            except Exception:
-                allowed_tools = None
-
-        tool_defs = self.tools.get_tool_definitions(allowed_tools if allowed_tools else None)
-        iteration = 0
-        final_response_text = ""
-
-        # 2. Loop de raciocínio multi-turn (teto estrito de iterações)
-        while iteration < self.max_iterations:
-            iteration += 1
-            yield {
-                "event": "thought:delta",
-                "data": {
-                    "run_id": run_id,
-                    "iteration": iteration,
-                    "thought": f"Analisando contexto e formulando resposta (Passo {iteration}/{self.max_iterations})..."
-                }
-            }
-
-            try:
-                # Chamada com Circuit Breaker ao provedor OpenAI-compatível
-                response = await self.provider.chat_completion(
-                    messages=messages,
-                    tools=tool_defs if tool_defs else None,
-                    model=dot_info["model"]
-                )
-            except ProviderAuthError as auth_err:
-                err_msg = str(auth_err)
-                logger.error("Falha de autenticação com provedor de IA: %s", err_msg)
-                
-                # Persiste mensagem interna de diagnóstico no SQLite WAL
-                diag_msg_id = str(uuid.uuid4())
-                async with get_db() as db:
-                    await db.execute(
-                        """
-                        INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
-                        VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
-                        """,
-                        (diag_msg_id, thread_id, f"[FALHA DE AUTENTICAÇÃO]: {err_msg}", self.dot_id, err_msg)
-                    )
-                    await db.commit()
-
-                yield {
-                    "event": "thought:delta",
-                    "data": {"run_id": run_id, "error": err_msg}
-                }
-                yield {
-                    "event": "run:finished",
-                    "data": {
-                        "run_id": run_id,
-                        "status": "failed",
-                        "final_response": "",
-                        "error": err_msg,
-                        "error_type": "auth_error"
-                    }
-                }
-                return
-            except ProviderEndpointError as endp_err:
-                err_msg = str(endp_err)
-                logger.error("Falha de endpoint/modelo com provedor de IA: %s", err_msg)
-
-                # Persiste mensagem interna de diagnóstico no SQLite WAL
-                diag_msg_id = str(uuid.uuid4())
-                async with get_db() as db:
-                    await db.execute(
-                        """
-                        INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
-                        VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
-                        """,
-                        (diag_msg_id, thread_id, f"[FALHA DE ENDPOINT]: {err_msg}", self.dot_id, err_msg)
-                    )
-                    await db.commit()
-
-                yield {
-                    "event": "thought:delta",
-                    "data": {"run_id": run_id, "error": err_msg}
-                }
-                yield {
-                    "event": "run:finished",
-                    "data": {
-                        "run_id": run_id,
-                        "status": "failed",
-                        "final_response": "",
-                        "error": err_msg,
-                        "error_type": "endpoint_error"
-                    }
-                }
-                return
-            except Exception as e:
-                err_msg = str(e)
-                logger.error("Erro na chamada de inferência: %s", err_msg)
-                
-                # Persiste mensagem interna de diagnóstico no SQLite WAL
-                diag_msg_id = str(uuid.uuid4())
-                async with get_db() as db:
-                    await db.execute(
-                        """
-                        INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
-                        VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
-                        """,
-                        (diag_msg_id, thread_id, f"[FALHA DE INFERÊNCIA]: {err_msg}", self.dot_id, err_msg)
-                    )
-                    await db.commit()
-
-                yield {
-                    "event": "thought:delta",
-                    "data": {"run_id": run_id, "error": f"Falha de conexão com provedor: {err_msg}"}
-                }
-                yield {
-                    "event": "run:finished",
-                    "data": {
-                        "run_id": run_id,
-                        "status": "failed",
-                        "final_response": "",
-                        "error": err_msg,
-                        "error_type": "transient_error"
-                    }
-                }
-                return
-
-            choice = response.get("choices", [{}])[0]
-            msg = choice.get("message", {})
-            content = msg.get("content") or ""
-            tool_calls = msg.get("tool_calls", [])
-
-            if content:
-                final_response_text += content
-                yield {
-                    "event": "thought:delta",
-                    "data": {"run_id": run_id, "content_chunk": content}
-                }
-
-            # Caso 1: O modelo requisitou chamadas de ferramentas
-            if tool_calls:
-                # Provedores que suportam apenas single tool-call por turno (ex: Llama no OpenRouter)
-                if len(tool_calls) > 1:
-                    logger.info("Modelo requisitou %d chamadas de ferramentas simultâneas. Executando a primeira para compatibilidade com o gateway de inferência.", len(tool_calls))
-                    tool_calls = [tool_calls[0]]
-                    msg["tool_calls"] = tool_calls
-
-                # Adiciona mensagem do assistente contendo a chamada de ferramenta
-                messages.append(msg)
-
-                for call in tool_calls:
-                    call_id = call.get("id", str(uuid.uuid4()))
-                    func = call.get("function", {})
-                    fn_name = func.get("name")
-                    try:
-                        args = json.loads(func.get("arguments", "{}"))
-                    except Exception:
-                        args = {}
-
-                    # Validação de Governança Human-in-the-Loop
-                    requires_hitl, risk = HITLManager.requires_approval(fn_name, json.dumps(args))
-                    if requires_hitl:
-                        approval_id = await HITLManager.create_approval_request(
-                            dot_id=self.dot_id,
-                            thread_id=thread_id,
-                            action_type=fn_name,
-                            payload=json.dumps(args),
-                            risk_level=risk
-                        )
-                        yield {
-                            "event": "hitl:approval_required",
-                            "data": {
-                                "run_id": run_id,
-                                "approval_id": approval_id,
-                                "tool_name": fn_name,
-                                "arguments": args,
-                                "risk_level": risk
-                            }
-                        }
-                        # Persiste aviso transparente no chat para evitar silêncio aparente
-                        hitl_notice = (
-                            f"[GOVERNANCA HITL // ACAO RETIDA]\n"
-                            f"O agente '{self.dot_id}' solicitou a acao '{fn_name}' (Risco: {risk}), "
-                            f"que requer autorizacao expressa do operador humano.\n"
-                            f"ID de Aprovacao: {approval_id}\n"
-                            f"Instrucao: Homologue a execucao na aba de governanca HITL ou via comando /hitl."
-                        )
-                        async with get_db() as db:
-                            await db.execute(
-                                """
-                                INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
-                                VALUES (?, ?, 'assistant', ?, ?, 'dot', 'public', ?)
-                                """,
-                                (str(uuid.uuid4()), thread_id, hitl_notice, self.dot_id, hitl_notice)
-                            )
-                            await db.commit()
-
-                        # Interrompe o run até aprovação humana
-                        yield {
-                            "event": "run:finished",
-                            "data": {"run_id": run_id, "status": "awaiting_hitl"}
-                        }
-                        return
-
-                    # Execução segura da ferramenta
-                    yield {
-                        "event": "tool:called",
-                        "data": {"run_id": run_id, "call_id": call_id, "name": fn_name, "arguments": args}
-                    }
-
-                    t_start = datetime.now(timezone.utc)
-                    tool_result = await self.tools.execute_tool(
-                        fn_name,
-                        args,
-                        dot_id=self.dot_id,
-                        thread_id=thread_id,
-                        provider=self.provider
-                    )
-                    t_duration = int((datetime.now(timezone.utc) - t_start).total_seconds() * 1000)
-
-                    yield {
-                        "event": "tool:result",
-                        "data": {
-                            "run_id": run_id,
-                            "call_id": call_id,
-                            "name": fn_name,
-                            "result": tool_result,
-                            "duration_ms": t_duration
-                        }
-                    }
-
-                    # Se a ferramenta acionou Self-Healing Harness, emite evento de diagnóstico
-                    if isinstance(tool_result, dict) and tool_result.get("self_healing_details"):
-                        healing_info = tool_result["self_healing_details"]
-                        yield {
-                            "event": "self_healing:triggered",
-                            "data": {
-                                "run_id": run_id,
-                                "call_id": call_id,
-                                "tool_name": fn_name,
-                                "error_type": healing_info.get("error_type"),
-                                "target_file": healing_info.get("target_file"),
-                                "target_line": healing_info.get("target_line"),
-                                "diagnosis": healing_info.get("diagnosis")
-                            }
-                        }
-
-                    # Registra resultado no contexto
-                    messages.append({
-                        "role": "tool",
-                        "tool_call_id": call_id,
-                        "name": fn_name,
-                        "content": json.dumps(tool_result, ensure_ascii=False)
-                    })
-
-                # Continua o loop para a próxima iteração com os resultados das ferramentas
-                continue
-
-            # Caso 2: Resposta finalizada sem ferramentas
-            break
-
-        # 3. Salva resposta final do assistente no banco SQLite WAL
-        if final_response_text:
-            msg_id = str(uuid.uuid4())
-            async with get_db() as db:
-                await db.execute(
-                    """
-                    INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
-                    VALUES (?, ?, 'assistant', ?, ?, 'dot', 'public')
-                    """,
-                    (msg_id, thread_id, final_response_text, self.dot_id)
-                )
-                await db.commit()
-
-        yield {
-            "event": "run:finished",
-            "data": {
-                "run_id": run_id,
-                "status": "completed",
-                "iterations": iteration,
-                "duration_seconds": round((datetime.now(timezone.utc) - start_time).total_seconds(), 2),
-                "final_response": final_response_text,
-                "error": None
-            }
-        }
+        finally:
+            if not is_hitl:
+                await self._update_thread_status(thread_id, "idle")
 
     async def _load_context(
         self,
@@ -369,6 +467,15 @@ class DotAgent:
             if not dot_row:
                 return None, []
             dot_info = dict(dot_row)
+
+            # Garante que a thread exista antes de inserir mensagem para evitar IntegrityError
+            await db.execute(
+                """
+                INSERT OR IGNORE INTO threads (id, dot_id, title, status)
+                VALUES (?, ?, ?, 'idle')
+                """,
+                (thread_id, self.dot_id, f"Thread {thread_id[:16]}")
+            )
 
             # Se houver nova mensagem do usuário, salva no SQLite
             if user_message:
@@ -385,12 +492,12 @@ class DotAgent:
             # Obtém histórico da thread (filtrando mensagens públicas ou direcionadas a este Dot)
             cursor = await db.execute(
                 """
-                SELECT role, content, actor_id, actor_type FROM (
-                    SELECT role, content, actor_id, actor_type, created_at FROM messages
+                SELECT role, content, actor_id, actor_type, tool_calls_json FROM (
+                    SELECT rowid AS rid, role, content, actor_id, actor_type, tool_calls_json, created_at FROM messages
                     WHERE thread_id = ? AND (visibility = 'public' OR target_dot_id = ? OR actor_id = ?)
-                    ORDER BY created_at DESC
-                    LIMIT 15
-                ) ORDER BY created_at ASC
+                    ORDER BY created_at DESC, rowid DESC
+                    LIMIT 20
+                ) ORDER BY created_at ASC, rid ASC
                 """,
                 (thread_id, self.dot_id, self.dot_id)
             )
@@ -428,8 +535,13 @@ class DotAgent:
         ]
         for r in rows:
             entry: dict[str, Any] = {"role": r["role"], "content": r["content"]}
+            if r["tool_calls_json"]:
+                try:
+                    entry["tool_calls"] = json.loads(r["tool_calls_json"])
+                except Exception:
+                    pass
             actor = r["actor_id"] if "actor_id" in r.keys() else None
-            if actor:
+            if actor and r["role"] not in ("tool", "system"):
                 entry["name"] = actor.replace("-", "_")[:64]
             messages.append(entry)
 

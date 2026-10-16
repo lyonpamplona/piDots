@@ -8,6 +8,7 @@ import uuid
 import zipfile
 import difflib
 import logging
+from pathlib import Path
 from typing import Any
 from datetime import datetime, timezone
 
@@ -34,10 +35,24 @@ class SpacesManager:
         Salva ou atualiza um documento no Space.
         Calcula diff contra versão anterior e indexa na memória vetorial.
         """
+        # Validação prévia estrita contra Path Traversal antes de comitar no banco
+        FileManager._get_safe_path(dot_id, filename)
+
         doc_title = title or filename
         diff_summary = ""
 
         async with get_db() as db:
+            # Garante que o Dot exista de forma idempotente para cumprir Foreign Key
+            target_ws = str(Path(settings.workspaces_root) / dot_id)
+            await db.execute(
+                """
+                INSERT OR IGNORE INTO dots (
+                    id, name, role, system_prompt, model, workspace_path
+                ) VALUES (?, ?, 'AI Coworker', 'Assistente técnico.', ?, ?)
+                """,
+                (dot_id, dot_id, settings.ai_model, target_ws)
+            )
+
             # Verifica se já existe documento com mesmo filename para o Dot
             cursor = await db.execute(
                 "SELECT id, content, version FROM spaces WHERE dot_id = ? AND filename = ?",
@@ -111,9 +126,11 @@ class SpacesManager:
         await VectorStore.index_document(space_id=space_id, content=content)
 
         return {
+            "id": space_id,
             "space_id": space_id,
             "dot_id": dot_id,
             "filename": filename,
+            "title": doc_title,
             "version": new_version,
             "diff_summary": diff_summary,
             "status": "success"
@@ -161,15 +178,20 @@ class SpacesManager:
         Inclui fallback para recuperar documentos versionados da tabela spaces caso o disco local
         ainda não tenha sido sincronizado ou contenha arquivos apenas no banco.
         """
-        workspace_dir = os.path.join(settings.workspaces_root, dot_id)
+        workspace_dir = FileManager._get_safe_path(dot_id, "")
         zip_buffer = io.BytesIO()
         written_files = set()
 
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_f:
             if os.path.exists(workspace_dir):
-                for root, _, files in os.walk(workspace_dir):
+                real_workspace = os.path.realpath(workspace_dir)
+                for root, _, files in os.walk(workspace_dir, followlinks=False):
                     for file in files:
                         full_path = os.path.join(root, file)
+                        # Prevenção estrita de symlink traversal: valida se o arquivo real reside dentro do workspace
+                        real_file = os.path.realpath(full_path)
+                        if os.path.commonpath([real_workspace, real_file]) != real_workspace:
+                            continue
                         rel_path = os.path.relpath(full_path, workspace_dir)
                         zip_f.write(full_path, arcname=rel_path)
                         written_files.add(rel_path)

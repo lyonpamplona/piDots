@@ -17,7 +17,7 @@
 
 **piDots** is a platform for persistent autonomous agents (AI Coworkers) specifically designed to run 24/7 on edge computing and resource-constrained environments (SBCs, Mini PCs, and compact servers), using the **Raspberry Pi 4B with 4GB RAM (ARM64)** as its reference benchmark.
 
-Inspired by the persistent coworker concepts of corporate OpenDots, piDots was re-engineered and optimized as a high-performance, asynchronous modular monolith. It eliminates heavy dependencies such as headless Chromium browsers, bulky vector database containers, and Node.js orchestrators, achieving an idle memory footprint of under **50 MB RAM** and less than **150 MB RAM** during simultaneous multi-agent execution.
+Inspired by the persistent coworker concepts of corporate OpenDots, piDots was re-engineered and optimized as a high-performance, asynchronous modular monolith. It eliminates heavy dependencies such as headless Chromium browsers, bulky vector database containers, and Node.js orchestrators, achieving an idle memory footprint of under **50 MB RAM** and less than **100 MB RAM** during simultaneous multi-agent execution.
 
 The platform provides persistent agents tailored for technical workflows (DevOps, Research, Code Auditing), equipped with long-term memory, filesystem sandbox isolation, Human-in-the-Loop (HITL) governance for high-risk operations, and an ultra-responsive dark-mode SPA/PWA web interface.
 
@@ -30,7 +30,7 @@ The platform provides persistent agents tailored for technical workflows (DevOps
 | **Minimum Hardware** | x86_64 Server with 8GB to 16GB RAM | Raspberry Pi 4B (4GB RAM) / ARM64 / x86_64 |
 | **Runtime Stack** | Node.js, Electron/Next.js, Python, Redis | Python 3.11-3.13 (FastAPI, uvloop, AsyncIO) |
 | **Memory Footprint (Idle)** | 2,000 MB - 3,500 MB RAM | ~48 MB - 52 MB RAM (~98% reduction) |
-| **Memory under Load (Peak)** | 4,000 MB - 6,000 MB RAM | < 150 MB RAM |
+| **Memory under Load (Peak)** | 4,000 MB - 6,000 MB RAM | < 100 MB RAM |
 | **Database & State** | PostgreSQL / Neo4j / Redis | SQLite with WAL Mode and tuned PRAGMAs |
 | **Vector Database / Memory** | ChromaDB / Pinecone / Qdrant (500MB+) | On-disk CRC32 KNN Vector Extractor (< 5MB) |
 | **Web Browser & Scraping** | Headless Chromium / Playwright (~500MB RAM) | Pure CPU async Trafilatura / httpx (~20MB) |
@@ -159,7 +159,7 @@ The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 - **Vanilla JS Micro-Engine (`static/pidots-i18n.js`):** Instant language switching (< 10ms) without bloated frontend frameworks or memory overhead, persisting preference safely in `localStorage.getItem('pidots_lang')`.
 - **Atomic JSON Dictionaries (`data/locales/pt.json` and `data/locales/en.json`):** Semantic edge localization dictionaries with proactive stale-while-revalidate caching and graceful fallbacks.
 - **Strict textContent DOM Mutation:** Declarative attribute bindings via `data-i18n` and `data-i18n-attr`, guaranteeing complete immunity against cross-site scripting (XSS).
-- **Interactive Onboarding & SemVer v1.3.0 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
+- **Interactive Onboarding & SemVer v1.5.0 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
 
 ### 11. Unified Slash Commands Protocol (/), Adaptive Triptych & Mobile Resilience (v1.3.0)
 - **Comprehensive 30 Slash Commands Catalog:** Commands structured across 6 operational domains (System, Agents, Memory, Tasks, Edge, Export), triggered with `/` in the teletype. Local commands (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) execute client-side in under 16ms with zero LLM API calls and zero token consumption.
@@ -372,11 +372,11 @@ The application exposes endpoints for external integration with Server-Sent Even
 | `GET` | `/relatorio` | Engineering feasibility and benchmark technical report |
 | `GET` | `/health` | Hardware telemetry (SoC temperature, RAM, SQLite WAL status) |
 | `GET` | `/manifest.json` | Progressive Web App manifest for desktop and mobile installation (`start_url: /app`) |
-| `GET` | `/sw.js` | Progressive Web App Service Worker with defensive v5 cache for offline resilience |
+| `GET` | `/sw.js` | Progressive Web App Service Worker with defensive v7 cache for offline resilience |
 | `GET` | `/icon.svg` | Official vector SVG icon with 24-hour cache headers |
 | `GET` | `/static/pidots-i18n.js` | Client-side Vanilla JS internationalization micro-engine |
 | `GET` | `/data/locales/{lang}.json` | Atomic bilingual localization dictionaries (PT/EN) with edge caching |
-| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.3.0) |
+| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.5.0) |
 | `GET` | `/api/dots` | List all registered AI Coworkers with archetypes and status |
 | `GET` | `/api/dots/{id}/export-pack` | Portable DotPack v1.0 export (persona, memory stores, and workspace files) |
 | `POST` | `/api/dots/import-pack` | Atomic import of AI Coworker packages from DotPack manifest |
@@ -428,7 +428,7 @@ piDots includes a native dark-mode SPA/PWA interface served on the canonical pat
 - **Just-in-Time Interactive HITL Governance:** Forensic approval and veto cards rendered only when actions are held, preserving security audit trails.
 - **AG-UI Reasoning Streaming:** Progressive token-by-token display of agent thoughts and tool calls.
 - **Guided Onboarding Walkthrough:** Five-step interactive onboarding flow for first-time operators with client persistence and instant F1 replay.
-- **SemVer v1.4.0 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
+- **SemVer v1.5.0 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
 
 #### Cross-Surface Navigation via Global Keyboard Chords
 Instant, zero-friction transition between system surfaces without requiring a mouse:
@@ -529,7 +529,7 @@ python3 scripts/stress_test.py
 ├── ARCHITECTURE.md                  # In-depth architectural and I/O specifications
 ├── CONTRIBUTING.md                  # Technical contribution guidelines
 ├── data/                            # Static application data, changelog, and localization dictionaries
-│   ├── changelog.json               # SemVer v1.3.0 release history and categorized update notes
+│   ├── changelog.json               # SemVer v1.5.0 release history and categorized update notes
 │   └── locales/                     # Atomic internationalization dictionaries (i18n)
 │       ├── en.json                  # English localization terms
 │       └── pt.json                  # Brazilian Portuguese localization terms
@@ -567,18 +567,26 @@ python3 scripts/stress_test.py
 │       ├── registry.py              # Centralized tool registry
 │       ├── terminal.py              # Process execution with Bubblewrap (bwrap) sandbox
 │       └── web_reader.py            # Lightweight web extraction via trafilatura
-├── pidots_apresentacao_pixel_paper.html # Official high-conversion presentation page
-├── pidots_guia.html                 # Step-by-step interactive operational guide
-├── pidots_spa_prototype.html        # Official SPA/PWA operational console
+├── pages/                           # Decoupled semantic HTML pages
+│   ├── app.html                     # Official SPA/PWA operational console (/app)
+│   ├── landing.html                 # Official presentation and hero landing page (/)
+│   ├── docs.html                    # Step-by-step interactive operational guide (/docs)
+│   └── relatorio.html               # Historical technical feasibility report (/relatorio)
 ├── pyproject.toml                   # PEP 517/518/621 packaging specification
 ├── README.md                        # Primary documentation (Brazilian Portuguese)
 ├── README_EN.md                     # Mirrored documentation (American English)
-├── relatorio_estudo_pidots.html     # Technical feasibility and engineering study report
 ├── requirements.txt                 # Strict dependency pinning
 ├── SECURITY.md                      # Security policy and vulnerability reporting
 ├── scripts/                         # Automated test suites and stress benchmarks
-└── static/                          # Frontend static assets
-    └── pidots-i18n.js               # Client-side Vanilla JS internationalization micro-engine
+└── static/                          # High-performance frontend static assets
+    ├── css/                         # Modular Pixel Paper UI Design System
+    │   ├── tokens.css, reset.css, layout.css, components.css, mobile.css
+    │   └── spa.css, landing.css, docs.css, relatorio.css
+    └── js/                          # Modular Vanilla JS runtime engines
+        ├── core/                    # i18n, scroll-lock, pixel-system
+        ├── spa/                     # pidots-api, slash-commands, tour-engine, pidots-ux, app-init
+        ├── landing/                 # landing.js (ReAct simulator, silicon ROI, HITL lock)
+        └── docs/                    # docs.js (Ctrl+K Omnisearch, interactive API tester)
 ```
 
 ---

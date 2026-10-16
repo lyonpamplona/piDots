@@ -1,0 +1,349 @@
+/* =====================================================================
+   PIXEL PAPER UI - COMPONENTES OPERACIONAIS TATEIS
+   Ambiente: Raspberry Pi 4B (ARM64) // piDots Edge Core
+   Diretriz: Zero Emojis // Icones SVG // Botoes Pixel // Carimbos // Toasts
+   ===================================================================== */
+
+/* =====================================================================
+   1. CATALOGO DE ICONES TECNICOS SVG
+   ===================================================================== */
+.ui-icon {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2;
+    stroke: currentColor;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.ui-icon-sm { width: 12px; height: 12px; }
+.ui-icon-lg { width: 18px; height: 18px; }
+.pidots-logo-svg { display: inline-block; flex-shrink: 0; vertical-align: middle; }
+
+/* =====================================================================
+   2. BOTOES TATEIS COM DEPRESSAO MECANICA EM DEGRAUS
+   ===================================================================== */
+.pixel-btn {
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    background: var(--paper-surface);
+    color: var(--ink-main);
+    border: 2px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+}
+
+/* Hitbox acessivel de toque de 48x48px (Apple 44pt / Google 48dp) */
+.pixel-btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 48px;
+    min-height: 48px;
+    pointer-events: auto;
+}
+
+.pixel-btn:hover {
+    border-color: var(--border-accent);
+    color: var(--border-accent);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.pixel-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+.pixel-btn.btn-cyan {
+    background: #0369a1;
+    border-color: #38bdf8;
+    color: #ffffff;
+}
+
+.pixel-btn.btn-cyan:hover {
+    background: #0284c7;
+}
+
+.pixel-btn.btn-amber {
+    background: #b45309;
+    border-color: #f59e0b;
+    color: #ffffff;
+}
+
+.pixel-btn.btn-amber:hover {
+    background: #d97706;
+}
+
+.pixel-btn.btn-danger {
+    background: #991b1b;
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
+.pixel-btn.btn-danger:hover {
+    background: #dc2626;
+}
+
+.pixel-btn.btn-success {
+    background: #15803d;
+    border-color: #22c55e;
+    color: #ffffff;
+}
+
+.pixel-btn.btn-success:hover {
+    background: #16a34a;
+}
+
+/* =====================================================================
+   3. ENTRADAS DE TEXTO ESTILO TERMINAL
+   ===================================================================== */
+.pixel-input, .pixel-textarea {
+    width: 100%;
+    background: var(--paper-surface-recessed);
+    border: 2px solid var(--border-default);
+    color: var(--ink-main);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 8px 10px;
+    outline: none;
+    box-shadow: inset 1px 1px 0px #000;
+}
+
+.pixel-input:focus, .pixel-textarea:focus {
+    border-color: var(--border-accent);
+    box-shadow: 0 0 0 1px var(--border-accent);
+}
+
+/* =====================================================================
+   4. CARIMBOS ANALOGICOS DE BORRACHA (RUBBER STAMPS)
+   ===================================================================== */
+.rubber-stamps-arena {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 16px;
+    background: var(--paper-surface-recessed);
+    border: 1px dashed var(--border-default);
+    position: relative;
+}
+
+.rubber-stamp {
+    border: 3px double currentColor;
+    padding: 4px 10px;
+    font-family: var(--font-display);
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    user-select: none;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.85;
+    position: relative;
+    box-shadow: 2px 2px 0px #000;
+    transition: transform 0.1s steps(1), opacity 0.1s steps(1);
+}
+
+.rubber-stamp.stamp-approved {
+    color: var(--phosphor-green);
+    border-color: var(--phosphor-green);
+    transform: rotate(2deg);
+}
+
+.rubber-stamp.stamp-rejected {
+    color: var(--stamp-danger);
+    border-color: var(--stamp-danger);
+    transform: rotate(-2.5deg);
+}
+
+.rubber-stamp .stamp-inner {
+    border: 1px solid currentColor;
+    padding: 4px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(7, 9, 12, 0.9);
+}
+
+.rubber-stamp .stamp-title {
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    font-weight: bold;
+}
+
+.rubber-stamp .stamp-sub {
+    font-family: var(--font-mono);
+    font-size: 7px;
+    letter-spacing: 0.04em;
+}
+
+.rubber-stamp .stamp-hash {
+    font-family: var(--font-mono);
+    font-size: 6px;
+    color: var(--ink-muted);
+}
+
+/* =====================================================================
+   5. BADGES, CHIPS E ROTULOS TATICOS
+   ===================================================================== */
+.pixel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    letter-spacing: 0.05em;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    color: var(--ink-secondary);
+}
+
+.pixel-badge.badge-cyan {
+    border-color: var(--blueprint-cyan);
+    color: var(--blueprint-cyan);
+}
+
+.pixel-badge.badge-amber {
+    border-color: var(--thermal-amber);
+    color: var(--thermal-amber);
+}
+
+.pixel-badge.badge-green {
+    border-color: var(--phosphor-green);
+    color: var(--phosphor-green);
+}
+
+/* =====================================================================
+   6. SISTEMA DE TOASTS E DIALOGOS MECANICOS
+   ===================================================================== */
+#pixelToastContainer, .pixel-toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.pixel-toast {
+    background: var(--paper-sheet);
+    border: 2px solid var(--border-strong);
+    padding: 8px 14px;
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    color: var(--ink-main);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto;
+    animation: toastPop 0.15s steps(2);
+}
+
+.pixel-toast.toast-success {
+    border-color: var(--phosphor-green);
+    color: var(--phosphor-green);
+}
+
+.pixel-toast.toast-error {
+    border-color: var(--stamp-danger);
+    color: var(--stamp-danger);
+}
+
+.pixel-toast.toast-info {
+    border-color: var(--blueprint-cyan);
+    color: var(--blueprint-cyan);
+}
+
+@keyframes toastPop {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Modais e Caixas de Dialogo */
+.pixel-modal-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(4, 6, 8, 0.8);
+    backdrop-filter: blur(2px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.pixel-modal-backdrop.open {
+    display: flex;
+}
+
+.pixel-dialog-box {
+    background: var(--paper-sheet);
+    border: 2px solid var(--border-strong);
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+}
+
+.pixel-dialog-header {
+    background: var(--paper-surface-recessed);
+    border-bottom: 2px solid var(--border-default);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pixel-dialog-title {
+    font-family: var(--font-pixel);
+    font-size: 11px;
+    color: var(--blueprint-cyan);
+    letter-spacing: 0.06em;
+}
+
+.pixel-dialog-body {
+    padding: 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink-main);
+}
+
+.pixel-dialog-footer {
+    padding: 10px 16px;
+    background: var(--paper-surface);
+    border-top: 1px solid var(--border-default);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}

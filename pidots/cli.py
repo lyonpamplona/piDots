@@ -41,10 +41,10 @@ async def _init_cmd() -> None:
 
 async def _status_cmd() -> None:
     """Exibe telemetria do sistema Edge e métricas do SQLite WAL."""
-    from .main import get_soc_temperature, get_memory_info
+    from .core.edge_triggers import EdgeHardwareTriggers
 
-    temp = get_soc_temperature()
-    mem = get_memory_info()
+    temp = EdgeHardwareTriggers.get_soc_temperature()
+    mem = EdgeHardwareTriggers.get_ram_metrics()
 
     db_path = Path(settings.sqlite_db_path)
     wal_path = Path(f"{settings.sqlite_db_path}-wal")
@@ -77,13 +77,13 @@ async def _hitl_list_cmd() -> None:
     await init_edge_database()
     async with get_db() as db:
         cursor = await db.execute(
-            "SELECT id, dot_id, action_type, risk_level, status, created_at FROM hitl_approvals WHERE status = 'PENDING'"
+            "SELECT id, dot_id, action_type, risk_level, status, requested_at FROM hitl_approvals WHERE status = 'PENDING'"
         )
         rows = await cursor.fetchall()
 
     print(f"Solicitações HITL pendentes: {len(rows)}")
     for r in rows:
-        print(f" - [ID: {r['id']}] Dot: {r['dot_id']} | Ação: {r['action_type']} | Risco: {r['risk_level']}")
+        print(f" - [ID: {r['id']}] Dot: {r['dot_id']} | Ação: {r['action_type']} | Risco: {r['risk_level']} | Em: {r['requested_at']}")
 
 
 async def _hitl_resolve_cmd(approval_id: str, approve: bool, notes: str) -> None:

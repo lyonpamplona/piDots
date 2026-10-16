@@ -1,0 +1,2221 @@
+/* =====================================================================
+   PIXEL PAPER UI - CONSOLE OPERACIONAL SPA (/app)
+   Estilos exclusivos: Sidebar de Dots, Teletipo ReAct, Live Canvas,
+   Inspetor de Diffs, Slash Commands Popover, Mentions Dropdown,
+   Patch Notes e Motor de Spotlight Tour Interativo
+   ===================================================================== */
+
+        /* ---------------------------------------------------------------------
+           COLUNA 1: SIDEBAR ESQUERDA (DOTS, SPACES, FILA HITL)
+           --------------------------------------------------------------------- */
+        aside.left-sidebar {
+            width: 270px;
+            min-width: 270px;
+            background: var(--paper-sheet);
+            border-right: 2px solid var(--border-default);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+            transition: width 0.15s steps(2), min-width 0.15s steps(2);
+        }
+
+        aside.left-sidebar.collapsed {
+            width: 0px;
+            min-width: 0px;
+            overflow: hidden;
+            border-right: none;
+        }
+
+        .sidebar-section {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .sidebar-title {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+            letter-spacing: 0.08em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        /* Mini-cards de Dots Coworkers */
+        .dot-card {
+            background: var(--paper-surface);
+            border: 1px solid var(--border-default);
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            box-shadow: 1px 1px 0px #000;
+            transition: transform 0.05s steps(1);
+        }
+
+        .dot-card:hover {
+            border-color: var(--border-accent);
+            transform: translate(-1px, -1px);
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .dot-card.active {
+            border-color: var(--border-accent);
+            border-left: 3px solid var(--border-accent);
+            background: var(--paper-surface-elevated);
+        }
+
+        .dot-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .dot-card-name {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-main);
+        }
+
+        .dot-card-status {
+            font-size: 8px;
+            padding: 1px 5px;
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            color: var(--phosphor-green);
+        }
+
+        .dot-card-role {
+            font-size: 10px;
+            color: var(--ink-secondary);
+        }
+
+        /* Lista de Spaces (Arquivos e Fichas) */
+        .space-item {
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .space-item:hover, .space-item.active {
+            border-color: var(--border-accent);
+            color: var(--blueprint-cyan);
+            background: var(--paper-surface);
+        }
+
+        .space-item-rev {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--thermal-amber);
+        }
+
+        /* Banner de Alerta Rápido HITL na Sidebar */
+        .sidebar-hitl-alert {
+            background: rgba(255, 184, 48, 0.08);
+            border: 1px solid var(--thermal-amber);
+            padding: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .sidebar-hitl-alert:hover {
+            background: rgba(255, 184, 48, 0.16);
+        }
+
+        /* ---------------------------------------------------------------------
+           COLUNA 2: CENTRO (TELETIPO DE CHAT / REASONING STREAM)
+           --------------------------------------------------------------------- */
+        main.center-ticker-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--paper-surface);
+            border-right: 2px solid var(--border-default);
+            position: relative;
+        }
+
+        .ticker-header-bar {
+            background: var(--paper-sheet);
+            border-bottom: 1px solid var(--border-default);
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .ticker-channel-name {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--blueprint-cyan);
+            letter-spacing: 0.05em;
+        }
+
+        .ticker-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: var(--paper-surface);
+        }
+
+        /* Estrutura da Bobina de Papel Central (Chat Despoluído) */
+        .ticker-rail-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+            background: var(--paper-sheet);
+            width: 100%;
+        }
+
+        .tractor-feed {
+            display: none !important;
+        }
+
+        /* Modo 2: Foco Zen (Inspirado em Claude Code & Linear) */
+        .triptych-shell.mode-focus-zen aside.left-sidebar {
+            display: none !important;
+        }
+
+        .triptych-shell.mode-focus-zen aside.right-canvas {
+            display: none !important;
+        }
+
+        .triptych-shell.mode-focus-zen main.center-ticker-column {
+            max-width: 880px;
+            margin: 0 auto;
+            width: 100%;
+            border-left: 1px solid var(--border-subtle);
+            border-right: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Tiras de Papel Térmico */
+        .ticker-slip {
+            background: var(--paper-sheet);
+            border: 1px solid var(--border-default);
+            padding: 12px 16px;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .slip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed var(--border-default);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+        }
+
+        .slip-tag {
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-accent);
+            color: var(--blueprint-cyan);
+            padding: 2px 6px;
+        }
+
+        /* Carimbos Táteis de Identificação de Ator (Pixel Paper Multi-Bot) */
+        .actor-stamp {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            padding: 2px 6px;
+            border: 1px solid currentColor;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-transform: uppercase;
+        }
+        .stamp-user { color: var(--thermal-amber); border-color: var(--thermal-amber); background: rgba(255, 184, 48, 0.08); }
+        .stamp-supervisor { color: var(--phosphor-green); border-color: var(--phosphor-green); background: rgba(51, 255, 102, 0.08); }
+        .stamp-coder { color: var(--blueprint-cyan); border-color: var(--blueprint-cyan); background: rgba(56, 189, 248, 0.08); }
+        .stamp-auditor { color: var(--stamp-danger); border-color: var(--stamp-danger); background: rgba(239, 68, 68, 0.08); }
+        .stamp-architect { color: #a855f7; border-color: #a855f7; background: rgba(168, 85, 247, 0.08); }
+        .stamp-general { color: var(--ink-secondary); border-color: var(--border-strong); background: rgba(148, 163, 184, 0.08); }
+
+        /* Fita de Carbono Expansível (Caderno de Raciocínio) */
+        .slip-reasoning {
+            background: var(--paper-surface-recessed);
+            border: 1px dashed var(--border-default);
+            border-left: 3px solid var(--thermal-amber);
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            font-size: 11px;
+            color: var(--ink-secondary);
+        }
+
+        .reasoning-heading, .reasoning-toggle {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--thermal-amber);
+            margin-bottom: 4px;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .reasoning-toggle:hover {
+            color: var(--ink-main);
+        }
+
+        .reasoning-content {
+            transition: opacity 0.15s ease-out;
+        }
+
+        .reasoning-content.collapsed {
+            display: none;
+        }
+
+        /* Autocomplete de Menção (@bot) em Pixel Paper */
+        .mention-autocomplete-dropdown {
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 32px;
+            width: 320px;
+            max-width: calc(100% - 40px);
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-accent);
+            box-shadow: 4px -4px 0px #000000;
+            z-index: 10000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .mention-autocomplete-header {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--blueprint-cyan);
+            padding: 5px 8px;
+            border-bottom: 1px dashed var(--border-default);
+            background: var(--paper-surface-recessed);
+            letter-spacing: 0.08em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .mention-item {
+            padding: 6px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ink-main);
+            border-bottom: 1px solid var(--border-subtle);
+            user-select: none;
+        }
+
+        .mention-item:hover, .mention-item.selected {
+            background: var(--paper-surface-elevated);
+            color: var(--blueprint-cyan);
+        }
+
+        .mention-item .mention-tag {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--thermal-amber);
+        }
+
+        /* Autocomplete de Slash Commands (/comando) em Pixel Paper */
+        .slash-autocomplete-popover {
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 12px;
+            right: 12px;
+            max-height: 280px;
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-accent);
+            box-shadow: 4px -4px 0px #000000;
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: var(--font-mono);
+        }
+
+        .slash-popover-header {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--blueprint-cyan);
+            padding: 5px 8px;
+            border-bottom: 1px dashed var(--border-default);
+            background: var(--paper-surface-recessed);
+            letter-spacing: 0.08em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slash-header-title {
+            color: var(--blueprint-cyan);
+        }
+
+        .slash-header-hint {
+            color: var(--ink-muted);
+            font-size: 6.5px;
+        }
+
+        .slash-category-tabs {
+            display: flex;
+            gap: 2px;
+            padding: 4px 6px;
+            background: var(--paper-surface-recessed);
+            border-bottom: 1px solid var(--border-subtle);
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+        }
+
+        .slash-cat-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--ink-muted);
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            padding: 2px 5px;
+            cursor: pointer;
+            letter-spacing: 0.04em;
+        }
+
+        .slash-cat-btn.active, .slash-cat-btn:hover {
+            background: var(--paper-surface-elevated);
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+        }
+
+        .slash-items-viewport {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 200px;
+            scrollbar-width: thin;
+        }
+
+        .slash-item {
+            padding: 5px 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-family: var(--font-mono);
+            border-bottom: 1px solid var(--border-subtle);
+            user-select: none;
+        }
+
+        .slash-item:hover, .slash-item.selected {
+            background: var(--paper-surface-elevated);
+            border-left: 3px solid var(--blueprint-cyan);
+            padding-left: 5px;
+        }
+
+        .slash-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slash-cmd-syntax {
+            color: var(--phosphor-green);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .slash-badge-cat {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--thermal-amber);
+            padding: 1px 4px;
+            border: 1px solid var(--border-subtle);
+            background: var(--paper-surface-recessed);
+        }
+
+        .slash-cmd-desc {
+            color: var(--ink-muted);
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .slash-popover-footer {
+            font-family: var(--font-pixel);
+            font-size: 6.5px;
+            color: var(--ink-muted);
+            padding: 3px 8px;
+            border-top: 1px dashed var(--border-default);
+            background: var(--paper-surface-recessed);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slip-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--ink-main);
+            white-space: pre-wrap;
+        }
+
+        /* Review Card HITL Embutido Diretamente no Chat (Padrão OpenDots) */
+        .inline-hitl-card {
+            background: rgba(255, 184, 48, 0.05);
+            border: 2px solid var(--thermal-amber);
+            padding: 12px;
+            margin: 10px 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .inline-hitl-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--thermal-amber);
+            margin-bottom: 8px;
+            border-bottom: 1px dashed var(--thermal-amber);
+            padding-bottom: 4px;
+        }
+
+        .inline-hitl-code {
+            background: #020305;
+            border: 1px solid var(--border-default);
+            padding: 6px 10px;
+            color: var(--blueprint-cyan);
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .inline-hitl-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* Cursor em Bloco Mecânico (Piscada Seca de 1s) */
+        .pixel-cursor {
+            display: inline-block;
+            color: var(--phosphor-green);
+            margin-left: 4px;
+            animation: pixelBlink 1s steps(1) infinite;
+        }
+
+        @keyframes pixelBlink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .slip-perforation {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            padding-top: 2px;
+            opacity: 0.45;
+        }
+
+        .perforation-line {
+            flex: 1;
+            height: 1px;
+            border-top: 1px dashed var(--border-default);
+        }
+
+        .perforation-label {
+            display: none !important;
+        }
+
+        /* Barra de Entrada de Comandos */
+        .ticker-input-bar {
+            background: var(--paper-sheet);
+            border-top: 2px solid var(--border-default);
+            padding: 10px 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .ticker-prompt-sign {
+            display: none !important;
+        }
+
+        .ticker-textarea {
+            flex: 1;
+            background: var(--paper-surface-recessed);
+            border: 2px solid var(--border-default);
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 8px 10px;
+            outline: none;
+            resize: none;
+            height: 38px;
+            box-shadow: inset 1px 1px 0px #000;
+        }
+
+        .ticker-textarea:focus {
+            border-color: var(--border-accent);
+        }
+
+        /* ---------------------------------------------------------------------
+           COLUNA 3: PAINEL DIREITO (LIVE CANVAS / ARTEFATOS / TELEMETRIA)
+           --------------------------------------------------------------------- */
+        aside.right-canvas {
+            width: 440px;
+            min-width: 440px;
+            background: var(--paper-sheet);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: width 0.15s steps(2), min-width 0.15s steps(2);
+        }
+
+        aside.right-canvas.collapsed {
+            width: 0px;
+            min-width: 0px;
+            overflow: hidden;
+        }
+
+        aside.right-canvas.expanded {
+            width: 100%;
+            min-width: 100%;
+        }
+
+        /* Abas do Painel de Artefatos / Canvas */
+        .canvas-tab-bar {
+            background: var(--paper-surface-recessed);
+            border-bottom: 2px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+            gap: 4px;
+            overflow-x: auto;
+        }
+
+        .canvas-tab {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            letter-spacing: 0.05em;
+            padding: 8px 12px;
+            background: transparent;
+            color: var(--ink-secondary);
+            border: 1px solid transparent;
+            border-bottom: none;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .canvas-tab:hover {
+            color: var(--blueprint-cyan);
+        }
+
+        .canvas-tab.active {
+            background: var(--paper-sheet);
+            color: var(--blueprint-cyan);
+            border: 1px solid var(--border-default);
+            border-top: 2px solid var(--blueprint-cyan);
+            border-bottom: 2px solid var(--paper-sheet);
+            margin-bottom: -2px;
+        }
+
+        .canvas-controls {
+            margin-left: auto;
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+        }
+
+        .canvas-content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .canvas-panel-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            gap: 12px;
+        }
+
+        .canvas-panel-view.active {
+            display: flex;
+        }
+
+        /* Editor e Ficha do Artefato Ativo no Canvas */
+        .artifact-card-wrapper {
+            background: var(--paper-surface);
+            border: 2px solid var(--border-default);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .artifact-header {
+            padding: 8px 12px;
+            background: var(--paper-surface-elevated);
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .artifact-title-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .artifact-editor-textarea {
+            flex: 1;
+            background: var(--paper-surface-recessed);
+            border: none;
+            padding: 12px;
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            box-shadow: inset 1px 1px 0px #000;
+        }
+
+        /* Arena de Carimbos no Canvas HITL */
+        .rubber-stamps-arena {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 16px;
+            background: var(--paper-surface-recessed);
+            border: 1px dashed var(--border-default);
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .rubber-stamp {
+            display: inline-block;
+            padding: 4px;
+            user-select: none;
+            transition: transform 0.1s steps(2);
+        }
+
+        .rubber-stamp.stamp-rejected {
+            color: var(--stamp-danger);
+            border: 3px solid var(--stamp-danger);
+            transform: rotate(-3deg);
+            background-image: radial-gradient(var(--stamp-danger) 15%, transparent 16%);
+            background-size: 4px 4px;
+        }
+
+        .rubber-stamp.stamp-approved {
+            color: var(--phosphor-green);
+            border: 3px solid var(--phosphor-green);
+            transform: rotate(2.5deg);
+            background-image: radial-gradient(var(--phosphor-green) 15%, transparent 16%);
+            background-size: 4px 4px;
+        }
+
+        .stamp-inner {
+            border: 2px solid currentColor;
+            padding: 6px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            background: rgba(11, 14, 18, 0.9);
+        }
+
+        .stamp-title {
+            font-family: var(--font-pixel);
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+        }
+
+        .stamp-sub {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            letter-spacing: 0.1em;
+        }
+
+        /* Plotters Vetoriais SVG */
+        .plotter-card {
+            background: var(--paper-surface);
+            border: 2px solid var(--border-default);
+            box-shadow: var(--shadow-sm);
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+
+        .plotter-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-default);
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+        }
+
+        .plotter-tag {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+            letter-spacing: 0.06em;
+        }
+
+        .plotter-val {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--thermal-amber);
+        }
+
+        .plotter-frame {
+            height: 110px;
+            border: 1px solid var(--border-subtle);
+            background: #040608;
+            position: relative;
+        }
+
+        .plotter-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* =====================================================================
+           DRAWER RETRÁTIL LATERAL DIREITO (DOCS & GUIA TÉCNICO)
+           ===================================================================== */
+        .drawer-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
+            background-size: 4px 4px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .drawer-backdrop.open {
+            display: block;
+        }
+
+        aside.retractable-drawer {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 400px;
+            max-width: 90vw;
+            height: 100%;
+            background: var(--paper-sheet);
+            border-left: 3px solid var(--border-accent);
+            box-shadow: -6px 0px 0px #000;
+            z-index: 1001;
+            transition: right 0.15s steps(3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        aside.retractable-drawer.open {
+            right: 0;
+        }
+
+        .drawer-header {
+            background: var(--paper-surface);
+            border-bottom: 2px solid var(--border-default);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-title {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: var(--blueprint-cyan);
+            letter-spacing: 0.08em;
+        }
+
+        .drawer-search-box {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border-default);
+            background: var(--paper-surface-recessed);
+        }
+
+        .drawer-search-input {
+            width: 100%;
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-default);
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 6px 10px;
+            outline: none;
+        }
+
+        .drawer-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .guide-step {
+            background: var(--paper-surface);
+            border: 1px solid var(--border-default);
+            padding: 10px 12px;
+        }
+
+        .step-num {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--thermal-amber);
+            margin-bottom: 4px;
+        }
+
+        .step-heading {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-main);
+            margin-bottom: 4px;
+        }
+
+        .step-body {
+            font-size: 11px;
+            color: var(--ink-secondary);
+            line-height: 1.4;
+        }
+
+        /* Rodapé de Telemetria */
+        footer.mission-footer {
+            background: var(--paper-sheet);
+            border-top: 2px solid var(--border-default);
+            padding: 6px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            color: var(--ink-muted);
+            flex-shrink: 0;
+            z-index: 90;
+        }
+
+        .footer-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--phosphor-green);
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--phosphor-green);
+            display: inline-block;
+        }
+    
+        
+        /* =====================================================================
+
+
+        /* =====================================================================
+           COMPONENTES 100% PERSONALIZADOS (ZERO FUNÇÕES NATIVAS DO NAVEGADOR)
+           ===================================================================== */
+        
+        /* 1. Scrollbars 100% Personalizadas no Estilo Papel Técnico */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-strong) var(--paper-surface-recessed);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--paper-surface-recessed);
+            border-left: 1px solid var(--border-subtle);
+            background-image: radial-gradient(var(--border-default) 28%, transparent 29%);
+            background-size: 4px 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-strong);
+            border: 1px solid var(--paper-base);
+            box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.12);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-accent);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--paper-surface-recessed);
+        }
+
+        /* 2. Seleção de Texto e Focus Rings Personalizados */
+        ::selection {
+            background: var(--blueprint-cyan);
+            color: #040608;
+        }
+
+        *:focus-visible {
+            outline: 2px solid var(--border-accent) !important;
+            outline-offset: 1px !important;
+        }
+
+        /* 3. Container e Tiras de Toast Notificações em Papel Térmico */
+        #pixelToastContainer {
+            position: fixed;
+            top: 50px;
+            right: 16px;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            pointer-events: none;
+        }
+
+        .pixel-toast {
+            pointer-events: auto;
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-default);
+            box-shadow: var(--shadow-md);
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: toastExtrude 0.1s steps(2);
+            position: relative;
+            user-select: none;
+        }
+
+        @keyframes toastExtrude {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .pixel-toast.toast-info { border-color: var(--blueprint-cyan); }
+        .pixel-toast.toast-success { border-color: var(--phosphor-green); }
+        .pixel-toast.toast-warning { border-color: var(--thermal-amber); }
+        .pixel-toast.toast-danger { border-color: var(--stamp-danger); }
+
+        .toast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            letter-spacing: 0.08em;
+            border-bottom: 1px dashed var(--border-default);
+            padding-bottom: 4px;
+        }
+
+        .toast-tag {
+            padding: 1px 5px;
+            border: 1px solid currentColor;
+            font-size: 8px;
+        }
+
+        .toast-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--ink-muted);
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .toast-close-btn:hover {
+            color: var(--stamp-danger);
+        }
+
+        .toast-body {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ink-main);
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        /* 4. Caixas de Diálogo Modais (Substitutas de Alert, Confirm e Prompt) */
+        #pixelDialogBackdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(4, 6, 8, 0.85);
+            background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
+            background-size: 4px 4px;
+            z-index: 100005;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #pixelDialogBackdrop.active {
+            display: flex;
+        }
+
+        .pixel-dialog-box {
+            background: var(--paper-sheet);
+            border: 3px solid var(--border-accent);
+            box-shadow: var(--shadow-lg);
+            width: 440px;
+            max-width: 90vw;
+            display: flex;
+            flex-direction: column;
+            animation: dialogSnap 0.1s steps(2);
+        }
+
+        @keyframes dialogSnap {
+            from { transform: scale(0.96); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .dialog-header {
+            background: var(--paper-surface-recessed);
+            border-bottom: 2px solid var(--border-default);
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            color: var(--blueprint-cyan);
+        }
+
+        .dialog-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dialog-message {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--ink-main);
+        }
+
+        .dialog-input {
+            background: var(--paper-surface-recessed);
+            border: 2px solid var(--border-default);
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 8px 10px;
+            outline: none;
+            width: 100%;
+            box-shadow: inset 1px 1px 0px #000000;
+        }
+
+        .dialog-input:focus {
+            border-color: var(--border-accent);
+        }
+
+        .dialog-footer {
+            background: var(--paper-surface-recessed);
+            border-top: 1px dashed var(--border-default);
+            padding: 10px 14px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* 5. Menu de Contexto Customizado (Botão Direito) */
+        #pixelContextMenu {
+            position: fixed;
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-strong);
+            box-shadow: var(--shadow-md);
+            z-index: 100010;
+            display: none;
+            flex-direction: column;
+            min-width: 250px;
+            user-select: none;
+        }
+
+        .context-menu-header {
+            background: var(--paper-surface-recessed);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 6px 10px;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+            letter-spacing: 0.06em;
+        }
+
+        .context-menu-item {
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ink-main);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dotted var(--border-subtle);
+        }
+
+        .context-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .context-menu-item:hover {
+            background: var(--paper-surface-elevated);
+            color: var(--blueprint-cyan);
+            border-left: 3px solid var(--blueprint-cyan);
+        }
+
+        .context-menu-shortcut {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+        }
+
+        /* 6. Tooltips Customizadas Flutuantes */
+        #pixelTooltip {
+            position: fixed;
+            background: #020305;
+            border: 1px solid var(--border-accent);
+            box-shadow: 2px 2px 0px #000000;
+            color: var(--ink-main);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            padding: 4px 8px;
+            pointer-events: none;
+            z-index: 100020;
+            display: none;
+            max-width: 260px;
+            letter-spacing: 0.02em;
+        }
+
+        /* 7. Switch Mecânico Tátil de Segurança (Missile Switch / DIP Switch) */
+        .pixel-switch-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .pixel-switch {
+            width: 38px;
+            height: 18px;
+            background: var(--paper-surface-recessed);
+            border: 2px solid var(--border-strong);
+            box-shadow: inset 1px 1px 0px #000000;
+            position: relative;
+            transition: background 0.05s steps(1);
+        }
+
+        .pixel-switch-thumb {
+            width: 14px;
+            height: 12px;
+            background: var(--ink-muted);
+            border: 1px solid var(--border-default);
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            transition: left 0.08s steps(2), background 0.05s steps(1);
+        }
+
+        .pixel-switch.active {
+            background: rgba(255, 184, 48, 0.18);
+            border-color: var(--thermal-amber);
+        }
+
+        .pixel-switch.active .pixel-switch-thumb {
+            left: 18px;
+            background: var(--thermal-amber);
+            border-color: #f59e0b;
+            box-shadow: 1px 1px 0px #000000;
+        }
+
+        /* 8. Estilos da Aba Matriz Comparativa Dots */
+        .matrix-container {
+            background: var(--paper-surface);
+            border: 2px solid var(--border-default);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .matrix-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--blueprint-cyan);
+            border-bottom: 1px solid var(--border-default);
+            padding-bottom: 6px;
+            letter-spacing: 0.06em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            font-family: var(--font-mono);
+        }
+
+        .matrix-table th {
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            padding: 6px 8px;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-secondary);
+            text-align: left;
+        }
+
+        .matrix-table td {
+            border: 1px solid var(--border-subtle);
+            padding: 6px 8px;
+            vertical-align: top;
+            line-height: 1.4;
+        }
+
+        .matrix-highlight-row {
+            background: rgba(56, 189, 248, 0.04);
+        }
+
+        .matrix-badge-tag {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            padding: 1px 4px;
+            display: inline-block;
+            border: 1px solid currentColor;
+        }
+
+        /* Surface Switcher Global (Pixel Paper UI) */
+        .surface-switcher {
+            display: inline-flex;
+            align-items: center;
+            background: var(--paper-surface-recessed, #0b0e12);
+            border: 1px solid var(--border-default, #283340);
+            padding: 2px;
+            gap: 2px;
+        }
+        .surface-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 9px;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--ink-muted, #64748b);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .surface-tab:hover {
+            color: var(--ink-primary, #f1f5f9);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .surface-tab.active {
+            color: var(--phosphor-green, #33ff66);
+            background: rgba(51, 255, 102, 0.08);
+            border-color: rgba(51, 255, 102, 0.4);
+            font-weight: 700;
+        }
+        .surface-tab .tab-idx {
+            font-family: var(--font-pixel, 'Silkscreen', monospace);
+            font-size: 8px;
+            opacity: 0.7;
+        }
+        .surface-tab.active .tab-idx {
+            opacity: 1;
+            color: var(--phosphor-green, #33ff66);
+        }
+        .surface-tab .tab-chord {
+            font-size: 8px;
+            padding: 1px 4px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border-default, #283340);
+            color: var(--ink-muted, #64748b);
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+        }
+        @media (max-width: 1440px) {
+            .brand-title {
+                display: none !important;
+            }
+            aside.left-sidebar {
+                width: 230px;
+                min-width: 230px;
+            }
+            aside.right-canvas {
+                width: 380px;
+                min-width: 380px;
+            }
+        }
+        @media (max-width: 1366px) {
+            .ticker-rail-wrapper {
+                grid-template-columns: 8px 1fr 8px !important;
+            }
+            .tractor-feed {
+                background-size: 8px 16px !important;
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1200px) {
+            aside.left-sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 50;
+                width: 260px;
+                min-width: 260px;
+                box-shadow: 4px 0 16px rgba(0, 0, 0, 0.7);
+            }
+            aside.left-sidebar.collapsed {
+                width: 0px !important;
+                min-width: 0px !important;
+                display: none;
+            }
+            aside.right-canvas {
+                width: 50%;
+                min-width: 320px;
+                max-width: 50%;
+            }
+            aside.right-canvas.collapsed {
+                width: 0px !important;
+                min-width: 0px !important;
+            }
+        }
+        @media (max-width: 1200px) {
+            .brand-badge {
+                display: none !important;
+            }
+            .surface-tab .tab-chord {
+                display: none !important;
+            }
+            .ticker-prompt-sign {
+                display: none !important;
+            }
+        }
+        @media (max-width: 992px) {
+            .header-telemetry {
+                display: none !important;
+            }
+        }
+        @media (max-height: 800px) {
+            .slash-autocomplete-popover {
+                max-height: 190px !important;
+            }
+        }
+        /* =====================================================================
+           COMPONENTES PIXEL PAPER UI: ONBOARDING, PATCH NOTES E PWA
+           ===================================================================== */
+
+        /* 1. Backdrop Modal com Dithering Mecânico */
+        .pixel-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background-color: rgba(4, 6, 8, 0.88);
+            background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
+            background-size: 4px 4px;
+            z-index: 100010;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+            animation: modalSnapIn 0.08s steps(2);
+        }
+
+        @keyframes modalSnapIn {
+            0% { transform: scale(0.97); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 2. Onboarding: Substituido por PiDotsTourEngine (Spotlight Tour Interativo) */
+
+        .btn-phosphor {
+            background: #064e3b !important;
+            border-color: var(--phosphor-green) !important;
+            color: var(--phosphor-green) !important;
+        }
+
+        .btn-phosphor:hover {
+            background: #047857 !important;
+            color: #ffffff !important;
+        }
+
+        /* 3. Patch Notes / Changelog Modal */
+        .pixel-patchnotes-box {
+            width: 820px;
+            max-width: calc(100vw - 32px);
+            max-height: calc(100vh - 48px);
+            max-height: calc(100dvh - 48px);
+            background-color: var(--paper-sheet);
+            border: 3px solid var(--border-accent);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .patchnotes-header-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background-color: var(--paper-surface-recessed);
+            border-bottom: 2px solid var(--border-default);
+            gap: 16px;
+        }
+
+        .patchnotes-sys-tag {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--blueprint-cyan);
+            margin-bottom: 4px;
+        }
+
+        .patchnotes-main-title {
+            font-family: var(--font-pixel);
+            font-size: 14px;
+            color: var(--ink-main);
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+
+        .patchnotes-meta-bar {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--ink-muted);
+            display: flex;
+            gap: 6px;
+        }
+
+        .meta-separator {
+            color: var(--border-strong);
+        }
+
+        .stamp-patchnotes {
+            padding: 2px;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .rubber-stamp.stamp-approved {
+            color: var(--phosphor-green);
+            border: 3px solid var(--phosphor-green);
+            transform: rotate(2.5deg);
+            background-image: radial-gradient(var(--phosphor-green) 15%, transparent 16%);
+            background-size: 4px 4px;
+        }
+
+        .rubber-stamp .stamp-inner {
+            border: 1px solid currentColor;
+            padding: 4px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(7, 9, 12, 0.9);
+        }
+
+        .rubber-stamp .stamp-title {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            font-weight: bold;
+        }
+
+        .rubber-stamp .stamp-sub {
+            font-family: var(--font-mono);
+            font-size: 7px;
+            letter-spacing: 0.04em;
+        }
+
+        .rubber-stamp .stamp-hash {
+            font-family: var(--font-mono);
+            font-size: 6px;
+            color: var(--ink-muted);
+        }
+
+        .patchnotes-scrollable-body {
+            padding: 18px 20px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .patchnotes-category-section {
+            background-color: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            padding: 12px 16px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pixel-pill {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            letter-spacing: 0.06em;
+            padding: 3px 8px;
+            border: 2px solid currentColor;
+            user-select: none;
+            display: inline-block;
+        }
+
+        .pill-green {
+            background-color: #052e16;
+            border-color: #22c55e;
+            color: #33ff66;
+        }
+
+        .pill-cyan {
+            background-color: #082f49;
+            border-color: #0284c7;
+            color: #38bdf8;
+        }
+
+        .pill-red {
+            background-color: #450a0a;
+            border-color: #dc2626;
+            color: #ef4444;
+        }
+
+        .pill-amber {
+            background-color: #451a03;
+            border-color: #d97706;
+            color: #ffb830;
+        }
+
+        .category-summary {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--ink-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .patchnotes-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--ink-secondary);
+            line-height: 1.5;
+        }
+
+        .patchnotes-list li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 6px;
+        }
+
+        .patchnotes-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .patchnotes-list li::before {
+            content: "■";
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 7px;
+            color: var(--border-accent);
+        }
+
+        .patchnotes-list strong {
+            color: var(--ink-main);
+            font-weight: 500;
+        }
+
+        .patchnotes-list code {
+            background-color: var(--paper-sheet);
+            border: 1px solid var(--border-subtle);
+            padding: 1px 4px;
+            color: var(--blueprint-cyan);
+            font-size: 10px;
+        }
+
+        .patchnotes-history-accordion {
+            border: 1px dashed var(--border-strong);
+            background-color: var(--paper-surface-recessed);
+        }
+
+        .history-summary {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-muted);
+            padding: 10px 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.05s steps(1);
+        }
+
+        .history-summary:hover {
+            color: var(--blueprint-cyan);
+        }
+
+        .history-content {
+            padding: 10px 14px 14px 14px;
+            border-top: 1px dashed var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-version-block {
+            border-left: 2px solid var(--border-default);
+            padding-left: 10px;
+        }
+
+        .history-ver-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            margin-bottom: 4px;
+        }
+
+        .ver-badge {
+            color: var(--ink-main);
+        }
+
+        .ver-type {
+            color: var(--ink-muted);
+        }
+
+        .history-ver-list {
+            list-style: square;
+            margin-left: 14px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--ink-secondary);
+            line-height: 1.4;
+        }
+
+        .patchnotes-footer-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background-color: var(--paper-surface-recessed);
+            border-top: 2px solid var(--border-default);
+        }
+
+        .patchnotes-footer-status {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--ink-muted);
+        }
+
+        /* 4. Componentes e Banner de Instalação PWA */
+        .pwa-header-btn {
+            background: #0284c7 !important;
+            border-color: #38bdf8 !important;
+            color: #ffffff !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pixel-pwa-banner {
+            position: fixed;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            left: 16px;
+            z-index: 100008;
+            width: 440px;
+            max-width: calc(100vw - 32px);
+            background-color: var(--paper-sheet);
+            border: 2px solid var(--blueprint-cyan);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            animation: modalSnapIn 0.08s steps(2);
+        }
+
+        .pwa-banner-tractor-feed {
+            height: 6px;
+            background-image: repeating-linear-gradient(to right, var(--paper-base) 0px, var(--paper-base) 4px, transparent 4px, transparent 8px);
+            background-color: var(--paper-surface-recessed);
+        }
+
+        .pwa-banner-body {
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pwa-banner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pwa-banner-tag {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--blueprint-cyan);
+            letter-spacing: 0.05em;
+        }
+
+        .pwa-banner-close-btn {
+            background: transparent;
+            border: 1px solid var(--border-default);
+            color: var(--ink-muted);
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+
+        .pwa-banner-close-btn:hover {
+            color: var(--stamp-danger);
+            border-color: var(--stamp-danger);
+        }
+
+        .pwa-banner-content {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .pwa-banner-icon {
+            width: 28px;
+            height: 28px;
+            color: var(--blueprint-cyan);
+            flex-shrink: 0;
+        }
+
+        .pwa-banner-title {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: var(--ink-main);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .pwa-banner-desc {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--ink-secondary);
+            line-height: 1.4;
+        }
+
+        .pwa-banner-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* =====================================================================
+           MOTOR DE TOUR SPOTLIGHT INTERATIVO // PIXEL PAPER UI
+           ESPECIFICACAO TECNICA DE BORDA ARM64 // ZERO BLUR // ZERO EMOJIS
+           ===================================================================== */
+
+        /* 1. Camada de Overlay Global e Caixa de Foco do Spotlight */
+        .pixel-tour-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99980;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.12s steps(2);
+        }
+
+        .pixel-tour-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Moldura e Orifício Translúcido com Contorno Crisp de 2px e Pulso Ciano */
+        .pixel-tour-target-box {
+            position: fixed;
+            z-index: 99985;
+            pointer-events: none;
+            box-sizing: border-box;
+            border: 2px solid var(--blueprint-cyan);
+            box-shadow: 0 0 0 9999px rgba(7, 9, 12, 0.84);
+            transition: top 0.15s cubic-bezier(0, 0, 0.2, 1),
+                        left 0.15s cubic-bezier(0, 0, 0.2, 1),
+                        width 0.15s cubic-bezier(0, 0, 0.2, 1),
+                        height 0.15s cubic-bezier(0, 0, 0.2, 1);
+            will-change: top, left, width, height;
+        }
+
+        .pixel-tour-target-box::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border: 2px dashed var(--blueprint-cyan);
+            opacity: 0.6;
+            animation: pixelTourPulse 1.2s steps(2) infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pixelTourPulse {
+            0% {
+                opacity: 0.2;
+                transform: scale(0.99);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.01);
+            }
+            100% {
+                opacity: 0.2;
+                transform: scale(0.99);
+            }
+        }
+
+        /* 2. Balão Flutuante Tático (.pixel-tour-popover) */
+        .pixel-tour-popover {
+            position: fixed;
+            z-index: 99990;
+            width: 360px;
+            max-width: calc(100vw - 24px);
+            background-color: var(--paper-sheet);
+            border: 2px solid var(--border-default);
+            box-shadow: 4px 4px 0px #000000;
+            color: var(--ink-main);
+            box-sizing: border-box;
+            opacity: 0;
+            visibility: hidden;
+            clip-path: polygon(
+                0 0,
+                calc(100% - 12px) 0,
+                100% 12px,
+                100% 100%,
+                0 100%
+            );
+            transition: opacity 0.15s steps(2),
+                        top 0.15s cubic-bezier(0, 0, 0.2, 1),
+                        left 0.15s cubic-bezier(0, 0, 0.2, 1);
+            will-change: top, left, opacity;
+        }
+
+        .pixel-tour-popover.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Chanfro decorativo superior estilo ficha catalográfica */
+        .pixel-tour-popover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: var(--blueprint-cyan);
+            clip-path: polygon(100% 0, 0 0, 100% 100%);
+            pointer-events: none;
+        }
+
+        /* Cabeçalho do Popover */
+        .pixel-tour-header {
+            padding: 10px 12px 8px 12px;
+            background: var(--paper-surface-recessed);
+            border-bottom: 2px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pixel-tour-tag {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--blueprint-cyan);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pixel-tour-step-counter {
+            background: #111a24;
+            border: 1px solid var(--blueprint-cyan);
+            padding: 1px 5px;
+            color: var(--blueprint-cyan);
+        }
+
+        .pixel-tour-btn-close {
+            background: transparent;
+            border: 1px solid var(--border-default);
+            color: var(--ink-muted);
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            padding: 2px 6px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .pixel-tour-btn-close:hover {
+            background: var(--border-default);
+            color: var(--ink-main);
+            border-color: var(--border-accent);
+        }
+
+        /* Corpo Técnico Didático */
+        .pixel-tour-body {
+            padding: 12px;
+            font-family: var(--font-mono);
+        }
+
+        .pixel-tour-title {
+            font-family: var(--font-pixel);
+            font-size: 11px;
+            color: var(--ink-main);
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+            letter-spacing: 0.4px;
+        }
+
+        /* Micro-passos Didáticos Estruturados */
+        .pixel-tour-steps-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .pixel-tour-chunk {
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-subtle);
+            padding: 6px 8px;
+        }
+
+        .pixel-tour-chunk-label {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        .chunk-what .pixel-tour-chunk-label {
+            color: var(--blueprint-cyan);
+        }
+
+        .chunk-how .pixel-tour-chunk-label {
+            color: var(--phosphor-green);
+        }
+
+        .chunk-tip .pixel-tour-chunk-label {
+            color: var(--thermal-amber);
+        }
+
+        .pixel-tour-chunk-text {
+            font-size: 11px;
+            line-height: 1.5;
+            color: var(--ink-main);
+            margin: 0;
+        }
+
+        .pixel-tour-chunk-text kbd {
+            font-family: var(--font-mono);
+            background: #182029;
+            border: 1px solid #3d5168;
+            padding: 1px 4px;
+            font-size: 10px;
+            color: var(--blueprint-cyan);
+        }
+
+        /* Rodapé de Controle e Botões Táteis */
+        .pixel-tour-footer {
+            padding: 8px 12px;
+            background: var(--paper-surface-recessed);
+            border-top: 2px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .pixel-tour-footer-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .pixel-tour-footer-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pixel-tour-btn {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            padding: 5px 8px;
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-default);
+            color: var(--ink-main);
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+            transition: transform 0.05s steps(1), box-shadow 0.05s steps(1);
+            user-select: none;
+        }
+
+        .pixel-tour-btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #000;
+            border-color: var(--border-accent);
+        }
+
+        .pixel-tour-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #000;
+        }
+
+        .pixel-tour-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .pixel-tour-btn-ghost {
+            border-color: transparent;
+            background: transparent;
+            color: var(--ink-muted);
+            box-shadow: none;
+        }
+
+        .pixel-tour-btn-ghost:hover {
+            border-color: var(--border-default);
+            background: #11161d;
+            color: var(--ink-secondary);
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .pixel-tour-btn-primary {
+            background: #0d2838;
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+        }
+
+        .pixel-tour-btn-finish {
+            background: #0d2e1a;
+            border-color: var(--phosphor-green);
+            color: var(--phosphor-green);
+        }
+
+        /* 3. Setas Indicadoras Ortogonais (Carets) Crisp em 4 Direções */
+        .pixel-tour-caret {
+            position: absolute;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        /* Caret Top: Popover está abaixo do elemento, seta aponta para cima */
+        .pixel-tour-popover[data-placement="bottom"] .pixel-tour-caret {
+            top: -10px;
+            left: 24px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 10px solid var(--border-default);
+        }
+
+        /* Caret Bottom: Popover está acima do elemento, seta aponta para baixo */
+        .pixel-tour-popover[data-placement="top"] .pixel-tour-caret {
+            bottom: -10px;
+            left: 24px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid var(--border-default);
+        }
+
+        /* Caret Left: Popover está à direita do elemento, seta aponta para esquerda */
+        .pixel-tour-popover[data-placement="right"] .pixel-tour-caret {
+            left: -10px;
+            top: 24px;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 10px solid var(--border-default);
+        }
+
+        /* Caret Right: Popover está à esquerda do elemento, seta aponta para direita */
+        .pixel-tour-popover[data-placement="left"] .pixel-tour-caret {
+            right: -10px;
+            top: 24px;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 10px solid var(--border-default);
+        }
+
+        /* Responsividade em Dispositivos Móveis (< 768px) */
+        @media (max-width: 768px) {
+            .pixel-tour-popover {
+                width: calc(100vw - 20px) !important;
+                max-width: calc(100vw - 20px) !important;
+                left: 10px !important;
+                bottom: 10px !important;
+                top: auto !important;
+                clip-path: none !important;
+            }
+            .pixel-tour-caret {
+                display: none !important;
+            }
+        }

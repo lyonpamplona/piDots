@@ -22,6 +22,7 @@ data/*_backup_*.db
 data/*.sqlite
 data/*.sqlite3
 data/*.bak
+data/backups/
 *.db
 *.db-wal
 *.db-shm

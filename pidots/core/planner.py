@@ -9,6 +9,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
+from ..config import settings
 from ..storage.db import get_db
 
 logger = logging.getLogger("pidots.planner")
@@ -42,21 +43,25 @@ class TwoStagePlanner:
         created_milestones = []
 
         async with get_db() as db:
-            # 1. Valida e resolve thread_id para garantir conformidade de Foreign Key
+            # 1. Garante existência do Dot e resolve thread_id para conformidade de Foreign Key
+            await db.execute(
+                """
+                INSERT OR IGNORE INTO dots (id, name, role, system_prompt, model, workspace_path)
+                VALUES (?, ?, 'Coworker', 'Agente executor de planos.', ?, ?)
+                """,
+                (dot_id, dot_id, settings.ai_model, f"{settings.workspaces_root}/{dot_id}")
+            )
             valid_thread_id = None
             if thread_id:
                 cursor = await db.execute("SELECT id FROM threads WHERE id = ?", (thread_id,))
                 if await cursor.fetchone():
                     valid_thread_id = thread_id
                 else:
-                    # Se o Dot existir, instancia a thread de forma idempotente
-                    c_dot = await db.execute("SELECT id FROM dots WHERE id = ?", (dot_id,))
-                    if await c_dot.fetchone():
-                        await db.execute(
-                            "INSERT OR IGNORE INTO threads (id, dot_id, title, status) VALUES (?, ?, ?, 'idle')",
-                            (thread_id, dot_id, f"Plano: {title.strip()[:30]}")
-                        )
-                        valid_thread_id = thread_id
+                    await db.execute(
+                        "INSERT OR IGNORE INTO threads (id, dot_id, title, status) VALUES (?, ?, ?, 'idle')",
+                        (thread_id, dot_id, f"Plano: {title.strip()[:30]}")
+                    )
+                    valid_thread_id = thread_id
 
             # 2. Registra meta principal
             await db.execute(
@@ -67,7 +72,7 @@ class TwoStagePlanner:
                 (goal_id, dot_id, valid_thread_id, title.strip(), description.strip(), priority)
             )
 
-            # 2. Registra marcos sequenciais
+            # 3. Registra marcos sequenciais
             for idx, m in enumerate(milestones, start=1):
                 m_id = str(uuid.uuid4())
                 m_title = m.get("title", f"Passo {idx}").strip()
@@ -117,25 +122,25 @@ class TwoStagePlanner:
                 target_goal = await cursor.fetchone()
             elif thread_id:
                 cursor = await db.execute(
-                    "SELECT * FROM goals WHERE thread_id = ? AND status = 'IN_PROGRESS' ORDER BY created_at DESC LIMIT 1",
+                    "SELECT * FROM goals WHERE thread_id = ? AND status = 'IN_PROGRESS' ORDER BY created_at DESC, rowid DESC LIMIT 1",
                     (thread_id,)
                 )
                 target_goal = await cursor.fetchone()
                 if not target_goal:
                     cursor = await db.execute(
-                        "SELECT * FROM goals WHERE thread_id = ? ORDER BY created_at DESC LIMIT 1",
+                        "SELECT * FROM goals WHERE thread_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1",
                         (thread_id,)
                     )
                     target_goal = await cursor.fetchone()
             elif dot_id:
                 cursor = await db.execute(
-                    "SELECT * FROM goals WHERE dot_id = ? AND status = 'IN_PROGRESS' ORDER BY created_at DESC LIMIT 1",
+                    "SELECT * FROM goals WHERE dot_id = ? AND status = 'IN_PROGRESS' ORDER BY created_at DESC, rowid DESC LIMIT 1",
                     (dot_id,)
                 )
                 target_goal = await cursor.fetchone()
                 if not target_goal:
                     cursor = await db.execute(
-                        "SELECT * FROM goals WHERE dot_id = ? ORDER BY created_at DESC LIMIT 1",
+                        "SELECT * FROM goals WHERE dot_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1",
                         (dot_id,)
                     )
                     target_goal = await cursor.fetchone()

@@ -4,14 +4,13 @@ Garante proteção contra Path Traversal e realiza escrita atômica para evitar 
 """
 
 import os
-import uuid
+import re
 import tempfile
 import logging
 from typing import Any
 from datetime import datetime, timezone
 
 from ..config import settings
-from ..storage.db import get_db
 
 logger = logging.getLogger("pidots.tools.file_ops")
 
@@ -21,16 +20,24 @@ class FileManager:
 
     @staticmethod
     def _get_safe_path(dot_id: str, relative_path: str) -> str:
-        """Resolve o caminho absoluto e valida se está estritamente contido no workspace do Dot."""
-        workspace_dir = os.path.abspath(os.path.join(settings.workspaces_root, dot_id))
-        os.makedirs(workspace_dir, exist_ok=True)
-        target_path = os.path.abspath(os.path.join(workspace_dir, relative_path.lstrip("/")))
+        """Resolve o caminho real (incluindo symlinks) e valida contenção estrita no workspace do Dot."""
+        safe_dot_id = re.sub(r"[^\w\-_.]", "_", (dot_id or "default").strip()).strip(".") or "default"
+        workspaces_root = os.path.realpath(settings.workspaces_root)
+        workspace_dir = os.path.realpath(os.path.join(workspaces_root, safe_dot_id))
+        if os.path.commonpath([workspaces_root, workspace_dir]) != workspaces_root:
+            raise PermissionError("Identificador de workspace inválido.")
 
-        # Proteção contra Path Traversal (ex: ../../etc/passwd)
-        if not target_path.startswith(workspace_dir):
+        os.makedirs(workspace_dir, exist_ok=True)
+        clean_rel = (relative_path or "").lstrip("/\\")
+        target_path = os.path.realpath(os.path.join(workspace_dir, clean_rel))
+
+        # Proteção estrita contra Path Traversal e Symlink Bypass (previne colisão de prefixo ex: dot-1 vs dot-10)
+        if os.path.commonpath([workspace_dir, target_path]) != workspace_dir:
             raise PermissionError(f"Acesso negado: o caminho '{relative_path}' escapa do workspace autorizado.")
 
         return target_path
+
+    MAX_READ_BYTES = 10 * 1024 * 1024  # Limite de 10MB para proteger a memória RAM em hardware restrito
 
     @classmethod
     async def read_file(cls, dot_id: str, filename: str) -> dict[str, Any]:
@@ -41,6 +48,12 @@ class FileManager:
                 return {"error": f"Arquivo '{filename}' não existe no workspace."}
             if os.path.isdir(target_path):
                 return {"error": f"'{filename}' é um diretório, não um arquivo."}
+
+            file_size = os.path.getsize(target_path)
+            if file_size > cls.MAX_READ_BYTES:
+                return {
+                    "error": f"Arquivo '{filename}' ({round(file_size / (1024*1024), 2)}MB) excede o limite máximo permitido de {cls.MAX_READ_BYTES // (1024*1024)}MB."
+                }
 
             with open(target_path, "r", encoding="utf-8", errors="replace") as f:
                 content = f.read()
@@ -58,41 +71,43 @@ class FileManager:
     async def write_file(cls, dot_id: str, filename: str, content: str, sync_space: bool = False) -> dict[str, Any]:
         """Grava um arquivo atomicamente (escreve em temporário e renomeia)."""
         try:
+            if sync_space:
+                from ..storage.spaces_manager import SpacesManager
+                space_res = await SpacesManager.save_document(
+                    dot_id=dot_id,
+                    filename=filename,
+                    content=content,
+                    title=filename
+                )
+                return {
+                    "filename": filename,
+                    "space_id": space_res.get("space_id"),
+                    "version": space_res.get("version", 1),
+                    "status": "success",
+                    "bytes_written": len(content.encode("utf-8")),
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+
             target_path = cls._get_safe_path(dot_id, filename)
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
 
             # Gravação atômica: cria temporário no mesmo diretório para garantir mesmo ponto de montagem
             target_dir = os.path.dirname(target_path)
-            with tempfile.NamedTemporaryFile("w", dir=target_dir, delete=False, encoding="utf-8") as tmp_f:
-                tmp_f.write(content)
-                tmp_path = tmp_f.name
+            tmp_path = None
+            try:
+                with tempfile.NamedTemporaryFile("w", dir=target_dir, delete=False, encoding="utf-8") as tmp_f:
+                    tmp_f.write(content)
+                    tmp_path = tmp_f.name
 
-            # Substitui atomicamente o arquivo final
-            os.replace(tmp_path, target_path)
-
-            # Sincroniza de forma idempotente na tabela Spaces somente se solicitado e sem duplicar
-            if sync_space:
-                try:
-                    async with get_db() as db:
-                        cursor = await db.execute("SELECT id FROM spaces WHERE dot_id = ? AND filename = ?", (dot_id, filename))
-                        existing = await cursor.fetchone()
-                        if existing:
-                            await db.execute(
-                                "UPDATE spaces SET content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                                (content, existing["id"])
-                            )
-                        else:
-                            space_id = str(uuid.uuid4())
-                            await db.execute(
-                                """
-                                INSERT INTO spaces (id, dot_id, filename, title, content)
-                                VALUES (?, ?, ?, ?, ?)
-                                """,
-                                (space_id, dot_id, filename, filename, content)
-                            )
-                        await db.commit()
-                except Exception as db_err:
-                    logger.warning("Não foi possível sincronizar histórico em spaces: %s", str(db_err))
+                # Substitui atomicamente o arquivo final
+                os.replace(tmp_path, target_path)
+                tmp_path = None
+            finally:
+                if tmp_path and os.path.exists(tmp_path):
+                    try:
+                        os.unlink(tmp_path)
+                    except OSError:
+                        pass
 
             return {
                 "filename": filename,

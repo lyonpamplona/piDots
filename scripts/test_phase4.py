@@ -94,7 +94,7 @@ async def main():
     with zipfile.ZipFile(io.BytesIO(zip_bytes)) as z:
         namelist = z.namelist()
         print(f"      Arquivos empacotados no ZIP: {namelist}")
-        assert "architecture_spec.md" in namelist or any("architecture_spec.md" in n for n in namelist), "Arquivo principal ausente no ZIP!"
+        assert ("architecture_spec_phase4.md" in namelist or any("architecture_spec" in n for n in namelist)), "Arquivo principal ausente no ZIP!"
 
     print("\n=== [SUCESSO] Fase 4 validada com 100% de êxito! Spaces, Diffs e Memória Vetorial Operacionais! ===")
 

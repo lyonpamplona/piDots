@@ -9,7 +9,11 @@ import time
 import httpx
 import statistics
 import os
+import sys
 from pathlib import Path
+
+# Adiciona o diretorio raiz ao PYTHONPATH
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 BASE_URL = "http://localhost:8000"
 TOTAL_REQUESTS = 100

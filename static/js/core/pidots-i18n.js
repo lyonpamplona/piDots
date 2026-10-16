@@ -201,10 +201,13 @@
             isInitialized = true;
 
             currentLang = PiDotsI18n.detectInitialLanguage();
-            await PiDotsI18n.loadDictionary(currentLang);
-
             if (currentLang !== DEFAULT_LANG) {
-                PiDotsI18n.loadDictionary(DEFAULT_LANG);
+                await Promise.all([
+                    PiDotsI18n.loadDictionary(currentLang),
+                    PiDotsI18n.loadDictionary(DEFAULT_LANG)
+                ]);
+            } else {
+                await PiDotsI18n.loadDictionary(currentLang);
             }
 
             if (document.readyState === 'loading') {

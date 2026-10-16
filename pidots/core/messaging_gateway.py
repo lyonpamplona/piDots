@@ -31,6 +31,20 @@ class UnifiedIncomingMessage(BaseModel):
 class MessagingGateway:
     """Núcleo de recepção, normalização e despacho de mensagens externas."""
 
+    _background_tasks: set[asyncio.Task] = set()
+
+    @classmethod
+    async def cancel_pending_tasks(cls) -> None:
+        """Cancela e aguarda o término das tarefas em background durante o encerramento gracioso."""
+        if cls._background_tasks:
+            pending = list(cls._background_tasks)
+            for t in pending:
+                t.cancel()
+            await asyncio.gather(*pending, return_exceptions=True)
+            cls._background_tasks.clear()
+        if "ChannelOrchestrator" in globals():
+            await ChannelOrchestrator.cancel_pending_tasks()
+
     @classmethod
     async def get_or_create_external_thread(
         cls,
@@ -42,11 +56,23 @@ class MessagingGateway:
         """Localiza ou cria uma thread persistente para a conversa externa no SQLite WAL."""
         thread_title = f"{platform.capitalize()}: {sender_name} ({sender_id})"
         async with get_db() as db:
+            # Garante que o dot_id referenciado exista para respeitar Foreign Key
+            cur_dot = await db.execute("SELECT id FROM dots WHERE id = ?", (dot_id,))
+            if not await cur_dot.fetchone():
+                await db.execute(
+                    """
+                    INSERT OR IGNORE INTO dots (
+                        id, name, role, system_prompt, model, workspace_path
+                    ) VALUES (?, ?, 'AI Coworker', 'Assistente técnico.', ?, ?)
+                    """,
+                    (dot_id, dot_id, settings.ai_model, f"workspaces/{dot_id}")
+                )
+
             cursor = await db.execute(
                 """
                 SELECT id FROM threads 
                 WHERE dot_id = ? AND title = ?
-                ORDER BY created_at DESC LIMIT 1
+                ORDER BY created_at DESC, rowid DESC LIMIT 1
                 """,
                 (dot_id, thread_title)
             )
@@ -134,7 +160,8 @@ class MessagingGateway:
             elif channel_type == "whatsapp":
                 evo_url = getattr(settings, "evolution_api_url", "http://host.docker.internal:8080")
                 evo_token = getattr(settings, "evolution_api_key", "")
-                url = f"{evo_url.rstrip('/')}/message/sendText"
+                evo_instance = getattr(settings, "evolution_instance", "pidots")
+                url = f"{evo_url.rstrip('/')}/message/sendText/{evo_instance}"
                 headers = {"apikey": evo_token} if evo_token else {}
                 payload = {
                     "number": target_id,
@@ -170,6 +197,17 @@ class ChannelOrchestrator:
     """Gerenciador de colaboração e roteamento em salas temáticas (#canais)."""
 
     MAX_HOPS = 3
+    _background_tasks: set[asyncio.Task] = set()
+
+    @classmethod
+    async def cancel_pending_tasks(cls) -> None:
+        """Cancela e aguarda o término das tarefas em background durante o encerramento gracioso."""
+        if cls._background_tasks:
+            pending = list(cls._background_tasks)
+            for t in pending:
+                t.cancel()
+            await asyncio.gather(*pending, return_exceptions=True)
+            cls._background_tasks.clear()
 
     @classmethod
     async def post_message_to_channel(
@@ -210,28 +248,35 @@ class ChannelOrchestrator:
             members = await cursor.fetchall()
             dot_ids = [row["member_id"] for row in members]
 
-        # Se não houver tabela de membros preenchida, considera todos os dots ativos
+        # Se não houver tabela de membros preenchida, considera apenas os Dots do Squad Central ativos
         if not dot_ids:
             async with get_db() as db:
-                cursor = await db.execute("SELECT id FROM dots WHERE is_active = 1")
+                cursor = await db.execute("SELECT id FROM dots WHERE is_active = 1 AND is_core = 1")
                 dot_ids = [row["id"] for row in await cursor.fetchall()]
+                if not dot_ids:
+                    cursor = await db.execute("SELECT id FROM dots WHERE is_active = 1 LIMIT 4")
+                    dot_ids = [row["id"] for row in await cursor.fetchall()]
 
-        # Regras de disparo inteligente
+        from .orchestrator import ThreadRouter
+        explicit_mentions = set(ThreadRouter.parse_mentions(content))
+        has_all_mention = "@all" in content.lower().split()
+
+        # Regras de disparo inteligente com correspondência exata de menção
         for d_id in dot_ids:
             if d_id == author_id:
                 continue
 
             if author_type in ("user", "webhook"):
-                if f"@{d_id}" in content or "@all" in content or len(dot_ids) == 1:
+                if d_id.lower() in explicit_mentions or has_all_mention or len(dot_ids) == 1:
                     dots_to_trigger.append(d_id)
             elif author_type == "dot":
-                # Bot só responde a outro bot se houver menção explícita
-                if f"@{d_id}" in content:
+                # Bot só responde a outro bot se houver menção explícita exata
+                if d_id.lower() in explicit_mentions:
                     dots_to_trigger.append(d_id)
 
-        # Dispara os agentes de forma assíncrona desacoplada
+        # Dispara os agentes de forma assíncrona desacoplada com retenção forte contra GC
         for target_dot in dots_to_trigger:
-            asyncio.create_task(
+            task = asyncio.create_task(
                 cls._run_dot_in_channel(
                     channel_id=channel_id,
                     dot_id=target_dot,
@@ -240,6 +285,8 @@ class ChannelOrchestrator:
                     ai_provider=ai_provider
                 )
             )
+            cls._background_tasks.add(task)
+            task.add_done_callback(cls._background_tasks.discard)
 
         return msg_id
 
@@ -260,7 +307,7 @@ class ChannelOrchestrator:
                 """
                 SELECT author_type, author_id, content FROM channel_messages
                 WHERE channel_id = ?
-                ORDER BY created_at DESC LIMIT 8
+                ORDER BY created_at DESC, rowid DESC LIMIT 8
                 """,
                 (channel_id,)
             )

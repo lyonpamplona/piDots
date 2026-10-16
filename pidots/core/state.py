@@ -21,6 +21,9 @@ class DotModel(BaseModel):
     model: str
     workspace_path: str
     is_active: bool = True
+    archetype: str = "generalist"
+    avatar_stamp: str = "[DOT]"
+    is_core: bool = False
     created_at: datetime = Field(default_factory=now_utc)
 
 
@@ -28,8 +31,9 @@ class ThreadModel(BaseModel):
     """Fio de conversa durável associado a um Dot."""
     id: str
     dot_id: str
+    primary_dot_id: str | None = None
     title: str
-    status: Literal["idle", "thinking", "awaiting_hitl", "completed", "error"] = "idle"
+    status: Literal["idle", "thinking", "running", "proactive", "awaiting_hitl", "completed", "error"] = "idle"
     created_at: datetime = Field(default_factory=now_utc)
 
 
@@ -37,10 +41,15 @@ class MessageModel(BaseModel):
     """Mensagem de diálogo multi-turn."""
     id: str
     thread_id: str
+    actor_id: str | None = None
+    actor_type: str = "user"
+    target_dot_id: str | None = None
+    visibility: Literal["public", "internal", "ephemeral"] = "public"
     role: Literal["user", "assistant", "system", "tool"]
     content: str
     thought_log: str | None = None
     tool_calls_json: str | None = None
+    parent_message_id: str | None = None
     created_at: datetime = Field(default_factory=now_utc)
 
 
@@ -61,9 +70,9 @@ class HITLApprovalModel(BaseModel):
     id: str
     dot_id: str
     thread_id: str | None = None
-    action_type: Literal["shell_exec", "file_delete", "network_call", "skill_create"]
+    action_type: str
     payload: str
-    risk_level: Literal["MEDIUM", "HIGH", "CRITICAL"] = "HIGH"
+    risk_level: Literal["LOW", "MEDIUM", "WARNING", "HIGH", "CRITICAL"] = "HIGH"
     status: Literal["PENDING", "APPROVED", "REJECTED"] = "PENDING"
     reviewer_notes: str | None = None
     requested_at: datetime = Field(default_factory=now_utc)
@@ -77,6 +86,7 @@ class AGUIEvent(BaseModel):
         "thought:delta",
         "tool:called",
         "tool:result",
+        "self_healing:triggered",
         "hitl:approval_required",
         "artifact:updated",
         "run:finished",

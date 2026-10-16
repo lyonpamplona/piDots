@@ -1,0 +1,344 @@
+/* =====================================================================
+   PIXEL PAPER UI - ARQUITETURA DE LAYOUT & SHELL OPERACIONAL
+   Ambiente: Raspberry Pi 4B (ARM64) // piDots Edge Core
+   Diretriz: Zero Emojis // Casca Triptica // Surface Switcher // Drawer
+   ===================================================================== */
+
+/* =====================================================================
+   1. CABECALHO TECNICO DE COMANDO (TOP BAR)
+   ===================================================================== */
+header.mission-header {
+    background-color: var(--paper-sheet);
+    border-bottom: 2px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+    padding: 8px 16px;
+    padding-top: max(8px, var(--safe-top));
+    padding-left: max(16px, calc(16px + var(--safe-left)));
+    padding-right: max(16px, calc(16px + var(--safe-right)));
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    z-index: 100;
+    gap: 12px;
+}
+
+.header-brand, .brand-unit {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    flex-shrink: 0;
+}
+
+.brand-badge {
+    background: var(--paper-surface-recessed);
+    border: 2px solid var(--border-accent);
+    padding: 2px 6px;
+    font-family: var(--font-pixel);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--blueprint-cyan);
+    user-select: none;
+    box-shadow: 1px 1px 0px #000;
+}
+
+.brand-title {
+    font-family: var(--font-pixel);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--ink-main);
+    white-space: nowrap;
+}
+
+.header-telemetry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+}
+
+.edge-pulse-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-subtle);
+    padding: 3px 8px;
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    letter-spacing: 0.05em;
+    color: var(--ink-secondary);
+    user-select: none;
+    white-space: nowrap;
+}
+
+.edge-pulse-chip .pulse-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--phosphor-green);
+    box-shadow: 0 0 4px var(--phosphor-green);
+    display: inline-block;
+}
+
+.edge-pulse-chip .chip-sep {
+    color: var(--border-default);
+    opacity: 0.6;
+}
+
+.edge-pulse-chip .chip-part {
+    color: var(--ink-main);
+}
+
+.edge-pulse-chip #val-temp {
+    color: var(--thermal-amber);
+    font-weight: 700;
+}
+
+.edge-pulse-chip #val-ram {
+    color: var(--phosphor-green);
+    font-weight: 700;
+}
+
+.edge-pulse-chip #val-wal {
+    color: var(--blueprint-cyan);
+}
+
+.edge-pulse-chip #val-hitl {
+    color: var(--thermal-amber);
+    font-weight: 700;
+}
+
+.telemetry-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-subtle);
+    padding: 2px 8px;
+}
+
+.chip-label {
+    color: var(--ink-muted);
+    font-family: var(--font-pixel);
+    font-size: 8px;
+}
+
+.chip-value {
+    font-weight: 700;
+    color: var(--thermal-amber);
+}
+
+.chip-value.ok {
+    color: var(--phosphor-green);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* =====================================================================
+   2. COMUTADOR CANONICO DE SUPERFICIES (SURFACE SWITCHER)
+   ===================================================================== */
+.surface-switcher {
+    display: inline-flex;
+    align-items: center;
+    background: var(--paper-surface-recessed, #0b0e12);
+    border: 1px solid var(--border-default, #283340);
+    padding: 2px;
+    gap: 2px;
+    box-shadow: var(--shadow-sm);
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.surface-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    color: var(--ink-secondary);
+    text-decoration: none;
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+    transition: background 0.1s steps(1), color 0.1s steps(1);
+}
+
+.surface-tab:hover {
+    color: var(--ink-main);
+    background: var(--paper-surface);
+}
+
+.surface-tab.active {
+    background: var(--paper-sheet);
+    color: var(--blueprint-cyan);
+    border-color: var(--border-accent);
+    box-shadow: 1px 1px 0px #000;
+}
+
+.surface-tab .tab-idx {
+    font-size: 8px;
+    opacity: 0.6;
+}
+
+.surface-tab .tab-chord {
+    font-size: 7px;
+    padding: 1px 3px;
+    background: var(--paper-surface-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--ink-muted);
+    letter-spacing: 0.02em;
+}
+
+.surface-tab.active .tab-chord {
+    border-color: var(--border-accent);
+    color: var(--blueprint-cyan);
+}
+
+/* =====================================================================
+   3. CASCA TRIPICA DE TRABALHO (TRIPTYCH SHELL)
+   ===================================================================== */
+.triptych-shell {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+/* Painel Esquerdo: Dots & Squad de Especialistas */
+.col-sidebar, aside.sidebar-dots, aside.left-sidebar {
+    width: 280px;
+    min-width: 240px;
+    background: var(--paper-sheet);
+    border-right: 2px solid var(--border-default);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+/* Painel Central: Teletipo ReAct & Fluxo */
+.col-chat, main.workspace-center, main.center-ticker-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--paper-base);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Painel Direito: Live Artifact Canvas & Spaces */
+.col-canvas, aside.workspace-canvas, aside.right-canvas {
+    width: 440px;
+    min-width: 320px;
+    background: var(--paper-sheet);
+    border-left: 2px solid var(--border-default);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: width 0.15s ease-out;
+}
+
+.col-canvas.collapsed, aside.workspace-canvas.collapsed, aside.right-canvas.collapsed {
+    display: none !important;
+}
+
+/* =====================================================================
+   4. MENU LATERAL DIREITO RETRATIL (DRAWER TECNICO)
+   ===================================================================== */
+.drawer-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(4, 6, 8, 0.75);
+    backdrop-filter: blur(2px);
+    z-index: 120;
+}
+
+.drawer-backdrop.open, .drawer-backdrop.is-active, body.drawer-open .drawer-backdrop {
+    display: block;
+}
+
+aside.retractable-drawer {
+    position: fixed;
+    top: 0;
+    right: -440px;
+    width: var(--drawer-width, 440px);
+    height: 100vh;
+    height: 100dvh;
+    background: var(--paper-sheet);
+    border-left: 2px solid var(--border-strong);
+    z-index: 130;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.2s ease-out, transform 0.2s steps(1);
+    box-shadow: -6px 0px 0px #000000;
+}
+
+aside.retractable-drawer.open, aside.retractable-drawer.is-open {
+    right: 0;
+    transform: translateX(0);
+}
+
+.drawer-header, .drawer-top-bar {
+    min-height: var(--header-height, 52px);
+    padding: 10px 16px;
+    background: var(--paper-surface-recessed);
+    border-bottom: 2px solid var(--border-default);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.drawer-title, .drawer-top-title {
+    font-family: var(--font-pixel);
+    font-size: 10px;
+    color: var(--blueprint-cyan);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drawer-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.drawer-search-box {
+    margin-bottom: 8px;
+}
+
+.drawer-search-input {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--paper-surface);
+    border: 2px solid var(--border-default);
+    color: var(--ink-main);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    outline: none;
+}
+
+.drawer-search-input:focus {
+    border-color: var(--border-accent);
+}

@@ -319,20 +319,23 @@ class MemoryManager:
 
         async with get_db() as db:
             # 1. Busca textual BM25 via tabela virtual FTS5
-            # Sanitiza query para FTS5 removendo caracteres especiais de sintaxe
-            clean_fts_query = re.sub(r"[^\w\s]", "", query).strip()
-            if clean_fts_query:
-                # Divide termos para operador OR ou prefix match
-                fts_terms = " OR ".join([f"{term}*" for term in clean_fts_query.split() if term])
+            # Extrai tokens alfanuméricos preservando separação por hífen/pontuação e filtra palavras reservadas FTS5
+            fts_reserved = {"AND", "OR", "NOT", "NEAR"}
+            raw_tokens = [
+                t for t in re.findall(r"\w+", query)
+                if t and t.upper() not in fts_reserved
+            ]
+            if raw_tokens:
+                fts_terms = " OR ".join([f'"{term}"*' for term in raw_tokens])
                 if fts_terms:
                     try:
                         cursor = await db.execute(
                             """
-                            SELECT a.id, a.content, a.tags_json, a.vector_json, a.created_at, f.rank
-                            FROM archival_memories_fts f
-                            JOIN archival_memories a ON a.id = f.id
-                            WHERE f.dot_id = ? AND archival_memories_fts MATCH ?
-                            ORDER BY f.rank
+                            SELECT a.id, a.content, a.tags_json, a.vector_json, a.created_at, archival_memories_fts.rank
+                            FROM archival_memories_fts
+                            JOIN archival_memories a ON a.rowid = archival_memories_fts.rowid
+                            WHERE archival_memories_fts.dot_id = ? AND archival_memories_fts MATCH ?
+                            ORDER BY archival_memories_fts.rank
                             LIMIT ?
                             """,
                             (dot_id, fts_terms, limit)
@@ -340,14 +343,20 @@ class MemoryManager:
                         rows = await cursor.fetchall()
                         for r in rows:
                             vec_loaded = json.loads(r["vector_json"]) if r["vector_json"] else []
-                            sim = cosine_similarity(query_vec, vec_loaded)
-                            bm25_weight = abs(r["rank"]) if r["rank"] is not None else 0.0
+                            sim = cosine_similarity(query_vec, vec_loaded) if vec_loaded else 0.0
+                            rank = r["rank"]
+                            raw_bm25 = -rank if rank and rank < 0 else 0.0
+                            bm25_norm = raw_bm25 / (raw_bm25 + 1.0) if raw_bm25 > 0 else 0.0
+                            if vec_loaded:
+                                hybrid_score = round(0.6 * bm25_norm + 0.4 * sim, 3)
+                            else:
+                                hybrid_score = round(bm25_norm, 3)
                             results.append({
                                 "id": r["id"],
                                 "content": r["content"],
                                 "tags": json.loads(r["tags_json"]) if r["tags_json"] else [],
                                 "created_at": r["created_at"],
-                                "relevance_score": round(bm25_weight + sim * 0.5, 3),
+                                "relevance_score": hybrid_score,
                                 "source": "fts5_bm25"
                             })
                             seen_ids.add(r["id"])

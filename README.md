@@ -159,7 +159,7 @@ O módulo `pidots/core/council.py` implementa deliberação dialética formal en
 - **Micro-Motor Vanilla JS (`static/pidots-i18n.js`):** Alternância instantânea de idioma (< 10ms) sem frameworks pesados ou consumo extra de RAM, com detecção e persistência segura em `localStorage.getItem('pidots_lang')`.
 - **Dicionários Atômicos JSON (`data/locales/pt.json` e `data/locales/en.json`):** Dicionários semânticos servidos com cache de borda e fallback defensivo inteligente.
 - **Mutação Estrita via textContent:** Mecanismo declarativo baseado em atributos `data-i18n` e `data-i18n-attr`, com imunidade total a injeções de script (XSS).
-- **Onboarding e Patch Notes SemVer v1.3.0:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
+- **Onboarding e Patch Notes SemVer v1.5.0:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
 
 ### 11. Protocolo Unificado de Slash Commands (/), Triptico Adaptativo e Resiliencia Mobile (v1.3.0)
 - **Catalogo Completo de 30 Slash Commands:** Comandos categorizados em 6 grupos operacionais (Sistema, Agentes, Memoria, Tarefas, Borda, Exportacao), invocados com `/` no teletipo. Comandos locais (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) executam instantaneamente no cliente (< 16ms) com zero chamadas externas e zero consumo de tokens.
@@ -372,11 +372,11 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 | `GET` | `/relatorio` | Relatorio tecnico de viabilidade de engenharia e benchmarks |
 | `GET` | `/health` | Telemetria de hardware (temperatura SoC, RAM, status SQLite WAL) |
 | `GET` | `/manifest.json` | Manifesto PWA para instalacao em dispositivos moveis e desktop (`start_url: /app`) |
-| `GET` | `/sw.js` | Service Worker PWA com cache defensivo v5 para operacao offline |
+| `GET` | `/sw.js` | Service Worker PWA com cache defensivo v7 para operacao offline |
 | `GET` | `/icon.svg` | Logotipo vetorial oficial em formato SVG com cache prolongado |
 | `GET` | `/static/pidots-i18n.js` | Micro-motor Vanilla JS de internacionalizacao client-side |
 | `GET` | `/data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
-| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.3.0) |
+| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.5.0) |
 | `GET` | `/api/dots` | Listagem de AI Coworkers com arquetipos e status |
 | `GET` | `/api/dots/{id}/export-pack` | Exportacao portavel do manifesto DotPack v1.0 (persona, memorias, workspace) |
 | `POST` | `/api/dots/import-pack` | Importacao atomica de novos agentes a partir de arquivo de DotPack |
@@ -428,7 +428,7 @@ O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota ca
 - **Governanca Interativa HITL Just-in-Time:** Cartoes de aprovacao e veto forense exibidos apenas quando ha acoes retidas, com persistencia de logs de seguranca.
 - **Streaming de Raciocinio AG-UI:** Exibicao token a token de pensamentos e chamadas de ferramentas.
 - **Onboarding Walkthrough Guiado:** Esteira interativa de 5 passos para novos operadores com retencao de conclusao no cliente e reabertura via atalho F1.
-- **Central de Patch Notes SemVer (v1.4.0):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
+- **Central de Patch Notes SemVer (v1.5.0):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
 
 #### Navegacao Cruzada via Chords Globais de Teclado
 Para transicao instantanea entre as superficies do sistema sem necessidade de mouse:
@@ -529,7 +529,7 @@ python3 scripts/stress_test.py
 ├── ARCHITECTURE.md                  # Especificacao detalhada de arquitetura e I/O
 ├── CONTRIBUTING.md                  # Diretrizes para contribuicao tecnica ao projeto
 ├── data/                            # Dados estaticos, changelog e dicionarios de localizacao
-│   ├── changelog.json               # Historico de versoes e notas de atualizacao SemVer v1.3.0
+│   ├── changelog.json               # Historico de versoes e notas de atualizacao SemVer v1.5.0
 │   └── locales/                     # Dicionarios de internacionalizacao atomicos (i18n)
 │       ├── en.json                  # Dicionario de termos em Ingles Tecnico
 │       └── pt.json                  # Dicionario de termos em Portugues do Brasil
@@ -567,18 +567,26 @@ python3 scripts/stress_test.py
 │       ├── registry.py              # Registro centralizado de funcoes do agente
 │       ├── terminal.py              # Executor com isolamento Bubblewrap (bwrap)
 │       └── web_reader.py            # Extracao leve de conteudo web com trafilatura
-├── pidots_apresentacao_pixel_paper.html # Landing page oficial de apresentacao
-├── pidots_guia.html                 # Guia operacional didatico passo a passo
-├── pidots_spa_prototype.html        # Console operacional SPA/PWA oficial
+├── pages/                           # Paginas HTML semanticas desacopladas
+│   ├── app.html                     # Console operacional SPA/PWA (/app)
+│   ├── landing.html                 # Landing page oficial de apresentacao (/)
+│   ├── docs.html                    # Guia didatico operacional passo a passo (/docs)
+│   └── relatorio.html               # Relatorio tecnico historico (/relatorio)
 ├── pyproject.toml                   # Empacotamento padrao PEP 517/518/621
 ├── README.md                        # Documentacao principal (Portugues do Brasil)
 ├── README_EN.md                     # Documentacao espelhada (Ingles Americano)
-├── relatorio_estudo_pidots.html     # Relatorio tecnico de viabilidade e engenharia
 ├── requirements.txt                 # Dependencias estritas do projeto
 ├── SECURITY.md                      # Politica de seguranca e reporte de vulnerabilidades
 ├── scripts/                         # Scripts de teste automatizado e benchmarks
 └── static/                          # Assets estaticos do frontend
-    └── pidots-i18n.js               # Micro-motor Vanilla JS de internacionalizacao client-side
+    ├── css/                         # Design System Pixel Paper UI modularizado
+    │   ├── tokens.css, reset.css, layout.css, components.css, mobile.css
+    │   └── spa.css, landing.css, docs.css, relatorio.css
+    └── js/                          # Motores JavaScript modulares em Vanilla JS
+        ├── core/                    # i18n, scroll-lock, pixel-system
+        ├── spa/                     # pidots-api, slash-commands, tour-engine, pidots-ux, app-init
+        ├── landing/                 # landing.js (simulador ReAct, ROI silicio, trava HITL)
+        └── docs/                    # docs.js (Omnisearch Ctrl+K, mini API tester)
 ```
 
 ---

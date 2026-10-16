@@ -4,10 +4,10 @@ Formatação compatível com a especificação da OpenAI API (Function Calling).
 Inclui terminal isolado (Bubblewrap/Subprocess), extrator web semântico e gerenciamento de arquivos.
 """
 
+import inspect
 import logging
 from typing import Callable, Any, Awaitable
 from datetime import datetime, timezone
-import os
 
 from .terminal import TerminalSandbox
 from .web_reader import WebReader
@@ -93,6 +93,12 @@ class ToolRegistry:
             elif name == "edge_maintenance_run":
                 if "dot_id" not in arguments:
                     arguments["dot_id"] = dot_id
+
+            # Filtra argumentos alucinados se a função não aceitar **kwargs arbitrários
+            sig = inspect.signature(handler)
+            has_var_keyword = any(param.kind == inspect.Parameter.VAR_KEYWORD for param in sig.parameters.values())
+            if not has_var_keyword:
+                arguments = {k: v for k, v in arguments.items() if k in sig.parameters}
 
             return await handler(**arguments)
         except TypeError as te:
@@ -575,7 +581,8 @@ class ToolRegistry:
                                 "type": "string",
                                 "description": "ID específico do plano (opcional; se omitido, busca o plano ativo da thread)."
                             }
-                        }
+                        },
+                        "required": []
                     }
                 }
             },
@@ -663,7 +670,8 @@ class ToolRegistry:
                                 "type": "string",
                                 "description": "Identificador do tópico a ser lido (opcional; se omitido, retorna a lista de todos os tópicos da thread)."
                             }
-                        }
+                        },
+                        "required": []
                     }
                 }
             },
@@ -689,7 +697,8 @@ class ToolRegistry:
                                 "type": "number",
                                 "description": "Percentual mínimo customizado de espaço livre em disco antes de alerta (opcional, padrão: 10.0%)."
                             }
-                        }
+                        },
+                        "required": []
                     }
                 }
             },
@@ -715,7 +724,8 @@ class ToolRegistry:
                                 "type": "boolean",
                                 "description": "Se verdadeiro, gera cópia atômica consistente do banco SQLite em data/backups via VACUUM INTO (padrão: false)."
                             }
-                        }
+                        },
+                        "required": []
                     }
                 }
             },
@@ -748,15 +758,15 @@ class ToolRegistry:
         return {"current_time": datetime.now(timezone.utc).isoformat()}
 
     async def _tool_edge_telemetry(self) -> dict[str, Any]:
-        temp = 45.0
-        thermal_path = "/sys/class/thermal/thermal_zone0/temp"
-        if os.path.exists(thermal_path):
-            try:
-                with open(thermal_path, "r") as f:
-                    temp = round(float(f.read().strip()) / 1000.0, 1)
-            except Exception as therm_err:
-                logger.debug("Falha ao ler temperatura térmica do SoC: %s", therm_err)
-        return {"soc_temperature_celsius": temp, "arch": "aarch64", "device": "Raspberry Pi 4B"}
+        hw = self._get_hardware_triggers()
+        temp = hw.get_soc_temperature()
+        mem = hw.get_memory_metrics()
+        return {
+            "soc_temperature_celsius": temp,
+            "memory": mem,
+            "arch": "aarch64",
+            "device": "Raspberry Pi 4B"
+        }
 
     @staticmethod
     def _get_orchestrator():
@@ -810,6 +820,9 @@ class ToolRegistry:
         thread_id: str | None = None,
         provider: Any = None
     ) -> dict[str, Any]:
+        if provider is None:
+            from ..providers.openai_client import OpenAIUniversalProvider
+            provider = OpenAIUniversalProvider()
         orchestrator = self._get_orchestrator()
         t_id = thread_id or "default-thread"
         return await orchestrator.delegate_subtask(
@@ -850,7 +863,7 @@ class ToolRegistry:
         results = await MemoryManager.search_archival_memory(dot_id=dot_id, query=query, limit=limit)
         return {"results": results, "count": len(results)}
 
-    async def _tool_recall_memory_search(self, query: str, limit: int = 5, thread_id: str | None = None, dot_id: str | None = None) -> dict[str, Any]:
+    async def _tool_recall_memory_search(self, query: str, limit: int = 5, thread_id: str | None = None) -> dict[str, Any]:
         t_id = thread_id or "default-thread"
         results = await MemoryManager.search_recall_memory(thread_id=t_id, query=query, limit=limit)
         return {"results": results, "count": len(results)}

@@ -8,6 +8,7 @@ import uuid
 import json
 import logging
 from datetime import datetime, timezone
+from ..config import settings
 from ..storage.db import get_db
 
 logger = logging.getLogger("pidots.hitl")
@@ -51,12 +52,42 @@ class HITLManager:
             for pattern in DANGEROUS_COMMAND_PATTERNS:
                 if re.search(pattern, cmd_text, re.IGNORECASE):
                     return True, "CRITICAL"
-            # Remove redirecionamentos inofensivos de descarte de stream (/dev/null, 2>&1) antes de verificar escrita
-            sanitized_cmd = re.sub(r"(?:[12]?>|&>)\s*/dev/null|2>&1", "", cmd_text)
-            if any(token in sanitized_cmd for token in [">", ">>", "tee"]):
+            # Remove redirecionamentos inofensivos (/dev/null, 2>&1) e setas (->, =>) antes de verificar redirecionamento de arquivo
+            sanitized_cmd = re.sub(r"(?:[12]?>|&>)\s*/dev/null|2>&1|->|=>", "", cmd_text)
+            if re.search(r"(?:>>|>|\|\s*tee\b)", sanitized_cmd):
                 return True, "MEDIUM"
 
         return False, "LOW"
+
+    @staticmethod
+    async def has_prior_approval(
+        dot_id: str,
+        thread_id: str | None,
+        action_type: str,
+        payload: str
+    ) -> bool:
+        """Verifica se a mesma ação já foi homologada pelo operador humano para este Dot/Thread."""
+        async with get_db() as db:
+            if thread_id:
+                cursor = await db.execute(
+                    """
+                    SELECT id FROM hitl_approvals
+                    WHERE dot_id = ? AND thread_id = ? AND action_type = ? AND payload = ? AND status = 'APPROVED'
+                    LIMIT 1
+                    """,
+                    (dot_id, thread_id, action_type, payload)
+                )
+            else:
+                cursor = await db.execute(
+                    """
+                    SELECT id FROM hitl_approvals
+                    WHERE dot_id = ? AND action_type = ? AND payload = ? AND status = 'APPROVED'
+                    LIMIT 1
+                    """,
+                    (dot_id, action_type, payload)
+                )
+            row = await cursor.fetchone()
+            return row is not None
 
     @staticmethod
     async def create_approval_request(
@@ -69,6 +100,14 @@ class HITLManager:
         """Cria e persiste uma solicitação de aprovação pendente no SQLite."""
         approval_id = str(uuid.uuid4())
         async with get_db() as db:
+            await db.execute(
+                """
+                INSERT OR IGNORE INTO dots (
+                    id, name, role, system_prompt, model, workspace_path
+                ) VALUES (?, ?, 'AI Coworker', 'Assistente técnico.', ?, ?)
+                """,
+                (dot_id, dot_id, settings.ai_model, f"{settings.workspaces_root}/{dot_id}")
+            )
             await db.execute(
                 """
                 INSERT INTO hitl_approvals (id, dot_id, thread_id, action_type, payload, risk_level, status)
@@ -99,10 +138,18 @@ class HITLManager:
 
     @staticmethod
     async def resolve_approval(approval_id: str, approved: bool, notes: str | None = None) -> bool:
-        """Resolve uma solicitação HITL, aprovando-a ou rejeitando-a."""
+        """Resolve uma solicitação HITL, aprovando-a ou rejeitando-a, e registra o evento na thread."""
         new_status = "APPROVED" if approved else "REJECTED"
         now = datetime.now(timezone.utc).isoformat()
         async with get_db() as db:
+            cur_info = await db.execute(
+                "SELECT dot_id, thread_id, action_type, payload FROM hitl_approvals WHERE id = ? AND status = 'PENDING'",
+                (approval_id,)
+            )
+            approval_row = await cur_info.fetchone()
+            if not approval_row:
+                return False
+
             cursor = await db.execute(
                 """
                 UPDATE hitl_approvals
@@ -111,5 +158,32 @@ class HITLManager:
                 """,
                 (new_status, notes, now, approval_id)
             )
+            updated = cursor.rowcount > 0
+
+            # Se houver thread_id vinculada, registra aviso de resolução para continuidade do agente
+            t_id = approval_row["thread_id"]
+            d_id = approval_row["dot_id"]
+            act_type = approval_row["action_type"]
+            if updated and t_id:
+                cur_th = await db.execute("SELECT id FROM threads WHERE id = ?", (t_id,))
+                if await cur_th.fetchone():
+                    verdict_label = "HOMOLOGADA (APPROVED)" if approved else "REJEITADA (REJECTED)"
+                    note_txt = f" Notas: {notes}" if notes else ""
+                    resolution_msg = (
+                        f"[GOVERNANCA HITL // ACAO {verdict_label}]\n"
+                        f"Solicitacao '{approval_id}' para '{act_type}' foi resolvida pelo operador humano.{note_txt}"
+                    )
+                    await db.execute(
+                        """
+                        INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
+                        VALUES (?, ?, 'system', ?, ?, 'system', 'public')
+                        """,
+                        (str(uuid.uuid4()), t_id, resolution_msg, d_id)
+                    )
+                    await db.execute(
+                        "UPDATE threads SET status = 'idle', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                        (t_id,)
+                    )
+
             await db.commit()
-            return cursor.rowcount > 0
+            return updated

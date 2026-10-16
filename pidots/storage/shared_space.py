@@ -7,9 +7,11 @@ descobertas e dados estruturados na mesma thread com persistência atômica no S
 import uuid
 import re
 import logging
+from xml.sax.saxutils import escape as xml_escape
 from typing import Any
 
 from .db import get_db
+from ..config import settings
 
 logger = logging.getLogger("pidots.shared_space")
 
@@ -42,9 +44,9 @@ class SharedSpaceManager:
                 """
                 INSERT OR IGNORE INTO dots (
                     id, name, role, system_prompt, model, workspace_path
-                ) VALUES (?, ?, 'AI Coworker', 'Assistente técnico.', 'qwen3.8-27b', ?)
+                ) VALUES (?, ?, 'AI Coworker', 'Assistente técnico.', ?, ?)
                 """,
-                (dot_id, dot_id, f"workspaces/{dot_id}")
+                (dot_id, dot_id, settings.ai_model, f"workspaces/{dot_id}")
             )
             await db.execute(
                 """
@@ -157,8 +159,11 @@ class SharedSpaceManager:
             "  <description>Notas técnicas e descobertas compartilhadas entre múltiplos Dots nesta thread:</description>"
         ]
         for r in rows:
-            lines.append(f"  <topic key=\"{r['topic_key']}\" author=\"@{r['dot_id']}\" updated_at=\"{r['updated_at']}\">")
-            lines.append(f"    {r['content']}")
+            safe_key = xml_escape(str(r['topic_key']))
+            safe_author = xml_escape(str(r['dot_id']))
+            safe_content = xml_escape(str(r['content']))
+            lines.append(f"  <topic key=\"{safe_key}\" author=\"@{safe_author}\" updated_at=\"{r['updated_at']}\">")
+            lines.append(f"    {safe_content}")
             lines.append("  </topic>")
         lines.append("</shared_knowledge_space>")
 

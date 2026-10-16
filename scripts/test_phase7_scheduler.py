@@ -7,6 +7,13 @@ import asyncio
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+
+import sys
+from pathlib import Path
+
+# Adiciona o diretorio raiz ao PYTHONPATH
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from pidots.config import settings
 from pidots.storage.db import init_edge_database, get_db
 from pidots.core.scheduler import EdgeScheduler, execute_proactive_task

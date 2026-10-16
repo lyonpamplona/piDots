@@ -357,7 +357,7 @@ A informacao foi organizada para eliminar colisoes entre navegacao de produto, o
 | **Dicionarios de Locale** | `GET /data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
 | **Micro-Motor i18n JS** | `GET /static/pidots-i18n.js` | Micro-motor Vanilla JS de traducao dinamica client-side |
 | **Changelog e Patch Notes** | `GET /api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.3.0) |
-| **Service Worker PWA** | `GET /sw.js` | Service Worker com cache defensivo v5 para operacao offline |
+| **Service Worker PWA** | `GET /sw.js` | Service Worker com cache defensivo v7 para operacao offline |
 | **Redirecionamentos RFC 7538** | `/apresentacao`, `/guia`, `/console` | Redirecionamentos permanentes HTTP 308 preservando compatibilidade retroativa |
 
 ### 12.2 Surface Switcher e Navegacao Cruzada via Chords Globais
@@ -474,6 +474,42 @@ Para solucionar a compressao lateral de interface em notebooks de resolucoes med
 1. **Colapso Sob Demanda da Sidebar:** Em telas entre 1024px e 1440px, a coluna esquerda (canais e Dots) colapsa automaticamente, funcionando como gaveta flutuante sob demanda de 260px com backdrop acionada via `Alt+B` ou clique no botao `[PAINEL]`. Isso eleva a largura util do teletipo de 202px para mais de 750px, mantendo o Live Canvas aberto lado a lado sem espremer a leitura do operador.
 2. **Edge Pulse Chip de Telemetria:** Substitui a multiplicidade de chips dispersos no cabecalho por uma pílula tecnica única de alta densidade (`[EDGE // 48.2 °C // 118 MB // WAL ATIVO // HITL 0]`), economizando mais de 360px de espaco horizontal no topo da tela.
 3. **Canvas Responsivo com Split Dinamico:** O editor de documentos Spaces ajusta sua largura em proporcao 50/50 em desktops e pode ser expandido em tela cheia com a tecla `F11`.
+
+### 12.8 Arquitetura Frontend Modular Desacoplada e EdgeAssetManager
+
+A versao 1.5.0 do piDots consolidou o desacoplamento completo dos grandes monolitos de frontend, decompondo os documentos em camadas independentes de alta coesao e baixo acoplamento:
+
+```
+frontend/
+├── pages/                           # Documentos HTML semanticos enxutos
+│   ├── app.html                     # Console operacional Workspace (/app) — reducao de 86%
+│   ├── landing.html                 # Landing page oficial de apresentacao (/) — reducao de 59%
+│   ├── docs.html                    # Guia didatico e manual de referencia (/docs) — reducao de 51%
+│   └── relatorio.html               # Relatorio historico de engenharia (/relatorio)
+├── static/
+│   ├── css/                         # Design System Pixel Paper UI segmentado
+│   │   ├── tokens.css               # Design tokens, cores Noir/Blueprint e insets
+│   │   ├── reset.css                # Resets de caixa, tipografia e teletipo scrollbars
+│   │   ├── layout.css               # Casca triptica, header e barra de telemetria
+│   │   ├── components.css           # Botoes chanfrados, inputs, carimbos e catalogos SVG
+│   │   ├── mobile.css               # Ergonomia touch, safe areas e prevencao de zoom
+│   │   ├── spa.css                  # Estilos especificos do Console Workspace
+│   │   ├── landing.css              # Estilos do Hero, calculadora ROI e ReAct simulator
+│   │   ├── docs.css                 # Estilos do Guia Didatico e blocos de codigo
+│   │   └── relatorio.css            # Estilos dedicados do relatorio de engenharia
+│   └── js/                          # Motores JavaScript desacoplados em Vanilla JS
+│       ├── core/                    # pidots-i18n.js, scroll-lock.js, pixel-system.js
+│       ├── spa/                     # pidots-api.js, slash-commands.js, tour-engine.js, pidots-ux.js, app-init.js
+│       ├── landing/                 # landing.js (simuladores e calculadora)
+│       └── docs/                    # docs.js (Omnisearch Ctrl+K e mini API tester)
+```
+
+#### Principios de Engenharia da Camada Desacoplada:
+1. **Zero-Build e Vanilla JS Puro:** Nao utiliza ferramentas de empacotamento pesadas no no de silicio (Node.js/Webpack/Vite), eliminando consumo de memoria RAM em segundo plano e preservando o hardware restrito ARM64 do Raspberry Pi 4B.
+2. **Encapsulamento IIFE com Exportacao Global:** Todos os modulos JavaScript sao estruturados com escopo fechado via IIFE e exportacao seletiva para o objeto `window`, mantendo compatibilidade de 100% com manipuladores de eventos declarativos (`onclick`, `onkeydown`).
+3. **`EdgeAssetManager` In-Memory Preload:** Todas as paginas HTML sao pré-carregadas na memoria RAM no momento do arranque da aplicacao FastAPI (`lifespan`), recebendo hash ETag SHA-256 e versao pré-comprimida em Gzip. Leituras consecutivas no cartao MicroSD sao zeradas.
+4. **Cache HTTP Condicional (ETag / HTTP 304):** Respostas validam o cabecalho `If-None-Match`, respondendo instantaneamente com `304 Not Modified` e 0 bytes de payload para clientes locais ou sob conexoes tuneis.
+5. **Service Worker v7 (`pidots-cache-v7`):** Atualizacao da esteira de cache offline do navegador com suporte integral aos 9 arquivos CSS e 11 arquivos JS modularizados, garantindo operacao continua mesmo com a rede desconectada.
 
 ---
 
@@ -715,5 +751,44 @@ flowchart TD
    - Consolida mensagens antigas (> 7 dias) na tabela `episodic_memories` e poda mensagens brutas para economizar blocos de armazenamento.
    - Executa `VACUUM INTO` em conexao isolada com autocommit (`isolation_level=None`), gerando backups sem bloqueio concorrente.
    - Endpoint: `POST /api/edge/maintenance`.
+
+---
+
+## 20. Motor de Tour Spotlight Interativo e Experiencia de Primeiro Acesso (PiDotsTourEngine)
+
+O **PiDotsTourEngine** e o modulo client-side em Vanilla JS puro (< 12KB) responsavel por guiar novos operadores pelo cockpit do piDots em seus primeiros acessos, eliminando modais estaticos ineficientes e adotando o padrao de **Spotlight Walkthrough in-context**.
+
+```mermaid
+flowchart TD
+    subgraph TriggerLayer["Gatilhos de Inicializacao"]
+        FTUE["Primeiro Acesso\n(localStorage: pidots_tour_completed != true)"]
+        CmdTour["Comando /tour\n(ou /onboarding)"]
+        MenuDrawer["Menu de Sistema (F1)\n[REVER GUIA OPERACIONAL]"]
+    end
+
+    subgraph TourEngine["Motor de Execucao (PiDotsTourEngine)"]
+        CalcCoord["Calculo Dinamico de Viewport\n(getBoundingClientRect + Scroll)"]
+        PrepareDOM["Hook beforeStep()\n(Descolapsa Sidebar / Altera Aba Mobile)"]
+        SpotlightMask["Mascara Spotlight Pixel Paper\n(box-shadow: 0 0 0 9999px rgba(0,0,0,0.82))"]
+        FloatingPopover["Balao Flutuante .pixel-tour-popover\n(Posicionamento Bottom/Top/Left com Clamp)"]
+    end
+
+    subgraph Steps["Etapas Canonicas do Cockpit"]
+        S1["Etapa 1: Squad de Especialistas\n(#dotsListContainer)"]
+        S2["Etapa 2: Teletipo e Slash Commands\n(#instructionInput)"]
+        S3["Etapa 3: Comutador de Modos (Foco/Zen)\n(#btnToggleMode)"]
+        S4["Etapa 4: Live Artifact Canvas & Diffs\n(#rightCanvas)"]
+        S5["Etapa 5: Gaveta Tecnica & Telemetria\n(#btn-system-drawer)"]
+    end
+
+    TriggerLayer --> TourEngine
+    TourEngine --> PrepareDOM --> CalcCoord --> SpotlightMask --> FloatingPopover
+    FloatingPopover --> S1 --> S2 --> S3 --> S4 --> S5
+```
+
+### Principios de Engenharia do PiDotsTourEngine:
+1. **Zero Dependencias Pesadas:** Nenhuma biblioteca de terceiros (como Intro.js ou Shepherd.js). Implementado diretamente em CSS custom properties e DOM API padrao, preservando RAM e processamento no cliente.
+2. **Preparacao Reativa do DOM (`beforeStep`):** Se um painel estiver colapsado (como o Live Canvas ou a Sidebar), o motor executa automaticamente a transicao de abertura antes de focar o elemento, recalculando coordenadas apos a animacao.
+3. **Persistencia Local Segura:** Utiliza `localStorage.getItem('pidots_tour_completed')`. O operador pode reiniciar o fluxo a qualquer momento com o comando `/tour reset`.
 
 

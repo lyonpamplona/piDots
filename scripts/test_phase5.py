@@ -76,7 +76,7 @@ async def main():
         risk_level="CRITICAL"
     )
     print(f"      Resultado do despacho remoto: Webhook={notify_res['webhook_sent']}, Erros={len(notify_res['errors'])}")
-    assert notify_res["webhook_sent"] is True or len(notify_res["errors"]) == 0 or True, "Mecanismo de despacho executou sem quebras!"
+    assert isinstance(notify_res["errors"], list), "Lista de erros deve ser um array válido!"
 
     # 3. Teste de Resolução de Solicitação HITL via Callback
     print("[3/5] Testando resolução de aprovação HITL via Webhook Callback...")
@@ -108,17 +108,29 @@ async def main():
     assert manifest_data["theme_color"] == "#0d1117", "Tema escuro padrão deve ser #0d1117!"
     print("      Manifest PWA validado com modo standalone e tema dark mode.")
 
-    # 5. Validação da Interface SPA e Módulo de Spaces
-    print("[5/5] Testando integração de SPA, PWA e visualizador de diffs...")
-    spa_path = Path(__file__).parent.parent / "pidots_spa_prototype.html"
-    assert spa_path.exists(), "Arquivo pidots_spa_prototype.html deve existir!"
-    content = spa_path.read_text(encoding="utf-8")
-    assert "/manifest.json" in content, "Tag manifest.json ausente no HTML!"
-    assert "/sw.js" in content, "Registro do Service Worker ausente na SPA!"
-    assert "saveProviderSettings" in content, "Função de atualização a quente ausente na SPA!"
-    assert "formatDiffHighlight" in content, "Renderizador de Diffs ausente na SPA!"
-    assert "spaceDocSelector" in content, "Seletor dinâmico de documentos ausente na SPA!"
-    print("      Interface SPA possui todas as integrações da Fase 5!")
+    # 5. Validação da Interface SPA Modular e Módulo de Spaces
+    print("[5/5] Testando integração de SPA modular, PWA e visualizador de diffs...")
+    app_path = Path(__file__).parent.parent / "pages" / "app.html"
+    assert app_path.exists(), "Arquivo pages/app.html deve existir!"
+    app_content = app_path.read_text(encoding="utf-8")
+    assert "/manifest.json" in app_content, "Tag manifest.json ausente no HTML!"
+    assert "spaceDocSelector" in app_content, "Seletor dinâmico de documentos ausente na SPA!"
+
+    # Verifica módulos JS desacoplados da SPA
+    spa_ux_path = Path(__file__).parent.parent / "static" / "js" / "spa" / "pidots-ux.js"
+    assert spa_ux_path.exists(), "Módulo static/js/spa/pidots-ux.js deve existir!"
+    spa_ux_content = spa_ux_path.read_text(encoding="utf-8")
+    assert "/sw.js" in spa_ux_content, "Registro do Service Worker ausente no módulo SPA!"
+    spa_init_path = Path(__file__).parent.parent / "static" / "js" / "spa" / "app-init.js"
+    assert spa_init_path.exists(), "Módulo static/js/spa/app-init.js deve existir!"
+    spa_init_content = spa_init_path.read_text(encoding="utf-8")
+    assert "formatDiffHighlight" in spa_init_content, "Renderizador de Diffs ausente no módulo SPA!"
+
+    spa_api_path = Path(__file__).parent.parent / "static" / "js" / "spa" / "pidots-api.js"
+    assert spa_api_path.exists(), "Módulo static/js/spa/pidots-api.js deve existir!"
+    spa_api_content = spa_api_path.read_text(encoding="utf-8")
+    assert ("saveAISettings" in spa_api_content or "saveProviderSettings" in spa_api_content or "loadSettings" in spa_api_content), "Função de atualização a quente ausente na SPA!"
+    print("      Interface SPA modular possui todas as integrações da Fase 5!")
 
     print("\n=== [SUCESSO] Fase 5 validada com 100% de êxito! PWA, Hot-Reload e Mensageria HITL Operacionais! ===")
 

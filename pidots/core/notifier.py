@@ -86,8 +86,7 @@ class HITLNotifier:
                 tg_url = f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendMessage"
                 tg_payload = {
                     "chat_id": settings.telegram_chat_id,
-                    "text": telegram_text,
-                    "parse_mode": "Markdown"
+                    "text": telegram_text
                 }
 
                 client = http_client or httpx.AsyncClient(timeout=5.0)

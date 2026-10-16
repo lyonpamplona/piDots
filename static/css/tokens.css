@@ -1,0 +1,95 @@
+/* =====================================================================
+   PIXEL PAPER UI - DESIGN TOKENS & CSS CUSTOM PROPERTIES
+   Ambiente: Raspberry Pi 4B (ARM64) // piDots Edge Core
+   Estética: Dark Paper Noir (Padrão) & Blueprint (Claro)
+   Diretriz: Zero Emojis // 1-bit / 8-bit Ortogonal // Sombras 0-blur
+   ===================================================================== */
+
+:root {
+    /* Unidade escalar base de pixel art */
+    --px: 2px;
+
+    /* Insets de Seguranca de Hardware (Notch, Dynamic Island, Home Indicator iOS/Android) */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+
+    /* Dimensoes Estruturais */
+    --header-height: 52px;
+    --drawer-width: 380px;
+
+    /* Tipografia Tecnica Hibrida */
+    --font-pixel: 'Silkscreen', monospace;
+    --font-display: 'VT323', monospace;
+    --font-mono: 'JetBrains Mono', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+
+    /* Paleta Dark Paper Noir (Padrao de Fabrica) */
+    --paper-base: #07090c;
+    --paper-sheet: #0b0e12;
+    --paper-surface: #11161d;
+    --paper-surface-elevated: #182029;
+    --paper-surface-recessed: #040608;
+
+    /* Tintas Tecnicas e Fosforo Retro */
+    --ink-main: #f1f5f9;
+    --ink-primary: var(--ink-main);
+    --ink-secondary: #94a3b8;
+    --ink-muted: #64748b;
+    --ink-carbon: #2b394a;
+
+    --phosphor-green: #33ff66;
+    --phosphor-green-muted: #15803d;
+    --thermal-amber: #ffb830;
+    --thermal-amber-muted: #b45309;
+    --blueprint-cyan: #38bdf8;
+    --stamp-danger: #ef4444;
+
+    /* Bordas e Contornos Tecnicos */
+    --border-subtle: #1c2633;
+    --border-default: #283340;
+    --border-strong: #3d5168;
+    --border-accent: #38bdf8;
+
+    /* Sombras Mecanicas Solidas Duras (Zero Blur) */
+    --shadow-sm: 2px 2px 0px #000000;
+    --shadow-md: 4px 4px 0px #000000;
+    --shadow-lg: 6px 6px 0px #000000;
+
+    /* Grade Milimetrada Procedural */
+    --grid-color-fine: rgba(56, 189, 248, 0.04);
+    --grid-color-major: rgba(56, 189, 248, 0.09);
+}
+
+/* Tema Alternativo: Blueprint Tecnico de Prancheta */
+[data-theme="blueprint"] {
+    --paper-base: #e9ecef;
+    --paper-sheet: #f6f8fa;
+    --paper-surface: #ffffff;
+    --paper-surface-elevated: #f1f4f8;
+    --paper-surface-recessed: #e2e8f0;
+
+    --ink-main: #0f172a;
+    --ink-secondary: #334155;
+    --ink-muted: #64748b;
+    --ink-carbon: #cbd5e1;
+
+    --phosphor-green: #15803d;
+    --phosphor-green-muted: #166534;
+    --thermal-amber: #b45309;
+    --thermal-amber-muted: #92400e;
+    --blueprint-cyan: #0284c7;
+    --stamp-danger: #b91c1c;
+
+    --border-subtle: #cbd5e1;
+    --border-default: #94a3b8;
+    --border-strong: #475569;
+    --border-accent: #0284c7;
+
+    --shadow-sm: 2px 2px 0px #0f172a;
+    --shadow-md: 4px 4px 0px #0f172a;
+    --shadow-lg: 6px 6px 0px #0f172a;
+
+    --grid-color-fine: rgba(2, 132, 199, 0.06);
+    --grid-color-major: rgba(2, 132, 199, 0.15);
+}

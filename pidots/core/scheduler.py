@@ -64,6 +64,10 @@ class EdgeScheduler:
         next_run = cls.calculate_next_run(cron_expr)
 
         async with get_db() as db:
+            cursor = await db.execute("SELECT id FROM dots WHERE id = ?", (dot_id,))
+            if not await cursor.fetchone():
+                raise ValueError(f"Dot '{dot_id}' não encontrado para agendamento.")
+
             await db.execute(
                 """
                 INSERT INTO scheduled_tasks (
@@ -252,8 +256,11 @@ async def execute_proactive_task(
     async with get_db() as db:
         await db.execute(
             """
-            INSERT OR REPLACE INTO threads (id, dot_id, title, status)
+            INSERT INTO threads (id, dot_id, title, status)
             VALUES (?, ?, ?, 'proactive')
+            ON CONFLICT(id) DO UPDATE SET
+                status = 'proactive',
+                updated_at = CURRENT_TIMESTAMP
             """,
             (proactive_thread_id, dot_id, f"Heartbeat: {task['task_name']}")
         )
@@ -327,6 +334,9 @@ async def execute_proactive_task(
     )
 
 
+_background_tasks: set[asyncio.Task[Any]] = set()
+
+
 async def heartbeat_worker_loop(
     ai_provider: OpenAIUniversalProvider,
     check_interval_seconds: int = 15
@@ -344,7 +354,9 @@ async def heartbeat_worker_loop(
             due_tasks = await EdgeScheduler.get_due_tasks()
             for task in due_tasks:
                 if not EdgeScheduler.is_running(task["id"]):
-                    asyncio.create_task(execute_proactive_task(task, ai_provider))
+                    t = asyncio.create_task(execute_proactive_task(task, ai_provider))
+                    _background_tasks.add(t)
+                    t.add_done_callback(_background_tasks.discard)
 
             # Monitoramento proativo de triggers de hardware a cada ~60 segundos
             hardware_check_ticks += 1
@@ -358,6 +370,8 @@ async def heartbeat_worker_loop(
 
             await asyncio.sleep(check_interval_seconds)
         except asyncio.CancelledError:
+            for active_t in list(_background_tasks):
+                active_t.cancel()
             logger.info("Scheduler Proativo encerrado.")
             break
         except Exception as e:

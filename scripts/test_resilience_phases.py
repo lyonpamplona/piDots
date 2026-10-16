@@ -9,6 +9,13 @@ import asyncio
 from datetime import datetime, timezone
 import httpx
 
+
+import sys
+from pathlib import Path
+
+# Adiciona o diretorio raiz ao PYTHONPATH
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from pidots.config import settings
 from pidots.storage.db import init_edge_database, get_db
 from pidots.providers.openai_client import (

@@ -114,8 +114,12 @@ class OpenAIUniversalProvider:
                     logger.error("%s", err_msg)
                     raise ProviderAuthError(err_msg)
 
-                # Códigos passíveis de retry (503 Service Unavailable, 429 Rate Limit, 502 Bad Gateway, 504 Gateway Timeout)
-                if response.status_code in (503, 429, 502, 504):
+                # Códigos passíveis de retry (500 Internal Error, 503 Service Unavailable, 429 Rate Limit, 502 Bad Gateway, 504 Gateway Timeout)
+                if response.status_code in (500, 502, 503, 504, 429):
+                    if attempt == self.max_retries - 1:
+                        err_text = response.text[:400]
+                        logger.error("Esgotadas as %d tentativas com o provedor (HTTP %d): %s", self.max_retries, response.status_code, err_text)
+                        raise ProviderTransientError(f"Provedor retornou HTTP {response.status_code} após {self.max_retries} tentativas: {err_text}")
                     jitter = random.uniform(0.1, 0.5)
                     wait_time = delays[min(attempt, len(delays) - 1)] + jitter
                     logger.warning(
@@ -139,7 +143,7 @@ class OpenAIUniversalProvider:
                 logger.error("Erro retornado pelo provedor: HTTP %d - %s", response.status_code, response.text[:200])
                 response.raise_for_status()
 
-            except (httpx.ConnectError, httpx.ReadTimeout, httpx.RemoteProtocolError) as net_err:
+            except (httpx.TransportError, httpx.TimeoutException, httpx.HTTPStatusError) as net_err:
                 if attempt == self.max_retries - 1:
                     logger.error("Esgotadas as tentativas de conexão com %s: %s", endpoint, str(net_err))
                     raise ProviderTransientError(f"Falha de conexão com {endpoint}: {str(net_err)}") from net_err

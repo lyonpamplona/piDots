@@ -10,14 +10,14 @@ Correcoes de seguranca sao aplicadas exclusivamente nas seguintes versoes:
 
 | Versao | Status de Suporte |
 | :--- | :--- |
-| `0.1.x` | Suportada ativamente com correcoes prioritarias |
-| `< 0.1.0` | Descontinuada / Nao suportada |
+| `1.5.x` | Suportada ativamente com correcoes prioritarias de borda |
+| `< 1.5.0` | Descontinuada / Nao suportada |
 
 ---
 
 ## 2. Modelo de Ameacas e Fronteiras de Seguranca
 
-O piDots implementa o principio de defesa em profundidade estruturado em tres barreiras independentes:
+O piDots implementa o principio de defesa em profundidade estruturado em cinco barreiras independentes:
 
 ### 1. Isolamento via Sandbox Bubblewrap (`bwrap`)
 - Comandos de terminal despachados pelos agentes sao executados dentro de namespaces isolados do kernel Linux (`CLONE_NEWNS`, `CLONE_NEWPID`, `CLONE_NEWIPC`, `CLONE_NEWUTS`).
@@ -30,7 +30,15 @@ O piDots implementa o principio de defesa em profundidade estruturado em tres ba
 - Comandos que envolvam remocao recursiva (`rm -rf`), elevacao de privilegios (`sudo`, `su`), alteracao de permissoes (`chmod`, `chown`), operacoes de rede de baixo nivel ou reinicializacao do sistema sao retidos imediatamente em fila de governanca.
 - Nenhuma acao de risco critico e executada sem a confirmacao explicita do operador humano autenticado via interface web ou CLI.
 
-### 3. Protecao de Segredos e Variaveis de Ambiente
+### 3. Protecao Rigorosa Anti-SSRF (Server-Side Request Forgery)
+- A ferramenta `read_web_page` valida os enderecos IP resolvidos por DNS contra faixas de rede privada (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), loopback (`127.0.0.0/8`), link-local (`169.254.0.0/16`) e multicast.
+- Redirecionamentos HTTP (301, 302, 303, 307, 308) sao inspecionados salto a salto (hop-by-hop), impedindo evasao por open-redirects externos.
+
+### 4. Protecao Anti-Path-Traversal e Symlink Traversal
+- Todas as operacoes de arquivo em `file_ops.py` e empacotamento em `spaces_manager.py` aplicam verificacao estrita com `os.path.realpath` e `os.path.commonpath`.
+- O acesso fora da arvore autorizada do workspace ou a inclusao de symlinks apontando para arquivos sensiveis do hospedeiro e sumariamente bloqueado.
+
+### 5. Protecao de Segredos e Variaveis de Ambiente
 - Chaves de API de provedores de inferencia sao injetadas exclusivamente via variaveis de ambiente ou arquivo `.env`.
 - Arquivos `.env`, bancos de dados SQLite com dados transacionais e workspaces de usuarios sao rigorosamente bloqueados no `.gitignore` e no `.dockerignore`, impedindo commit acidental em repositorios publicos.
 

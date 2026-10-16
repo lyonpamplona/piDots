@@ -139,6 +139,8 @@ class EdgeHardwareTriggers:
             "free_percent": free_percent
         }
 
+    get_memory_metrics = get_ram_metrics
+
     @classmethod
     def get_load_metrics(cls) -> dict[str, Any]:
         """Recupera a média de carga do sistema (Load Average 1m, 5m, 15m)."""
