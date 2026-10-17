@@ -4,6 +4,101 @@
    ReAct Simulator, HITL Mechanical Lock, Calculadora ROI, Matrix
    ===================================================================== */
 
+/* =====================================================================
+   RESTAURACAO DE REGRAS CRITICAS DESACOPLADAS DO MONOLITO ORIGINAL
+   ===================================================================== */
+
+/* 1. Sobrescrita do Body para a Landing Page (Anula overflow: hidden da SPA) */
+body {
+    background-color: var(--paper-base);
+    background-image: 
+        linear-gradient(var(--grid-color-major) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color-major) 1px, transparent 1px),
+        linear-gradient(var(--grid-color-fine) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color-fine) 1px, transparent 1px);
+    background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
+    background-position: -1px -1px;
+    color: var(--ink-main);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: geometricPrecision;
+}
+
+/* 2. Cabecalho Fixo Desktop (Sticky Header) */
+header.landing-header {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    background: var(--paper-surface);
+    border-bottom: 2px solid var(--border-default);
+    height: calc(54px + max(0px, var(--safe-top)));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: max(0px, var(--safe-top));
+    padding-bottom: 0;
+    padding-left: max(12px, var(--safe-left));
+    padding-right: max(12px, var(--safe-right));
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+header.landing-header::-webkit-scrollbar {
+    display: none;
+}
+
+.lang-text-short {
+    display: none;
+}
+
+.header-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-link-btn {
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    color: var(--ink-secondary);
+    text-decoration: none;
+    padding: 5px 8px;
+    border: 1px solid transparent;
+    transition: all 0.05s steps(1);
+    position: relative;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-link-btn:hover {
+    color: var(--blueprint-cyan);
+    border-color: var(--border-default);
+    background: var(--paper-surface-elevated);
+}
+
+/* 3. Ponto Indicador Ortogonal para CTAs Primarios */
+.pulse-step-dot {
+    width: 6px;
+    height: 6px;
+    background: #000000;
+    display: inline-block;
+    box-shadow: 0 0 0 1px #000000;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+}
+
         .landing-container {
             width: 100%;
             padding: 24px 28px;
@@ -1210,7 +1305,7 @@
             width: 100vw;
             height: 100vh;
             background: rgba(0, 0, 0, 0.7);
-            z-index: 90;
+            z-index: 120;
             display: none;
             backdrop-filter: blur(1px);
         }
@@ -1228,7 +1323,7 @@
             height: 100dvh;
             background: var(--paper-surface);
             border-left: 2px solid var(--border-accent);
-            z-index: 100;
+            z-index: 130;
             display: flex;
             flex-direction: column;
             transition: right 0.2s ease-out;
@@ -1283,7 +1378,10 @@
         .drawer-content {
             flex: 1;
             overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
             padding: 16px;
+            padding-bottom: max(20px, var(--safe-bottom));
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -1816,9 +1914,9 @@
         .node-telemetry-badge .telemetry-led {
             width: 6px;
             height: 6px;
-            border-radius: 50%;
+            border-radius: 0;
             background: var(--phosphor-green, #33ff66);
-            box-shadow: 0 0 6px rgba(51, 255, 102, 0.8);
+            box-shadow: 1px 1px 0px #000000;
             display: inline-block;
         }
         @media (max-width: 992px) {
@@ -1878,4 +1976,70 @@
                 font-size: 8px !important;
                 min-height: 32px !important;
             }
+            #btnMobileNavToggle {
+                display: inline-flex !important;
+            }
+            .lang-text-full {
+                display: none !important;
+            }
+            .lang-text-short {
+                display: inline !important;
+            }
+            .theme-btn-label {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .manual-btn-label {
+                display: none !important;
+            }
+            .brand-unit .brand-badge {
+                display: none !important;
+            }
+            .rubber-stamps-arena {
+                flex-direction: column !important;
+                gap: 12px !important;
+                padding: 12px !important;
+            }
+            .rubber-stamp {
+                font-size: 18px !important;
+                padding: 6px 10px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .mobile-nav-panel.open {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* Classes do Quickstart Banner Responsivo */
+        .quickstart-banner {
+            background: var(--paper-surface-elevated);
+            border: 2px solid var(--border-accent);
+            box-shadow: var(--shadow-lg);
+            padding: clamp(20px, 4vw, 32px) clamp(14px, 3vw, 24px);
+            text-align: center;
+        }
+
+        .quickstart-badge {
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .quickstart-title {
+            font-family: var(--font-pixel);
+            font-size: clamp(16px, 3.8vw, 24px);
+            color: var(--ink-main);
+            margin-bottom: 14px;
+            letter-spacing: 0.04em;
+            line-height: 1.3;
+        }
+
+        .quickstart-lead {
+            max-width: 760px;
+            margin: 0 auto 24px;
+            font-size: clamp(11.5px, 2vw, 13px);
+            color: var(--ink-secondary);
+            line-height: 1.6;
         }

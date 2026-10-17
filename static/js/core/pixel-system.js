@@ -196,6 +196,9 @@
             };
 
             backdrop.classList.add('active');
+            if (window.ScrollLockManager && typeof window.ScrollLockManager.bloquear === 'function') {
+                window.ScrollLockManager.bloquear();
+            }
         },
 
         confirmDialog() {
@@ -204,6 +207,10 @@
             const cb = this.dialogCallback;
 
             if (backdrop) backdrop.classList.remove('active');
+            if (window.ScrollLockManager && typeof window.ScrollLockManager.desbloquear === 'function') {
+                window.ScrollLockManager.desbloquear();
+            }
+
             if (cb && cb.onConfirm) {
                 if (cb.isPrompt && inputEl) {
                     cb.onConfirm(inputEl.value.trim());
@@ -219,6 +226,10 @@
             const cb = this.dialogCallback;
 
             if (backdrop) backdrop.classList.remove('active');
+            if (window.ScrollLockManager && typeof window.ScrollLockManager.desbloquear === 'function') {
+                window.ScrollLockManager.desbloquear();
+            }
+
             if (!isConfirmed && cb && cb.onCancel) {
                 cb.onCancel();
             }

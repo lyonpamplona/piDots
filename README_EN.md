@@ -159,19 +159,23 @@ The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 - **Vanilla JS Micro-Engine (`static/pidots-i18n.js`):** Instant language switching (< 10ms) without bloated frontend frameworks or memory overhead, persisting preference safely in `localStorage.getItem('pidots_lang')`.
 - **Atomic JSON Dictionaries (`data/locales/pt.json` and `data/locales/en.json`):** Semantic edge localization dictionaries with proactive stale-while-revalidate caching and graceful fallbacks.
 - **Strict textContent DOM Mutation:** Declarative attribute bindings via `data-i18n` and `data-i18n-attr`, guaranteeing complete immunity against cross-site scripting (XSS).
-- **Interactive Onboarding & SemVer v1.5.0 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
+- **Interactive Onboarding & SemVer v1.5.2 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
 
-### 11. Unified Slash Commands Protocol (/), Adaptive Triptych & Mobile Resilience (v1.3.0)
-- **Comprehensive 30 Slash Commands Catalog:** Commands structured across 6 operational domains (System, Agents, Memory, Tasks, Edge, Export), triggered with `/` in the teletype. Local commands (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) execute client-side in under 16ms with zero LLM API calls and zero token consumption.
+### 11. Unified Slash Commands Protocol (/), Adaptive Triptych & Mobile-First Engineering (v1.5.2)
+- **Comprehensive 30 Slash Commands Catalog:** Commands structured across 6 operational domains (System, Agents, Memory, Tasks, Edge, Export), triggered with `/` in the teletype or via the mechanical touch button `[/]`. Local commands (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) execute client-side in under 16ms with zero LLM API calls and zero token consumption.
+- **Mechanical Slash Trigger Button [/]:** Dedicated tactile button (`#slashTriggerBtn`) inside the operational console opening the slash command popover instantly on mobile devices without requiring virtual keyboard engagement.
 - **Vanilla JS Autocomplete Popover Engine:** Lightweight client-side engine (< 10KB) providing in-memory fuzzy search, cyclic arrow key navigation (ArrowUp/ArrowDown), Tab/Enter completion, Escape dismissal, and Levenshtein fault-tolerance.
 - **Tactile Teletype Slips (Slash Receipt Slip):** Receipts generated with UTC timestamps, sequential `SEQ#` audit tags, jagged perforation lines, and an enforced DOM ceiling of 150 nodes to avoid memory leaks.
 - **Adaptive Workspace Triptych (1024px-1440px):** Responsive 3-column layout collapsing the left sidebar on-demand into an overlaid 260px drawer with backdrop, expanding useful teletype width from 202px to > 750px while keeping the Live Canvas in a 50/50 split.
 - **Consolidated Edge Pulse Chip Telemetry:** High-density single-line header monitor (`[EDGE // 48.2 °C // 118 MB // WAL ACTIVE // HITL 0]`), conserving over 360px of horizontal viewport real estate.
-- **Mobile window.visualViewport Engine & WCAG 2.2 Touch Targets:** Automatic virtual keyboard detection concealing bottom navigation bars, preserving smooth input scrolling on iOS Safari and Android Chrome, and guaranteeing 44px minimum tap targets (WCAG 2.2 AA).
+- **Mobile Bottom Navigation Bar:** High-density fixed footer bar active on screens <= 768px (`.mobile-bottom-nav`) with 4 ergonomic tabs (`[O] DOTS`, `[>] CHAT`, `[*] CANVAS`, `[?] GUIDE`), isolated with `env(safe-area-inset-bottom)` and minimum 44x44pt hitboxes (Thumb Zone) via `::after` pseudo-elements.
+- **Dynamic Virtual Keyboard Synchronization (window.visualViewport):** Reactive `window.visualViewport` listener adjusting physical body height (`document.body.style.height = ${vv.height}px`), hiding bottom navigation via the `keyboard-open` class, and auto-scrolling the ticker after 60ms to eliminate UI collisions on iOS Safari and Android Chrome.
+- **Apple WebKit Anti-Zoom Protection:** Mandatory `font-size: 16px` on mobile inputs and textareas with `touch-action: manipulation`, completely preventing Safari's destructive viewport auto-zoom.
 
-### 12. High-Performance In-Context Spotlight Tour & FTUE Onboarding (v1.5.0)
+### 12. High-Performance In-Context Spotlight Tour & FTUE Onboarding (v1.5.2)
 - **Vanilla JS PiDotsTourEngine (< 12KB):** Completely replaces static blocking modals with an in-context spotlight anchoring system in the live DOM. Uses single-layer `box-shadow: 0 0 0 9999px rgba(7, 9, 12, 0.84)` composited directly on the GPU, requiring < 1% CPU on the Raspberry Pi 4B and zero third-party dependencies.
 - **Five Canonical Walkthrough Steps:** Practical interactive guide spotlighting the Central Agent Squad, Command Terminal & Teletipo, Workspace Focus Switcher (Zen vs 50/50), Live Canvas & Diffs, and System Drawer (F1).
+- **Safe-Area Anchoring & Non-Intrusive Mobile Focus (v1.5.2):** Fixed positioning of `.pixel-tour-popover` above the bottom navigation bar respecting iOS safe areas, alongside virtual keyboard suppression during mobile walkthroughs.
 - **Slash Command `/tour`:** Allows revisiting the walkthrough anytime or resetting operator state via `/tour reset`.
 - **System Drawer & Context Menu Integration:** Dedicated card `[REVER GUIA OPERACIONAL SPOTLIGHT]` in the F1 drawer and rapid context menu shortcut.
 - **First-Time Access Auto-Trigger:** Automatically detects new operators via `localStorage.getItem('pidots_tour_completed')` with a smooth 600ms boot decoupling delay.
@@ -376,7 +380,7 @@ The application exposes endpoints for external integration with Server-Sent Even
 | `GET` | `/icon.svg` | Official vector SVG icon with 24-hour cache headers |
 | `GET` | `/static/pidots-i18n.js` | Client-side Vanilla JS internationalization micro-engine |
 | `GET` | `/data/locales/{lang}.json` | Atomic bilingual localization dictionaries (PT/EN) with edge caching |
-| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.5.0) |
+| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.5.2) |
 | `GET` | `/api/dots` | List all registered AI Coworkers with archetypes and status |
 | `GET` | `/api/dots/{id}/export-pack` | Portable DotPack v1.0 export (persona, memory stores, and workspace files) |
 | `POST` | `/api/dots/import-pack` | Atomic import of AI Coworker packages from DotPack manifest |
@@ -428,7 +432,7 @@ piDots includes a native dark-mode SPA/PWA interface served on the canonical pat
 - **Just-in-Time Interactive HITL Governance:** Forensic approval and veto cards rendered only when actions are held, preserving security audit trails.
 - **AG-UI Reasoning Streaming:** Progressive token-by-token display of agent thoughts and tool calls.
 - **Guided Onboarding Walkthrough:** Five-step interactive onboarding flow for first-time operators with client persistence and instant F1 replay.
-- **SemVer v1.5.0 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
+- **SemVer v1.5.2 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
 
 #### Cross-Surface Navigation via Global Keyboard Chords
 Instant, zero-friction transition between system surfaces without requiring a mouse:
@@ -445,6 +449,8 @@ Tactical terminal and artifact operations without interface friction:
 | Shortcut | Operational Action | Description |
 | :--- | :--- | :--- |
 | `Key /` | Autocomplete Popover | Triggers catalog of 30 Slash Commands with fuzzy search in teletype |
+| `Button [/]` | Touch Autocomplete | Opens slash command popover directly without triggering virtual keyboard |
+| `Bottom-Nav` | Mobile View Switch | Switches between [O] DOTS, [>] CHAT, [*] CANVAS, and [?] GUIDE views |
 | `Alt+B` / `Ctrl+B` | Toggle Sidebar | Toggles visibility of coworkers and spaces sidebar |
 | `Alt+I` | Inspect Artifact | Focuses and expands active artifact in Live Canvas |
 | `Ctrl+S` / `Cmd+S` | Save Revision | Persists atomic document revision in Spaces to SQLite WAL |
@@ -529,7 +535,7 @@ python3 scripts/stress_test.py
 ├── ARCHITECTURE.md                  # In-depth architectural and I/O specifications
 ├── CONTRIBUTING.md                  # Technical contribution guidelines
 ├── data/                            # Static application data, changelog, and localization dictionaries
-│   ├── changelog.json               # SemVer v1.5.0 release history and categorized update notes
+│   ├── changelog.json               # SemVer v1.5.2 release history and categorized update notes
 │   └── locales/                     # Atomic internationalization dictionaries (i18n)
 │       ├── en.json                  # English localization terms
 │       └── pt.json                  # Brazilian Portuguese localization terms

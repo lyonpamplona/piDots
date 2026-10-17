@@ -356,7 +356,7 @@ A informacao foi organizada para eliminar colisoes entre navegacao de produto, o
 | **Esquema OpenAPI JSON** | `GET /api/openapi.json` | Contrato formal OpenAPI 3.0 estruturado em JSON |
 | **Dicionarios de Locale** | `GET /data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
 | **Micro-Motor i18n JS** | `GET /static/pidots-i18n.js` | Micro-motor Vanilla JS de traducao dinamica client-side |
-| **Changelog e Patch Notes** | `GET /api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.3.0) |
+| **Changelog e Patch Notes** | `GET /api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.5.2) |
 | **Service Worker PWA** | `GET /sw.js` | Service Worker com cache defensivo v7 para operacao offline |
 | **Redirecionamentos RFC 7538** | `/apresentacao`, `/guia`, `/console` | Redirecionamentos permanentes HTTP 308 preservando compatibilidade retroativa |
 
@@ -372,6 +372,8 @@ As interfaces integram o **Surface Switcher**, um cabeçalho técnico flutuante 
 ### 12.3 Atalhos de Alta Produtividade do Console SPA
 Para operar 24/7 sem dependencia de mouse:
 - `Tecla /`: Disparar Autocomplete Popover com catalogo de 30 Slash Commands e busca fuzzy no teletipo.
+- `Botão [/]`: Disparar popover de comandos no mobile diretamente por toque sem ativar o teclado virtual.
+- `Bottom-Nav`: Comutar visoes taticas (`dots`, `chat`, `canvas`, `guia`) com Thumb Zone acessivel.
 - `Alt+B`: Alternar gaveta sob demanda da Sidebar no Triptico Adaptativo (1024px-1440px) com backdrop.
 - `Alt+I`: Inspecionar artefato ativo no Live Canvas.
 - `Ctrl+S` / `Cmd+S`: Gravar revisao atomica do documento em Spaces no SQLite WAL (com `preventDefault` para interceptar a gravacao padrao do browser).
@@ -380,15 +382,15 @@ Para operar 24/7 sem dependencia de mouse:
 - `Ctrl+L`: Limpar mensagens visuais da bobina do teletipo/chat local (/clear).
 - `F1`: Abrir gaveta retratil com o manual operacional tecnico.
 
-### 12.4 Engenharia e Resiliencia Mobile-First para Hardware de Borda
+### 12.4 Engenharia e Resiliencia Mobile-First para Hardware de Borda (v1.5.2)
 As interfaces foram calibradas para dispositivos moveis (iOS Safari e Android Chrome) operados remotamente via tuneis Cloudflared:
-1. **Engine window.visualViewport para Teclado Virtual:** O console monitora ativamente `window.visualViewport.addEventListener('resize')`. Quando a altura visível cai mais de 150px em relacao a `window.innerHeight`, a classe `keyboard-open` e injetada no `document.body`, ocultando a barra inferior `.mobile-bottom-nav` e preservando a rolagem nativa para o campo `#instructionInput` sem sobreposicoes indesejadas.
-2. **Protecao Anti-Zoom no iOS Safari:** Regra CSS global `font-size: 16px !important` em todos os elementos de input de texto e buscas, impedindo o disparo de zoom automatico destrutivo da Apple que quebra layouts responsivos fixos.
-3. **Viewport Dinamico (100dvh):** Uso de `min-height: 100dvh` (Dynamic Viewport Height) com fallback para `100vh`, acomodando com precisao o surgimento e recolhimento das barras de navegacao de navegadores moveis.
-4. **Respeito a Safe Areas:** Utilizacao de `env(safe-area-inset-top)` e `env(safe-area-inset-bottom)` nos cabecalhos e na barra de navegacao inferior (`.mobile-bottom-nav`), garantindo compatibilidade com Dynamic Island e Home Indicators do iOS.
-5. **Tap Targets Acessiveis (WCAG 2.2 AA):** Areas minimas de toque de 44x44px em botoes e icones com feedback haptico sutil via `navigator.vibrate` em navegadores compativeis.
-6. **Surface Switcher Compacto em Linha Unica:** Em viewports moveis (< 640px), as abas adotam notacao compacta (`[01 VIS]`, `[02 APP]`, `[03 DOC]`), preservando a linha unica de 44px do cabecalho com `flex-wrap: nowrap !important` e eliminando saltos de layout.
-7. **Estetica Pixel Paper UI:** Visual tatico inspirado em teletipos tecnicos, fichas catalograficas e papel milimetrado com alta densidade de informacoes, tipografia tecnica crisp, ausencia de filtros graficos pesados e catalogo uniforme de 26 icones SVGs tecnicos. Buffer circular de DOM mantido em 150 nos para prevenir exaustao de memoria em navegadores de borda.
+1. **Controlador de Visualizacao Mobile (setMobileView):** Em telas <= 768px, as 3 colunas do triptico sao desacopladas em visualizacoes exclusivas (`dots`, `chat`, `canvas`). A funcao `setMobileView()` comuta a classe `.mobile-view-active` entre `#leftSidebar`, `.center-ticker-column` e `#rightCanvas`. Ao comutar para DOTS ou CANVAS, o modo Foco Zen e desengatado automaticamente (`triptych.classList.remove('mode-focus-zen')`), eliminando colisoes de layout e telas pretas.
+2. **Barra de Navegacao Inferior (.mobile-bottom-nav):** Fixada no rodape mobile respeitando `env(safe-area-inset-bottom)`, composta por 4 botoes tateis de 44x44pt: `[O] DOTS`, `[>] CHAT`, `[*] CANVAS` e `[?] GUIA` (que dispara a gaveta retratil tecnica `toggleDrawer()`).
+3. **Botao Mecanico de Barra [/] (#slashTriggerBtn):** Posicionado a esquerda da caixa de instrucoes, permite abrir o popover de Slash Commands por toque direto, sem a necessidade de acionar o teclado virtual do smartphone.
+4. **Engine window.visualViewport para Teclado Virtual:** O console monitora os eventos `resize` e `scroll` de `window.visualViewport`. Quando a altura visivel cai abaixo de 85% de `window.innerHeight`, a classe `keyboard-open` e injetada no body, ocultando compulsoriamente a barra inferior (`display: none !important`), fixando `document.body.style.height = ${vv.height}px` e rolando o teletipo (`#tickerScroll`) para o final apos 60ms, eliminando qualquer colisao de layout no iOS Safari e Android Chrome.
+5. **Protecao Anti-Zoom no iOS Safari:** Regra CSS global `font-size: 16px !important` e `touch-action: manipulation` em todos os inputs e textareas, neutralizando o zoom automatico do Apple WebKit.
+6. **Ancoragem Defensiva do Spotlight Tour:** Elementos de tour (`.pixel-tour-popover`) sao ancorados acima da barra inferior respeitando as safe areas, com inibicao de foco compulsorio em campos de texto no mobile.
+7. **Precedencia Soberana de mobile.css:** A folha `mobile.css` e carregada compulsoriamente por ultimo em todas as 4 paginas HTML, garantindo soberania das regras de tela pequena sobre tokens e componentes.
 
 ### 12.5 Arquitetura do Micro-Motor de Internacionalização (i18n) e Localização de Borda
 
@@ -429,7 +431,7 @@ O Console Operacional incorpora um motor lexico e despachador assincrono de coma
 |                 FLUXO ARQUITETURAL DE SLASH COMMANDS                     |
 +--------------------------------------------------------------------------+
 |                                                                          |
-|  [Input: #instructionInput]  --> Digita '/'                              |
+|  [Input: #instructionInput] (Digita '/') OU [Botao Touch: #slashTriggerBtn]
 |             |                                                            |
 |             +--> [SlashCommandsEngine] (Fuzzy Filter in-memory < 10KB)    |
 |             |          |                                                 |

@@ -4,7 +4,7 @@
 **Autor e Criador:** lyon christopher  
 **Assistente:** Logger  
 **Ambiente Alvo:** Computacao de Borda e SBCs (Benchmark de Referencia: Raspberry Pi 4B 4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
-**Versão:** 1.5.0 (Produção Estável — Spotlight Tour, Squad Central, Governança HITL e Três Modos de Operação)  
+**Versão:** 1.5.2 (Produção Estável — Mobile-First, Ergonomia Touch, Bottom-Nav e Spotlight Tour)  
 
 ---
 
@@ -494,6 +494,8 @@ Para agilizar o fluxo operacional diario do operador:
 | Atalho de Teclado | Acao Executada | Comportamento no Sistema |
 | :--- | :--- | :--- |
 | `Tecla /` | Autocomplete Popover | Dispara menu suspenso de 30 Slash Commands com busca fuzzy no teletipo |
+| `Botão [/]` | Autocomplete Touch | Abre diretamente o popover de comandos no mobile sem abrir teclado |
+| `Bottom-Nav` | Comutação Mobile | Alterna entre visualizações [O] DOTS, [>] CHAT, [*] CANVAS e [?] GUIA em smartphones |
 | `Alt+B` | Sidebar Adaptativa | Alterna overlay sob demanda da barra lateral no Triptico (1024px-1440px) |
 | `Alt+I` | Inspecionar Artefato | Foca e expande o artefato ativo no Live Canvas |
 | `Ctrl+S` / `Cmd+S` | Gravar Revisao | Grava revisao atomica do documento em Spaces no SQLite WAL |
@@ -675,7 +677,7 @@ curl -s -i http://localhost:8000/data/locales/en.json | head -n 15
 # Validar cabecalhos de cache de borda do script i18n
 curl -s -i http://localhost:8000/static/pidots-i18n.js | grep -E "HTTP/|content-type|cache-control"
 
-# Validar integridade da API de Changelog e Patch Notes SemVer v1.3.0
+# Validar integridade da API de Changelog e Patch Notes SemVer v1.5.2
 curl -s http://localhost:8000/api/changelog | jq '{version: .current_version, release_date: .release_date, patch_notes: .patch_notes.title}'
 ```
 
@@ -731,6 +733,9 @@ curl -s -X POST http://localhost:8000/api/spaces \
 curl -s http://localhost:8000/api/spaces/relatorio_termico.md/revisions | jq .
 ```
 
-### 20.2 Checklist de Verificacao da Interface Triptico
+### 20.2 Checklist de Verificacao da Interface Triptico e Mobile (v1.5.2)
 1. **Em Telas de 1024px a 1440px:** A coluna da esquerda colapsa automaticamente e pode ser expandida via `Alt+B` ou clique no botao `[PAINEL]`, sem espremer o teletipo.
-2. **Em Telas Mobile (< 640px):** O Surface Switcher permanece em linha unica de 44px (`[01 VIS] [02 APP] [03 DOC]`), e ao tocar no input de comando com teclado virtual aberto, a classe `keyboard-open` e ativada sem quebrar a visualizacao.
+2. **Em Telas Mobile (<= 768px):** A barra inferior `.mobile-bottom-nav` permanece visivel com 4 botoes tateis (`[O] DOTS`, `[>] CHAT`, `[*] CANVAS`, `[?] GUIA`). A comutacao entre `dots`, `chat` e `canvas` comuta a visibilidade das colunas atraves de `setMobileView()`.
+3. **Comutacao de Abas e Modo Foco:** Ao alternar para DOTS ou CANVAS, a classe `mode-focus-zen` e removida compulsoriamente para impedir travamentos visuais.
+4. **Acionamento do Teclado Virtual (window.visualViewport):** Ao focar `#instructionInput`, a classe `keyboard-open` e ativada no body, a barra inferior e ocultada e a altura do body e fixada na altura visivel real, mantendo o scroll do chat no final.
+5. **Atalho Mecanico Touch [/]:** O clique em `#slashTriggerBtn` abre imediatamente o popover de comandos sem exigir a subida do teclado.

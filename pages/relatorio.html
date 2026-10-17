@@ -4,28 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>piDots: Estudo Técnico de Viabilidade e Engenharia Reversa do OpenDots no Raspberry Pi 4B</title>
-    <style>
-        :root {
-            --bg-base: #0b0e14;
-            --bg-surface: #111622;
-            --bg-elevated: #182030;
-            --bg-highlight: #1f2a40;
-            --border-subtle: #242f45;
-            --border-focus: #3b82f6;
-            --text-primary: #e2e8f0;
-
     <!-- Folhas de Estilo Modulares Pixel Paper UI -->
     <link rel="stylesheet" href="/static/css/tokens.css">
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/layout.css">
     <link rel="stylesheet" href="/static/css/components.css">
     <link rel="stylesheet" href="/static/css/relatorio.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
 
     <!-- Motores JavaScript Desacoplados -->
     <script defer src="/static/js/core/pidots-i18n.js"></script>
+    <script defer src="/static/js/core/scroll-lock.js"></script>
     <script defer src="/static/js/docs/relatorio.js"></script>
 </head>
-<body class="drawer-open">
+<body>
 
     <!-- Header Navigation -->
     <header class="top-bar">
@@ -755,6 +747,9 @@ bwrap \
             </section>
 
         </main>
+
+        <!-- Backdrop para Fechamento ao Tocar no Fundo (Mobile) -->
+        <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
         <!-- Right Retractable Drawer -->
         <aside class="drawer-right" id="rightDrawer">

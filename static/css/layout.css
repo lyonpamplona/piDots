@@ -7,7 +7,9 @@
 /* =====================================================================
    1. CABECALHO TECNICO DE COMANDO (TOP BAR)
    ===================================================================== */
-header.mission-header {
+header.mission-header,
+header.landing-header,
+header.guide-header {
     background-color: var(--paper-sheet);
     border-bottom: 2px solid var(--border-default);
     box-shadow: var(--shadow-sm);
@@ -263,8 +265,9 @@ header.mission-header {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    background: rgba(4, 6, 8, 0.75);
-    backdrop-filter: blur(2px);
+    background-color: rgba(4, 6, 8, 0.85);
+    background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
+    background-size: 4px 4px;
     z-index: 120;
 }
 
@@ -275,8 +278,8 @@ header.mission-header {
 aside.retractable-drawer {
     position: fixed;
     top: 0;
-    right: -440px;
-    width: var(--drawer-width, 440px);
+    right: calc(-1 * var(--drawer-width, 380px));
+    width: var(--drawer-width, 380px);
     height: 100vh;
     height: 100dvh;
     background: var(--paper-sheet);
@@ -284,7 +287,7 @@ aside.retractable-drawer {
     z-index: 130;
     display: flex;
     flex-direction: column;
-    transition: right 0.2s ease-out, transform 0.2s steps(1);
+    transition: right 0.15s steps(2), transform 0.15s steps(2);
     box-shadow: -6px 0px 0px #000000;
 }
 

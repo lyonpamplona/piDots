@@ -42,6 +42,9 @@ O piDots implementa o principio de defesa em profundidade estruturado em cinco b
 - Chaves de API de provedores de inferencia sao injetadas exclusivamente via variaveis de ambiente ou arquivo `.env`.
 - Arquivos `.env`, bancos de dados SQLite com dados transacionais e workspaces de usuarios sao rigorosamente bloqueados no `.gitignore` e no `.dockerignore`, impedindo commit acidental em repositorios publicos.
 
+### 6. Integridade de Assets Estáticos Desacoplados e Cache ETag
+- Todos os arquivos estáticos desacoplados (`pages/*.html`, `static/css/*.css`, `static/js/**/*.js`) são servidos com cabeçalhos de defesa `X-Content-Type-Options: nosniff` e validados via ETag SHA-256 no `EdgeAssetManager` em memória RAM, neutralizando adulterações de scripts client-side e contaminação de cache por intermediários.
+
 ---
 
 ## 3. Reporte Responsavel de Vulnerabilidades

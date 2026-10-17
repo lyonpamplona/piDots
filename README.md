@@ -159,22 +159,26 @@ O módulo `pidots/core/council.py` implementa deliberação dialética formal en
 - **Micro-Motor Vanilla JS (`static/pidots-i18n.js`):** Alternância instantânea de idioma (< 10ms) sem frameworks pesados ou consumo extra de RAM, com detecção e persistência segura em `localStorage.getItem('pidots_lang')`.
 - **Dicionários Atômicos JSON (`data/locales/pt.json` e `data/locales/en.json`):** Dicionários semânticos servidos com cache de borda e fallback defensivo inteligente.
 - **Mutação Estrita via textContent:** Mecanismo declarativo baseado em atributos `data-i18n` e `data-i18n-attr`, com imunidade total a injeções de script (XSS).
-- **Onboarding e Patch Notes SemVer v1.5.0:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
+- **Onboarding e Patch Notes SemVer v1.5.2:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
 
-### 11. Protocolo Unificado de Slash Commands (/), Triptico Adaptativo e Resiliencia Mobile (v1.3.0)
-- **Catalogo Completo de 30 Slash Commands:** Comandos categorizados em 6 grupos operacionais (Sistema, Agentes, Memoria, Tarefas, Borda, Exportacao), invocados com `/` no teletipo. Comandos locais (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) executam instantaneamente no cliente (< 16ms) com zero chamadas externas e zero consumo de tokens.
-- **Motor de Autocomplete Popover em Vanilla JS:** Componente ultraleve (< 10KB) com busca fuzzy em memoria, navegacao ciclica por setas (ArrowUp/ArrowDown), autocompletar com Tab/Enter, fechamento por Esc e tolerancia a falhas via distancia Levenshtein.
-- **Recibos Tatis de Teletipo (Slash Receipt Slip):** Emissao de comprovantes com timestamp UTC, identificador sequencial `SEQ#`, picote serrilhado e teto estrito de 150 nos DOM para estabilidade de memoria sob operacao continua.
-- **Triptico Adaptativo do Workspace (1024px-1440px):** Layout inteligente que colapsa a barra lateral esquerda sob demanda em uma gaveta de 260px com backdrop, preservando a visibilidade da bobina de teletipo (largura util elevada de 202px para > 750px) e mantendo o Live Canvas em split 50/50.
-- **Telemetria Consolidada Edge Pulse Chip:** Linha unica de alta densidade no cabecalho (`[EDGE // 48.2 °C // 118 MB // WAL ATIVO // HITL 0]`), economizando mais de 360px de espaco horizontal.
-- **Engine Mobile window.visualViewport & Touch WCAG 2.2:** Deteccao automatica de abertura de teclado virtual que oculta barras inferiores, mantem a rolagem suave do input no iOS Safari e Android Chrome, e garante tap targets minimos de 44px (WCAG 2.2 AA).
+### 11. Protocolo Unificado de Slash Commands (/), Tríptico Adaptativo e Engenharia Mobile-First (v1.5.2)
+- **Catálogo Completo de 30 Slash Commands:** Comandos categorizados em 6 grupos operacionais (Sistema, Agentes, Memória, Tarefas, Borda, Exportação), invocados com `/` no teletipo ou via botão mecânico touch `[/]`. Comandos locais (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) executam instantaneamente no cliente (< 16ms) com zero chamadas externas e zero consumo de tokens.
+- **Atalho Tático de Barra Touch [/]:** Botão mecânico rápido (`#slashTriggerBtn`) integrado ao console operacional, abrindo diretamente o popover flutuante de comandos em smartphones sem a necessidade de acionar o teclado virtual.
+- **Motor de Autocomplete Popover em Vanilla JS:** Componente ultraleve (< 10KB) com busca fuzzy em memória, navegação cíclica por setas (ArrowUp/ArrowDown), autocompletar com Tab/Enter, fechamento por Esc e tolerância a falhas via distância Levenshtein.
+- **Recibos Táteis de Teletipo (Slash Receipt Slip):** Emissão de comprovantes com timestamp UTC, identificador sequencial `SEQ#`, picote serrilhado e teto estrito de 150 nós DOM para estabilidade de memória sob operação contínua.
+- **Tríptico Adaptativo do Workspace (1024px-1440px):** Layout inteligente que colapsa a barra lateral esquerda sob demanda em uma gaveta de 260px com backdrop, preservando a visibilidade da bobina de teletipo (largura útil elevada de 202px para > 750px) e mantendo o Live Canvas em split 50/50.
+- **Telemetria Consolidada Edge Pulse Chip:** Linha única de alta densidade no cabeçalho (`[EDGE // 48.2 °C // 118 MB // WAL ATIVO // HITL 0]`), economizando mais de 360px de espaço horizontal.
+- **Barra de Navegação Inferior Mobile (Bottom Navigation Bar):** Barra de alta densidade fixada no rodapé em telas <= 768px (`.mobile-bottom-nav`) com 4 abas táteis (`[O] DOTS`, `[>] CHAT`, `[*] CANVAS`, `[?] GUIA`), isolada com `env(safe-area-inset-bottom)` e hitbox mínima de 44x44pt (Thumb Zone) via pseudo-elementos `::after`.
+- **Sincronização Dinâmica com Teclado Virtual (window.visualViewport):** Escuta reativa da API `window.visualViewport` redimensionando a altura física do corpo (`document.body.style.height = ${vv.height}px`), ocultando compulsoriamente a barra inferior através da classe `keyboard-open` e realizando auto-scroll do chat após 60ms, eliminando colisões de layout no iOS Safari e Android Chrome.
+- **Proteção Anti-Zoom e Ergonomia no Apple WebKit:** Imposição estrita de `font-size: 16px` em inputs e textareas móveis com `touch-action: manipulation`, neutralizando o auto-zoom compulsório do Safari iOS.
 
-### 12. Novo Tour Spotlight Interativo In-Context e Onboarding FTUE de Alto Desempenho (v1.5.0)
-- **Motor PiDotsTourEngine em Vanilla JS (< 12KB):** Substituicao completa de modais estaticos por um sistema de ancoragem espacial in-context no DOM real. Utiliza `box-shadow: 0 0 0 9999px rgba(7, 9, 12, 0.84)` em camada de composicao direta da GPU, demandando < 1% de CPU no Raspberry Pi 4B e zero dependencias externas.
-- **Cinco Etapas Canonicas de Capacitacao:** Guia pratico cobrindo o Squad Central de Especialistas, o Terminal de Comandos & Teletipo, o Comutador de Modo Foco (Zen vs 50/50), o Live Canvas & Diffs e a Gaveta Tecnica (F1).
-- **Comando de Barra `/tour`:** Permite rever o tour a qualquer momento ou reinicia-lo do zero via `/tour reset`.
-- **Acionamento Tatico na Gaveta Tecnica e Context Menu:** Card dedicado `[REVER GUIA OPERACIONAL SPOTLIGHT]` dentro da central F1 / `[SISTEMA]` e atalho rapido com botao direito do mouse.
-- **Disparo Automatico no Primeiro Acesso:** Detecta novos operadores via `localStorage.getItem('pidots_tour_completed')` e dispara suavemente com 600ms de desacoplamento apos o assentamento do cockpit.
+### 12. Novo Tour Spotlight Interativo In-Context e Onboarding FTUE de Alto Desempenho (v1.5.2)
+- **Motor PiDotsTourEngine em Vanilla JS (< 12KB):** Substituição completa de modais estáticos por um sistema de ancoragem espacial in-context no DOM real. Utiliza `box-shadow: 0 0 0 9999px rgba(7, 9, 12, 0.84)` em camada de composição direta da GPU, demandando < 1% de CPU no Raspberry Pi 4B e zero dependências externas.
+- **Cinco Etapas Canônicas de Capacitação:** Guia prático cobrindo o Squad Central de Especialistas, o Terminal de Comandos & Teletipo, o Comutador de Modo Foco (Zen vs 50/50), o Live Canvas & Diffs e a Gaveta Técnica (F1).
+- **Ancoragem Defensiva e Foco Não-Intrusivo no Mobile (v1.5.2):** Posicionamento fixo de `.pixel-tour-popover` acima da barra inferior respeitando as safe areas do iOS e inibição de foco compulsório em inputs durante o tour em smartphones para evitar a subida acidental do teclado virtual.
+- **Comando de Barra `/tour`:** Permite rever o tour a qualquer momento ou reiniciá-lo do zero via `/tour reset`.
+- **Acionamento Tático na Gaveta Técnica e Context Menu:** Card dedicado `[REVER GUIA OPERACIONAL SPOTLIGHT]` dentro da central F1 / `[SISTEMA]` e atalho rápido com botão direito do mouse.
+- **Disparo Automático no Primeiro Acesso:** Detecta novos operadores via `localStorage.getItem('pidots_tour_completed')` e dispara suavemente com 600ms de desacoplamento após o assentamento do cockpit.
 
 ---
 
@@ -376,7 +380,7 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 | `GET` | `/icon.svg` | Logotipo vetorial oficial em formato SVG com cache prolongado |
 | `GET` | `/static/pidots-i18n.js` | Micro-motor Vanilla JS de internacionalizacao client-side |
 | `GET` | `/data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
-| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.5.0) |
+| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.5.2) |
 | `GET` | `/api/dots` | Listagem de AI Coworkers com arquetipos e status |
 | `GET` | `/api/dots/{id}/export-pack` | Exportacao portavel do manifesto DotPack v1.0 (persona, memorias, workspace) |
 | `POST` | `/api/dots/import-pack` | Importacao atomica de novos agentes a partir de arquivo de DotPack |
@@ -428,7 +432,7 @@ O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota ca
 - **Governanca Interativa HITL Just-in-Time:** Cartoes de aprovacao e veto forense exibidos apenas quando ha acoes retidas, com persistencia de logs de seguranca.
 - **Streaming de Raciocinio AG-UI:** Exibicao token a token de pensamentos e chamadas de ferramentas.
 - **Onboarding Walkthrough Guiado:** Esteira interativa de 5 passos para novos operadores com retencao de conclusao no cliente e reabertura via atalho F1.
-- **Central de Patch Notes SemVer (v1.5.0):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
+- **Central de Patch Notes SemVer (v1.5.2):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
 
 #### Navegacao Cruzada via Chords Globais de Teclado
 Para transicao instantanea entre as superficies do sistema sem necessidade de mouse:
@@ -445,6 +449,8 @@ Operacao tática de terminal e gerenciamento sem atrito:
 | Atalho | Acao Operacional | Descricao |
 | :--- | :--- | :--- |
 | `Tecla /` | Autocomplete Popover | Dispara menu de 30 Slash Commands com busca fuzzy no teletipo |
+| `Botão [/]` | Autocomplete Touch | Abre diretamente o popover de comandos sem necessidade de abrir o teclado virtual |
+| `Bottom-Nav` | Comutação Mobile | Alterna entre visualizações [O] DOTS, [>] CHAT, [*] CANVAS e [?] GUIA em telas móveis |
 | `Alt+B` / `Ctrl+B` | Alternar Sidebar | Alterna visibilidade da barra lateral de coworkers e spaces |
 | `Alt+I` | Inspecionar Artefato | Foca e expande o artefato ativo no Live Canvas |
 | `Ctrl+S` / `Cmd+S` | Gravar Revisao | Grava revisao atomica do documento em Spaces no SQLite WAL |
@@ -529,7 +535,7 @@ python3 scripts/stress_test.py
 ├── ARCHITECTURE.md                  # Especificacao detalhada de arquitetura e I/O
 ├── CONTRIBUTING.md                  # Diretrizes para contribuicao tecnica ao projeto
 ├── data/                            # Dados estaticos, changelog e dicionarios de localizacao
-│   ├── changelog.json               # Historico de versoes e notas de atualizacao SemVer v1.5.0
+│   ├── changelog.json               # Historico de versoes e notas de atualizacao SemVer v1.5.2
 │   └── locales/                     # Dicionarios de internacionalizacao atomicos (i18n)
 │       ├── en.json                  # Dicionario de termos em Ingles Tecnico
 │       └── pt.json                  # Dicionario de termos em Portugues do Brasil

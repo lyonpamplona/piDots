@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-title" content="piDots">
     <meta name="mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>piDots // Pixel Paper UI Workspace (Triptych Layout)</title>
     <!-- Importação de fontes Pixel Art e Monospace com suporte a renderização crisp -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,8 +26,8 @@
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/layout.css">
     <link rel="stylesheet" href="/static/css/components.css">
-    <link rel="stylesheet" href="/static/css/mobile.css">
     <link rel="stylesheet" href="/static/css/spa.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
 
     <!-- Motores JavaScript Desacoplados (Fase 2) -->
     <script defer src="/static/js/core/pidots-i18n.js"></script>
@@ -39,7 +39,7 @@
     <script defer src="/static/js/spa/pidots-ux.js"></script>
     <script defer src="/static/js/spa/app-init.js"></script>
 </head>
-<body>
+<body class="spa-shell">
 
     <!-- CABEÇALHO OPERACIONAL MINIMALISTA (TOP BAR) -->
     <header class="mission-header">
@@ -56,9 +56,21 @@
 
         <!-- Seletor Canonico de Superficies -->
         <nav class="surface-switcher" aria-label="Superficies de Produto">
-            <a href="/" class="surface-link" title="Apresentacao do Produto">[APRESENTACAO]</a>
-            <a href="/app" class="surface-link active" title="Console Operacional">[WORKSPACE]</a>
-            <a href="/docs" class="surface-link" title="Guia Didatico e Referencia">[MANUAL]</a>
+            <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
+                <span class="tab-idx">01</span>
+                <span class="tab-lbl" data-i18n="nav.overview">APRESENTACAO</span>
+                <span class="tab-chord">g h</span>
+            </a>
+            <a href="/app" class="surface-tab active" id="tab-workspace" title="Atalho: G W">
+                <span class="tab-idx">02</span>
+                <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
+                <span class="tab-chord">g w</span>
+            </a>
+            <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
+                <span class="tab-idx">03</span>
+                <span class="tab-lbl" data-i18n="nav.docs">MANUAL</span>
+                <span class="tab-chord">g d</span>
+            </a>
         </nav>
 
         <!-- Centro: Ação Rápida de Nova Conversa e Comutador de Modos -->
@@ -74,7 +86,7 @@
         <!-- Lado Direito: Micro-Indicador de Nó Edge e Menu de Sistema -->
         <div class="header-actions" style="display: flex; align-items: center; gap: 6px;">
             <button class="pixel-btn" id="edgePulseSummaryBtn" onclick="openSystemDrawer()" title="Clique para abrir telemetria de silício e configurações (F1)" style="font-size: 10px;">
-                <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--phosphor-green); border-radius: 50%; margin-right: 4px;"></span>
+                <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--phosphor-green); margin-right: 4px;"></span>
                 <span id="val-compact-node">ARM64 // 78°C</span>
             </button>
             <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" title="Alternar Idioma [PT | EN]">
@@ -91,15 +103,6 @@
             </button>
         </div>
     </header>
-
-    <!-- BANNER PWA DE INSTALAÇÃO NO NAVEGADOR -->
-    <div id="pixelPwaInstallBanner" style="display: none; background: var(--paper-sheet); border-bottom: 2px solid var(--border-default); padding: 8px 16px; align-items: center; justify-content: space-between; font-size: 11px; z-index: 100;">
-        <span>INSTALAR CONSOLE PIDOTS // Disponivel como aplicativo offline e tela cheia (PWA).</span>
-        <div style="display: flex; gap: 8px;">
-            <button class="pixel-btn btn-cyan" onclick="PiDotsUX.PWA.install()">[INSTALAR AGORA]</button>
-            <button class="pixel-btn" onclick="PiDotsUX.PWA.dismissBanner()">[DISPENSAR]</button>
-        </div>
-    </div>
 
     <!-- SHELL TRIPTYCH (3 COLUNAS SIMULTÂNEAS) -->
     <div class="triptych-shell">
@@ -180,7 +183,7 @@
         <!-- -------------------------------------------------------------------
              COLUNA 2: CENTRO (TELETIPO CONVERSACIONAL REACt)
              ------------------------------------------------------------------- -->
-        <main class="center-ticker-column">
+        <main class="center-ticker-column mobile-view-active">
             <div class="ticker-header-bar">
                 <div class="ticker-channel-name" id="activeDotChannel">
                     CANAL DE MISSAO // DOT-DEV (SESSAO #001)
@@ -289,9 +292,13 @@
                     </div>
                 </div>
 
+                <button type="button" class="pixel-btn slash-trigger-btn" id="slashTriggerBtn" onclick="toggleSlashPopover(event)" title="Comandos de Barra (/)" aria-label="Abrir Comandos de Barra">
+                    <span>[/]</span>
+                </button>
                 <textarea class="ticker-textarea" id="instructionInput" placeholder="Digite uma instrucao ou mencione @dot (Enter para transmitir)..." data-i18n-placeholder="console.input_placeholder" onkeydown="handleInputKey(event)" oninput="handleMentionInput(event)"></textarea>
-                <button class="pixel-btn btn-cyan" onclick="transmitInstruction()" data-i18n="console.send_btn">
-                    [TRANSMITIR COMANDO]
+                <button class="pixel-btn btn-cyan" id="sendBtn" onclick="transmitInstruction()" title="Transmitir Comando">
+                    <span class="send-btn-full" data-i18n="console.send_btn">[TRANSMITIR COMANDO]</span>
+                    <span class="send-btn-short">[&gt;]</span>
                 </button>
             </div>
         </main>
@@ -314,9 +321,21 @@
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <span>[HITL]</span>
                 </button>
-                <button class="canvas-tab" onclick="openSystemDrawer()" data-tooltip="Painel Técnico, Telemetria e Sandbox sob Demanda (F1)">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                    <span>[+ PAINEL TECNICO]</span>
+                <button class="canvas-tab" onclick="switchCanvasTab('canvas-telemetry', this)" data-tooltip="Telemetria de Silício ARM64">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    <span>[TELEMETRIA]</span>
+                </button>
+                <button class="canvas-tab" onclick="switchCanvasTab('canvas-terminal', this)" data-tooltip="Terminal e Logs de Sandbox">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    <span>[TERMINAL]</span>
+                </button>
+                <button class="canvas-tab" onclick="switchCanvasTab('canvas-settings', this)" data-tooltip="Configurações de Inferência e Provedor">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>[CONFIGS]</span>
+                </button>
+                <button class="canvas-tab" onclick="switchCanvasTab('canvas-matrix', this)" data-tooltip="Matriz Comparativa de Dots">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    <span>[MATRIZ]</span>
                 </button>
 
                 <div class="canvas-controls">
@@ -498,14 +517,14 @@
                         </div>
 
                         <!-- Trava Mecânica e Ações -->
-                        <div style="margin-top: auto; border-top: 1px dashed var(--border-default); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <div class="hitl-canvas-footer" style="margin-top: auto; border-top: 1px dashed var(--border-default); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                             <div class="pixel-switch-wrapper" onclick="toggleSafetySwitch(this)" data-tooltip="Trava mecânica analógica de liberação de comandos sensíveis">
                                 <div class="pixel-switch" id="safetySwitchMechanical">
                                     <div class="pixel-switch-thumb"></div>
                                 </div>
                                 <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-secondary);">DESTRAVAR SEGURANCA</span>
                             </div>
-                            <div style="display: flex; gap: 8px;">
+                            <div class="hitl-canvas-actions" style="display: flex; gap: 8px;">
                                 <button class="pixel-btn btn-danger" onclick="resolveHitlFull('REJEITADO')">[VETAR]</button>
                                 <button class="pixel-btn btn-success" id="btnApproveCanvas" disabled onclick="resolveHitlFull('HOMOLOGADO')">[HOMOLOGAR]</button>
                             </div>
@@ -726,19 +745,19 @@
          Apenas ativa e visível em smartphones e tablets (< 768px)
          ======================================================================= -->
     <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Navegacao Principal Mobile">
-        <button class="mobile-nav-btn" data-view="dots" onclick="setMobileView('dots')">
+        <button class="mobile-nav-btn" id="mobileNavDots" data-view="dots" onclick="setMobileView('dots')">
             <span class="mobile-nav-icon">[O]</span>
             <span class="mobile-nav-label">DOTS</span>
         </button>
-        <button class="mobile-nav-btn active" data-view="chat" onclick="setMobileView('chat')">
+        <button class="mobile-nav-btn active" id="mobileNavChat" data-view="chat" onclick="setMobileView('chat')">
             <span class="mobile-nav-icon">[&gt;]</span>
             <span class="mobile-nav-label">CHAT</span>
         </button>
-        <button class="mobile-nav-btn" data-view="canvas" onclick="setMobileView('canvas')">
+        <button class="mobile-nav-btn" id="mobileNavCanvas" data-view="canvas" onclick="setMobileView('canvas')">
             <span class="mobile-nav-icon">[*]</span>
             <span class="mobile-nav-label">CANVAS</span>
         </button>
-        <button class="mobile-nav-btn" data-view="docs" onclick="toggleDrawer()">
+        <button class="mobile-nav-btn" id="mobileNavDocs" data-view="docs" onclick="toggleDrawer()">
             <span class="mobile-nav-icon">[?]</span>
             <span class="mobile-nav-label">GUIA</span>
         </button>

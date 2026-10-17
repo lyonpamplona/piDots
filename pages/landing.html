@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>piDots // Landing Page Oficial de Alta Conversao (Pixel Paper UI)</title>
     
     <!-- Favicon e Icones Oficiais PWA (Rasterizados & SVG) -->
@@ -28,8 +28,8 @@
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/layout.css">
     <link rel="stylesheet" href="/static/css/components.css">
-    <link rel="stylesheet" href="/static/css/mobile.css">
     <link rel="stylesheet" href="/static/css/landing.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
 
     <!-- Motores JavaScript Desacoplados (Fase 2) -->
     <script defer src="/static/js/core/pidots-i18n.js"></script>
@@ -91,37 +91,38 @@
                 <span class="telemetry-led"></span>
                 <span>NO: ONLINE</span>
             </div>
-            <button class="pixel-btn" onclick="toggleMobileNavMenu()" id="btnMobileNavToggle" style="display: none;" title="Abrir menu de seções móvel">
+            <button class="pixel-btn" onclick="toggleMobileNavMenu()" id="btnMobileNavToggle" title="Abrir menu de seções móvel">
                 <span>[SECOES]</span>
             </button>
             <button class="pixel-btn pwa-install-trigger" id="btnLandingPwaInstall" style="display: none; background: #0284c7; border-color: #38bdf8; color: #ffffff;" onclick="PiDotsLandingPWA.install()" title="Instalar piDots como aplicativo PWA">
                 <span data-i18n="nav.pwa_install">[INSTALAR PWA]</span>
             </button>
             <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
-                [IDIOMA: PT | EN]
+                <span class="lang-text-full">[IDIOMA: PT | EN]</span>
+                <span class="lang-text-short">[PT]</span>
             </button>
             <button class="pixel-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <span data-i18n="nav.theme">[TEMA]</span>
+                <span class="theme-btn-label" data-i18n="nav.theme">[TEMA]</span>
             </button>
             <button class="pixel-btn btn-cyan" onclick="toggleDrawer()" id="btnHeaderManual" title="Abrir Manual Operacional do Sistema">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                <span data-i18n="nav.manual">[MANUAL TECNICO]</span>
+                <span class="manual-btn-label" data-i18n="nav.manual">[MANUAL TECNICO]</span>
             </button>
         </div>
     </header>
 
     <!-- Painel Retrátil de Navegação Móvel -->
     <nav id="mobileNavPanel" class="mobile-nav-panel" aria-label="Menu Movel">
-        <a href="#hero" class="mobile-nav-item" onclick="toggleMobileNavMenu()">01 // VISAO</a>
-        <a href="#metricas-choque" class="mobile-nav-item" onclick="toggleMobileNavMenu()">02 // CHOQUE</a>
-        <a href="#dor-solucao" class="mobile-nav-item" onclick="toggleMobileNavMenu()">03 // NUVEM VS EDGE</a>
-        <a href="#pilares" class="mobile-nav-item" onclick="toggleMobileNavMenu()">04 // PILARES</a>
-        <a href="#arena-hitl" class="mobile-nav-item" onclick="toggleMobileNavMenu()">05 // ARENA VIVA</a>
-        <a href="#calculadora-roi" class="mobile-nav-item" onclick="toggleMobileNavMenu()">06 // ROI EDGE</a>
-        <a href="#matriz" class="mobile-nav-item" onclick="toggleMobileNavMenu()">07 // MATRIZ DOTS</a>
-        <a href="#faq-objecoes" class="mobile-nav-item" onclick="toggleMobileNavMenu()">08 // FAQ</a>
-        <a href="#quickstart" class="mobile-nav-item" onclick="toggleMobileNavMenu()">09 // DEPLOY</a>
+        <a href="#hero" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">01 // VISAO</a>
+        <a href="#metricas-choque" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">02 // CHOQUE</a>
+        <a href="#dor-solucao" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">03 // NUVEM VS EDGE</a>
+        <a href="#pilares" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">04 // PILARES</a>
+        <a href="#arena-hitl" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">05 // ARENA VIVA</a>
+        <a href="#calculadora-roi" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">06 // ROI EDGE</a>
+        <a href="#matriz" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">07 // MATRIZ DOTS</a>
+        <a href="#faq-objecoes" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">08 // FAQ</a>
+        <a href="#quickstart" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">09 // DEPLOY</a>
     </nav>
 
     <!-- CONTEUDO PRINCIPAL DA LANDING PAGE (LARGURA TOTAL // SEM CENTRALIZACAO ARTIFICIAL) -->
@@ -1747,14 +1748,14 @@
                 <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">DISPONIVEL AGORA // OPEN SOURCE MIT</span>
             </div>
 
-            <div style="background: var(--paper-surface-elevated); border: 2px solid var(--border-accent); box-shadow: var(--shadow-lg); padding: 32px 24px; text-align: center;">
-                <span class="brand-badge" style="margin-bottom: 12px; display: inline-block;">SILICIO LIBERADO // PRONTO PARA USO</span>
+            <div class="quickstart-banner">
+                <span class="brand-badge quickstart-badge">SILICIO LIBERADO // PRONTO PARA USO</span>
                 
-                <h2 style="font-family: var(--font-pixel); font-size: 24px; color: var(--ink-main); margin-bottom: 14px; letter-spacing: 0.04em;" data-i18n="sections.cta_final_title">
+                <h2 class="quickstart-title" data-i18n="sections.cta_final_title">
                     SUBINDO SUA ESTAÇÃO EM MENOS DE DOIS MINUTOS
                 </h2>
                 
-                <p style="max-width: 760px; margin: 0 auto 24px; font-size: 13px; color: var(--ink-secondary); line-height: 1.6;" data-i18n="sections.cta_final_lead">
+                <p class="quickstart-lead" data-i18n="sections.cta_final_lead">
                     Basta clonar o repositório e disparar o Docker Compose. Sem passos ocultos, sem configurações mirabolantes e com código 100% auditável.
                 </p>
 
@@ -1819,7 +1820,7 @@
                 <a href="/" class="pixel-btn btn-cyan" data-i18n="nav.overview">[01 // VISAO GERAL]</a>
                 <a href="/app" class="pixel-btn btn-green" data-i18n="nav.workspace">[02 // WORKSPACE]</a>
                 <a href="/docs" class="pixel-btn" data-i18n="nav.docs">[03 // DOCUMENTACAO]</a>
-                <a href="/api/changelog" class="pixel-btn" target="_blank" title="Consultar Changelog v1.5.0">[PATCH NOTES // V1.5.0]</a>
+                <a href="/api/changelog" class="pixel-btn" target="_blank" title="Consultar Changelog v1.5.2">[PATCH NOTES // V1.5.2]</a>
                 <button class="pixel-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
                     <span>[VOLTAR AO TOPO]</span>

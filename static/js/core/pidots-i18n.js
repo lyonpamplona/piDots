@@ -159,7 +159,14 @@
             const toggleBtns = document.querySelectorAll('.lang-toggle-btn');
             for (let i = 0; i < toggleBtns.length; i++) {
                 const btn = toggleBtns[i];
-                btn.textContent = currentLang === 'pt' ? '[IDIOMA: PT | EN]' : '[LANG: EN | PT]';
+                const fullSpan = btn.querySelector('.lang-text-full');
+                const shortSpan = btn.querySelector('.lang-text-short');
+                if (fullSpan && shortSpan) {
+                    fullSpan.textContent = currentLang === 'pt' ? '[IDIOMA: PT | EN]' : '[LANG: EN | PT]';
+                    shortSpan.textContent = currentLang === 'pt' ? '[PT]' : '[EN]';
+                } else {
+                    btn.textContent = currentLang === 'pt' ? '[IDIOMA: PT | EN]' : '[LANG: EN | PT]';
+                }
                 btn.setAttribute('title', currentLang === 'pt' 
                     ? 'Alternar interface para Ingles Tecnico (EN)' 
                     : 'Switch interface to Brazilian Portuguese (PT)');

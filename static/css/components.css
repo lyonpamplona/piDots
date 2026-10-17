@@ -103,14 +103,29 @@
     background: #dc2626;
 }
 
-.pixel-btn.btn-success {
-    background: #15803d;
-    border-color: #22c55e;
-    color: #ffffff;
+.pixel-btn.btn-green,
+.pixel-btn.btn-success,
+.btn-green {
+    background: rgba(51, 255, 102, 0.1);
+    border-color: var(--phosphor-green);
+    color: var(--phosphor-green);
 }
 
-.pixel-btn.btn-success:hover {
-    background: #16a34a;
+.pixel-btn.btn-green:hover,
+.pixel-btn.btn-success:hover,
+.btn-green:hover {
+    background: var(--phosphor-green);
+    color: #000000;
+}
+
+.pixel-btn.btn-lg {
+    padding: 10px 16px;
+    font-size: 10px;
+}
+
+.pixel-btn.btn-sm {
+    padding: 4px 8px;
+    font-size: 7px;
 }
 
 /* =====================================================================
@@ -253,31 +268,97 @@
 .pixel-toast {
     background: var(--paper-sheet);
     border: 2px solid var(--border-strong);
-    padding: 8px 14px;
-    font-family: var(--font-pixel);
-    font-size: 9px;
-    letter-spacing: 0.05em;
-    color: var(--ink-main);
     box-shadow: var(--shadow-md);
+    padding: 8px 12px;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 6px;
     pointer-events: auto;
+    min-width: 280px;
+    max-width: 400px;
     animation: toastPop 0.15s steps(2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    position: relative;
+}
+
+.toast-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed var(--border-subtle);
+    padding-bottom: 4px;
+}
+
+.toast-tag {
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.toast-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--ink-muted);
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    position: relative;
+    touch-action: manipulation;
+}
+
+/* Hitbox acessivel de toque de 44x44pt no botao fechar do toast */
+.toast-close-btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.toast-close-btn:hover {
+    color: var(--stamp-danger);
+}
+
+.toast-body {
+    font-size: 11px;
+    color: var(--ink-main);
+    line-height: 1.4;
+    word-break: break-word;
 }
 
 .pixel-toast.toast-success {
     border-color: var(--phosphor-green);
+}
+.pixel-toast.toast-success .toast-tag {
     color: var(--phosphor-green);
 }
 
-.pixel-toast.toast-error {
+.pixel-toast.toast-error,
+.pixel-toast.toast-danger {
     border-color: var(--stamp-danger);
+}
+.pixel-toast.toast-error .toast-tag,
+.pixel-toast.toast-danger .toast-tag {
     color: var(--stamp-danger);
+}
+
+.pixel-toast.toast-warning {
+    border-color: var(--thermal-amber);
+}
+.pixel-toast.toast-warning .toast-tag {
+    color: var(--thermal-amber);
 }
 
 .pixel-toast.toast-info {
     border-color: var(--blueprint-cyan);
+}
+.pixel-toast.toast-info .toast-tag {
     color: var(--blueprint-cyan);
 }
 
@@ -286,8 +367,9 @@
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* Modais e Caixas de Dialogo */
-.pixel-modal-backdrop {
+/* Modais e Caixas de Dialogo Mecanicas */
+.pixel-modal-backdrop,
+#pixelDialogBackdrop {
     display: none;
     position: fixed;
     top: 0;
@@ -295,15 +377,18 @@
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    background: rgba(4, 6, 8, 0.8);
-    backdrop-filter: blur(2px);
+    background-color: rgba(4, 6, 8, 0.85);
+    background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
+    background-size: 4px 4px;
     z-index: 1000;
     align-items: center;
     justify-content: center;
 }
 
-.pixel-modal-backdrop.open {
-    display: flex;
+.pixel-modal-backdrop.open,
+.pixel-modal-backdrop.active,
+#pixelDialogBackdrop.active {
+    display: flex !important;
 }
 
 .pixel-dialog-box {

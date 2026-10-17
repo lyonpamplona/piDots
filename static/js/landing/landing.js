@@ -40,8 +40,19 @@
             const drawer = document.getElementById('retractableDrawer');
             const backdrop = document.getElementById('drawerBackdrop');
             if (!drawer || !backdrop) return;
-            drawer.classList.toggle('open');
-            backdrop.classList.toggle('open');
+
+            const willOpen = !drawer.classList.contains('open');
+            drawer.classList.toggle('open', willOpen);
+            backdrop.classList.toggle('open', willOpen);
+
+            if (window.ScrollLockManager) {
+                if (willOpen) {
+                    window.ScrollLockManager.bloquear();
+                } else {
+                    window.ScrollLockManager.desbloquear();
+                }
+            }
+
             playHapticMechanicalClick();
         }
 
@@ -209,10 +220,21 @@
         }
 
         // Controle do Menu Movel de Secoes
-        function toggleMobileNavMenu() {
+        function toggleMobileNavMenu(isNavigating = false) {
             playHapticMechanicalClick();
             const panel = document.getElementById('mobileNavPanel');
-            if (panel) panel.classList.toggle('open');
+            if (!panel) return;
+
+            const willOpen = !panel.classList.contains('open');
+            panel.classList.toggle('open', willOpen);
+
+            if (window.ScrollLockManager) {
+                if (willOpen) {
+                    window.ScrollLockManager.bloquear();
+                } else {
+                    window.ScrollLockManager.desbloquear(false, !isNavigating);
+                }
+            }
         }
 
         // Alternancia de Abas no Simulador ReAct do Hero

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>piDots // Guia Operacional Didático (Pixel Paper UI)</title>
     <meta name="description" content="Guia operacional oficial e didático do piDots: conceitos, ciclo ReAct, arsenal de ferramentas, governança HITL, configuração e deploy em Raspberry Pi 4B sob o design system Pixel Paper UI.">
     
@@ -22,14 +22,15 @@
     <!-- Tipografia Oficial Pixel Paper UI: Silkscreen, VT323 e JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
 
     <!-- Folhas de Estilo Modulares Pixel Paper UI (Fase 1) -->
     <link rel="stylesheet" href="/static/css/tokens.css">
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/layout.css">
     <link rel="stylesheet" href="/static/css/components.css">
-    <link rel="stylesheet" href="/static/css/mobile.css">
     <link rel="stylesheet" href="/static/css/docs.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
 
     <!-- Motores JavaScript Desacoplados (Fase 2) -->
     <script defer src="/static/js/core/pidots-i18n.js"></script>
@@ -37,11 +38,6 @@
     <script defer src="/static/js/docs/docs.js"></script>
 </head>
 <body>
-
-    <!-- BARRA MECANICA DE PROGRESSO DE LEITURA (0-100% DINAMICA) -->
-    <div id="readingProgressBar" class="reading-progress-track" aria-hidden="true">
-        <div id="readingProgressThumb" class="reading-progress-thumb"></div>
-    </div>
 
     <!-- CABECALHO FIXO TECNICO (PIXEL PAPER UI) -->
     <header class="guide-header">
@@ -75,7 +71,7 @@
             </a>
         </nav>
 
-        <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch -->
+        <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch (Desktop) -->
         <div class="header-search-box" onclick="abrirOmnisearch()" style="cursor: pointer;" title="Abrir Omnisearch (Atalho: Ctrl+K ou /)">
             <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (CTRL+K OU /)..." data-i18n-placeholder="guide.search_placeholder" readonly style="cursor: pointer;">
@@ -88,6 +84,11 @@
                 <span>NO: ONLINE</span>
             </div>
 
+            <!-- Botao de Busca Touch Exclusivo Mobile (Omnisearch) -->
+            <button class="pixel-btn btn-search-mobile" id="btnDocsSearchMobile" onclick="abrirOmnisearch()" title="Buscar no Guia (Ctrl+K)" aria-label="Buscar Guia">
+                <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+
             <!-- Botao de Instalacao PWA -->
             <button class="pixel-btn pwa-install-trigger" id="btnDocsPwaInstall" style="display: none; background: #0284c7; border-color: #38bdf8; color: #ffffff;" onclick="PiDotsDocsPWA.install()" title="Instalar piDots como aplicativo PWA">
                 <span data-i18n="nav.pwa_install">[INSTALAR PWA]</span>
@@ -95,20 +96,26 @@
 
             <!-- Comutador Bilíngue de Idioma [PT | EN] -->
             <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
-                [IDIOMA: PT | EN]
+                <span class="lang-text-full">[IDIOMA: PT | EN]</span>
+                <span class="lang-text-short">[PT]</span>
             </button>
 
             <!-- Alternador de Tema Dark Noir vs Blueprint -->
             <button class="pixel-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
                 <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <span data-i18n="nav.theme">[TEMA]</span>
+                <span class="theme-btn-label" data-i18n="nav.theme">[TEMA]</span>
             </button>
 
             <!-- Botao do Menu Drawer Retratil a Direita -->
             <button id="toggleDrawerBtn" class="pixel-btn btn-cyan" title="Abrir Indice de Navegacao Passo a Passo">
                 <svg class="ui-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                <span data-i18n="nav.guide_index">[INDICE GUIA]</span>
+                <span class="drawer-btn-label" data-i18n="nav.guide_index">[INDICE GUIA]</span>
             </button>
+        </div>
+
+        <!-- BARRA MECANICA DE PROGRESSO DE LEITURA (0-100% ANCORADA NA BASE DO CABECALHO) -->
+        <div id="readingProgressBar" class="reading-progress-track" aria-hidden="true">
+            <div id="readingProgressThumb" class="reading-progress-thumb"></div>
         </div>
     </header>
 

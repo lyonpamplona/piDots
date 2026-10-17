@@ -256,6 +256,21 @@
                 }
             },
 
+            togglePopover() {
+                if (this.isOpen) {
+                    this.closePopover();
+                } else {
+                    const input = document.getElementById('instructionInput');
+                    if (input && !input.value.startsWith('/')) {
+                        input.value = '/' + input.value;
+                    }
+                    this.filter('');
+                    this.render();
+                    this.openPopover();
+                    if (input) input.focus();
+                }
+            },
+
             closePopover() {
                 const pop = document.getElementById('slashPopover');
                 if (pop) {
@@ -265,13 +280,18 @@
             }
         };
         window.SlashCommandsEngine = SlashCommandsEngine;
+        window.toggleSlashPopover = (e) => {
+            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+            SlashCommandsEngine.togglePopover();
+        };
 
         // Fecha o popover e mencoes se o usuario clicar fora da area de entrada
         document.addEventListener('click', (e) => {
             const pop = document.getElementById('slashPopover');
             const mention = document.getElementById('mentionDropdown');
             const input = document.getElementById('instructionInput');
-            if (pop && pop.style.display === 'flex' && !pop.contains(e.target) && e.target !== input) {
+            const triggerBtn = document.getElementById('slashTriggerBtn');
+            if (pop && pop.style.display === 'flex' && !pop.contains(e.target) && e.target !== input && (!triggerBtn || !triggerBtn.contains(e.target))) {
                 SlashCommandsEngine.closePopover();
             }
             if (mention && (mention.style.display === 'block' || mention.style.display === 'flex') && !mention.contains(e.target) && e.target !== input) {
@@ -391,7 +411,11 @@
 
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                transmitInstruction();
+                if (typeof window.transmitInstruction === 'function') {
+                    window.transmitInstruction();
+                } else if (typeof transmitInstruction === 'function') {
+                    transmitInstruction();
+                }
             }
         }
 

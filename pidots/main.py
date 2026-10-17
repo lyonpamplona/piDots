@@ -231,7 +231,7 @@ async def lifespan(app: FastAPI):
     await app.state.http_client.aclose()
 
 
-APP_VERSION = "1.5.0"
+APP_VERSION = "1.5.2"
 
 app = FastAPI(
     title="piDots Edge Core",

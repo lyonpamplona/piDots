@@ -617,6 +617,30 @@
             color: var(--accent-cyan);
         }
 
+        /* Backdrop para Fechamento ao Tocar no Fundo em Telas Menores */
+        .drawer-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 85;
+            touch-action: none;
+        }
+
+        body.drawer-open .drawer-backdrop {
+            display: block;
+        }
+
+        @media (min-width: 901px) {
+            .drawer-backdrop {
+                display: none !important;
+            }
+        }
+
         @media (max-width: 900px) {
             body.drawer-open main.content-area {
                 padding-right: 1.5rem;
@@ -629,4 +653,3 @@
                 padding: 1.5rem 1rem;
             }
         }
-    </style>

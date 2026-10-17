@@ -1,48 +1,48 @@
 {
   "system": "piDots",
   "app_name": "piDots Edge Console",
-  "current_version": "1.5.0",
-  "release_date": "2026-10-16",
-  "build": "20261016-ARM64",
-  "commit_hash": "f4c9a1d",
+  "current_version": "1.5.2",
+  "release_date": "2026-10-17",
+  "build": "20261017-ARM64-MOBILE",
+  "commit_hash": "c5a5e67",
   "channel": "stable",
   "patch_notes": {
-    "version": "1.5.0",
-    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.5.0",
-    "summary": "Consolidacao Soberana do piDots: Desacoplamento Completo da Camada Frontend em Pages e Assets Modulares (CSS/JS), Motor EdgeAssetManager com In-Memory Preload e ETag (HTTP 304), Service Worker v7, Tour Spotlight Interativo In-Context e Auditoria Integral de Seguranca.",
+    "version": "1.5.2",
+    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.5.2 - MOBILE-FIRST & ERGONOMIA TOUCH",
+    "summary": "Consolidacao da Engenharia Mobile-First e Ergonomia Touch no piDots: Prevencao Definitiva de Auto-Zoom no iOS Safari, Sincronizacao Dinamica com Teclado Virtual via VisualViewport, Atalho Mecanico [/] para Slash Commands, Viewport-Fit=Cover, Ancoragem Segura de Popovers e Toasts acima da Barra Inferior e Rolagem Horizontal Suave de Matrizes Tecnicas.",
     "categories": {
       "included": [
-        "Desacoplamento Completo do Frontend: Monolitos divididos em pages/ semanticas limpas (-86% no console SPA), 9 folhas de estilo em static/css/ e 11 modulos JavaScript em static/js/.",
-        "EdgeAssetManager no FastAPI: Pre-carregamento total de documentos em memoria RAM com ETag SHA-256 (HTTP 304 Not Modified) e pre-compressao Gzip (-76.7% de reducao de payload).",
-        "Service Worker v7 (pidots-cache-v7): Esteira offline completa cobrindo toda a arvore modular de CSS e JS com transicao suave e purga automatica do cache legado v6.",
-        "Motor de Tour Spotlight In-Context (PiDotsTourEngine): Ancoragem tatica no DOM real sem bloqueio de tela, recortando os elementos de trabalho com contorno pulsante ciano (--blueprint-cyan).",
-        "Cinco Etapas Canonicas de Capacitacao: Squad Central de Agentes, Terminal de Comando & Teletipo, Comutador de Modo Foco, Live Canvas & Diffs e Telemetria / Gaveta Tecnica (F1).",
-        "Comandos de Barra /tour e /onboarding: Acionamento imediato no teletipo com suporte a parametro 'reset' para reiniciar o ciclo do operador."
+        "Atalho Tatico de Barra Slash [/]: Botao mecanico rapido no console mobile abrindo o popover de comandos sem necessidade de digitar.",
+        "Sincronizacao Dinamica com Teclado Virtual: Escuta reativa da API window.visualViewport ajustando a altura fisica do body e ocultando a bottom-nav quando o teclado do smartphone sobe.",
+        "Hitbox Acessivel Padrao Thumb Zone: Pseudo-elementos ::after garantindo area de toque minima de 44x44pt para categorias de slash commands, botoes de fechar toast e acoes HITL.",
+        "Botao de Busca Dedicado no Guia: Icone touch no cabecalho mobile de /docs disparando o Omnisearch modal instantaneamente.",
+        "Ancoragem Defensiva do Spotlight Tour: Posicionamento fixo de .pixel-tour-popover acima da barra inferior respeitando safe-area-inset-bottom e inibicao de foco compulsorio no mobile."
       ],
       "adjusted": [
-        "Correcao no Loop de Agente: Envolvimento de run_thread em try/finally garantindo reversao para idle mesmo com desconexoes SSE do cliente; remocao de poda cega de chamadas de ferramentas paralelas; e persistencia no SQLite WAL de chamadas e respostas de tools para continuidade de contexto.",
-        "Calculo Matematico de Relevancia Hibrida: Remocao de piso artificial de 0.5 em memory_manager.py quando nao ha correspondencia textual BM25 ou projecao vetorial.",
-        "Resiliencia em Deliberacoes: Tratamento explicito de status awaiting_hitl no conselho consultivo (council.py) e na delegacao de subtarefas (orchestrator.py), impedindo que retencoes sejam tratadas como conclusoes.",
-        "Otimizacao de Flash MicroSD: Remocao de ANALYZE redundante pos-optimize e inclusao de poda de tool_runs com mais de 30 dias em maintenance.py.",
-        "Circuit Breaker e Timeout: Eliminacao de sono desnecessario na tentativa terminal de retry e enriquecimento de mensagens de erro em openai_client.py.",
-        "Retencao Forte de Tarefas Assincronas: Conjunto _background_tasks em MessagingGateway impedindo descarte prematuro de corrotinas pelo Garbage Collector."
+        "Prevencao de Auto-Zoom no iOS: font-size: 16px obrigatorio para todos os inputs e textareas no mobile com touch-action: manipulation.",
+        "Cascata CSS Otimizada: Inversao da precedencia para carregar mobile.css por ultimo em todas as 4 paginas, garantindo soberania das regras de tela pequena.",
+        "Desengate Automatico do Modo Foco: Alternancia graciosa para abas DOTS ou CANVAS removendo a classe mode-focus-zen e eliminando colisoes visuais.",
+        "Rolagem Suave de Matrizes e Codigo: overflow-x: auto touch e largura minima de 580px na matriz comparativa do canvas e word-break: break-word em tags code/pre.",
+        "Saneamento de Meta Viewport: Remocao de user-scalable=no e adicao universal de viewport-fit=cover para respeito a notches e ilhas dinamicas."
       ],
       "removed": [
-        "Eliminacao Definitiva dos Monolitos Legados da Raiz: pidots_spa_prototype.html, pidots_apresentacao_pixel_paper.html, pidots_guia.html e relatorio_estudo_pidots.html salvaguardados em data/backups/monoliths_v150/ e substituidos pelas paginas modulares em pages/.",
-        "Saneamento de Codigo Morto e Orfaos: Removidos ~1.000 linhas de HTML/CSS de modais legados, pasta scratch/ e 10 diretorios orfaos residuais em workspaces/.",
-        "Expurgo de Bots Efemeros de Testes: 46 registros de bots temporarios expurgados de data/pidots.db, mantendo o Squad Central 100% limpo.",
-        "Eliminacao de Redundancias: Arquivo duplicado static/pidots-i18n.js removido da raiz de static/, mantendo o modulo modular estatico em static/js/core/."
-      ],
-      "security_and_edge": [
-        "Blindagem Anti-SSRF Hop-by-Hop: Desativacao de follow_redirects cego em web_reader.py e validacao rigorosa de cada salto de redirecionamento contra faixas de rede privada/loopback.",
-        "Protecao Anti-Symlink Traversal: Inspecao realpath/commonpath em export_workspace_zip de spaces_manager.py impedindo inclusao de symlinks fora do workspace no arquivo ZIP.",
-        "Teto de Memoria em Operacoes de Arquivo: Limite de 10MB em read_file e remocao garantida de arquivos temporarios via try/finally em write_file.",
-        "Sanitizacao Rigorosa Contra XSS: Tratamento de entradas do operador via String(str ?? '').replace com escape estrito de HTML e aspas.",
-        "Isolamento Sandbox Robusto: Adicionadas flags --dev /dev e --proc /proc com os.killpg em subprocessos bwrap para evitar processos zumbis."
+        "Eliminacao de Blur e Sombras Difusas Residuais: Remocao de box-shadow disperso sob a borda ciano ativa da barra inferior, assegurando fidelidade 1-bit ao Pixel Paper UI.",
+        "Eliminacao de Tags HTML e Estilos Quebrados: Saneamento do bloco style residual em relatorio.html e relatorio.css."
       ]
     }
   },
   "history": [
+    {
+      "version": "1.5.0",
+      "release_date": "2026-10-16",
+      "type": "MAJOR RELEASE",
+      "highlights": [
+        "Desacoplamento Completo do Frontend: Monolitos divididos em pages/, static/css/ e static/js/.",
+        "Motor EdgeAssetManager no FastAPI com pre-carregamento em memoria RAM e ETag SHA-256.",
+        "Service Worker v7 (pidots-cache-v7) e esteira offline com pre-compressao Gzip.",
+        "Motor de Tour Spotlight Interativo In-Context com 5 etapas canonicas de capacitacao."
+      ]
+    },
     {
       "version": "1.4.0",
       "release_date": "2026-10-13",

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pidots"
-version = "1.5.0"
+version = "1.5.2"
 description = "Always-On AI Coworkers persistentes e otimizados para Raspberry Pi 4B (ARM64) e Edge Computing"
 readme = "README.md"
 requires-python = ">=3.11"

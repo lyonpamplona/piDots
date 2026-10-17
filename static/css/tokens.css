@@ -45,6 +45,25 @@
     --blueprint-cyan: #38bdf8;
     --stamp-danger: #ef4444;
 
+    /* Aliases Canonicos de Tintas Mecanicas (Especificacao Pixel Paper UI) */
+    --ink-green-phosphor: var(--phosphor-green);
+    --ink-amber-thermal:  var(--thermal-amber);
+    --ink-cyan-blueprint: var(--blueprint-cyan);
+    --ink-stamp-danger:   var(--stamp-danger);
+
+    /* Aliases de Compatibilidade para Relatorios e Superficies Tecnicas */
+    --bg-base:        var(--paper-base);
+    --bg-surface:     var(--paper-surface);
+    --bg-elevated:    var(--paper-surface-elevated);
+    --bg-highlight:   var(--paper-surface-recessed);
+    --text-primary:   var(--ink-main);
+    --text-secondary: var(--ink-secondary);
+    --text-muted:     var(--ink-muted);
+    --accent-cyan:    var(--blueprint-cyan);
+    --accent-emerald: var(--phosphor-green);
+    --accent-amber:   var(--thermal-amber);
+    --accent-rose:    var(--stamp-danger);
+
     /* Bordas e Contornos Tecnicos */
     --border-subtle: #1c2633;
     --border-default: #283340;
@@ -80,6 +99,26 @@
     --thermal-amber-muted: #92400e;
     --blueprint-cyan: #0284c7;
     --stamp-danger: #b91c1c;
+
+    /* Aliases Canonicos de Tintas Mecanicas (Blueprint) */
+    --ink-primary:        var(--ink-main);
+    --ink-green-phosphor: var(--phosphor-green);
+    --ink-amber-thermal:  var(--thermal-amber);
+    --ink-cyan-blueprint: var(--blueprint-cyan);
+    --ink-stamp-danger:   var(--stamp-danger);
+
+    /* Aliases de Compatibilidade para Relatorios e Superficies Tecnicas (Blueprint) */
+    --bg-base:        var(--paper-base);
+    --bg-surface:     var(--paper-surface);
+    --bg-elevated:    var(--paper-surface-elevated);
+    --bg-highlight:   var(--paper-surface-recessed);
+    --text-primary:   var(--ink-main);
+    --text-secondary: var(--ink-secondary);
+    --text-muted:     var(--ink-muted);
+    --accent-cyan:    var(--blueprint-cyan);
+    --accent-emerald: var(--phosphor-green);
+    --accent-amber:   var(--thermal-amber);
+    --accent-rose:    var(--stamp-danger);
 
     --border-subtle: #cbd5e1;
     --border-default: #94a3b8;

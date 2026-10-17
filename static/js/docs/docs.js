@@ -63,11 +63,11 @@
             if (drawerSearch) drawerSearch.focus();
         }
 
-        function closeDrawer() {
+        function closeDrawer(restoreScroll = true) {
             drawer.classList.remove('is-open');
             drawerBackdrop.classList.remove('is-active');
             document.body.classList.remove('drawer-open');
-            ScrollLockManager.desbloquear();
+            ScrollLockManager.desbloquear(false, restoreScroll);
         }
 
         if (toggleDrawerBtn) {
@@ -90,10 +90,12 @@
 
         function handleDrawerNav(e, stepId) {
             e.preventDefault();
-            scrollToStep(stepId);
             if (window.innerWidth < 900) {
-                closeDrawer();
+                closeDrawer(false);
             }
+            requestAnimationFrame(() => {
+                scrollToStep(stepId);
+            });
         }
 
         // Destaque Ativo via Intersection Observer

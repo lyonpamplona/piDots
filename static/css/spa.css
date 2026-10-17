@@ -1281,6 +1281,8 @@
             gap: 12px;
             height: 100%;
             overflow-y: auto;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .matrix-title {
@@ -1296,6 +1298,7 @@
 
         .matrix-table {
             width: 100%;
+            min-width: 580px;
             border-collapse: collapse;
             font-size: 10px;
             font-family: var(--font-mono);
@@ -1762,6 +1765,24 @@
             color: var(--ink-muted);
         }
 
+        @media (max-width: 768px) {
+            .pixel-patchnotes-box {
+                width: calc(100vw - 20px) !important;
+                max-width: calc(100vw - 20px) !important;
+            }
+            .patchnotes-header-block {
+                flex-wrap: wrap !important;
+                gap: 10px !important;
+                padding: 12px 14px !important;
+            }
+            .patchnotes-header-right {
+                width: 100% !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+        }
+
         /* 4. Componentes e Banner de Instalação PWA */
         .pwa-header-btn {
             background: #0284c7 !important;
@@ -1874,6 +1895,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             z-index: 99980;
             pointer-events: none;
             opacity: 0;
@@ -2211,7 +2233,8 @@
                 width: calc(100vw - 20px) !important;
                 max-width: calc(100vw - 20px) !important;
                 left: 10px !important;
-                bottom: 10px !important;
+                right: 10px !important;
+                bottom: calc(56px + max(8px, var(--safe-bottom, env(safe-area-inset-bottom, 0px)))) !important;
                 top: auto !important;
                 clip-path: none !important;
             }

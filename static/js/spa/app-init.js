@@ -36,7 +36,7 @@
             const tabBtn = document.getElementById('canvasTabHitl');
             switchCanvasTab('canvas-hitl', tabBtn);
             if (typeof setMobileView === 'function') {
-                setMobileView('artifacts');
+                setMobileView('canvas');
             }
             if (window.PiDotsAPI && typeof PiDotsAPI.loadPendingHitl === 'function') {
                 PiDotsAPI.loadPendingHitl();
@@ -106,6 +106,11 @@
 
             if (!sidebar || !ticker || !canvas) return;
 
+            const triptych = document.querySelector('.triptych-shell');
+            if (triptych && viewName !== 'chat' && triptych.classList.contains('mode-focus-zen')) {
+                triptych.classList.remove('mode-focus-zen');
+            }
+
             sidebar.classList.toggle('mobile-view-active', viewName === 'dots');
             ticker.classList.toggle('mobile-view-active', viewName === 'chat');
             canvas.classList.toggle('mobile-view-active', viewName === 'canvas');
@@ -156,8 +161,14 @@
         if (window.visualViewport) {
             const handleViewportChange = () => {
                 const vv = window.visualViewport;
-                const isKeyboardOpen = vv.height < (window.innerHeight - 100);
+                const isKeyboardOpen = vv.height < (window.innerHeight * 0.85);
                 document.body.classList.toggle('keyboard-open', isKeyboardOpen);
+
+                if (isKeyboardOpen) {
+                    document.body.style.height = `${vv.height}px`;
+                } else {
+                    document.body.style.height = '';
+                }
 
                 if (currentMobileView === 'chat' && isKeyboardOpen) {
                     const scrollArea = document.getElementById('tickerScroll');
@@ -225,14 +236,19 @@
         // Controle de Layout: Expandir Canvas Direito para Tela Cheia
         function toggleCanvasExpand() {
             const canvas = document.getElementById('rightCanvas');
+            const sidebar = document.getElementById('leftSidebar');
             const btn = document.getElementById('btnCanvasExpand');
+            if (!canvas) return;
+
             if (canvas.classList.contains('expanded')) {
                 canvas.classList.remove('expanded');
-                btn.textContent = '[MAX]';
+                if (sidebar) sidebar.classList.remove('collapsed');
+                if (btn) btn.textContent = '[MAX]';
             } else {
                 canvas.classList.remove('collapsed');
                 canvas.classList.add('expanded');
-                btn.textContent = '[DIVIDIR]';
+                if (sidebar) sidebar.classList.add('collapsed');
+                if (btn) btn.textContent = '[DIVIDIR]';
             }
         }
 
@@ -240,8 +256,19 @@
         function toggleDrawer() {
             const drawer = document.getElementById('retractableDrawer');
             const backdrop = document.getElementById('drawerBackdrop');
-            if (drawer) drawer.classList.toggle('open');
-            if (backdrop) backdrop.classList.toggle('open');
+            if (!drawer) return;
+
+            const willOpen = !drawer.classList.contains('open');
+            drawer.classList.toggle('open', willOpen);
+            if (backdrop) backdrop.classList.toggle('open', willOpen);
+
+            if (window.ScrollLockManager) {
+                if (willOpen) {
+                    window.ScrollLockManager.bloquear();
+                } else {
+                    window.ScrollLockManager.desbloquear();
+                }
+            }
         }
 
         function closeDrawer() {

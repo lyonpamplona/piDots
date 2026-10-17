@@ -67,7 +67,7 @@
                             setMobileView('chat');
                         }
                         const input = document.getElementById('instructionInput');
-                        if (input) {
+                        if (input && !isMobile) {
                             try { input.focus(); } catch (e) {}
                         }
                     }
@@ -349,6 +349,8 @@
                 if (vw <= 768) {
                     if (this.popoverEl) {
                         this.popoverEl.removeAttribute('data-placement');
+                        this.popoverEl.style.top = '';
+                        this.popoverEl.style.left = '';
                     }
                     return;
                 }
