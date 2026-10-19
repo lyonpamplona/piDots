@@ -1,33 +1,44 @@
 {
   "system": "piDots",
   "app_name": "piDots Edge Console",
-  "current_version": "1.5.2",
-  "release_date": "2026-10-17",
-  "build": "20261017-ARM64-MOBILE",
-  "commit_hash": "c5a5e67",
+  "current_version": "1.5.3",
+  "release_date": "2026-10-18",
+  "build": "20261018-ARM64-EDGE-FEATURES",
+  "commit_hash": "e81d7f2",
   "channel": "stable",
   "patch_notes": {
-    "version": "1.5.2",
-    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.5.2 - MOBILE-FIRST & ERGONOMIA TOUCH",
-    "summary": "Consolidacao da Engenharia Mobile-First e Ergonomia Touch no piDots: Prevencao Definitiva de Auto-Zoom no iOS Safari, Sincronizacao Dinamica com Teclado Virtual via VisualViewport, Atalho Mecanico [/] para Slash Commands, Viewport-Fit=Cover, Ancoragem Segura de Popovers e Toasts acima da Barra Inferior e Rolagem Horizontal Suave de Matrizes Tecnicas.",
+    "version": "1.5.3",
+    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.5.3 - NOVAS FUNCIONALIDADES DE BORDA & GOVERNANCA",
+    "summary": "Consolidacao do Roadmap de Extensibilidade e Seguranca no piDots: Cliente MCP Lite ultraleve com Dynamic Tool Pruning (< 5MB RAM), Governanca HITL Interativa via Telegram e WhatsApp assinada com HMAC-SHA256, Dot Packs v1.1 com integridade criptografica SHA-256 e inspecao de Prompt Injection pelo @dot-auditor, e Barramento Fisico GPIO & MQTT Edge Triggers para sensores de borda.",
     "categories": {
       "included": [
-        "Atalho Tatico de Barra Slash [/]: Botao mecanico rapido no console mobile abrindo o popover de comandos sem necessidade de digitar.",
-        "Sincronizacao Dinamica com Teclado Virtual: Escuta reativa da API window.visualViewport ajustando a altura fisica do body e ocultando a bottom-nav quando o teclado do smartphone sobe.",
-        "Hitbox Acessivel Padrao Thumb Zone: Pseudo-elementos ::after garantindo area de toque minima de 44x44pt para categorias de slash commands, botoes de fechar toast e acoes HITL.",
-        "Botao de Busca Dedicado no Guia: Icone touch no cabecalho mobile de /docs disparando o Omnisearch modal instantaneamente.",
-        "Ancoragem Defensiva do Spotlight Tour: Posicionamento fixo de .pixel-tour-popover acima da barra inferior respeitando safe-area-inset-bottom e inibicao de foco compulsorio no mobile."
+        "Layout Composto OpenDots + Pixel Paper UI (/app): Activity Rail (Alt+1..4) com 4 paineis contextuais (Spaces & Canais, Estúdio de Dots & Tools, Tasks Cron & Sensores, Memoria 64D & MCP Lite), Header Contextual Multi-Bot com [HANDOFF], [CONSELHO] e [SALVAR EM SPACE].",
+        "Protocolo CopilotKit AG-UI & Generative UI Cards Inline: Fichas catalograficas táticas (.gen-ui-card) renderizadas ao vivo no fluxo do teletipo para tool_call:start, tool_call:result e artifact:updated, mais aba [COAGENTS] com inspetor de Shared State.",
+        "Computador de Borda do Dot (Dot's Computer) com Modo Takeover: Explorador interativo de /workspace/{dot_id}, terminal Bubblewrap com modo Takeover ao vivo (/api/edge/computer/exec) e telemetria real de memoria RSS do processo Python (process_rss_mb).",
+        "Unificacao do Motor de Embedding 64D: Convergencia matematica entre VectorStore e MemoryManager (trigram hashing 64D + ativacao semantica + L2 normalization) garantindo deduplicacao precisa (>= 0.92).",
+        "Cliente MCP Lite com Tool Pruning (Fase 14): Integracao assincrona em Python puro (< 5MB RAM) para servidores MCP externos via STDIO ou SSE, com filtragem automatica por allowed_tools_json para zero poluicao de contexto.",
+        "Governanca HITL Interativa via Telegram e WhatsApp (Fase 15): Alertas remotos com botoes inline assinados com HMAC-SHA256 em tempo constante, permitindo autorizar ou bloquear comandos criticos diretamente pelo celular com nao-repudio.",
+        "Dot Packs v1.1 Assinados Criptograficamente (Fase 16): Campo sha256_checksum no manifesto com validacao de integridade e inspecao defensiva de seguranca contra Prompt Injection nos blocos de memoria.",
+        "Barramento Fisico GPIO & MQTT Edge Triggers (Fase 17): Leitura de pinos fisicos GPIO (sysfs/gpiod) e listener MQTT assincrono para sensores ambientais de borda no Raspberry Pi 4B sem bloquear o loop de eventos uvloop.",
+        "Topologia Modular de Rotas (APIRouters): Fatiamento completo do entrypoint FastAPI em pidots/api/, desacoplando rotas de Dots, Threads, Tasks, Canais, Webhooks, Telemetria Edge e PWA.",
+        "Isolamento Estrito de Terminal (STRICT_SANDBOX): Trava configuravel que recusa execucao em subprocesso caso o Bubblewrap (bwrap) nao esteja instalado, retornando saida 126 com auditoria SQLite WAL.",
+        "Preload Estrategico no Frontend: Inclusao de tags link rel='preload' no cabecalho de todas as superficies HTML para tokens CSS e scripts criticos de inicializacao.",
+        "Gateway Multi-Provedor com Failover Transparente: Chaveamento automatico para endpoint secundario (AI_FALLBACK_URL) quando o primario falhar por erros HTTP 5xx ou timeout, preservando o fluxo cognitivo do agente.",
+        "Circuit Breaker de Inferencia de 3 Estados: Maquina de estados (CLOSED, OPEN, HALF_OPEN) em openai_client.py com desvio imediato ao fallback e recuperacao canario.",
+        "Governanca HITL com TTL de 30 Minutos: Coluna expires_at com purga automatica para status EXPIRED, liberacao de threads retidas e envio de push instantaneo SSE (hitl:pending_approval) para abertura automatica do modal Alt+H.",
+        "Teto Estrito de Tentativas no Self-Healing: Limitador rigido MAX_HEAL_ATTEMPTS = 2 em execute_and_verify evitando loops infinitos e escalando traceback dissecado diretamente ao @dot-auditor.",
+        "Early Consensus Exit no Conselho Consultivo: Encerramento antecipado do debate na Rodada 2 quando o @dot-auditor aprovar a proposta com parecer RISK_LOW / APPROVED, poupando tokens e latencia na borda.",
+        "Deduplicacao Semantica na Memoria Arquival: Merge/update automatico de registros com similaridade >= 0.92, unificando tags sem duplicar linhas no SQLite WAL nem na tabela virtual FTS5."
       ],
       "adjusted": [
+        "Truncamento Defensivo de Terminal: Limitador rigido de 10KB para saidas de comandos com aviso explicito de truncamento para poupar a memoria RAM e o canal SSE.",
+        "Refatoracao Enxuta de main.py: Reducao de 1.451 linhas para 273 linhas (-1.208 linhas), mantendo 100% de retrocompatibilidade de endpoints.",
         "Prevencao de Auto-Zoom no iOS: font-size: 16px obrigatorio para todos os inputs e textareas no mobile com touch-action: manipulation.",
-        "Cascata CSS Otimizada: Inversao da precedencia para carregar mobile.css por ultimo em todas as 4 paginas, garantindo soberania das regras de tela pequena.",
-        "Desengate Automatico do Modo Foco: Alternancia graciosa para abas DOTS ou CANVAS removendo a classe mode-focus-zen e eliminando colisoes visuais.",
-        "Rolagem Suave de Matrizes e Codigo: overflow-x: auto touch e largura minima de 580px na matriz comparativa do canvas e word-break: break-word em tags code/pre.",
-        "Saneamento de Meta Viewport: Remocao de user-scalable=no e adicao universal de viewport-fit=cover para respeito a notches e ilhas dinamicas."
+        "Cascata CSS Otimizada: Inversao da precedencia para carregar mobile.css por ultimo em todas as 4 paginas, garantindo soberania das regras de tela pequena."
       ],
       "removed": [
-        "Eliminacao de Blur e Sombras Difusas Residuais: Remocao de box-shadow disperso sob a borda ciano ativa da barra inferior, assegurando fidelidade 1-bit ao Pixel Paper UI.",
-        "Eliminacao de Tags HTML e Estilos Quebrados: Saneamento do bloco style residual em relatorio.html e relatorio.css."
+        "Eliminacao de Menções Obsoletas: Remocao cirurgica de mencoes a provedores ou modelos de exemplo que nao estao ativos.",
+        "Eliminacao de Blur e Sombras Difusas Residuais: Remocao de box-shadow disperso sob a borda ciano ativa da barra inferior, assegurando fidelidade visual 1-bit ao console escuro minimalista."
       ]
     }
   },
@@ -48,7 +59,7 @@
       "release_date": "2026-10-13",
       "type": "MINOR RELEASE",
       "highlights": [
-        "Reestruturacao ergonomica, Squad Central de 4 bots essenciais (Supervisor, Dev, Muse, Auditor).",
+        "Reestruturacao ergonomica, Squad Central de 4 assistentes essenciais (Supervisor, Coder, Arquiteto, Auditor).",
         "Tres modos de operacao (Criacao 50/50, Foco Zen em 880px e Painel Tecnico sob demanda).",
         "Remocao de furos de trator e linhas de picote repetitivas, liberando largura util de leitura."
       ]
@@ -109,7 +120,7 @@
       "highlights": [
         "Lancamento do console triptych oficial para agentes autonomos piDots.",
         "Roteador de mensageria com suporte a mencao @dot e dossie HITL.",
-        "Engine de renderizacao Pixel Paper UI e integracao LLM."
+        "Engine de renderizacao triptica minimalista e integracao LLM."
       ]
     }
   ]

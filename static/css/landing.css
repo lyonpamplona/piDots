@@ -1988,6 +1988,19 @@ header.landing-header::-webkit-scrollbar {
             .theme-btn-label {
                 display: none !important;
             }
+            .cli-terminal-deck {
+                padding: 10px !important;
+                max-width: 100% !important;
+            }
+            .cli-code-row {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
+            }
+            .cli-code-row .pixel-btn {
+                width: 100% !important;
+                justify-content: center !important;
+            }
         }
 
         @media (max-width: 480px) {

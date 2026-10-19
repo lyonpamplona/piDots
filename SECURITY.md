@@ -1,6 +1,6 @@
 # Politica de Seguranca (SECURITY)
 
-A seguranca da infraestrutura e o controle deterministico sobre a execucao de ferramentas sao prioridades absolutas no ecossistema **piDots**. Como a plataforma opera agentes autonomos com capacidade de execucao de comandos em sistemas de borda persistentes, adotamos medidas rigorosas de isolamento em camadas.
+A seguranca da infraestrutura e o controle deterministico sobre a execucao de ferramentas sao prioridades absolutas no **piDots**. Como a plataforma opera agentes autonomos com capacidade de execucao de comandos em sistemas de borda persistentes, adotamos medidas rigorosas de isolamento em camadas.
 
 ---
 
@@ -17,7 +17,7 @@ Correcoes de seguranca sao aplicadas exclusivamente nas seguintes versoes:
 
 ## 2. Modelo de Ameacas e Fronteiras de Seguranca
 
-O piDots implementa o principio de defesa em profundidade estruturado em cinco barreiras independentes:
+O piDots implementa o principio de defesa em profundidade estruturado em nove barreiras independentes:
 
 ### 1. Isolamento via Sandbox Bubblewrap (`bwrap`)
 - Comandos de terminal despachados pelos agentes sao executados dentro de namespaces isolados do kernel Linux (`CLONE_NEWNS`, `CLONE_NEWPID`, `CLONE_NEWIPC`, `CLONE_NEWUTS`).
@@ -28,7 +28,7 @@ O piDots implementa o principio de defesa em profundidade estruturado em cinco b
 ### 2. Governanca Human-in-the-Loop (HITL)
 - O motor de avaliacao de risco analisa sintaticamente todas as chamadas de ferramentas.
 - Comandos que envolvam remocao recursiva (`rm -rf`), elevacao de privilegios (`sudo`, `su`), alteracao de permissoes (`chmod`, `chown`), operacoes de rede de baixo nivel ou reinicializacao do sistema sao retidos imediatamente em fila de governanca.
-- Nenhuma acao de risco critico e executada sem a confirmacao explicita do operador humano autenticado via interface web ou CLI.
+- Nenhuma acao de risco critico e executada sem a confirmacao explicita do operador humano autenticado via interface web, CLI ou canal assinado.
 
 ### 3. Protecao Rigorosa Anti-SSRF (Server-Side Request Forgery)
 - A ferramenta `read_web_page` valida os enderecos IP resolvidos por DNS contra faixas de rede privada (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), loopback (`127.0.0.0/8`), link-local (`169.254.0.0/16`) e multicast.
@@ -44,6 +44,17 @@ O piDots implementa o principio de defesa em profundidade estruturado em cinco b
 
 ### 6. Integridade de Assets Estáticos Desacoplados e Cache ETag
 - Todos os arquivos estáticos desacoplados (`pages/*.html`, `static/css/*.css`, `static/js/**/*.js`) são servidos com cabeçalhos de defesa `X-Content-Type-Options: nosniff` e validados via ETag SHA-256 no `EdgeAssetManager` em memória RAM, neutralizando adulterações de scripts client-side e contaminação de cache por intermediários.
+
+### 7. Governanca HITL Remota Assinada com HMAC-SHA256
+- Autorizacoes remotas via Telegram ou WhatsApp utilizam tokens unívocos assinados com HMAC-SHA256, validados em tempo constante (`hmac.compare_digest`) no endpoint `/api/hitl/signed-resolve`.
+- As requisicoes retidas possuem janela de validade temporal (TTL de 30 minutos em `expires_at`). Transcorrido o prazo, o status muda automaticamente para `EXPIRED`, descartando a acao e registrando log de auditoria forense.
+
+### 8. Integridade de Dot Packs v1.1 e Defesa contra Prompt Injection
+- Manifestos exportados recebem hash criptografico `sha256_checksum` gerado a partir do conteudo canonico normalizado.
+- Na importacao (`POST /api/dots/import-pack`), a integridade do pacote e verificada antes da persistencia e os blocos de `core_memory` sao auditados contra padroes de subversao de instrucao de sistema (Prompt Injection).
+
+### 9. Isolamento Estrito de Terminal (STRICT_SANDBOX)
+- Sob a diretiva `STRICT_SANDBOX=true`, a ferramenta de execucao de terminal recusa terminantemente a execucao caso o binario `bwrap` nao esteja disponivel no ambiente, retornando codigo de saida 126 com erro de governanca, impedindo qualquer fallback permissivo em processos desprotegidos.
 
 ---
 

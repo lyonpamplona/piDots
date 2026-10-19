@@ -40,8 +40,8 @@ async def run_phase12_tests():
         await db.execute(
             """
             INSERT OR REPLACE INTO dots (id, name, role, system_prompt, model, workspace_path, archetype)
-            VALUES (?, 'Dot Autor 1', 'Arquiteto', 'Prompt 1', 'qwen3.8-27b', '/tmp', 'general'),
-                   (?, 'Dot Autor 2', 'Segurança', 'Prompt 2', 'qwen3.8-27b', '/tmp', 'grok')
+            VALUES (?, 'Dot Autor 1', 'Arquiteto', 'Prompt 1', 'test-model', '/tmp', 'general'),
+                   (?, 'Dot Autor 2', 'Segurança', 'Prompt 2', 'test-model', '/tmp', 'grok')
             """,
             (dot_author_1, dot_author_2)
         )
@@ -155,7 +155,7 @@ async def run_phase12_tests():
             "archetype": "grok",
             "avatar_stamp": "[IOT]",
             "system_prompt": "Você é um especialista em sensores I2C, SPI e barramento GPIO no Raspberry Pi 4B.",
-            "model": "qwen3.8-27b",
+            "model": "test-model",
             "allowed_tools": ["execute_shell_command", "workspace_read_file", "workspace_write_file"]
         },
         "core_memory": {

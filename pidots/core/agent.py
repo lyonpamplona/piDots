@@ -291,6 +291,17 @@ class DotAgent:
                                 risk_level=risk
                             )
                             yield {
+                                "event": "hitl:pending_approval",
+                                "data": {
+                                    "run_id": run_id,
+                                    "approval_id": approval_id,
+                                    "tool_name": fn_name,
+                                    "arguments": args,
+                                    "risk_level": risk,
+                                    "ttl_minutes": 30
+                                }
+                            }
+                            yield {
                                 "event": "hitl:approval_required",
                                 "data": {
                                     "run_id": run_id,
@@ -380,6 +391,77 @@ class DotAgent:
                             }
                         }
 
+                        # Emissão de Eventos AG-UI / CoAgents Shared State Sync
+                        if fn_name == "workspace_write_file" and isinstance(tool_result, dict) and not tool_result.get("error"):
+                            written_file = args.get("filename") or args.get("filepath") or "artifact.md"
+                            written_content = args.get("content", "")
+                            yield {
+                                "event": "artifact:updated",
+                                "data": {
+                                    "run_id": run_id,
+                                    "dot_id": self.dot_id,
+                                    "filename": written_file,
+                                    "space_id": tool_result.get("space_id") or written_file,
+                                    "version": tool_result.get("version", 1),
+                                    "content": written_content,
+                                    "canvas_patch": written_content
+                                }
+                            }
+                            yield {
+                                "event": "canvas:patch",
+                                "data": {
+                                    "run_id": run_id,
+                                    "dot_id": self.dot_id,
+                                    "filename": written_file,
+                                    "content": written_content,
+                                    "canvas_patch": written_content
+                                }
+                            }
+                        elif fn_name in ("plan_create", "plan_update_step", "plan_get_status"):
+                            yield {
+                                "event": "state:sync",
+                                "data": {
+                                    "run_id": run_id,
+                                    "thread_id": thread_id,
+                                    "dot_id": self.dot_id,
+                                    "sync_type": "plan",
+                                    "state_data": tool_result
+                                }
+                            }
+                        elif fn_name in ("core_memory_append", "core_memory_replace", "archival_memory_insert"):
+                            yield {
+                                "event": "state:sync",
+                                "data": {
+                                    "run_id": run_id,
+                                    "thread_id": thread_id,
+                                    "dot_id": self.dot_id,
+                                    "sync_type": "memory",
+                                    "state_data": tool_result
+                                }
+                            }
+                        elif fn_name == "shared_space_write":
+                            yield {
+                                "event": "state:sync",
+                                "data": {
+                                    "run_id": run_id,
+                                    "thread_id": thread_id,
+                                    "dot_id": self.dot_id,
+                                    "sync_type": "shared_space",
+                                    "state_data": tool_result
+                                }
+                            }
+                        elif fn_name in ("delegate_task", "handoff_to_dot", "run_council_debate"):
+                            yield {
+                                "event": "state:sync",
+                                "data": {
+                                    "run_id": run_id,
+                                    "thread_id": thread_id,
+                                    "dot_id": self.dot_id,
+                                    "sync_type": fn_name,
+                                    "state_data": tool_result
+                                }
+                            }
+
                         # Se a ferramenta acionou Self-Healing Harness, emite evento de diagnóstico
                         if isinstance(tool_result, dict) and tool_result.get("self_healing_details"):
                             healing_info = tool_result["self_healing_details"]
@@ -389,12 +471,26 @@ class DotAgent:
                                     "run_id": run_id,
                                     "call_id": call_id,
                                     "tool_name": fn_name,
+                                    "attempt": healing_info.get("attempt", 1),
+                                    "max_attempts": healing_info.get("max_attempts", 2),
+                                    "max_attempts_exceeded": healing_info.get("max_attempts_exceeded", False),
+                                    "escalate_to": healing_info.get("escalate_to"),
                                     "error_type": healing_info.get("error_type"),
                                     "target_file": healing_info.get("target_file"),
                                     "target_line": healing_info.get("target_line"),
                                     "diagnosis": healing_info.get("diagnosis")
                                 }
                             }
+                            if healing_info.get("max_attempts_exceeded"):
+                                yield {
+                                    "event": "self_healing:max_attempts_exceeded",
+                                    "data": {
+                                        "run_id": run_id,
+                                        "tool_name": fn_name,
+                                        "escalate_to": healing_info.get("escalate_to"),
+                                        "diagnosis": healing_info.get("diagnosis")
+                                    }
+                                }
 
                         # Registra resultado no contexto
                         tool_content_str = json.dumps(tool_result, ensure_ascii=False) if isinstance(tool_result, (dict, list)) else str(tool_result)

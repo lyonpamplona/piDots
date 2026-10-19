@@ -15,17 +15,19 @@
 
 ## Visão Geral
 
-O **piDots** é uma plataforma de agentes autônomos persistentes (AI Coworkers) projetada para funcionar 24 horas por dia em computadores de placa única (SBCs), Mini PCs e servidores locais, tendo o **Raspberry Pi 4B com 4GB de RAM (ARM64)** como referência de hardware.
+O **piDots** é uma plataforma de agentes autônomos persistentes (AI Coworkers) projetada para operar continuamente em computadores de placa única (SBCs), Mini PCs e servidores locais, tendo o **Raspberry Pi 4B com 4GB de RAM (ARM64)** como bancada de referência.
 
-Desenvolvido a partir dos conceitos de agentes persistentes do OpenDots, o piDots foi totalmente reconstruído como um monólito modular assíncrono em Python (FastAPI + uvloop). Eliminamos navegadores Chromium headless em segundo plano, bancos vetoriais pesados em contêineres separados e dependências de Node.js. O resultado prático é uma aplicação estável que consome menos de **50 MB de RAM** em repouso e menos de **100 MB** durante a execução ativa de múltiplos agentes.
+Projetamos o piDots do zero para o silício real. Frameworks corporativos tradicionais assumem servidores com dezenas de gigabytes de memória, navegadores headless pesados e bancos vetoriais em contêineres separados. Na borda física, essa conta não fecha. O hardware aquece, o cartão MicroSD sofre desgaste precoce por fsync e a fatura em nuvem cresce sem controle.
 
-O sistema disponibiliza especialistas orientados a tarefas técnicas (DevOps, Pesquisa, Auditoria de Código), equipados com memória de longo prazo, isolamento em sandbox de segurança no sistema de arquivos, governança com aprovação humana (Human-in-the-Loop) para ações de alto risco, e uma interface web SPA/PWA dark mode ultra-responsiva.
+O piDots resolve isso como um monólito modular assíncrono em Python (`FastAPI + uvloop`). Eliminamos runtimes dispensáveis e estruturamos um motor determinístico que consome **menos de 50 MB de RAM em repouso** e **menos de 80 MB durante a execução simultânea de agentes**.
+
+O sistema entrega especialistas orientados a tarefas reais (programação, arquitetura, auditoria e manutenção de sistemas), munidos de memória persistente em SQLite WAL, isolamento em sandbox Bubblewrap, governança Human-in-the-Loop assinada com HMAC-SHA256 e console web tático dark mode.
 
 ---
 
-## Comparativo Técnico: piDots vs OpenDots Corporativo
+## Comparativo Técnico: piDots vs Frameworks Tradicionais
 
-| Parâmetro | OpenDots (Padrão Corporativo) | piDots (Computação de Borda) |
+| Parâmetro | Frameworks Tradicionais (Padrão Nuvem) | piDots (Computação de Borda) |
 | :--- | :--- | :--- |
 | **Hardware Mínimo** | Servidor x86_64 com 8GB a 16GB RAM | Raspberry Pi 4B (4GB RAM) / ARM64 / x86_64 |
 | **Stack de Execução** | Node.js, Electron/Next.js, Python, Redis | Python 3.11-3.13 (FastAPI, uvloop, AsyncIO) |
@@ -49,16 +51,27 @@ pidots/
 ├── __init__.py
 ├── cli.py               # Interface CLI nativa para terminal
 ├── config.py            # Configuracoes centralizadas e variaveis de ambiente
-├── main.py              # Entrypoint FastAPI, rotas REST, SSE streaming e console SPA
+├── main.py              # Bootstrap FastAPI, Lifespan e configuracao de middlewares
+├── api/                 # Sub-roteadores modulares desacoplados (APIRouters)
+│   ├── __init__.py      # Agregador central de rotas da aplicacao
+│   ├── routes_dots.py   # Gerenciamento de agentes e Dot Packs v1.1
+│   ├── routes_threads.py # Sessoes de conversa, canais e streaming SSE
+│   ├── routes_tasks.py  # Agendamentos proativos e manutencao
+│   ├── routes_webhooks.py # Webhooks Telegram, WhatsApp e incoming
+│   ├── routes_edge.py   # Telemetria, hardware triggers e changelog
+│   ├── routes_hitl.py   # Governanca e resolucao remota HMAC-SHA256
+│   ├── routes_mcp.py    # Descoberta e gestao de servidores MCP Lite
+│   └── routes_static.py # Entrega canonica com EdgeAssetManager
 ├── core/
 │   ├── __init__.py
 │   ├── agent.py         # Motor ReAct assincrono com Dynamic Tool Pruning e AG-UI
 │   ├── council.py       # Conselho Consultivo e debate dialetico tripartite
-│   ├── dot_pack.py      # Empacotamento, exportacao e importacao portavel de Dot Packs v1.0
-│   ├── edge_triggers.py # Triggers de hardware edge (SoC Broadcom BCM2711, MicroSD e RAM)
-│   ├── hitl.py          # Governanca Human-in-the-Loop com retencao e aprovacao
+│   ├── dot_pack.py      # Dot Packs v1.1 assinados com SHA-256 e auditoria anti-injection
+│   ├── edge_triggers.py # Triggers de hardware (BCM2711), barramento GPIO e listener MQTT
+│   ├── hitl.py          # Governanca Human-in-the-Loop com retencao e expiracao TTL
+│   ├── hitl_crypto.py   # Assinatura e verificacao de tokens HMAC-SHA256
 │   ├── messaging_gateway.py # Gateway unificado de mensageria e barramento de canais
-│   ├── notifier.py      # Notificador HTTP e alertas externos
+│   ├── notifier.py      # Notificador HTTP e alertas externos assinados
 │   ├── orchestrator.py  # Orquestrador Multi-Bot (Supervisor, Handoff, mencoes @dot)
 │   ├── planner.py       # Planejamento em dois estagios (Goals, Milestones e Checkpoints)
 │   ├── scheduler.py     # Motor proativo Dot Heartbeat com calculo via croniter e circuit breaker
@@ -66,7 +79,7 @@ pidots/
 │   └── state.py         # Modelos de eventos do protocolo AG-UI e estados de sessao
 ├── providers/
 │   ├── __init__.py
-│   └── openai_client.py # Cliente universal compativel com protocolo OpenAI API
+│   └── openai_client.py # Gateway universal de inferencia com Circuit Breaker de 3 estados
 ├── storage/
 │   ├── __init__.py
 │   ├── db.py            # SQLite WAL calibrado para microSD e migracoes idempotentes
@@ -78,8 +91,9 @@ pidots/
 └── tools/
     ├── __init__.py
     ├── file_ops.py      # Operacoes atomicas de leitura, escrita e listagem em disco
-    ├── registry.py      # Registro centralizado de 23 ferramentas com Dynamic Tool Pruning
-    ├── terminal.py      # Executor shell isolado via Bubblewrap ou subprocesso seguro
+    ├── mcp_client.py    # Cliente MCP Lite assincrono sobre STDIO/SSE com Tool Pruning
+    ├── registry.py      # Registro centralizado de ferramentas com Dynamic Tool Pruning
+    ├── terminal.py      # Executor shell isolado via Bubblewrap com trava STRICT_SANDBOX
     └── web_reader.py    # Extrator semantico web assincrono com Trafilatura
 ```
 
@@ -93,11 +107,11 @@ Em vez de chats isolados, o piDots conecta múltiplos especialistas dentro do me
 - **Topologia Supervisor-Worker:** O supervisor planeja e delega subtarefas técnicas através da ferramenta `delegate_task`, executando workers em threads isoladas e consolidando os resultados na conversa principal.
 - **Transferência de Liderança (Handoff):** Ferramenta `handoff_to_dot` para transferir a titularidade operacional de uma thread para outro especialista com registro na tabela `agent_handoffs`.
 - **Logs Internos de Depuração:** Mensagens de comunicação inter-agente são gravadas com `visibility: 'internal'` para auditoria sem poluir a interface do usuário.
-- **Perfis Especializados:** Suporte nativo a papéis operacionais bem definidos:
-  - `supervisor`: Coordenador geral e gestão de metas.
-  - `grok` ou `coder`: Analítico, terminal, automação e testes de código.
-  - `muse`: Arquitetura de sistemas, síntese e redação técnica.
-  - `auditor`: Inspeção de segurança, telemetria e conformidade de comandos.
+- **Perfis Especializados:** Suporte nativo a papeis operacionais bem definidos:
+  - `supervisor`: Coordenador geral e gestao de metas executivas.
+  - `coder`: Desenvolvimento de software, depuracao de erros, execucao em terminal isolado e testes automatizados.
+  - `arquiteto`: Arquitetura de sistemas, modelagem de dados, sintese conceitual e documentacao tecnica.
+  - `auditor`: Inspecao de seguranca, telemetria e conformidade de comandos.
 - **Dynamic Tool Pruning:** Cada Dot carrega apenas as ferramentas permitidas em `allowed_tools_json`, reduzindo em até 75% o consumo de tokens de contexto e eliminando alucinações.
 
 ### 2. Automações Proativas: Padrão Dot Heartbeat e Circuit Breaker
@@ -147,9 +161,9 @@ O módulo `pidots/core/council.py` implementa deliberação dialética formal en
 - **Trava de Segurança:** Teto máximo rígido de 3 rodadas de debate para conter custos e memória, com consumo medido inferior a 53 MB de RAM.
 - **Ferramenta Nativa:** Invocação direta via `run_council_debate`.
 
-### 8. Espaço de Conhecimento Compartilhado e Dot Packs Portáveis
+### 8. Espaço de Conhecimento Compartilhado e Dot Packs Portáveis (v1.1)
 - **Shared Knowledge Space (`pidots/storage/shared_space.py`):** Quadro colaborativo indexado por `(thread_id, topic_key)` na tabela `thread_shared_notes`. Permite gravação (`shared_space_write`), leitura (`shared_space_read`) e sobrescrita colaborativa entre bots na mesma thread, com formatação XML `<shared_knowledge_space>`.
-- **Dot Packs v1.0 (`pidots/core/dot_pack.py`):** Formato portável de manifesto JSON que empacota definições do Dot, perfil, ferramentas, blocos de Core Memory, memórias duradouras e arquivos de workspace. Exportação via `GET /api/dots/{dot_id}/export-pack` e importação atômica via `POST /api/dots/import-pack`.
+- **Dot Packs v1.1 com Assinatura SHA-256 (`pidots/core/dot_pack.py`):** Manifesto JSON padronizado com hash criptografico de integridade `sha256_checksum`. Na importacao atômica (`POST /api/dots/import-pack`), o sistema valida a correspondencia do hash e aciona auditoria estatica contra tecnicas de Prompt Injection em `core_memory` antes de instanciar o agente.
 
 ### 9. Triggers de Hardware e Manutenção Noturna do MicroSD
 - **Triggers Orientados a Eventos de Hardware (`pidots/core/edge_triggers.py`):** Monitora temperatura do SoC Broadcom BCM2711 via sysfs Linux (`/sys/class/thermal/thermal_zone0/temp`), espaço livre no MicroSD e memória RAM livre. Emite alertas proativos e ativa throttle automático caso a temperatura ultrapasse 72°C ou o espaço em disco seja inferior a 10%. Endpoint: `GET /api/edge/triggers`.
@@ -159,9 +173,9 @@ O módulo `pidots/core/council.py` implementa deliberação dialética formal en
 - **Micro-Motor Vanilla JS (`static/pidots-i18n.js`):** Alternância instantânea de idioma (< 10ms) sem frameworks pesados ou consumo extra de RAM, com detecção e persistência segura em `localStorage.getItem('pidots_lang')`.
 - **Dicionários Atômicos JSON (`data/locales/pt.json` e `data/locales/en.json`):** Dicionários semânticos servidos com cache de borda e fallback defensivo inteligente.
 - **Mutação Estrita via textContent:** Mecanismo declarativo baseado em atributos `data-i18n` e `data-i18n-attr`, com imunidade total a injeções de script (XSS).
-- **Onboarding e Patch Notes SemVer v1.5.2:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
+- **Onboarding e Patch Notes SemVer v1.5.3:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
 
-### 11. Protocolo Unificado de Slash Commands (/), Tríptico Adaptativo e Engenharia Mobile-First (v1.5.2)
+### 11. Protocolo Unificado de Slash Commands (/), Tríptico Adaptativo e Engenharia Mobile-First
 - **Catálogo Completo de 30 Slash Commands:** Comandos categorizados em 6 grupos operacionais (Sistema, Agentes, Memória, Tarefas, Borda, Exportação), invocados com `/` no teletipo ou via botão mecânico touch `[/]`. Comandos locais (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) executam instantaneamente no cliente (< 16ms) com zero chamadas externas e zero consumo de tokens.
 - **Atalho Tático de Barra Touch [/]:** Botão mecânico rápido (`#slashTriggerBtn`) integrado ao console operacional, abrindo diretamente o popover flutuante de comandos em smartphones sem a necessidade de acionar o teclado virtual.
 - **Motor de Autocomplete Popover em Vanilla JS:** Componente ultraleve (< 10KB) com busca fuzzy em memória, navegação cíclica por setas (ArrowUp/ArrowDown), autocompletar com Tab/Enter, fechamento por Esc e tolerância a falhas via distância Levenshtein.
@@ -172,13 +186,27 @@ O módulo `pidots/core/council.py` implementa deliberação dialética formal en
 - **Sincronização Dinâmica com Teclado Virtual (window.visualViewport):** Escuta reativa da API `window.visualViewport` redimensionando a altura física do corpo (`document.body.style.height = ${vv.height}px`), ocultando compulsoriamente a barra inferior através da classe `keyboard-open` e realizando auto-scroll do chat após 60ms, eliminando colisões de layout no iOS Safari e Android Chrome.
 - **Proteção Anti-Zoom e Ergonomia no Apple WebKit:** Imposição estrita de `font-size: 16px` em inputs e textareas móveis com `touch-action: manipulation`, neutralizando o auto-zoom compulsório do Safari iOS.
 
-### 12. Novo Tour Spotlight Interativo In-Context e Onboarding FTUE de Alto Desempenho (v1.5.2)
+### 12. Tour Spotlight Interativo In-Context e Onboarding FTUE de Alto Desempenho
 - **Motor PiDotsTourEngine em Vanilla JS (< 12KB):** Substituição completa de modais estáticos por um sistema de ancoragem espacial in-context no DOM real. Utiliza `box-shadow: 0 0 0 9999px rgba(7, 9, 12, 0.84)` em camada de composição direta da GPU, demandando < 1% de CPU no Raspberry Pi 4B e zero dependências externas.
 - **Cinco Etapas Canônicas de Capacitação:** Guia prático cobrindo o Squad Central de Especialistas, o Terminal de Comandos & Teletipo, o Comutador de Modo Foco (Zen vs 50/50), o Live Canvas & Diffs e a Gaveta Técnica (F1).
-- **Ancoragem Defensiva e Foco Não-Intrusivo no Mobile (v1.5.2):** Posicionamento fixo de `.pixel-tour-popover` acima da barra inferior respeitando as safe areas do iOS e inibição de foco compulsório em inputs durante o tour em smartphones para evitar a subida acidental do teclado virtual.
+- **Ancoragem Defensiva e Foco Não-Intrusivo no Mobile:** Posicionamento fixo de `.pixel-tour-popover` acima da barra inferior respeitando as safe areas do iOS e inibição de foco compulsório em inputs durante o tour em smartphones para evitar a subida acidental do teclado virtual.
 - **Comando de Barra `/tour`:** Permite rever o tour a qualquer momento ou reiniciá-lo do zero via `/tour reset`.
 - **Acionamento Tático na Gaveta Técnica e Context Menu:** Card dedicado `[REVER GUIA OPERACIONAL SPOTLIGHT]` dentro da central F1 / `[SISTEMA]` e atalho rápido com botão direito do mouse.
 - **Disparo Automático no Primeiro Acesso:** Detecta novos operadores via `localStorage.getItem('pidots_tour_completed')` e dispara suavemente com 600ms de desacoplamento após o assentamento do cockpit.
+
+### 13. Cliente MCP Lite (Model Context Protocol) com Dynamic Tool Pruning
+- **Conectividade Externa Sob Demanda (`pidots/tools/mcp_client.py`):** Conecta servidores MCP externos leves via STDIO ou Server-Sent Events (SSE) assíncrono em Python puro (< 5MB RAM).
+- **Conversão Automática de Esquemas:** Converte definições de ferramentas JSON-RPC 2.0 em callables registrados no `ToolRegistry`.
+- **Dynamic Tool Pruning Rigoroso:** As ferramentas MCP importadas submetem-se compulsoriamente à lista de permissões `allowed_tools_json`, impedindo a inflação desnecessária do prompt de contexto dos agentes que não as utilizam.
+
+### 14. Governança HITL Remota Assinada com HMAC-SHA256 e TTL
+- **Aprovação Segura via Celular (`pidots/core/hitl_crypto.py`):** Geração de links e botões interativos para Telegram e WhatsApp com assinatura HMAC-SHA256 em tempo constante (`hmac.compare_digest`).
+- **Endpoint Dedicado (`/api/hitl/signed-resolve`):** Autorização ou veto de comandos críticos com um clique no smartphone sem necessidade de autenticação por senha no navegador.
+- **Expiração Temporal Automática (TTL 30m):** Solicitações pendentes retidas recebem `expires_at`. Após 30 minutos sem deliberação, o status migra para `EXPIRED`, cancelando a execução com log de segurança.
+
+### 15. Barramento Físico GPIO e Sensores MQTT de Borda
+- **Leitura Direta de Hardware (`pidots/core/edge_triggers.py`):** Suporte nativo à leitura de pinos GPIO físicos no Raspberry Pi 4B (com fallback defensivo caso execute em containers sem privilégios de hardware ou sistemas x86_64).
+- **Listener MQTT Assíncrono:** Permite que sensores locais despachem tópicos de telemetria diretamente ao piDots, disparando missões de agentes autônomos ou rotinas do `EdgeScheduler` sem bloquear o loop de eventos.
 
 ---
 
@@ -213,7 +241,7 @@ Preencha a sua chave de API e selecione o modelo de linguagem e canais desejados
 ```dotenv
 AI_API_KEY=sua-chave-aqui
 AI_BASE_URL=https://api.openai.com/v1
-AI_MODEL=qwen3.8-27b
+AI_MODEL=gpt-4o-mini
 
 # Opcional: Alertas HITL e Mensageria
 WEBHOOK_NOTIFICATION_URL=https://seu-endpoint.com/webhook
@@ -364,32 +392,31 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 
 | Metodo | Endpoint | Descricao |
 | :--- | :--- | :--- |
-| `GET` | `/` | Landing page oficial de apresentacao e onboarding em Pixel Paper UI |
-| `GET` | `/app` | Console operacional oficial SPA/PWA em Pixel Paper UI (Dark Noir e Blueprint) |
+| `GET` | `/` | Landing page oficial de apresentacao e onboarding (Hero ReAct e calculadora de silicio) |
+| `GET` | `/app` | Console operacional oficial SPA/PWA (Dark Noir e Blueprint monospace) |
 | `GET` | `/workspace` | Alias operacional canonico para a estacao de trabalho SPA/PWA (`/app`) |
 | `GET` | `/docs` | Guia didatico canonico com busca client-side (Ctrl+K), drawer retratil e API tester |
+| `GET` | `/relatorio` | Relatorio tecnico de engenharia, viabilidade e homologacao |
 | `GET` | `/api/docs` | Swagger UI interativo OpenAPI desacoplado para desenvolvedores |
 | `GET` | `/api/openapi.json` | Esquema OpenAPI 3.0 estruturado em JSON bruto |
-| `GET` | `/apresentacao` | Redirecionamento permanente HTTP 308 (RFC 7538) para a raiz `/` |
-| `GET` | `/guia` | Redirecionamento permanente HTTP 308 (RFC 7538) para `/docs` |
-| `GET` | `/console` | Redirecionamento permanente HTTP 308 (RFC 7538) para `/app` |
-| `GET` | `/relatorio` | Relatorio tecnico de viabilidade de engenharia e benchmarks |
 | `GET` | `/health` | Telemetria de hardware (temperatura SoC, RAM, status SQLite WAL) |
 | `GET` | `/manifest.json` | Manifesto PWA para instalacao em dispositivos moveis e desktop (`start_url: /app`) |
 | `GET` | `/sw.js` | Service Worker PWA com cache defensivo v7 para operacao offline |
 | `GET` | `/icon.svg` | Logotipo vetorial oficial em formato SVG com cache prolongado |
 | `GET` | `/static/pidots-i18n.js` | Micro-motor Vanilla JS de internacionalizacao client-side |
 | `GET` | `/data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
-| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.5.2) |
+| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.5.3) |
 | `GET` | `/api/dots` | Listagem de AI Coworkers com arquetipos e status |
-| `GET` | `/api/dots/{id}/export-pack` | Exportacao portavel do manifesto DotPack v1.0 (persona, memorias, workspace) |
-| `POST` | `/api/dots/import-pack` | Importacao atomica de novos agentes a partir de arquivo de DotPack |
+| `GET` | `/api/dots/{id}/export-pack` | Exportacao portavel de DotPack v1.1 assinado com SHA-256 |
+| `POST` | `/api/dots/import-pack` | Importacao atomica de novos agentes a partir de DotPack v1.1 com auditoria |
 | `POST` | `/api/threads` | Criacao de thread de conversacao duravel |
 | `GET` | `/api/threads/{id}/messages` | Historico de mensagens com metadados multi-ator e visibilidade |
 | `POST` | `/api/threads/{id}/runs` | Ciclo autonomo do Dot com streaming SSE (Protocolo AG-UI v1.0) |
 | `GET` | `/api/hitl/pending` | Fila de solicitacoes de aprovacao humana pendentes |
 | `POST` | `/api/hitl/{id}/resolve` | Resolucao oficial (aprovacao ou veto) de acao retida |
+| `POST` | `/api/hitl/signed-resolve` | Resolucao remota de HITL assinada com HMAC-SHA256 para Telegram/WhatsApp |
 | `POST` | `/api/hitl/webhook-callback` | Callback assincrono para resolucao de HITL remota |
+| `GET` | `/api/mcp/servers` | Descoberta e status operacional dos servidores MCP Lite conectados |
 | `GET` | `/api/spaces` | Listagem de documentos versionados em Spaces |
 | `POST` | `/api/spaces` | Gravacao/atualizacao de documento com calculo de diff |
 | `GET` | `/api/spaces/{id}` | Conteudo integral de documento em Space |
@@ -418,21 +445,21 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 
 ---
 
-### Console Operacional Web SPA e Design System Pixel Paper UI
-O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota canonica `/app` (ou `/workspace`), projetada sob o design system **Pixel Paper UI**:
-- **Estetica Pixel Paper UI:** Visual tatico inspirado em teletipos tecnicos, fichas catalograficas e papel milimetrado com alta densidade de informacoes, tipografia tecnica crisp e estetica retro minimalista de 1-bit.
+### Console Operacional Web SPA e Interface Tecnica Minimalista
+O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota canonica `/app` (ou `/workspace`), projetada como um console escuro tatil:
+- **Estetica de Alta Densidade:** Visual tatico inspirado em matrizes tecnicas com alta densidade de informacoes, tipografia crisp e estetica retro minimalista de 1-bit.
 - **Logotipo Vetorial Oficial:** Marca de identidade do piDots servida via `/icon.svg` com nos interconectados em verde (#10b981) e ciano (#38bdf8).
 - **Tres Modos de Operacao Ergonomicos:**
   - *Modo 1: Criacao 50/50:* Chat de teletipo e Live Canvas lado a lado para trabalho ativo de geracao e edicao de codigo e documentos.
   - *Modo 2: Foco Zen (Claude Code / Linear):* Barra lateral e canvas recolhidos, centralizando o chat com largura calibrada (880px) para leitura contínua e raciocínio profundo.
   - *Modo 3: Painel Tecnico & Gestao:* Telemetria de hardware (SoC/RAM/WAL), configuracao de provedores e sandbox acessiveis sob demanda via gaveta tecnica (F1 / `[SISTEMA]` ou `/telemetry`).
-- **Squad Central de Especialistas:** Interface despoluida exibindo apenas os 4 coworkers essenciais (Supervisor, Dev Assistant, Muse e Auditor), eliminando a sobrecarga de dezenas de agentes residuais.
+- **Squad Central de Especialistas:** Interface despoluida exibindo apenas os 4 coworkers essenciais (Supervisor, Coder, Arquiteto e Auditor), eliminando a sobrecarga de dezenas de agentes residuais.
 - **Teletipo e Input Desobstruidos:** Remocao das calhas laterais de 20px (40px totais) do trator de papel e do prefixo rigido no input, concedendo maxima largura util de leitura e digitacao.
 - **Visualizador de Diffs e Versionamento:** Inspecao lado a lado de alteracoes em arquivos persistidos no SQLite WAL com carimbos analogicos de status.
-- **Governanca Interativa HITL Just-in-Time:** Cartoes de aprovacao e veto forense exibidos apenas quando ha acoes retidas, com persistencia de logs de seguranca.
+- **Governanca Interativa HITL Just-in-Time:** Cartoes de aprovacao e veto de seguranca exibidos apenas quando ha acoes retidas, com persistencia de logs de seguranca.
 - **Streaming de Raciocinio AG-UI:** Exibicao token a token de pensamentos e chamadas de ferramentas.
 - **Onboarding Walkthrough Guiado:** Esteira interativa de 5 passos para novos operadores com retencao de conclusao no cliente e reabertura via atalho F1.
-- **Central de Patch Notes SemVer (v1.5.2):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
+- **Central de Patch Notes SemVer (v1.5.3):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
 
 #### Navegacao Cruzada via Chords Globais de Teclado
 Para transicao instantanea entre as superficies do sistema sem necessidade de mouse:
@@ -448,8 +475,9 @@ Operacao tática de terminal e gerenciamento sem atrito:
 
 | Atalho | Acao Operacional | Descricao |
 | :--- | :--- | :--- |
-| `Tecla /` | Autocomplete Popover | Dispara menu de 30 Slash Commands com busca fuzzy no teletipo |
+| `Tecla /` | Autocomplete Popover | Dispara menu de 34 Slash Commands com busca fuzzy no teletipo |
 | `Botão [/]` | Autocomplete Touch | Abre diretamente o popover de comandos sem necessidade de abrir o teclado virtual |
+| `Alt+1` a `Alt+4` | Activity Rail Sidebar | Comuta instantaneamente entre os 4 paineis contextuais (Spaces, Dots Studio, Tasks Cron, Memoria 64D) |
 | `Bottom-Nav` | Comutação Mobile | Alterna entre visualizações [O] DOTS, [>] CHAT, [*] CANVAS e [?] GUIA em telas móveis |
 | `Alt+B` / `Ctrl+B` | Alternar Sidebar | Alterna visibilidade da barra lateral de coworkers e spaces |
 | `Alt+I` | Inspecionar Artefato | Foca e expande o artefato ativo no Live Canvas |
@@ -468,9 +496,9 @@ O Console SPA incorpora um motor de comandos iniciados por barra (`/`) para exec
 
 | Categoria | Comandos Principais | Exemplos de Uso |
 | :--- | :--- | :--- |
-| **Sistema & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/tour`, `/onboarding`, `/changelog` | `/tour`, `/tour reset`, `/telemetry`, `/theme noir` |
-| **Agentes & Multi-Bot** | `/dots`, `/handoff`, `/council`, `/delegate`, `/archetype`, `/tools` | `/dots`, `/handoff dot-researcher`, `/council analise termica` |
-| **Memoria & Conhecimento** | `/memory`, `/archival`, `/shared`, `/spaces`, `/diff` | `/archival SQLite WAL`, `/spaces analise.md`, `/diff` |
+| **Sistema & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/tour`, `/onboarding`, `/changelog`, `/computer` | `/tour`, `/computer ls -la`, `/telemetry`, `/theme noir` |
+| **Agentes & Multi-Bot** | `/dots`, `/handoff`, `/council`, `/delegate`, `/archetype`, `/tools`, `/mcp`, `/coagents` | `/dots`, `/handoff dot-auditor`, `/coagents`, `/mcp` |
+| **Memoria & Conhecimento** | `/memory`, `/archival`, `/shared`, `/spaces`, `/diff`, `/save-space` | `/archival SQLite WAL`, `/save-space ata.md`, `/diff` |
 | **Tarefas & Heartbeat** | `/tasks`, `/cron`, `/run-task` | `/tasks`, `/cron listar`, `/run-task task-001` |
 | **Governanca & Borda** | `/hitl`, `/triggers`, `/maintenance`, `/backup` | `/hitl status`, `/triggers`, `/maintenance run` |
 | **Exportacao & Dados** | `/export`, `/pack` | `/export chat`, `/export canvas`, `/pack dot-dev-core` |
@@ -514,6 +542,11 @@ python3 scripts/test_phase10_self_healing_planner.py # Self-Healing Harness e Tw
 python3 scripts/test_phase11_council_debate.py       # Conselho Consultivo e Debate Tripartite
 python3 scripts/test_phase12_shared_space_dot_packs.py # Shared Knowledge Space e Dot Packs v1.0
 python3 scripts/test_phase13_edge_triggers_maintenance.py # Triggers de Hardware e Manutencao MicroSD
+
+# Testes do protocolo AG-UI, CoAgents Shared State, Generative UI Inline e Layout OpenDots
+python3 scripts/test_phase1_opendots_agui.py
+python3 scripts/test_phase2_opendots_layout.py
+python3 scripts/test_phase3_opendots_dynamic_js.py
 
 # Teste de resiliencia integral (Tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
 python3 scripts/test_resilience_phases.py
@@ -585,7 +618,7 @@ python3 scripts/stress_test.py
 ├── SECURITY.md                      # Politica de seguranca e reporte de vulnerabilidades
 ├── scripts/                         # Scripts de teste automatizado e benchmarks
 └── static/                          # Assets estaticos do frontend
-    ├── css/                         # Design System Pixel Paper UI modularizado
+    ├── css/                         # Folhas de estilo modulares segmentadas
     │   ├── tokens.css, reset.css, layout.css, components.css, mobile.css
     │   └── spa.css, landing.css, docs.css, relatorio.css
     └── js/                          # Motores JavaScript modulares em Vanilla JS

@@ -266,7 +266,13 @@ class EdgeMaintenanceManager:
         # 1. Checkpoint WAL inicial
         chk_init = await cls.checkpoint_wal(mode="TRUNCATE")
 
-        # 2. Consolidação episódica
+        # 2. Consolidação episódica e purga de aprovações HITL expiradas
+        try:
+            from ..core.hitl import HITLManager
+            await HITLManager.expire_stale_approvals()
+        except Exception as e_hitl:
+            logger.debug("Falha na purga de HITL em manutenção: %s", e_hitl)
+
         consolidation = await cls.consolidate_old_episodes(
             days_threshold=days_threshold,
             dot_id=dot_id

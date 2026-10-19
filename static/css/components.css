@@ -49,8 +49,9 @@
     position: relative;
 }
 
-/* Hitbox acessivel de toque de 48x48px (Apple 44pt / Google 48dp) */
-.pixel-btn::after {
+/* Hitbox acessivel de toque de 48x48px (Apple 44pt / Google 48dp) restrita a botoes com .pixel-btn-touch */
+.pixel-btn.pixel-btn-touch::after,
+.pixel-btn-touch::after {
     content: "";
     position: absolute;
     top: 50%;

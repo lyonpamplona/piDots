@@ -67,6 +67,46 @@ class CouncilOrchestrator:
         return content, True, ""
 
     @classmethod
+    def _is_auditor_approved(cls, text: str) -> bool:
+        """
+        Detecta se a manifestação do auditor atingiu consenso favorável de baixo risco.
+        Identifica marcadores explícitos como 'RISK_LOW', 'APPROVED', 'APROVADO'
+        e a ausência de termos de veto ou risco crítico/alto impeditivo.
+        """
+        if not text:
+            return False
+        clean = text.upper()
+        has_approved_signal = any(
+            marker in clean
+            for marker in (
+                "RISK_LOW",
+                "APPROVED",
+                "APROVADO",
+                "APROVADA",
+                "RISCO BAIXO",
+                "BAIXO RISCO",
+                "CONSENSO ATINGIDO",
+                "APROVO SEM RESSALVAS",
+                "SEM RESSALVAS"
+            )
+        )
+        has_blocking_signal = any(
+            blocker in clean
+            for blocker in (
+                "RISK_HIGH",
+                "RISK_CRITICAL",
+                "REJECTED",
+                "REPROVADO",
+                "REJEITADO",
+                "CORREÇÕES OBRIGATÓRIAS",
+                "CORRECOES OBRIGATORIAS",
+                "VETO",
+                "VULNERABILIDADE CRÍTICA"
+            )
+        )
+        return has_approved_signal and not has_blocking_signal
+
+    @classmethod
     async def run_debate(
         cls,
         thread_id: str,
@@ -221,56 +261,15 @@ class CouncilOrchestrator:
         )
 
         # ======================================================================
-        # ETAPA 3 (Opcional): Rodadas Iterativas de Réplica e Tréplica se rounds > 1
+        # ETAPA 3 (Opcional): Rodadas Iterativas com Early Consensus Exit
         # ======================================================================
-        for round_idx in range(2, total_rounds + 1):
-            replica_prompt = (
-                f"[CONSELHO CONSULTIVO - RÉPLICA DO PROPOSITOR (RODADA {round_idx}/{total_rounds})]\n"
-                f"O auditor @{resolved_critic} fez as seguintes observações críticas à sua proposta:\n"
-                f"{critic_output}\n\n"
-                "Ajuste sua proposta ou refute os pontos levantados antes da decisão do supervisor."
-            )
-            replica_output, rep_ok, rep_err = await cls._execute_turn(proponent_agent, prop_subthread, replica_prompt)
-            if not rep_ok:
-                return await cls._fail_council(
-                    handoff_id=handoff_id,
-                    thread_id=thread_id,
-                    failed_dot_id=resolved_proponent,
-                    supervisor_dot_id=resolved_supervisor,
-                    error_msg=rep_err,
-                    subthreads=[prop_subthread, critic_subthread]
-                )
-            proponent_output = replica_output
+        actual_rounds_executed = 1
+        early_consensus = False
 
-            await MultiBotOrchestrator.record_message(
-                thread_id=thread_id,
-                actor_id=resolved_proponent,
-                actor_type="dot",
-                target_dot_id=resolved_supervisor,
-                visibility="internal",
-                role="assistant",
-                content=f"[CONSELHO - RÉPLICA DE @{resolved_proponent} (RODADA {round_idx})]:\n{proponent_output}"
-            )
-
-            # Tréplica do Crítico para fechamento do ciclo dialético simétrico
-            treplica_prompt = (
-                f"[CONSELHO CONSULTIVO - TRÉPLICA DO AUDITOR CRÍTICO (RODADA {round_idx}/{total_rounds})]\n"
-                f"O propositor @{resolved_proponent} apresentou a seguinte réplica/ajuste:\n"
-                f"{proponent_output}\n\n"
-                "Emita sua avaliação de auditoria sobre a réplica (aprovação final ou ressalvas remanescentes)."
-            )
-            treplica_output, trep_ok, trep_err = await cls._execute_turn(critic_agent, critic_subthread, treplica_prompt)
-            if not trep_ok:
-                return await cls._fail_council(
-                    handoff_id=handoff_id,
-                    thread_id=thread_id,
-                    failed_dot_id=resolved_critic,
-                    supervisor_dot_id=resolved_supervisor,
-                    error_msg=trep_err,
-                    subthreads=[prop_subthread, critic_subthread]
-                )
-            critic_output = treplica_output
-
+        # Verifica se o parecer inicial do auditor já aprovou a proposta sem ressalvas
+        if cls._is_auditor_approved(critic_output) and total_rounds > 1:
+            logger.info("Early Consensus Exit detectado no parecer inicial de @%s (RISK_LOW / APPROVED). Consolidando decisão.", resolved_critic)
+            early_consensus = True
             await MultiBotOrchestrator.record_message(
                 thread_id=thread_id,
                 actor_id=resolved_critic,
@@ -278,8 +277,86 @@ class CouncilOrchestrator:
                 target_dot_id=resolved_supervisor,
                 visibility="internal",
                 role="assistant",
-                content=f"[CONSELHO - TRÉPLICA DE @{resolved_critic} (RODADA {round_idx})]:\n{critic_output}"
+                content=f"[CONSELHO - EARLY CONSENSUS EXIT]: Consenso técnico imediato atingido com parecer RISK_LOW / APPROVED por @{resolved_critic}. Poupando rodadas adicionais."
             )
+
+        if not early_consensus:
+            for round_idx in range(2, total_rounds + 1):
+                actual_rounds_executed = round_idx
+                replica_prompt = (
+                    f"[CONSELHO CONSULTIVO - RÉPLICA DO PROPOSITOR (RODADA {round_idx}/{total_rounds})]\n"
+                    f"O auditor @{resolved_critic} fez as seguintes observações críticas à sua proposta:\n"
+                    f"{critic_output}\n\n"
+                    "Ajuste sua proposta ou refute os pontos levantados antes da decisão do supervisor."
+                )
+                replica_output, rep_ok, rep_err = await cls._execute_turn(proponent_agent, prop_subthread, replica_prompt)
+                if not rep_ok:
+                    return await cls._fail_council(
+                        handoff_id=handoff_id,
+                        thread_id=thread_id,
+                        failed_dot_id=resolved_proponent,
+                        supervisor_dot_id=resolved_supervisor,
+                        error_msg=rep_err,
+                        subthreads=[prop_subthread, critic_subthread]
+                    )
+                proponent_output = replica_output
+
+                await MultiBotOrchestrator.record_message(
+                    thread_id=thread_id,
+                    actor_id=resolved_proponent,
+                    actor_type="dot",
+                    target_dot_id=resolved_supervisor,
+                    visibility="internal",
+                    role="assistant",
+                    content=f"[CONSELHO - RÉPLICA DE @{resolved_proponent} (RODADA {round_idx})]:\n{proponent_output}"
+                )
+
+                # Tréplica do Crítico para fechamento do ciclo dialético simétrico
+                treplica_prompt = (
+                    f"[CONSELHO CONSULTIVO - TRÉPLICA DO AUDITOR CRÍTICO (RODADA {round_idx}/{total_rounds})]\n"
+                    f"O propositor @{resolved_proponent} apresentou a seguinte réplica/ajuste:\n"
+                    f"{proponent_output}\n\n"
+                    "Emita sua avaliação de auditoria final sobre a réplica (ex: 'RISK_LOW / APPROVED' para encerramento por consenso antecipado ou ressalvas remanescentes)."
+                )
+                treplica_output, trep_ok, trep_err = await cls._execute_turn(critic_agent, critic_subthread, treplica_prompt)
+                if not trep_ok:
+                    return await cls._fail_council(
+                        handoff_id=handoff_id,
+                        thread_id=thread_id,
+                        failed_dot_id=resolved_critic,
+                        supervisor_dot_id=resolved_supervisor,
+                        error_msg=trep_err,
+                        subthreads=[prop_subthread, critic_subthread]
+                    )
+                critic_output = treplica_output
+
+                await MultiBotOrchestrator.record_message(
+                    thread_id=thread_id,
+                    actor_id=resolved_critic,
+                    actor_type="dot",
+                    target_dot_id=resolved_supervisor,
+                    visibility="internal",
+                    role="assistant",
+                    content=f"[CONSELHO - TRÉPLICA DE @{resolved_critic} (RODADA {round_idx})]:\n{critic_output}"
+                )
+
+                # Early Consensus Exit na Rodada 2+: se auditor aprovou a réplica com RISK_LOW / APPROVED
+                if cls._is_auditor_approved(critic_output):
+                    logger.info(
+                        "Early Consensus Exit atingido na Rodada %d por @%s (RISK_LOW / APPROVED). Consolidando decisão sem rodadas extras.",
+                        round_idx, resolved_critic
+                    )
+                    early_consensus = True
+                    await MultiBotOrchestrator.record_message(
+                        thread_id=thread_id,
+                        actor_id=resolved_critic,
+                        actor_type="dot",
+                        target_dot_id=resolved_supervisor,
+                        visibility="internal",
+                        role="assistant",
+                        content=f"[CONSELHO - EARLY CONSENSUS EXIT]: Consenso técnico atingido com parecer RISK_LOW / APPROVED por @{resolved_critic} na Rodada {round_idx}. Encerrando debate antecipadamente."
+                    )
+                    break
 
         # ======================================================================
         # ETAPA 4: O Supervisor pondera, decide e sintetiza a resolução final
@@ -358,7 +435,8 @@ class CouncilOrchestrator:
             "success": True,
             "handoff_id": handoff_id,
             "topic": topic,
-            "rounds_executed": total_rounds,
+            "rounds_executed": actual_rounds_executed,
+            "early_consensus": early_consensus,
             "participants": {
                 "proponent": resolved_proponent,
                 "critic": resolved_critic,

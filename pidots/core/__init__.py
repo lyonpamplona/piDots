@@ -8,7 +8,7 @@ from .self_healing import SelfHealingHarness
 from .planner import TwoStagePlanner
 from .council import CouncilOrchestrator
 from .dot_pack import DotPackManager
-from .edge_triggers import EdgeHardwareTriggers
+from .edge_triggers import EdgeHardwareTriggers, EdgeGPIOMonitor, EdgeMQTTListener
 
 __all__ = [
     "DotModel",
@@ -23,6 +23,8 @@ __all__ = [
     "CouncilOrchestrator",
     "DotPackManager",
     "EdgeHardwareTriggers",
+    "EdgeGPIOMonitor",
+    "EdgeMQTTListener",
 ]
 
 

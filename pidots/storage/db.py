@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS hitl_approvals (
     status TEXT DEFAULT 'PENDING', -- 'PENDING', 'APPROVED', 'REJECTED'
     reviewer_notes TEXT,
     requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP,
     resolved_at TIMESTAMP,
     FOREIGN KEY(dot_id) REFERENCES dots(id) ON DELETE CASCADE
 );
@@ -382,11 +383,18 @@ async def _apply_schema_migrations(db: aiosqlite.Connection) -> None:
     if "backoff_until" not in tasks_cols:
         await db.execute("ALTER TABLE scheduled_tasks ADD COLUMN backoff_until TIMESTAMP;")
 
-    # 5. Índices de auditoria de execução de ferramentas
+    # 5. Tabela hitl_approvals: suporte a governança com TTL (Time-to-Live de 30 min)
+    cursor = await db.execute("PRAGMA table_info(hitl_approvals);")
+    hitl_cols = {row["name"] for row in await cursor.fetchall()}
+    if "expires_at" not in hitl_cols:
+        await db.execute("ALTER TABLE hitl_approvals ADD COLUMN expires_at TIMESTAMP;")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_hitl_expires ON hitl_approvals(status, expires_at);")
+
+    # 6. Índices de auditoria de execução de ferramentas
     await db.execute("CREATE INDEX IF NOT EXISTS idx_tool_runs_dot ON tool_runs(dot_id);")
     await db.execute("CREATE INDEX IF NOT EXISTS idx_tool_runs_created ON tool_runs(created_at);")
 
-    # 6. Recriação segura e explícita dos triggers FTS5 com new.rowid
+    # 7. Recriação segura e explícita dos triggers FTS5 com new.rowid
     await db.execute("DROP TRIGGER IF EXISTS trg_archival_insert;")
     await db.execute("DROP TRIGGER IF EXISTS trg_archival_delete;")
     await db.execute("DROP TRIGGER IF EXISTS trg_archival_update;")

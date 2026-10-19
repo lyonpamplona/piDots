@@ -8,6 +8,7 @@ import re
 import json
 import uuid
 import signal
+import shutil
 import asyncio
 import logging
 from datetime import datetime, timezone
@@ -76,9 +77,22 @@ class TerminalSandbox:
             "PYTHONUNBUFFERED": "1",
         }
 
-        # Tentativa inicial via Bubblewrap se bwrap estiver disponível no sistema
-        bwrap_path = "/usr/bin/bwrap"
-        if os.path.exists(bwrap_path):
+        bwrap_path = shutil.which("bwrap")
+        bwrap_available = bool(bwrap_path and os.path.exists(bwrap_path) and os.access(bwrap_path, os.X_OK))
+
+        if not bwrap_available and settings.strict_sandbox:
+            logger.error("Execucao de terminal recusada: utilitario bwrap nao encontrado e STRICT_SANDBOX=True.")
+            return await cls._record_run(
+                dot_id=safe_dot_id,
+                command=command,
+                exit_code=126,
+                stdout_b=b"",
+                stderr_b=b"Erro de Governanca: Execucao recusada. O utilitario Bubblewrap (bwrap) nao esta instalado no sistema, e a politica STRICT_SANDBOX esta ativa.",
+                method="strict_rejection",
+                start_time=start_time
+            )
+
+        if bwrap_available:
             bwrap_cmd = [
                 bwrap_path,
                 "--die-with-parent",
@@ -121,6 +135,17 @@ class TerminalSandbox:
                         method=execution_method,
                         start_time=start_time
                     )
+                elif settings.strict_sandbox:
+                    logger.error("Isolamento Bubblewrap recusado pelo kernel com STRICT_SANDBOX=True: %s", stderr_b.decode("utf-8", errors="ignore"))
+                    return await cls._record_run(
+                        dot_id=safe_dot_id,
+                        command=command,
+                        exit_code=126,
+                        stdout_b=stdout_b,
+                        stderr_b=stderr_b + b"\nErro de Governanca: Execucao recusada pelo isolamento estrito de sandbox (STRICT_SANDBOX=True).",
+                        method="strict_rejection",
+                        start_time=start_time
+                    )
             except asyncio.TimeoutError:
                 await cls._safe_terminate(bwrap_proc)
                 return await cls._record_run(
@@ -134,7 +159,18 @@ class TerminalSandbox:
                 )
             except Exception as bwrap_err:
                 await cls._safe_terminate(bwrap_proc)
-                logger.debug("bwrap indisponível ou sem permissão de namespace (%s). Usando Subprocess Sandbox.", str(bwrap_err))
+                if settings.strict_sandbox:
+                    logger.error("Falha ao instanciar Bubblewrap com STRICT_SANDBOX=True: %s", str(bwrap_err))
+                    return await cls._record_run(
+                        dot_id=safe_dot_id,
+                        command=command,
+                        exit_code=126,
+                        stdout_b=b"",
+                        stderr_b=f"Erro de Governanca: Falha no isolamento Bubblewrap ({str(bwrap_err)}) com STRICT_SANDBOX=True.".encode("utf-8"),
+                        method="strict_rejection",
+                        start_time=start_time
+                    )
+                logger.warning("bwrap indisponível ou sem permissão de namespace (%s). Usando Subprocess Sandbox.", str(bwrap_err))
 
         # Fallback resiliente: Subprocess Sandbox com diretório restrito e timeout
         proc = None
@@ -181,11 +217,18 @@ class TerminalSandbox:
         method: str,
         start_time: datetime
     ) -> dict[str, Any]:
-        """Trunca a saída para teto seguro e persiste auditoria no SQLite."""
         duration_ms = int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000)
-        stdout_str = stdout_b[:MAX_OUTPUT_BYTES].decode("utf-8", errors="replace")
-        stderr_str = stderr_b[:MAX_OUTPUT_BYTES].decode("utf-8", errors="replace")
         arguments_json = json.dumps({"command": command}, ensure_ascii=False)
+
+        if len(stdout_b) > MAX_OUTPUT_BYTES:
+            stdout_str = stdout_b[:MAX_OUTPUT_BYTES].decode("utf-8", errors="replace") + f"\n[TRUNCADO: Saída excedeu o limite seguro de {MAX_OUTPUT_BYTES // 1024}KB para hardware de borda]"
+        else:
+            stdout_str = stdout_b.decode("utf-8", errors="replace")
+
+        if len(stderr_b) > MAX_OUTPUT_BYTES:
+            stderr_str = stderr_b[:MAX_OUTPUT_BYTES].decode("utf-8", errors="replace") + f"\n[TRUNCADO: Erro excedeu o limite seguro de {MAX_OUTPUT_BYTES // 1024}KB para hardware de borda]"
+        else:
+            stderr_str = stderr_b.decode("utf-8", errors="replace")
 
         run_id = str(uuid.uuid4())
         try:
@@ -230,3 +273,6 @@ def bwrap_is_working(returncode: int, stderr_b: bytes) -> bool:
     if "pivot_root: Operation not permitted" in err_str:
         return False
     return True
+
+
+execute_shell_command = TerminalSandbox.execute

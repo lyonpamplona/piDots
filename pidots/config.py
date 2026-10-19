@@ -46,8 +46,8 @@ class Settings(BaseSettings):
         description="Chave de autenticação Bearer para a API de IA"
     )
     ai_model: str = Field(
-        default="qwen3.8-27b",
-        description="Identificador do modelo no provedor (ex: qwen3.8-27b, gpt-4o, claude-3-5-sonnet)"
+        default="gpt-4o-mini",
+        description="Identificador do modelo no provedor (ex: gpt-4o-mini, gpt-4o, claude-3-5-sonnet, llama-3.1-8b)"
     )
     ai_max_retries: int = Field(
         default=3,
@@ -56,6 +56,28 @@ class Settings(BaseSettings):
     ai_timeout_seconds: float = Field(
         default=60.0,
         description="Timeout máximo por requisição HTTP para inferência"
+    )
+
+    # Provedor de IA Secundário (Failover Opcional e Desativado por Padrão)
+    ai_fallback_url: str | None = Field(
+        default=None,
+        description="URL secundária para failover de inferência (opcional e desativada por padrão)"
+    )
+    ai_fallback_api_key: str | None = Field(
+        default=None,
+        description="Chave de autenticação para o provedor secundário de failover (opcional)"
+    )
+    ai_fallback_model: str | None = Field(
+        default=None,
+        description="Identificador do modelo secundário para failover (opcional)"
+    )
+    ai_circuit_breaker_consecutive_failures: int = Field(
+        default=3,
+        description="Número de falhas consecutivas com 5xx/timeout para abrir o Circuit Breaker do primário"
+    )
+    ai_circuit_breaker_cooldown_seconds: float = Field(
+        default=60.0,
+        description="Janela de cooldown em segundos com o circuito aberto antes de tentar requisição canário"
     )
 
     # Infraestrutura
@@ -74,6 +96,10 @@ class Settings(BaseSettings):
     )
 
     # Governança e Limites de Hardware Edge
+    strict_sandbox: bool = Field(
+        default=False,
+        description="Se verdadeiro, recusa comandos shell caso o Bubblewrap (bwrap) não esteja disponível ou falhe"
+    )
     max_iterations_per_goal: int = Field(
         default=8,
         description="Teto de ciclos de raciocínio autônomo para prevenir loops infinitos"
@@ -115,6 +141,32 @@ class Settings(BaseSettings):
         description="Identificador da instancia na Evolution API para envio de mensagens WhatsApp"
     )
 
+    # Governança Criptográfica HITL via Mensageria (Fase 15)
+    hitl_hmac_secret: str = Field(
+        default="pidots-edge-hmac-secret-key-v15",
+        description="Chave secreta para assinatura HMAC-SHA256 de aprovações HITL via mensageria"
+    )
+
+    # Barramento Físico GPIO & Sensores de Borda (Fase 17)
+    gpio_enabled: bool = Field(
+        default=False,
+        description="Habilita monitoramento de pinos GPIO no nó Linux Edge (Raspberry Pi 4B)"
+    )
+
+    # Barramento MQTT Edge Triggers (Fase 17)
+    mqtt_broker_host: str | None = Field(
+        default=None,
+        description="Host do broker MQTT local para eventos de sensores Edge (opcional)"
+    )
+    mqtt_broker_port: int = Field(
+        default=1883,
+        description="Porta de escuta do broker MQTT local"
+    )
+    mqtt_topic_prefix: str = Field(
+        default="pidots/edge",
+        description="Prefixo de tópicos MQTT escutados pelo piDots"
+    )
+
     def ensure_directories(self) -> None:
         """Garante que os diretórios necessários existam no disco."""
         db_dir = Path(self.sqlite_db_path).parent
@@ -128,7 +180,12 @@ class Settings(BaseSettings):
         api_key: str | None = None,
         model: str | None = None,
         max_retries: int | None = None,
-        timeout_seconds: float | None = None
+        timeout_seconds: float | None = None,
+        fallback_url: str | None = None,
+        fallback_api_key: str | None = None,
+        fallback_model: str | None = None,
+        circuit_breaker_consecutive_failures: int | None = None,
+        circuit_breaker_cooldown_seconds: float | None = None
     ) -> None:
         """Atualiza os parâmetros de IA em memória dinamicamente."""
         if base_url is not None:
@@ -141,6 +198,16 @@ class Settings(BaseSettings):
             self.ai_max_retries = max_retries
         if timeout_seconds is not None:
             self.ai_timeout_seconds = timeout_seconds
+        if fallback_url is not None:
+            self.ai_fallback_url = fallback_url.rstrip("/") if fallback_url.strip() else None
+        if fallback_api_key is not None:
+            self.ai_fallback_api_key = fallback_api_key.strip() if fallback_api_key.strip() else None
+        if fallback_model is not None:
+            self.ai_fallback_model = fallback_model.strip() if fallback_model.strip() else None
+        if circuit_breaker_consecutive_failures is not None:
+            self.ai_circuit_breaker_consecutive_failures = max(1, circuit_breaker_consecutive_failures)
+        if circuit_breaker_cooldown_seconds is not None:
+            self.ai_circuit_breaker_cooldown_seconds = max(1.0, circuit_breaker_cooldown_seconds)
 
     def update_notification_params(
         self,

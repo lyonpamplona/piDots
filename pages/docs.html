@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>piDots // Guia Operacional Didático (Pixel Paper UI)</title>
-    <meta name="description" content="Guia operacional oficial e didático do piDots: conceitos, ciclo ReAct, arsenal de ferramentas, governança HITL, configuração e deploy em Raspberry Pi 4B sob o design system Pixel Paper UI.">
+    <title>piDots // Guia Operacional Didático (Console Minimalista)</title>
+    <meta name="description" content="Guia operacional oficial e didático do piDots: conceitos, ciclo ReAct, arsenal de ferramentas, governança HITL, configuração e deploy em Raspberry Pi 4B sob interface técnica minimalista.">
     
     <!-- Favicon e Icones Oficiais PWA (Rasterizados & SVG) -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -19,12 +19,18 @@
     <meta name="apple-mobile-web-app-title" content="piDots">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- Tipografia Oficial Pixel Paper UI: Silkscreen, VT323 e JetBrains Mono -->
+    <!-- Tipografia Oficial: Silkscreen, VT323 e JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
 
-    <!-- Folhas de Estilo Modulares Pixel Paper UI (Fase 1) -->
+    <!-- Preload de Recursos Críticos de Estilo e Scripts -->
+    <link rel="preload" href="/static/css/tokens.css" as="style">
+    <link rel="preload" href="/static/css/docs.css" as="style">
+    <link rel="preload" href="/static/js/core/pidots-i18n.js" as="script">
+    <link rel="preload" href="/static/js/docs/docs.js" as="script">
+
+    <!-- Folhas de Estilo Modulares de Interface Tecnica (Fase 1) -->
     <link rel="stylesheet" href="/static/css/tokens.css">
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/layout.css">
@@ -39,7 +45,12 @@
 </head>
 <body>
 
-    <!-- CABECALHO FIXO TECNICO (PIXEL PAPER UI) -->
+    <!-- BARRA MECANICA DE PROGRESSO DE LEITURA (0-100% DINAMICA FIXA) -->
+    <div id="readingProgressBar" class="reading-progress-track" aria-hidden="true">
+        <div id="readingProgressThumb" class="reading-progress-thumb"></div>
+    </div>
+
+    <!-- CABECALHO FIXO TECNICO (INTERFACE TECNICA MINIMALISTA) -->
     <header class="guide-header">
         <a href="/" class="brand-unit" aria-label="Ir para Apresentacao Oficial piDots">
             <svg width="24" height="24" viewBox="0 0 28 28" fill="none" class="ui-icon" style="width: 24px; height: 24px;">
@@ -111,11 +122,6 @@
                 <svg class="ui-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 <span class="drawer-btn-label" data-i18n="nav.guide_index">[INDICE GUIA]</span>
             </button>
-        </div>
-
-        <!-- BARRA MECANICA DE PROGRESSO DE LEITURA (0-100% ANCORADA NA BASE DO CABECALHO) -->
-        <div id="readingProgressBar" class="reading-progress-track" aria-hidden="true">
-            <div id="readingProgressThumb" class="reading-progress-thumb"></div>
         </div>
     </header>
 
@@ -203,12 +209,12 @@
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">
                                     <span class="brand-badge" style="color: var(--phosphor-green); border-color: var(--phosphor-green);">[CDR]</span>
-                                    GROK / CODER
+                                    DESENVOLVEDOR / CODER
                                 </span>
                                 <span class="pixel-stamp stamp-approved" style="font-size: 6px; padding: 2px 4px;">DESENVOLVEDOR</span>
                             </div>
                             <p class="pixel-card-body">
-                                <strong>Identificador:</strong> <code>dot-coder</code> | <strong>Arquetipo:</strong> <code>grok</code><br>
+                                <strong>Identificador:</strong> <code>dot-coder</code> | <strong>Arquetipo:</strong> <code>coder</code><br>
                                 <strong>Missao:</strong> Especialista cirurgico em codigo-fonte, automacao Linux, depuracao de erros e leitura de baixo nivel do hardware. Cria scripts, executa testes em sandbox e analisa logs tecnicos.<br>
                                 <strong>Ferramentas Autorizadas:</strong> <code>execute_shell_command</code>, <code>workspace_read_file</code>, <code>workspace_write_file</code>, <code>workspace_list_files</code>, <code>get_edge_telemetry</code>.
                             </p>
@@ -217,13 +223,13 @@
                         <article class="pixel-card">
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">
-                                    <span class="brand-badge" style="color: var(--thermal-amber); border-color: var(--thermal-amber);">[MUS]</span>
-                                    MUSE / CRIATIVO
+                                    <span class="brand-badge" style="color: var(--thermal-amber); border-color: var(--thermal-amber);">[ARQ]</span>
+                                    ARQUITETO &amp; PESQUISADOR
                                 </span>
                                 <span class="pixel-stamp stamp-amber" style="font-size: 6px; padding: 2px 4px;">DOCUMENTADOR</span>
                             </div>
                             <p class="pixel-card-body">
-                                <strong>Identificador:</strong> <code>dot-muse</code> | <strong>Arquetipo:</strong> <code>muse</code><br>
+                                <strong>Identificador:</strong> <code>dot-arquiteto</code> | <strong>Arquetipo:</strong> <code>architect</code><br>
                                 <strong>Missao:</strong> Responsavel por redacao tecnica didatica, design de especificacoes, pesquisa de referencias na web e versionamento de documentos no repositorio Spaces sem gastar RAM com navegadores pesados.<br>
                                 <strong>Ferramentas Autorizadas:</strong> <code>read_web_page</code>, <code>workspace_read_file</code>, <code>workspace_write_file</code>, <code>workspace_list_files</code>.
                             </p>
@@ -271,17 +277,17 @@
                                     <td>Baixo (Prompt enxuto, apenas 3 ferramentas).</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Grok / Coder</strong></td>
+                                    <td><strong>Desenvolvedor / Coder</strong></td>
                                     <td><code>[CDR]</code></td>
                                     <td>Scripts Python/Bash, testes automatizados e compilacao em sandbox.</td>
                                     <td><code>workspaces/dot-coder/</code></td>
                                     <td>Medio (Prompt tecnico focado em codigo puro).</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Muse / Criativo</strong></td>
-                                    <td><code>[MUS]</code></td>
+                                    <td><strong>Arquiteto / Pesquisador</strong></td>
+                                    <td><code>[ARQ]</code></td>
                                     <td>Extracao web Trafilatura, manuais didaticos e artefatos Spaces.</td>
-                                    <td><code>workspaces/dot-muse/</code></td>
+                                    <td><code>workspaces/dot-arquiteto/</code></td>
                                     <td>Medio (Prompt semantico voltado a didatica).</td>
                                 </tr>
                                 <tr>
@@ -306,7 +312,7 @@
                     </div>
                 </div>
                 <div class="step-module-footer">
-                    <span class="step-counter-tag">PASSO 01 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 01 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-2')">
                         <span>AVANCAR: CHAT MULTI-BOT &amp; FITAS DE CARBONO</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -405,7 +411,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 02 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 02 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-3')">
                         <span>AVANCAR: DOT HEARTBEAT &amp; SILENCIO</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -499,7 +505,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 03 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 03 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-4')">
                         <span>AVANCAR: GATEWAY DE MENSAGERIA &amp; SALAS</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -608,7 +614,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 04 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 04 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-5')">
                         <span>AVANCAR: ARSENAL DE TOOLS &amp; TOOL PRUNING</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -659,7 +665,7 @@
                                     <td><span class="pixel-stamp stamp-approved" style="font-size: 7px;">-60.0% TOKENS</span></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>dot-muse</strong></td>
+                                    <td><strong>dot-arquiteto</strong></td>
                                     <td><code>read_web_page</code>, <code>workspace_read_file</code>, <code>workspace_write_file</code></td>
                                     <td>~ 590 tokens</td>
                                     <td><span class="pixel-stamp stamp-approved" style="font-size: 7px;">-69.7% TOKENS</span></td>
@@ -684,16 +690,23 @@
                         <article class="pixel-card">
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">execute_shell_command</span>
-                                <span class="brand-badge">BWRAP / SUBPROCESS</span>
+                                <span class="brand-badge">BWRAP NAMESPACES</span>
                             </div>
-                            <p class="pixel-card-body">Executa comandos Linux isolados com timeout estrito de 30s e controle de memoria.</p>
+                            <p class="pixel-card-body">Executa comandos Linux isolados via Bubblewrap. Em modo estrito (STRICT_SANDBOX=true), recusa execucao se bwrap inexiste.</p>
                         </article>
                         <article class="pixel-card">
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">execute_and_verify</span>
-                                <span class="brand-badge">SELF-HEALING</span>
+                                <span class="brand-badge">SELF-HEALING (TETO 2)</span>
                             </div>
-                            <p class="pixel-card-body">Executa comando shell com comando de verificacao obrigatorio e auto-diagnostico em caso de falha.</p>
+                            <p class="pixel-card-body">Executa comando shell com verificacao obrigatoria e auto-reparo limitado a 2 tentativas com escalonamento seguro.</p>
+                        </article>
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">mcp_client_bridge</span>
+                                <span class="brand-badge">MCP LITE SUB-5MB</span>
+                            </div>
+                            <p class="pixel-card-body">Conecta servidores MCP externos via JSON-RPC 2.0 (STDIO/SSE) com filtragem estrita pelo Dynamic Tool Pruning.</p>
                         </article>
                         <article class="pixel-card">
                             <div class="pixel-card-header">
@@ -788,7 +801,7 @@
                         <span class="perforation-line"></span>
                     </div>
 
-                    <!-- SIMULADOR INTERATIVO HITL (PIXEL PAPER UI) -->
+                    <!-- SIMULADOR INTERATIVO HITL (INTERFACE TECNICA) -->
                     <div class="hitl-arena-box">
                         <div class="hitl-arena-top">
                             <span class="hitl-arena-title">
@@ -820,7 +833,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 05 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 05 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-6')">
                         <span>AVANCAR: OPERACIONAL &amp; PRESERVACAO FLASH</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -852,7 +865,7 @@
                         <pre class="code-paper-content"># Gateway OpenAI Universal (compativel com qualquer provedor)
 AI_BASE_URL=https://api.openai.com/v1
 AI_API_KEY=sua_chave_de_api_aqui
-AI_MODEL=qwen3.8-27b
+AI_MODEL=gpt-4o-mini
 AI_MAX_RETRIES=3
 AI_TIMEOUT_SECONDS=60.0
 
@@ -893,7 +906,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
 # Acesse no navegador: http://127.0.0.1:8000/api/docs</pre>
                     </div>
 
-                    <!-- MINI API TESTER INTERATIVO (PIXEL PAPER UI) -->
+                    <!-- MINI API TESTER INTERATIVO (INTERFACE TECNICA) -->
                     <div class="api-tester-container" id="miniApiTester">
                         <div class="api-tester-header">
                             <span class="api-tester-title">
@@ -912,12 +925,17 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             <button class="api-chip-btn active" onclick="selecionarEndpointApi('GET', '/health', '')">[GET /health]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/spaces', '')">[GET /api/spaces]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots', '')">[GET /api/dots]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tools', '')">[GET /api/tools]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/mcp/servers', '')">[GET /api/mcp/servers]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/computer/files', '')">[GET /computer/files]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/computer/exec', '{\x22dot_id\x22: \x22dot-coder\x22, \x22command\x22: \x22uname -a && ls -la\x22}')">[POST /computer/exec]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tasks', '')">[GET /api/tasks]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/channels', '')">[GET /api/channels]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/data/locales/pt.json', '')">[GET /data/locales/pt.json]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/changelog', '')">[GET /api/changelog]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/triggers', '')">[GET /api/edge/triggers]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/dot-supervisor/export-pack', '')">[GET /export-pack]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/dot-supervisor/export-pack', '')">[GET /export-pack (v1.1)]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/signed-resolve', '{\x22action_id\x22: \x22demo_1\x22, \x22approved\x22: true, \x22token\x22: \x22demo_hmac\x22}')">[POST /hitl/signed-resolve]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/maintenance', '{\x22days_threshold\x22: 7, \x22create_backup\x22: true}')">[POST /maintenance]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/threads', '{\x22dot_id\x22: \x22dot-supervisor\x22, \x22title\x22: \x22Sessao Auditoria Edge\x22}')">[POST /api/threads]</button>
                         </div>
@@ -960,15 +978,19 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                     <div class="pixel-card-grid">
                         <article class="pixel-card">
                             <div class="pixel-card-header">
-                                <span class="pixel-card-title">TOPOLOGIA DE ROTAS CANONICAS</span>
-                                <span class="brand-badge">DESACOPLAMENTO</span>
+                                <span class="pixel-card-title">TOPOLOGIA DE ROTAS E FATIAMENTO MODULAR (API ROUTERS)</span>
+                                <span class="brand-badge">PIDOTS/API/</span>
                             </div>
                             <p class="pixel-card-body">
-                                <strong>/ :</strong> Landing Page Oficial, apresentacao executiva e simulador ReAct.<br>
-                                <strong>/app e /workspace :</strong> Console Operacional SPA/PWA para execucao 24/7.<br>
-                                <strong>/docs :</strong> Guia Didatico Canonico com busca client-side e API Tester.<br>
-                                <strong>/api/docs :</strong> Swagger UI OpenAPI interativo para desenvolvedores.<br>
-                                <em>Redirecionamentos RFC 7538:</em> /apresentacao, /guia e /console sao rotas HTTP 308 permanentes.
+                                <strong>/ :</strong> Landing Page Oficial com simulador ReAct e métricas de silício.<br>
+                                <strong>/app e /workspace :</strong> Console Operacional SPA/PWA com Activity Rail (48px), CoAgents State e Dot's Computer.<br>
+                                <strong>/docs :</strong> Guia Didático com busca client-side e Mini API Tester.<br>
+                                <strong>/api/docs :</strong> Swagger UI OpenAPI 3.1 interativo.<br>
+                                <strong>pidots/api/routes_dots.py :</strong> CRUD completo de agentes (GET/POST/PUT/DELETE), <code>/api/tools</code> e Dot Packs v1.1 SHA-256.<br>
+                                <strong>pidots/api/routes_threads.py :</strong> Sessões, <code>/state</code> (CoAgents Shared State), <code>/save-as-space</code> e streaming AG-UI SSE.<br>
+                                <strong>pidots/api/routes_tasks.py :</strong> Agendamentos cron, disparo imediato (<code>/run</code>), toggle e quadro Spaces.<br>
+                                <strong>pidots/api/routes_hitl.py :</strong> Governança HITL com edição de argumentos (<code>modified_args</code>) e retomada imediata.<br>
+                                <strong>pidots/api/routes_edge.py :</strong> Telemetria RSS real (<code>process_rss_mb</code>), Dot's Computer (<code>/computer/files</code> e <code>/computer/exec</code>) e MCP Lite (<code>/api/mcp/servers</code>).
                             </p>
                         </article>
 
@@ -992,14 +1014,14 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                                 <span class="brand-badge">AGILIDADE TATICA</span>
                             </div>
                             <p class="pixel-card-body" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 6px;">
-                                <span><code>Tecla /</code> : Abrir menu Autocomplete Popover de Slash Commands no teletipo.</span>
-                                <span><code>Alt + B</code> : Alternar gaveta da Sidebar no Triptico Adaptativo (1024px-1440px).</span>
+                                <span><code>Tecla /</code> : Abrir menu Autocomplete Popover de 34 Slash Commands no teletipo.</span>
+                                <span><code>Alt + 1..4</code> : Comutar os 4 paineis do Activity Rail (Spaces, Estudio Dots, Tasks, Memoria/MCP).</span>
+                                <span><code>Ctrl/Cmd + B</code> : Alternar gaveta da Sidebar no Triptico Adaptativo.</span>
                                 <span><code>Alt + I</code> : Focar e inspecionar artefato ativo no Live Canvas.</span>
                                 <span><code>Ctrl/Cmd + S</code> : Gravar revisao atomica do arquivo em Spaces.</span>
                                 <span><code>Alt + H</code> : Abrir modal de governanca HITL pendente.</span>
                                 <span><code>F11</code> : Alternar visualizacao split/maximizada do canvas.</span>
                                 <span><code>Ctrl + L</code> : Limpar bobina de chat do teletipo local (/clear).</span>
-                                <span><code>F1</code> : Abrir manual tecnico na gaveta lateral retratil.</span>
                             </p>
                         </article>
                     </div>
@@ -1067,7 +1089,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 06 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 06 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-7')">
                         <span>AVANCAR: MEMORIA HIERARQUICA (MEMGPT)</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1155,7 +1177,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 07 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 07 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-8')">
                         <span>AVANCAR: SELF-HEALING &amp; TWO-STAGE PLANNER</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1265,7 +1287,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                             <!-- Loop de Retorno Inferior -->
                             <path d="M762 110 V126 H85 V110" stroke="#33ff66" stroke-width="1.5" stroke-dasharray="4 2"/>
                             <polygon points="85,110 82,116 88,116" fill="#33ff66"/>
-                            <text x="422" y="124" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">RE-EXECUCAO AUTOMATICA ANTES DE ENTREGAR AO OPERADOR (0 TOKENS HUMANOS DESPERDICADOS)</text>
+                            <text x="422" y="124" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">RE-EXECUCAO AUTOMATICA COM TETO MAX_HEAL_ATTEMPTS=2 (ESCALONAMENTO FORENSE APOS 2 FALHAS)</text>
                         </svg>
                     </div>
 
@@ -1289,7 +1311,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 08 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 08 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-9')">
                         <span>AVANCAR: CONSELHO CONSULTIVO MULTI-BOT</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1310,7 +1332,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Para decisões críticas de arquitetura, segurança ou refatoração de código, o piDots implementa o padrão de <strong>Conselho Consultivo Multi-Bot</strong> (<code>CouncilOrchestrator</code>). Em vez de depender da opinião isolada de um único modelo, três arquétipos deliberam formalmente em uma estrutura dialética:
+                        Para decisões críticas de arquitetura, segurança ou refatoração de código, o piDots implementa o padrão de <strong>Conselho Consultivo Multi-Bot</strong> (<code>CouncilOrchestrator</code>). Em vez de depender da opinião isolada de um único modelo, três arquétipos deliberam formalmente em uma estrutura dialética com suporte a <strong>Saída Antecipada por Consenso (Early Consensus Exit)</strong>:
                     </p>
 
                     <div class="pixel-card-grid">
@@ -1319,21 +1341,21 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                                 <span class="pixel-card-title">1. PROPOSITOR (@coder)</span>
                                 <span class="brand-badge">FORMULACAO TECNICA</span>
                             </div>
-                            <p class="pixel-card-body">Apresenta a solucao proposta, o codigo inicial e a justificativa tecnica da abordagem.</p>
+                            <p class="pixel-card-body">Apresenta a solucao proposta, o codigo inicial e a justificativa tecnica da abordagem na Rodada 1.</p>
                         </article>
                         <article class="pixel-card">
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">2. AUDITOR CRITICO (@auditor)</span>
                                 <span class="brand-badge">ANALISE ADVERSARIAL</span>
                             </div>
-                            <p class="pixel-card-body">Examina a proposta em busca de vulnerabilidades, pontos de falha, condicoes de corrida e consumo excessivo de memoria.</p>
+                            <p class="pixel-card-body">Examina a proposta na Rodada 2. Se classificar como RISK_LOW/APPROVED, antecipa o fechamento por consenso.</p>
                         </article>
                         <article class="pixel-card">
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">3. SUPERVISOR (@supervisor)</span>
                                 <span class="brand-badge">SINTESE EXECUTIVA</span>
                             </div>
-                            <p class="pixel-card-body">Mediacao dialetica imparcial. Consolida os argumentos e emite a resolucao final com plano acionavel.</p>
+                            <p class="pixel-card-body">Mediacao dialetica imparcial. Consolida os argumentos e emite a resolucao final executiva publica.</p>
                         </article>
                     </div>
 
@@ -1380,17 +1402,17 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
 
                             <!-- Barra de Governanca Inferior -->
                             <rect x="20" y="125" width="800" height="15" fill="#040608" stroke="#1c2633" stroke-width="1"/>
-                            <text x="420" y="136" fill="#64748b" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">ISOLAMENTO DE MEMORIA // MAXIMO 3 RODADAS DIALETICAS // OVERHEAD RAM &lt; 53MB // EXECUCAO DETERMINISTICA</text>
+                            <text x="420" y="136" fill="#64748b" font-family="'Silkscreen', monospace" font-size="7" text-anchor="middle">EARLY CONSENSUS EXIT (ROUND 2) // OVERHEAD RAM &lt; 53MB // EXECUCAO DETERMINISTICA</text>
                         </svg>
                     </div>
 
                     <div class="pixel-callout info">
                         <div class="pixel-callout-header">
                             <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                            ISOLAMENTO DE FITAS E TRAVA DE SEGURANCA
+                            ISOLAMENTO DE FITAS E SAIDA ANTECIPADA POR CONSENSO
                         </div>
                         <div class="pixel-callout-text">
-                            O debate interno ocorre em fitas de carbono com <code>visibility = 'internal'</code>, mantendo o feed do usuario limpo. Somente o veredito final e publicado com o cabecalho <code>[CONSELHO CONSULTIVO - RESOLUCAO FINAL]</code>. Uma trava rigida de seguranca limita o debate a no maximo 3 rodadas, contendo custos de inferencia e mantendo o consumo de memoria RAM inferior a 53 MB.
+                            O debate interno ocorre em fitas de carbono com <code>visibility = 'internal'</code>, mantendo o feed do usuario limpo. Somente o veredito final e publicado com o cabecalho <code>[CONSELHO CONSULTIVO - RESOLUCAO FINAL]</code>. Se na Rodada 2 o Auditor classificar a proposta como <code>RISK_LOW / APPROVED</code>, o Supervisor ativa a <strong>Saida Antecipada por Consenso (Early Consensus Exit)</strong>, homologando a decisao imediatamente sem desperdicio de tokens na Rodada 3.
                         </div>
                     </div>
                 </div>
@@ -1399,7 +1421,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 09 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 09 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-10')">
                         <span>AVANCAR: SHARED SPACE &amp; DOT PACKS</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1420,7 +1442,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Para maximizar a cooperacao entre bots e viabilizar a distribuicao portavel de agentes pre-treinados, o piDots introduz o <strong>Shared Knowledge Space</strong> e o padrao de <strong>Dot Packs v1.0</strong>:
+                        Para maximizar a cooperacao entre bots e viabilizar a distribuicao portavel de agentes pre-treinados, o piDots introduz o <strong>Shared Knowledge Space</strong> e o padrao de <strong>Dot Packs v1.1</strong> com assinatura criptografica SHA-256:
                     </p>
 
                     <div class="pixel-card-grid">
@@ -1436,11 +1458,11 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
 
                         <article class="pixel-card">
                             <div class="pixel-card-header">
-                                <span class="pixel-card-title">DOT PACKS V1.0</span>
-                                <span class="brand-badge">MANIFESTO PORTAVEL</span>
+                                <span class="pixel-card-title">DOT PACKS V1.1</span>
+                                <span class="brand-badge">SHA-256 &amp; ANTI-INJECTION</span>
                             </div>
                             <p class="pixel-card-body">
-                                Formato padronizado JSON que empacota a identidade completa de um Dot: definições de persona, arquétipo operacional, ferramentas autorizadas, blocos de Core Memory, base duradoura de Archival Memories e snapshot dos arquivos do workspace.
+                                Formato padronizado JSON com checksum criptografico <code>sha256_checksum</code>. Na importacao via <code>POST /api/dots/import-pack</code>, a integridade e validada e o <code>@dot-auditor</code> inspeciona os blocos de Core Memory contra tentativas de Prompt Injection antes de instanciar o agente.
                             </p>
                         </article>
                     </div>
@@ -1452,10 +1474,10 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                             <span class="terminal-circle"></span>
                             <span class="terminal-title">EXEMPLO // EXPORTACAO E IMPORTACAO VIA ENDPOINTS REST</span>
                         </div>
-                        <pre class="terminal-pre"><code># 1. Exportar manifesto completo de um Dot especializado
+                        <pre class="terminal-pre"><code># 1. Exportar manifesto completo assinado com hash SHA-256
 curl -s http://localhost:8000/api/dots/dot-coder/export-pack > dot_coder_pack.json
 
-# 2. Importar e instanciar atomicamente um novo Dot em qualquer Raspberry Pi
+# 2. Importar e instanciar com validacao criptografica e inspecao anti-injection
 curl -s -X POST http://localhost:8000/api/dots/import-pack \
   -H "Content-Type: application/json" \
   -d @dot_coder_pack.json</code></pre>
@@ -1466,7 +1488,7 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 10 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 10 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-11')">
                         <span>AVANCAR: TRIGGERS &amp; MANUTENCAO MICROSD</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1487,7 +1509,7 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Operar agentes de IA em regime Always-On 24/7 no Raspberry Pi 4B exige protecao fisica do silicio e prevencao de desgaste prematuro da memoria flash do cartao MicroSD. O piDots integra monitoramento de eventos de hardware e rotina de manutencao noturna autonoma:
+                        Operar agentes de IA em regime Always-On 24/7 no Raspberry Pi 4B exige protecao fisica do silicio, prevencao de desgaste prematuro da memoria flash do cartao MicroSD e integracao com sensores locais:
                     </p>
 
                     <div class="pixel-card-grid">
@@ -1528,6 +1550,26 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                             </div>
                             <p class="pixel-card-body">
                                 Mensagens com mais de 7 dias sao resumidas de forma compacta na tabela <code>episodic_memories</code> e as mensagens brutas sao podadas. O comando <code>VACUUM INTO</code> cria backups atomicos consistentes sem bloquear transacoes ativas.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">5. BARRAMENTO GPIO &amp; MQTT TRIGGERS</span>
+                                <span class="brand-badge">HARDWARE REAL</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Leitura de pinos fisicos GPIO e listener MQTT assincrono em <code>/api/edge/triggers</code>, disparando rotinas autonomas a partir de sensores externos.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">6. HITL COM EXPIRACAO TTL &amp; HMAC</span>
+                                <span class="brand-badge">TELEGRAM / WHATSAPP</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                Acoes retidas expiram em 30 min (status <code>EXPIRED</code>). Botoes interativos no Telegram/WhatsApp assinados com HMAC-SHA256 autorizam sem abrir navegador.
                             </p>
                         </article>
                     </div>
@@ -1603,7 +1645,7 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 11 DE 13 // PIXEL PAPER UI</span>
+                    <span class="step-counter-tag">PASSO 11 DE 13 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-12')">
                         <span>AVANCAR: MOTOR I18N &amp; DICIONARIOS JSON</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1801,7 +1843,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                     </div>
 
                     <!-- TABELA DE AGENTES & MULTI-BOT -->
-                    <h3 class="step-subheading" style="margin-top: 24px;">[02] AGENTES &amp; MULTI-BOT (6 COMANDOS)</h3>
+                    <h3 class="step-subheading" style="margin-top: 24px;">[02] AGENTES &amp; MULTI-BOT (7 COMANDOS)</h3>
                     <div class="table-responsive">
                         <table class="pixel-table">
                             <thead>
@@ -1846,15 +1888,21 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                                 <tr>
                                     <td><code>/tools</code></td>
                                     <td><code>/tools [dot_id]</code></td>
-                                    <td>Local / Core</td>
-                                    <td>Catalogo de 23 ferramentas registradas e ferramentas ativas pos-Tool Pruning.</td>
+                                    <td>REST (/api/tools)</td>
+                                    <td>Catalogo de ferramentas nativas registradas e ferramentas ativas pos-Tool Pruning.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/coagents</code></td>
+                                    <td><code>/coagents</code></td>
+                                    <td>REST (/state)</td>
+                                    <td>Abre e sincroniza o Inspetor CoAgents Shared State (Plano, Quadro Negro, Handoffs e Tool Runs).</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
                     <!-- TABELA DE MEMORIA, TAREFAS, GOVERNANCA E DADOS -->
-                    <h3 class="step-subheading" style="margin-top: 24px;">[03] MEMORIA, TAREFAS, GOVERNANCA E EXPORTACAO (14 COMANDOS)</h3>
+                    <h3 class="step-subheading" style="margin-top: 24px;">[03] MEMORIA, TAREFAS, GOVERNANCA, COMPUTADOR E EXPORTACAO (17 COMANDOS)</h3>
                     <div class="table-responsive">
                         <table class="pixel-table">
                             <thead>
@@ -1876,7 +1924,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                                     <td><code>/archival</code></td>
                                     <td><code>/archival &lt;busca&gt;</code></td>
                                     <td>Memoria</td>
-                                    <td>Busca semantica vetorial KNN na base arquival persistente no SQLite WAL.</td>
+                                    <td>Busca semantica vetorial KNN 64D na base arquival persistente no SQLite WAL.</td>
                                 </tr>
                                 <tr>
                                     <td><code>/shared</code></td>
@@ -1889,6 +1937,12 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                                     <td><code>/spaces [nome]</code></td>
                                     <td>Memoria</td>
                                     <td>Lista documentos salvos no Space do coworker ou abre arquivo no Live Canvas.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/save-space</code></td>
+                                    <td><code>/save-space [nome.md]</code></td>
+                                    <td>Memoria</td>
+                                    <td>Converte a thread ativa em um documento Markdown estruturado e versionado em Spaces.</td>
                                 </tr>
                                 <tr>
                                     <td><code>/diff</code></td>
@@ -1939,6 +1993,18 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                                     <td>Inspeciona politica de snapshots ACID rotativos de 7 dias ou baixa dump do banco.</td>
                                 </tr>
                                 <tr>
+                                    <td><code>/computer</code></td>
+                                    <td><code>/computer [comando_bwrap]</code></td>
+                                    <td>Governanca</td>
+                                    <td>Alterna o Modo Takeover do Computador de Borda do Dot ou executa comando no Sandbox bwrap.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/mcp</code></td>
+                                    <td><code>/mcp [list]</code></td>
+                                    <td>Governanca</td>
+                                    <td>Lista servidores Model Context Protocol (MCP Lite JSON-RPC 2.0) acoplados na borda.</td>
+                                </tr>
+                                <tr>
                                     <td><code>/export</code></td>
                                     <td><code>/export [chat|canvas|markdown]</code></td>
                                     <td>Dados</td>
@@ -1948,7 +2014,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                                     <td><code>/pack</code></td>
                                     <td><code>/pack [dot_id]</code></td>
                                     <td>Dados</td>
-                                    <td>Gera e baixa pacote portatil estruturado DotPack v1.0 para distribuicao de agentes.</td>
+                                    <td>Gera e baixa pacote portatil estruturado DotPack v1.1 assinado com SHA-256.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1974,11 +2040,12 @@ CARGA DA CPU (LOAD AVG) : 0.40, 0.35, 0.25
 Throttle Automatico     : DESATIVADO (NORMAL)
 ==================== PICOTE // DESTACAR ==========================
 
-# 2. Executar a triade de preservacao de hardware noturna:
-/maintenance run
+# 2. Sincronizar o Inspetor CoAgents Shared State ou converter Thread em Space:
+/coagents
+/save-space relatorio_auditoria_borda.md
 
-# 3. Exportar historico completo do teletipo em Markdown:
-/export chat</code></pre>
+# 3. Assumir o Computador de Borda do Dot (Sandbox Bubblewrap):
+/computer uname -a &amp;&amp; ls -la</code></pre>
                     </div>
                 </div>
 
@@ -2017,7 +2084,7 @@ Throttle Automatico     : DESATIVADO (NORMAL)
             </div>
 
             <ul class="drawer-list-scroll" id="drawerListScroll">
-                <li class="drawer-item" data-keywords="arquetipos supervisor grok coder muse auditor conceitos edge react persistencia">
+                <li class="drawer-item" data-keywords="arquetipos supervisor coder desenvolvedor arquiteto auditor conceitos edge react persistencia">
                     <a href="#passo-1" class="drawer-link active" onclick="handleDrawerNav(event, 'passo-1')">
                         <span class="drawer-step-idx">01</span>
                         <span>O Que É o piDots &amp; Novos Arquétipos</span>
@@ -2047,7 +2114,7 @@ Throttle Automatico     : DESATIVADO (NORMAL)
                         <span>Arsenal de Ferramentas &amp; Tool Pruning</span>
                     </a>
                 </li>
-                <li class="drawer-item" data-keywords="operacional deploy docker env curl endpoints microsd flash wal preservacao">
+                <li class="drawer-item" data-keywords="operacional deploy docker env curl endpoints microsd flash wal preservacao computer state">
                     <a href="#passo-6" class="drawer-link" onclick="handleDrawerNav(event, 'passo-6')">
                         <span class="drawer-step-idx">06</span>
                         <span>Passo a Passo Operacional &amp; MicroSD</span>
@@ -2089,7 +2156,7 @@ Throttle Automatico     : DESATIVADO (NORMAL)
                         <span>Micro-Motor i18n &amp; Dicionarios JSON</span>
                     </a>
                 </li>
-                <li class="drawer-item" data-keywords="slash commands barra popover autocomplete catalogo 30 comandos teletipo slips levenshtein export pack hitl telemetry">
+                <li class="drawer-item" data-keywords="slash commands barra popover autocomplete catalogo 34 comandos teletipo slips levenshtein export pack hitl telemetry coagents computer save-space mcp">
                     <a href="#passo-13" class="drawer-link" onclick="handleDrawerNav(event, 'passo-13')">
                         <span class="drawer-step-idx">13</span>
                         <span>Slash Commands &amp; Protocolo de Borda</span>
@@ -2098,7 +2165,7 @@ Throttle Automatico     : DESATIVADO (NORMAL)
             </ul>
 
             <div class="drawer-bottom-bar">
-                <span>PIDOTS // PIXEL PAPER UI</span>
+                <span>PIDOTS // INTERFACE TECNICA</span>
                 <span>13 PASSOS DISPONIVEIS</span>
             </div>
         </aside>
@@ -2107,7 +2174,7 @@ Throttle Automatico     : DESATIVADO (NORMAL)
     </div>
 
     <!-- =====================================================================
-         MODAL OMNISEARCH CLIENT-SIDE (CTRL+K OU /) - DESIGN SYSTEM PIXEL PAPER UI
+         MODAL OMNISEARCH CLIENT-SIDE (CTRL+K OU /) - INTERFACE TECNICA MINIMALISTA
          ===================================================================== -->
     <div id="omnisearchBackdrop" class="omnisearch-backdrop" onclick="fecharOmnisearch()"></div>
     <div id="omnisearchModal" class="omnisearch-modal" role="dialog" aria-modal="true" aria-label="Omnisearch do Guia piDots">
@@ -2133,11 +2200,11 @@ Throttle Automatico     : DESATIVADO (NORMAL)
         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
     </button>
 
-    <!-- RODAPE OFICIAL PIXEL PAPER UI -->
+    <!-- RODAPE OFICIAL INTERFACE TECNICA -->
     <footer class="guide-paper-footer">
         <div class="footer-legal-unit">
             <div>PIDOTS CORE // HARDWARE DE BORDA &amp; SBCs (REF: RPI4 ARM64)</div>
-            <div>DESENVOLVIDO POR LYON CHRISTOPHER (2026) // DESIGN SYSTEM PIXEL PAPER UI // TIPOGRAFIA TECNICA CRISP</div>
+            <div>DESENVOLVIDO POR LYON CHRISTOPHER (2026) // INTERFACE TECNICA MINIMALISTA // TIPOGRAFIA TECNICA CRISP</div>
         </div>
         <div class="footer-link-cluster">
             <a href="/" class="pixel-btn btn-cyan">[01 // VISAO GERAL]</a>

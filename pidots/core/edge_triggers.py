@@ -7,6 +7,7 @@ e carga de sistema) e dispara alertas e mitigações proativas quando limiares s
 
 import os
 import shutil
+import asyncio
 import logging
 from datetime import datetime, timezone
 from typing import Any
@@ -14,6 +15,109 @@ from typing import Any
 from ..config import settings
 
 logger = logging.getLogger("pidots.edge_triggers")
+
+
+class EdgeGPIOMonitor:
+    """Monitor de pinos físicos GPIO para sensores de borda e sinais de hardware (SBC/RPi4)."""
+
+    SYSFS_GPIO_PATH = "/sys/class/gpio"
+    _simulated_pins: dict[int, int] = {}
+
+    @classmethod
+    def set_pin_simulation(cls, pin: int, value: int) -> None:
+        """Configura estado simulado (0 ou 1) de um pino GPIO para testes."""
+        cls._simulated_pins[pin] = 1 if value else 0
+
+    @classmethod
+    def clear_simulation(cls) -> None:
+        """Limpa simulações de pinos GPIO."""
+        cls._simulated_pins.clear()
+
+    @classmethod
+    def is_hardware_available(cls) -> bool:
+        """Verifica se o subsistema GPIO do Linux está presente no nó host."""
+        return os.path.exists(cls.SYSFS_GPIO_PATH) or os.path.exists("/dev/gpiochip0")
+
+    @classmethod
+    def read_pin(cls, pin: int) -> int | None:
+        """Lê o valor lógico (0 ou 1) do pino GPIO especificado."""
+        if pin in cls._simulated_pins:
+            return cls._simulated_pins[pin]
+
+        pin_path = f"{cls.SYSFS_GPIO_PATH}/gpio{pin}/value"
+        if os.path.exists(pin_path):
+            try:
+                with open(pin_path, "r", encoding="utf-8") as f:
+                    val = f.read().strip()
+                    return int(val) if val.isdigit() else None
+            except Exception as e:
+                logger.debug("Falha na leitura do pino GPIO %d: %s", pin, str(e))
+        return None
+
+    @classmethod
+    def check_gpio_triggers(cls, trigger_pins_config: dict[int, dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+        """
+        Avalia os pinos de trigger configurados.
+        Formato de trigger_pins_config: {pin_number: {"label": "PIR_SENSOR", "active_level": 1, "severity": "WARNING"}}
+        """
+        configs = trigger_pins_config or {
+            17: {"label": "EMERGENCY_STOP", "active_level": 1, "severity": "CRITICAL"},
+            27: {"label": "MOTION_PIR", "active_level": 1, "severity": "WARNING"}
+        }
+        events: list[dict[str, Any]] = []
+        for pin, cfg in configs.items():
+            val = cls.read_pin(pin)
+            if val is not None and val == cfg.get("active_level", 1):
+                severity = cfg.get("severity", "WARNING")
+                label = cfg.get("label", f"GPIO_{pin}")
+                events.append({
+                    "trigger": f"GPIO_PIN_{pin}_ACTIVE",
+                    "severity": severity,
+                    "metric": f"gpio_pin_{pin}",
+                    "current_value": val,
+                    "threshold": cfg.get("active_level", 1),
+                    "message": f"Pino GPIO {pin} ({label}) atingiu nível lógico ativo ({val}).",
+                    "recommendation": f"Acionar rotina autônoma vinculada ao sensor {label}."
+                })
+        return events
+
+
+class EdgeMQTTListener:
+    """Listener assíncrono ultraleve para barramento de tópicos MQTT em nós de borda."""
+
+    _handlers: dict[str, list[Any]] = {}
+    _simulated_inbox: list[dict[str, Any]] = []
+
+    @classmethod
+    def register_handler(cls, topic_prefix: str, handler: Any) -> None:
+        """Registra handler assíncrono para mensagens de um tópico ou padrão."""
+        cls._handlers.setdefault(topic_prefix, []).append(handler)
+
+    @classmethod
+    async def dispatch_message(cls, topic: str, payload: Any) -> int:
+        """Despacha uma mensagem recebida no barramento para os handlers registrados."""
+        dispatched_count = 0
+        for pattern, handlers in cls._handlers.items():
+            if topic.startswith(pattern) or pattern == "#":
+                for h in handlers:
+                    try:
+                        res = h(topic, payload)
+                        if asyncio.iscoroutine(res):
+                            await res
+                        dispatched_count += 1
+                    except Exception as e:
+                        logger.error("Erro no handler MQTT para tópico '%s': %s", topic, str(e))
+        return dispatched_count
+
+    @classmethod
+    async def simulate_incoming_message(cls, topic: str, payload: Any) -> int:
+        """Simula recepção de mensagem MQTT para homologação de gatilhos sem broker externo."""
+        cls._simulated_inbox.append({
+            "topic": topic,
+            "payload": payload,
+            "received_at": datetime.now(timezone.utc).isoformat()
+        })
+        return await cls.dispatch_message(topic, payload)
 
 
 class EdgeHardwareTriggers:
@@ -220,6 +324,11 @@ class EdgeHardwareTriggers:
                 "recommendation": "Despejar caches in-memory, truncar buffers de contexto e disparar coleta de lixo."
             })
 
+        # 4. Avaliação de Gatilhos Físicos GPIO
+        if settings.gpio_enabled or bool(EdgeGPIOMonitor._simulated_pins):
+            gpio_events = EdgeGPIOMonitor.check_gpio_triggers()
+            triggered_events.extend(gpio_events)
+
         # Determinação de status geral consolidado
         if any(ev["severity"] == "CRITICAL" for ev in triggered_events):
             status = "CRITICAL"
@@ -236,7 +345,12 @@ class EdgeHardwareTriggers:
                 "temperature_celsius": soc_temp,
                 "disk": disk_metrics,
                 "ram": ram_metrics,
-                "load_average": load_metrics
+                "load_average": load_metrics,
+                "gpio": {
+                    "hardware_available": EdgeGPIOMonitor.is_hardware_available(),
+                    "simulated_active": bool(EdgeGPIOMonitor._simulated_pins),
+                    "monitored_pins": list(EdgeGPIOMonitor._simulated_pins.keys())
+                }
             },
             "triggered_count": len(triggered_events),
             "triggered_events": triggered_events,

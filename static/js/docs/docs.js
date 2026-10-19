@@ -12,7 +12,7 @@
     "use strict";
 
         /* =====================================================================
-           SCRIPTS OPERACIONAIS DO GUIA DIDATICO PIDOTS (PIXEL PAPER UI)
+           SCRIPTS OPERACIONAIS DO GUIA DIDATICO PIDOTS (INTERFACE TECNICA MINIMALISTA)
            - Barra Mecanica de Leitura (0 a 100%)
            - Omnisearch Client-Side em Memoria (Ctrl+K e /)
            - Mini API Tester Interativo (Passo 06)
@@ -255,8 +255,8 @@
                 id: 'passo-1',
                 step: 'PASSO 01',
                 title: 'O Que É o piDots & Novos Arquétipos Cognitivos',
-                keywords: 'arquetipos supervisor grok coder muse auditor conceitos edge react persistencia monolito arm64',
-                desc: 'Estacao de trabalho soberana para Raspberry Pi 4B. Quatro arquetipos especializados: Supervisor, Grok/Coder, Muse e Auditor.'
+                keywords: 'arquetipos supervisor coder desenvolvedor arquiteto auditor conceitos edge react persistencia modular arm64',
+                desc: 'Estacao de trabalho soberana para Raspberry Pi 4B. Quatro arquetipos especializados: Supervisor, Desenvolvedor (@coder), Arquiteto (@arquiteto) e Auditor.'
             },
             {
                 id: 'passo-2',
@@ -290,43 +290,43 @@
                 id: 'passo-6',
                 step: 'PASSO 06',
                 title: 'Passo a Passo Operacional, Endpoints REST & Preservação Flash',
-                keywords: 'deploy docker docker-compose env curl rest endpoints health tasks channels microsd wal synchronous normal',
-                desc: 'Configuracao de ambiente, deploy via Docker Compose, Mini API Tester interativo e diretrizes PRAGMA de preservacao do MicroSD.'
+                keywords: 'deploy docker docker-compose env curl rest endpoints health tasks channels computer state save-as-space mcp microsd wal synchronous normal activity rail',
+                desc: 'Configuracao de ambiente, deploy via Docker Compose, Mini API Tester com rotas de CoAgents State e Computador de Borda, e diretrizes PRAGMA do MicroSD.'
             },
             {
                 id: 'passo-7',
                 step: 'PASSO 07',
                 title: 'Memória Hierárquica Autônoma (Padrão MemGPT / Letta)',
-                keywords: 'memoria hierarquica core memory archival recall fts5 bm25 embeddings memoria longa duracao persona fatos',
-                desc: 'Tres camadas de memoria: Core Memory no prompt, Recall Memory das sessoes e Archival Memory com busca FTS5/BM25.'
+                keywords: 'memoria hierarquica core memory archival recall fts5 bm25 embeddings 64d unificado memoria longa duracao persona fatos',
+                desc: 'Tres camadas de memoria: Core Memory editavel, Recall Memory e Archival Memory com motor de embedding 64D deterministico unificado e FTS5/BM25.'
             },
             {
                 id: 'passo-8',
                 step: 'PASSO 08',
                 title: 'Self-Healing Harness & Planejamento em Dois Estágios',
-                keywords: 'self-healing auto-correcao traceback goals milestones metas planejamento checkpoints ast fluxo fechado',
-                desc: 'Diagnostico cirurgico de tracebacks e auto-correcao em ciclo fechado. Planejamento com Metas e Marcos em XML.'
+                keywords: 'self-healing auto-correcao traceback goals milestones metas planejamento checkpoints ast fluxo fechado coagents state_snapshot state_delta',
+                desc: 'Diagnostico cirurgico de tracebacks (teto 2 tentativas) e Planejamento em 2 Estagios sincronizado via CoAgents Shared State (STATE_SNAPSHOT / STATE_DELTA).'
             },
             {
                 id: 'passo-9',
                 step: 'PASSO 09',
                 title: 'Conselho Consultivo & Debate Dialético Multi-Bot',
-                keywords: 'conselho consultivo debate dialetica propositor auditor supervisor fitas internas resolucao tripartite',
-                desc: 'Deliberacao formal entre Propositor (@coder), Auditor Critico (@auditor) e Supervisor (@supervisor) com limite de 3 rodadas.'
+                keywords: 'conselho consultivo debate dialetica propositor auditor supervisor fitas internas resolucao tripartite early consensus exit',
+                desc: 'Deliberacao formal entre Propositor (@coder), Auditor Critico (@auditor) e Supervisor (@supervisor) com Early Consensus Exit.'
             },
             {
                 id: 'passo-10',
                 step: 'PASSO 10',
                 title: 'Espaço de Conhecimento Compartilhado & Dot Packs Portáveis',
-                keywords: 'shared space knowledge quadro colaborativo dot packs templates manifestos import export json portabilidade',
-                desc: 'Quadro compartilhado sincronizado por thread e empacotamento completo de agentes em arquivos portaveis Dot Packs v1.0.'
+                keywords: 'shared space knowledge quadro colaborativo save thread as space dot packs v1.1 sha-256 templates manifestos import export json portabilidade',
+                desc: 'Quadro compartilhado sincronizado por thread, conversao de conversa em Space (/save-space) e empacotamento criptografico Dot Packs v1.1 (SHA-256).'
             },
             {
                 id: 'passo-11',
                 step: 'PASSO 11',
                 title: 'Triggers de Hardware Edge & Manutenção do MicroSD',
-                keywords: 'hardware triggers temperatura broadcom bcm2711 microsd manutencao noturna vacuum wal truncate protecao fisica',
-                desc: 'Monitoramento termico direto do SoC BCM2711 com throttle automatico e rotina noturna de WAL TRUNCATE + VACUUM INTO.'
+                keywords: 'hardware triggers temperatura broadcom bcm2711 process_rss_mb microsd manutencao noturna vacuum wal truncate protecao fisica',
+                desc: 'Telemetria fisica com process_rss_mb real do processo FastAPI, monitoramento termico BCM2711 e rotina noturna WAL TRUNCATE + VACUUM INTO.'
             },
             {
                 id: 'passo-12',
@@ -338,9 +338,9 @@
             {
                 id: 'passo-13',
                 step: 'PASSO 13',
-                title: 'Protocolo de Slash Commands (/) & Interface de Borda de Alta Velocidade',
-                keywords: 'slash commands barra popover autocomplete catalogo 30 comandos teletipo slips levenshtein export pack hitl telemetry clear theme',
-                desc: 'Catalogo unificado de 30 comandos em 6 categorias, execucao no cliente em < 16ms, popover em Vanilla JS, recibos tatis e integracao total de borda.'
+                title: 'Protocolo de 34 Slash Commands (/) & Interface de Borda de Alta Velocidade',
+                keywords: 'slash commands barra popover autocomplete catalogo 34 comandos teletipo slips levenshtein export pack hitl telemetry coagents computer save-space mcp clear theme',
+                desc: 'Catalogo unificado de 34 comandos em 6 categorias (incluindo /coagents, /computer, /save-space e /mcp), execucao no cliente em < 16ms e recibos tatis.'
             }
         ];
 

@@ -53,7 +53,7 @@ async def run_resilience_tests():
             INSERT OR REPLACE INTO dots (id, name, role, system_prompt, model, workspace_path, archetype)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (test_dot_id, "Resilience Tester", "Tester", "Você é um assistente de testes.", "qwen3.8-27b", "/tmp", "general")
+            (test_dot_id, "Resilience Tester", "Tester", "Você é um assistente de testes.", "test-model", "/tmp", "general")
         )
         await db.commit()
 

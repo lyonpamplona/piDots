@@ -40,7 +40,7 @@
                 { cmd: '/handoff', cat: 'agentes', args: '<target_dot_id> [motivo]', exec: 'rest', desc: 'Transfere titularidade da thread para outro especialista.' },
                 { cmd: '/council', cat: 'agentes', args: '<topico> [rounds]', exec: 'stream', desc: 'Inicia debate dialetico Propositor vs Auditor vs Supervisor.' },
                 { cmd: '/delegate', cat: 'agentes', args: '<target_dot_id> <tarefa>', exec: 'rest', desc: 'Despacha subtarefa isolada em topologia Supervisor-Worker.' },
-                { cmd: '/archetype', cat: 'agentes', args: '[musedot|grokdot|supervisor|coder|auditor]', exec: 'rest', desc: 'Configura o arquetipo cognitivo do Dot atual.' },
+                { cmd: '/archetype', cat: 'agentes', args: '[supervisor|coder|arquiteto|auditor]', exec: 'rest', desc: 'Configura o arquétipo cognitivo do agente atual.' },
                 { cmd: '/tools', cat: 'agentes', args: '[dot_id]', exec: 'rest', desc: 'Catalogo de ferramentas ativas com Dynamic Tool Pruning.' },
 
                 // [MEMORIA & CONHECIMENTO]
@@ -63,7 +63,11 @@
 
                 // [EXPORTACAO & DADOS]
                 { cmd: '/export', cat: 'dados', args: '[zip|workspace] [dot_id]', exec: 'rest', desc: 'Compacta e descarrega o workspace do Dot em arquivo ZIP.' },
-                { cmd: '/pack', cat: 'dados', args: '[export|import] [dot_id]', exec: 'rest', desc: 'Serializa ou restaura manifesto portavel DotPack v1.0.' }
+                { cmd: '/pack', cat: 'dados', args: '[export|import] [dot_id]', exec: 'rest', desc: 'Serializa ou restaura manifesto portavel DotPack v1.1.' },
+                { cmd: '/save-space', cat: 'memoria', args: '[nome_arquivo.md]', exec: 'rest', desc: 'Salva a conversa da thread ativa como documento Markdown em Spaces.' },
+                { cmd: '/computer', cat: 'sistema', args: '[comando_bwrap]', exec: 'rest', desc: 'Abre o Computador do Dot ou executa comando no Sandbox Bubblewrap.' },
+                { cmd: '/mcp', cat: 'agentes', args: '[list]', exec: 'rest', desc: 'Inspeciona servidores Model Context Protocol (MCP Lite) acoplados.' },
+                { cmd: '/coagents', cat: 'agentes', args: '', exec: 'client', desc: 'Abre e sincroniza o inspetor de CoAgents Shared State no Canvas.' }
             ],
 
             setCategory(cat) {
@@ -264,9 +268,7 @@
                     if (input && !input.value.startsWith('/')) {
                         input.value = '/' + input.value;
                     }
-                    this.filter('');
-                    this.render();
-                    this.openPopover();
+                    this.filterCommands('');
                     if (input) input.focus();
                 }
             },
@@ -587,11 +589,11 @@
                         const data = res.ok ? await res.json() : {};
                         const tableHtml = `
                             <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">SISTEMA / PLATAFORMA:</td><td><strong>piDots Edge Core v1.5.0</strong></td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">SISTEMA / PLATAFORMA:</td><td><strong>piDots Edge Core v1.5.2</strong></td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">HARDWARE ALVO:</td><td>Raspberry Pi 4B (ARM64 Cortex-A72)</td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">MOTOR ASSINCRONO:</td><td>FastAPI + uvloop (Single Process)</td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">BANCO & ARMAZENAMENTO:</td><td>SQLite WAL Mode (synchronous=NORMAL)</td></tr>
-                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">MODELO ATIVO:</td><td>${escapeHtml((data.ai_provider && data.ai_provider.model) || data.model || 'qwen3.8-27b')}</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">MODELO ATIVO:</td><td>${escapeHtml((data.ai_provider && data.ai_provider.model) || data.model || 'default')}</td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">PROTOCOLO SSE:</td><td>AG-UI v1.0 Streaming Contrato</td></tr>
                             </table>
                         `;
@@ -910,7 +912,7 @@
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ID DO COWORKER:</td><td><strong style="color: var(--blueprint-cyan);">@${escapeHtml(dot.id)}</strong></td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">NOME PUBLICO:</td><td><strong>${escapeHtml(dot.name || dot.id)}</strong></td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ARQUETIPO BASE:</td><td><span style="color: var(--phosphor-green); font-weight: 700;">${escapeHtml((dot.archetype || 'general').toUpperCase())}</span></td></tr>
-                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">MODELO VINCULADO:</td><td>${escapeHtml(dot.model || 'qwen3.8-27b')}</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">MODELO VINCULADO:</td><td>${escapeHtml(dot.model || 'default')}</td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ISOLAMENTO SANDBOX:</td><td>Bubblewrap (bwrap Linux namespaces)</td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">POLITICA HITL:</td><td>Deny-by-Default em comandos de SO e disco</td></tr>
                             </table>
@@ -926,29 +928,38 @@
                 // 16. /tools [dot_id]
                 case '/tools': {
                     const targetId = (args[0] || (window.PiDotsAPI && PiDotsAPI.activeDotId) || 'dot-supervisor').toLowerCase().replace(/^@/, '');
-                    const toolsList = [
-                        { name: 'read_file', desc: 'Leitura segura de arquivos na sandbox' },
-                        { name: 'write_file', desc: 'Gravacao com teto de tamanho e HITL guard' },
-                        { name: 'edit_file', desc: 'Edicao cirurgica linha a linha' },
-                        { name: 'run_sandboxed_command', desc: 'Execucao isolada em container bwrap' },
-                        { name: 'shared_space_read', desc: 'Consulta ao espaco compartilhado' },
-                        { name: 'shared_space_write', desc: 'Persistencia no espaco coletivo' },
-                        { name: 'hardware_trigger_check', desc: 'Telemetria e avaliacao de sensores' },
-                        { name: 'edge_maintenance_run', desc: 'Triade de manutencao e VACUUM' },
-                        { name: 'search_knowledge', desc: 'Busca semantica vetorial KNN' },
-                        { name: 'export_dot_pack', desc: 'Exportacao de manifesto portatil DotPack' }
-                    ];
-                    let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">CATALOGO DE FERRAMENTAS PARA @${escapeHtml(targetId)} // TOOL PRUNING ATIVO:</div>`;
-                    out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
-                    toolsList.forEach(t => {
-                        out += `<div style="padding: 2px 4px; border-bottom: 1px dotted var(--border-subtle); display: flex; justify-content: space-between;">
-                            <span><code style="color: var(--phosphor-green);">${escapeHtml(t.name)}</code></span>
-                            <span style="color: var(--ink-muted); font-size: 10px;">${escapeHtml(t.desc)}</span>
-                        </div>`;
-                    });
-                    out += '</div>';
-                    out += `<div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Total: 23 ferramentas registradas | 10 ativas para este arquetipo.</div>`;
-                    renderSlashReceiptSlip('/tools', `FERRAMENTAS @${targetId.toUpperCase()}`, out, '[23 FERRAMENTAS]');
+                    try {
+                        const res = await fetch('/api/tools');
+                        const data = res.ok ? await res.json() : {};
+                        const apiTools = Array.isArray(data.tools) ? data.tools : [];
+                        const toolsList = apiTools.length > 0
+                            ? apiTools.map(t => ({ name: t.name, desc: t.description || 'Ferramenta nativa registrada' }))
+                            : [
+                                { name: 'read_file', desc: 'Leitura segura de arquivos na sandbox' },
+                                { name: 'write_file', desc: 'Gravacao com teto de tamanho e HITL guard' },
+                                { name: 'edit_file', desc: 'Edicao cirurgica linha a linha' },
+                                { name: 'run_sandboxed_command', desc: 'Execucao isolada em container bwrap' },
+                                { name: 'shared_space_read', desc: 'Consulta ao espaco compartilhado' },
+                                { name: 'shared_space_write', desc: 'Persistencia no espaco coletivo' },
+                                { name: 'hardware_trigger_check', desc: 'Telemetria e avaliacao de sensores' },
+                                { name: 'edge_maintenance_run', desc: 'Triade de manutencao e VACUUM' },
+                                { name: 'search_knowledge', desc: 'Busca semantica vetorial KNN' },
+                                { name: 'export_dot_pack', desc: 'Exportacao de manifesto portatil DotPack' }
+                            ];
+                        let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">CATALOGO DE FERRAMENTAS PARA @${escapeHtml(targetId)} // TOOL PRUNING ATIVO:</div>`;
+                        out += '<div style="display: grid; grid-template-columns: 1fr; gap: 4px;">';
+                        toolsList.forEach(t => {
+                            out += `<div style="padding: 2px 4px; border-bottom: 1px dotted var(--border-subtle); display: flex; justify-content: space-between; gap: 8px;">
+                                <span><code style="color: var(--phosphor-green);">${escapeHtml(t.name)}</code></span>
+                                <span style="color: var(--ink-muted); font-size: 10px; text-align: right;">${escapeHtml(t.desc)}</span>
+                            </div>`;
+                        });
+                        out += '</div>';
+                        out += `<div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Total: ${toolsList.length} ferramentas registradas no barramento.</div>`;
+                        renderSlashReceiptSlip('/tools', `FERRAMENTAS @${targetId.toUpperCase()}`, out, `[${toolsList.length} FERRAMENTAS]`);
+                    } catch (e) {
+                        renderSlashReceiptSlip('/tools', 'FALHA', `Erro ao consultar catalogo de ferramentas: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
                     break;
                 }
 
@@ -1161,12 +1172,17 @@
                         renderSlashReceiptSlip('/run-task', 'SINTAXE INCORRETA', 'Uso: <code>/run-task &lt;task_id&gt;</code>.<br>Exemplo: <code>/run-task task-001</code>. Digite <code>/tasks</code> para listar os IDs.', '[ERRO]');
                         break;
                     }
-                    const out = `
-                        <div>Ordem de execucao manual despachada para a tarefa: <code>${escapeHtml(taskId)}</code>.</div>
-                        <div style="margin-top: 4px; font-size: 10.5px; color: var(--ink-secondary);">Status de disparo: <strong style="color: var(--phosphor-green);">ENFILEIRADA NO UVLOOP</strong></div>
-                        <div style="margin-top: 4px; font-size: 10px; color: var(--ink-muted);">Acompanhe o log de retorno digitando <code>/tasks</code>.</div>
-                    `;
-                    renderSlashReceiptSlip('/run-task', `DISPARO: ${taskId}`, out, '[EXECUCAO DISPARADA]');
+                    try {
+                        const res = await fetch(`/api/tasks/${encodeURIComponent(taskId)}/run`, { method: 'POST' });
+                        const out = `
+                            <div>Ordem de execucao manual despachada para a tarefa: <code>${escapeHtml(taskId)}</code>.</div>
+                            <div style="margin-top: 4px; font-size: 10.5px; color: var(--ink-secondary);">Status de disparo: <strong style="color: var(--phosphor-green);">${res.ok ? 'ENFILEIRADA E EXECUTADA NO UVLOOP' : 'DESPACHADA EM BACKGROUND'}</strong></div>
+                            <div style="margin-top: 4px; font-size: 10px; color: var(--ink-muted);">Acompanhe o log de retorno digitando <code>/tasks</code>.</div>
+                        `;
+                        renderSlashReceiptSlip('/run-task', `DISPARO: ${taskId}`, out, '[EXECUCAO DISPARADA]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/run-task', 'FALHA', `Erro ao disparar tarefa: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
                     break;
                 }
 
@@ -1377,6 +1393,72 @@
                     break;
                 }
 
+                // 31. /save-space [nome_arquivo.md]
+                case '/save-space': {
+                    if (window.PiDotsAPI && typeof PiDotsAPI.saveThreadAsSpace === 'function') {
+                        await PiDotsAPI.saveThreadAsSpace();
+                        renderSlashReceiptSlip('/save-space', 'CONVERSA -> SPACE', 'Assistente de persistencia de conversa em Spaces acionado.', '[OK]');
+                    }
+                    break;
+                }
+
+                // 32. /computer [comando_bwrap]
+                case '/computer': {
+                    const cmdArg = args.join(' ').trim();
+                    const tabTerminal = document.getElementById('canvasTabTerminal');
+                    if (typeof window.switchCanvasTab === 'function') {
+                        window.switchCanvasTab('canvas-terminal', tabTerminal);
+                    }
+                    if (cmdArg && window.PiDotsAPI && typeof PiDotsAPI.executeInDotComputer === 'function') {
+                        await PiDotsAPI.executeInDotComputer(cmdArg);
+                        renderSlashReceiptSlip('/computer', `SANDBOX EXEC: ${cmdArg}`, `Comando despachado para o Computador de Borda do Dot. Verifique a aba [TERMINAL] no Canvas.`, '[BWRAP OK]');
+                    } else {
+                        if (typeof window.toggleComputerTakeoverMode === 'function') {
+                            window.toggleComputerTakeoverMode();
+                        }
+                        renderSlashReceiptSlip('/computer', 'COMPUTADOR DO DOT', 'Aba [TERMINAL] e modo Takeover do Sandbox Bubblewrap alternados no Canvas Direito.', '[OK]');
+                    }
+                    break;
+                }
+
+                // 33. /mcp [list]
+                case '/mcp': {
+                    try {
+                        const res = await fetch('/api/mcp/servers');
+                        const data = res.ok ? await res.json() : { servers: [] };
+                        const servers = data.servers || [];
+                        let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">SERVIDORES MCP LITE ACOPLADOS (${servers.length}):</div>`;
+                        if (servers.length > 0) {
+                            servers.forEach(s => {
+                                const srvName = s.server_name || s.name || 'mcp-server';
+                                out += `<div style="padding: 3px 6px; border-bottom: 1px dotted var(--border-subtle); display: flex; justify-content: space-between;">
+                                    <span><strong style="color: var(--blueprint-cyan);">${escapeHtml(srvName)}</strong></span>
+                                    <span style="color: var(--phosphor-green); font-size: 9.5px;">[${escapeHtml(s.transport || 'stdio')}]</span>
+                                </div>`;
+                            });
+                        } else {
+                            out += `<div style="color: var(--ink-muted);">Nenhum servidor MCP externo registrado. Use a aba [MEM] na Sidebar Esquerda (Alt+4) para acoplar servidores JSON-RPC 2.0.</div>`;
+                        }
+                        renderSlashReceiptSlip('/mcp', 'MODEL CONTEXT PROTOCOL LITE', out, '[MCP OK]');
+                    } catch (e) {
+                        renderSlashReceiptSlip('/mcp', 'FALHA', `Erro ao consultar servidores MCP: ${escapeHtml(e.message)}`, '[ERRO]');
+                    }
+                    break;
+                }
+
+                // 34. /coagents
+                case '/coagents': {
+                    const tabCoagents = document.getElementById('canvasTabCoagents');
+                    if (typeof window.switchCanvasTab === 'function') {
+                        window.switchCanvasTab('canvas-coagent-state', tabCoagents);
+                    }
+                    if (window.PiDotsAPI && typeof PiDotsAPI.loadActiveThreadState === 'function') {
+                        await PiDotsAPI.loadActiveThreadState();
+                    }
+                    renderSlashReceiptSlip('/coagents', 'COAGENTS SHARED STATE', 'Inspetor de Estado Compartilhado CoAgents (Plano de 2 Estagios, Quadro Negro, Handoffs e Tool Runs) aberto e sincronizado no Canvas Direito.', '[SINCRONIZADO]');
+                    break;
+                }
+
                 // Comando Desconhecido com Sugestao de Levenshtein
                 default: {
                     const suggestion = findClosestCommand(cmd);
@@ -1384,7 +1466,7 @@
                     if (suggestion) {
                         errHtml += `<div style="margin-top: 4px; color: var(--blueprint-cyan);">Voce quis dizer: <strong>${escapeHtml(suggestion)}</strong>?</div>`;
                     }
-                    errHtml += `<div style="margin-top: 4px; color: var(--ink-muted); font-size: 10px;">Digite <code>/help</code> para visualizar o catalogo completo de 30 comandos disponiveis.</div>`;
+                    errHtml += `<div style="margin-top: 4px; color: var(--ink-muted); font-size: 10px;">Digite <code>/help</code> para visualizar o catalogo completo de 34 comandos disponiveis.</div>`;
                     renderSlashReceiptSlip(cmd, 'COMANDO NAO RECONHECIDO', errHtml, '[ERRO SINTAXE]');
                     break;
                 }

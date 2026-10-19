@@ -7,7 +7,7 @@ import re
 import uuid
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from ..config import settings
 from ..storage.db import get_db
 
@@ -95,10 +95,15 @@ class HITLManager:
         thread_id: str | None,
         action_type: str,
         payload: str,
-        risk_level: str = "HIGH"
+        risk_level: str = "HIGH",
+        ttl_minutes: int = 30
     ) -> str:
-        """Cria e persiste uma solicitação de aprovação pendente no SQLite."""
+        """Cria e persiste uma solicitação de aprovação pendente no SQLite com TTL configurável."""
         approval_id = str(uuid.uuid4())
+        now_dt = datetime.now(timezone.utc)
+        expires_dt = now_dt + timedelta(minutes=ttl_minutes)
+        expires_at = expires_dt.isoformat()
+
         async with get_db() as db:
             await db.execute(
                 """
@@ -110,13 +115,13 @@ class HITLManager:
             )
             await db.execute(
                 """
-                INSERT INTO hitl_approvals (id, dot_id, thread_id, action_type, payload, risk_level, status)
-                VALUES (?, ?, ?, ?, ?, ?, 'PENDING')
+                INSERT INTO hitl_approvals (id, dot_id, thread_id, action_type, payload, risk_level, status, expires_at)
+                VALUES (?, ?, ?, ?, ?, ?, 'PENDING', ?)
                 """,
-                (approval_id, dot_id, thread_id, action_type, payload, risk_level)
+                (approval_id, dot_id, thread_id, action_type, payload, risk_level, expires_at)
             )
             await db.commit()
-        logger.info("Solicitação HITL criada [%s] para Dot %s: %s (%s)", approval_id, dot_id, action_type, risk_level)
+        logger.info("Solicitação HITL criada [%s] para Dot %s: %s (%s, Expira em: %s)", approval_id, dot_id, action_type, risk_level, expires_at)
 
         # Dispara notificação não-bloqueante para canais remotos (Webhook / Telegram)
         try:
@@ -135,6 +140,68 @@ class HITLManager:
             logger.debug("Falha ao agendar tarefa de notificação HITL: %s", e)
 
         return approval_id
+
+    @classmethod
+    async def expire_stale_approvals(cls) -> list[str]:
+        """
+        Varre solicitações pendentes cujo expires_at já foi ultrapassado (TTL de 30 min).
+        Atualiza o status para 'EXPIRED', libera threads associadas e grava histórico de auditoria.
+        Retorna lista com IDs das aprovações expiradas.
+        """
+        now = datetime.now(timezone.utc).isoformat()
+        expired_ids: list[str] = []
+        async with get_db() as db:
+            cursor = await db.execute(
+                """
+                SELECT id, dot_id, thread_id, action_type
+                FROM hitl_approvals
+                WHERE status = 'PENDING' AND expires_at IS NOT NULL AND expires_at <= ?
+                """,
+                (now,)
+            )
+            rows = await cursor.fetchall()
+            if not rows:
+                return []
+
+            for row in rows:
+                app_id = row["id"]
+                t_id = row["thread_id"]
+                d_id = row["dot_id"]
+                act_type = row["action_type"]
+
+                await db.execute(
+                    """
+                    UPDATE hitl_approvals
+                    SET status = 'EXPIRED', reviewer_notes = 'Expirado por inatividade (> 30 minutos) pelo guardiao HITL.', resolved_at = ?
+                    WHERE id = ? AND status = 'PENDING'
+                    """,
+                    (now, app_id)
+                )
+
+                if t_id:
+                    expire_notice = (
+                        f"[GOVERNANCA HITL // ACAO EXPIRADA]\n"
+                        f"A solicitacao '{app_id}' para '{act_type}' expirou por inatividade (> 30 minutos). "
+                        "A execucao foi cancelada e os recursos de processamento foram liberados."
+                    )
+                    await db.execute(
+                        """
+                        INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
+                        VALUES (?, ?, 'system', ?, ?, 'system', 'public')
+                        """,
+                        (str(uuid.uuid4()), t_id, expire_notice, d_id)
+                    )
+                    await db.execute(
+                        "UPDATE threads SET status = 'idle', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                        (t_id,)
+                    )
+                expired_ids.append(app_id)
+
+            await db.commit()
+
+        if expired_ids:
+            logger.info("Guardiao HITL expirou %d solicitacoes pendentes: %s", len(expired_ids), expired_ids)
+        return expired_ids
 
     @staticmethod
     async def resolve_approval(approval_id: str, approved: bool, notes: str | None = None) -> bool:
@@ -187,3 +254,114 @@ class HITLManager:
 
             await db.commit()
             return updated
+
+    @staticmethod
+    async def execute_approved_action(approval_id: str, modified_args: dict | str | None = None) -> dict:
+        """
+        Executa no sandbox isolado do Dot a ferramenta cujos argumentos foram congelados
+        e homologados em uma solicitação HITL com status 'APPROVED' (aplicando modified_args se editado pelo operador).
+        Registra o recibo de saída na thread associada e em tool_runs.
+        """
+        async with get_db() as db:
+            cursor = await db.execute(
+                "SELECT id, dot_id, thread_id, action_type, payload, status FROM hitl_approvals WHERE id = ?",
+                (approval_id,)
+            )
+            row = await cursor.fetchone()
+            if not row:
+                return {"executed": False, "error": "Solicitação HITL não encontrada."}
+            if row["status"] != "APPROVED":
+                return {"executed": False, "error": f"Ação não está aprovada (status atual: {row['status']})."}
+
+            dot_id = row["dot_id"]
+            thread_id = row["thread_id"]
+            action_type = row["action_type"]
+            raw_payload = row["payload"] or "{}"
+
+        try:
+            args = json.loads(raw_payload)
+            if not isinstance(args, dict):
+                args = {"command": str(raw_payload)}
+        except Exception:
+            args = {"command": str(raw_payload)}
+
+        # Mapeia alias legado shell_exec para execute_shell_command e desempacota envelope {"tool": ..., "arguments": {...}}
+        tool_name = "execute_shell_command" if action_type == "shell_exec" else action_type
+        if isinstance(args.get("arguments"), dict):
+            if isinstance(args.get("tool"), str) and args["tool"].strip():
+                tool_name = args["tool"].strip()
+            args = args["arguments"]
+
+        # Se o operador humano editou argumentos via modified_args (Padrão CopilotKit Interrupt-Resume), aplica override
+        if modified_args is not None:
+            if isinstance(modified_args, dict):
+                if isinstance(modified_args.get("arguments"), dict):
+                    args = modified_args["arguments"]
+                else:
+                    args = modified_args
+            elif isinstance(modified_args, str) and modified_args.strip():
+                try:
+                    parsed_mod = json.loads(modified_args)
+                    if isinstance(parsed_mod, dict):
+                        args = parsed_mod.get("arguments") if isinstance(parsed_mod.get("arguments"), dict) else parsed_mod
+                    else:
+                        args = {"command": modified_args.strip()}
+                except Exception:
+                    args = {"command": modified_args.strip()}
+
+        from ..tools.registry import registry as default_tool_registry
+        if tool_name not in default_tool_registry._handlers:
+            return {
+                "executed": False,
+                "status": "unsupported_tool",
+                "tool_name": tool_name,
+                "error": f"Ferramenta '{tool_name}' não possui executor automático registrado."
+            }
+
+        t_start = datetime.now(timezone.utc)
+        result = await default_tool_registry.execute_tool(
+            name=tool_name,
+            arguments=args,
+            dot_id=dot_id,
+            thread_id=thread_id
+        )
+        duration_ms = int((datetime.now(timezone.utc) - t_start).total_seconds() * 1000)
+
+        # Se houver thread associada, persiste o recibo de execução pós-HITL
+        if thread_id:
+            try:
+                out_preview = ""
+                if isinstance(result, dict):
+                    out_preview = result.get("stdout") or result.get("message") or result.get("error") or json.dumps(result, ensure_ascii=False)
+                else:
+                    out_preview = str(result)
+                receipt_msg = (
+                    f"[RECIBO DE EXECUCAO POS-HOMOLOGACAO HITL]\n"
+                    f"Ferramenta: {tool_name} | Duracao: {duration_ms}ms\n"
+                    f"Resultado: {str(out_preview)[:1200]}"
+                )
+                async with get_db() as db:
+                    cur_th = await db.execute("SELECT id FROM threads WHERE id = ?", (thread_id,))
+                    if await cur_th.fetchone():
+                        await db.execute(
+                            """
+                            INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
+                            VALUES (?, ?, 'system', ?, ?, 'system', 'public')
+                            """,
+                            (str(uuid.uuid4()), thread_id, receipt_msg, dot_id)
+                        )
+                        await db.commit()
+            except Exception as rec_err:
+                logger.debug("Falha ao gravar recibo pós-HITL na thread %s: %s", thread_id, rec_err)
+
+        return {
+            "executed": True,
+            "status": "executed",
+            "approval_id": approval_id,
+            "dot_id": dot_id,
+            "thread_id": thread_id,
+            "tool_name": tool_name,
+            "duration_ms": duration_ms,
+            "result": result
+        }
+

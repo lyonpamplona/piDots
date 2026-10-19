@@ -14,14 +14,19 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>piDots // Pixel Paper UI Workspace (Triptych Layout)</title>
+    <title>piDots // Console Operacional Workspace (Layout Tríptico)</title>
     <!-- Importação de fontes Pixel Art e Monospace com suporte a renderização crisp -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
     
+    <!-- Preload de Recursos Críticos de Estilo e Scripts -->
+    <link rel="preload" href="/static/css/tokens.css" as="style">
+    <link rel="preload" href="/static/css/spa.css" as="style">
+    <link rel="preload" href="/static/js/core/pidots-i18n.js" as="script">
+    <link rel="preload" href="/static/js/spa/pidots-api.js" as="script">
 
-    <!-- Folhas de Estilo Modulares Pixel Paper UI (Fase 1) -->
+    <!-- Folhas de Estilo Modulares de Interface Técnica Minimalista -->
     <link rel="stylesheet" href="/static/css/tokens.css">
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/layout.css">
@@ -44,7 +49,7 @@
     <!-- CABEÇALHO OPERACIONAL MINIMALISTA (TOP BAR) -->
     <header class="mission-header">
         <div class="header-brand" style="display: flex; align-items: center; gap: 8px;">
-            <button class="pixel-btn" onclick="toggleSidebar()" title="Alternar Barra Lateral (Atalho: Ctrl+B)">
+            <button class="pixel-btn" id="btnSidebarToggle" onclick="toggleSidebar()" title="Alternar Barra Lateral (Atalho: Ctrl+B)">
                 [PAINEL]
             </button>
             <span class="brand-badge" style="font-weight: bold; color: var(--blueprint-cyan);">PIDOTS</span>
@@ -108,94 +113,262 @@
     <div class="triptych-shell">
 
         <!-- -------------------------------------------------------------------
-             COLUNA 1: SIDEBAR ESQUERDA (DOTS, SPACES, FILA HITL)
+             COLUNA 1: SIDEBAR ESQUERDA OPENDOTS (ACTIVITY RAIL 48PX + CONTEXT PANEL)
              ------------------------------------------------------------------- -->
         <aside class="left-sidebar" id="leftSidebar">
-            <!-- Seção 1: Diretório de Dots Coworkers -->
-            <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <span style="display: flex; align-items: center; gap: 4px;">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
-                        AI COWORKERS (DOTS)
-                    </span>
-                    <span style="color: var(--blueprint-cyan);" id="dotsCountBadge">ATIVOS</span>
-                </div>
-
-                <div id="dotsListContainer">
-                    <div style="font-size: 10px; color: var(--ink-muted); padding: 6px;">Carregando Dots do SQLite WAL...</div>
-                </div>
-            </div>
-
-            <!-- Seção 2: Diretório de Spaces (Documentos e Fichas) -->
-            <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <span style="display: flex; align-items: center; gap: 4px;">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                        SPACES & ARTEFATOS
-                    </span>
-                    <button class="pixel-btn" style="padding: 2px 6px; font-size: 7px;" onclick="createNewSpaceCustom()" data-tooltip="Criar novo arquivo persistido no SQLite WAL">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        [NOVO]
+            <div class="opendots-sidebar-layout">
+                <!-- Trilho Vertical de Atividades (Activity Rail 48px) -->
+                <nav class="activity-rail" aria-label="Modos do Workspace OpenDots">
+                    <button type="button" class="rail-btn active" id="railBtnSpaces" data-ctx="spaces" onclick="switchSidebarContext('spaces')" title="Spaces, Canais e Conversas (Alt+1)">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        <span class="rail-lbl">SPACES</span>
                     </button>
-                </div>
+                    <button type="button" class="rail-btn" id="railBtnDots" data-ctx="dots" onclick="switchSidebarContext('dots')" title="Squad de Coworkers e Catálogo de Ferramentas (Alt+2)">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
+                        <span class="rail-lbl">DOTS</span>
+                    </button>
+                    <button type="button" class="rail-btn" id="railBtnTasks" data-ctx="tasks" onclick="switchSidebarContext('tasks')" title="Rotinas Proativas Cron e Hardware Triggers (Alt+3)">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span class="rail-lbl">TASKS</span>
+                    </button>
+                    <button type="button" class="rail-btn" id="railBtnMemory" data-ctx="memory" onclick="switchSidebarContext('memory')" title="Memória Semântica 64D, Dot Packs e MCP Lite (Alt+4)">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                        <span class="rail-lbl">MEM</span>
+                    </button>
 
-                <div id="spacesListContainer">
-                    <div class="space-item active" onclick="loadArtifact('architecture_spec.md')">
-                        <span>architecture_spec.md</span>
-                        <span class="space-item-rev">REV 3.0</span>
-                    </div>
+                    <div class="rail-spacer"></div>
 
-                    <div class="space-item" onclick="loadArtifact('sqlite_guide.md')">
-                        <span>sqlite_guide.md</span>
-                        <span class="space-item-rev">REV 1.2</span>
-                    </div>
+                    <button type="button" class="rail-btn rail-btn-hitl" id="railBtnHitl" onclick="openHitlCanvas()" title="Fila de Governança Human-in-the-Loop (Alt+H)">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <span class="rail-lbl" id="railHitlBadge">HITL</span>
+                    </button>
+                </nav>
 
-                    <div class="space-item" onclick="loadArtifact('fibonacci.py')">
-                        <span>fibonacci.py</span>
-                        <span class="space-item-rev">SANDBOX</span>
-                    </div>
-                </div>
-            </div>
+                <!-- Pilha de Painéis Contextuais da Sidebar -->
+                <div class="sidebar-context-stack">
 
-            <!-- Seção 3: Fila Rápida HITL (Just-in-Time: Exibida apenas quando há ação retida) -->
-            <div class="sidebar-section" id="hitlSidebarSection" style="display: none;">
-                <div class="sidebar-title">
-                    <span style="display: flex; align-items: center; gap: 4px;">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                        GOVERNANCA HITL
-                    </span>
-                    <span style="color: var(--thermal-amber);" id="hitlSidebarCountBadge"><span id="val-hitl">0 PENDENTES</span></span>
-                </div>
+                    <!-- MODO 1: SPACES, CANAIS, THREADS & SQUAD ATIVO (PADRAO OPENDOTS) -->
+                    <div class="sidebar-ctx-pane active" id="sidebarCtxSpaces">
+                        <!-- Seção 1: Diretório de Dots Coworkers -->
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
+                                    AI COWORKERS (DOTS)
+                                </span>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <span style="color: var(--blueprint-cyan);" id="dotsCountBadge">ATIVOS</span>
+                                    <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="openDotCreatorModal()" title="Criar novo AI Coworker (@dot)">[+ DOT]</button>
+                                </div>
+                            </div>
 
-                <div id="hitlSidebarAlertContainer">
-                    <div class="sidebar-hitl-alert" onclick="openHitlCanvas()">
-                        <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber); margin-bottom: 2px;">
-                            ACAO CRITICA RETIDA // WAL
+                            <div id="dotsListContainer">
+                                <div style="font-size: 10px; color: var(--ink-muted); padding: 6px;">Carregando Dots do SQLite WAL...</div>
+                            </div>
                         </div>
-                        <div style="font-size: 10px; color: var(--ink-secondary);" id="hitlSidebarDesc">
-                            Nenhuma acao retida no momento.
+
+                        <!-- Seção 1B: Canais Colaborativos (#channels) -->
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+                                    CANAIS COLABORATIVOS
+                                </span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.promptCreateChannel()" title="Criar novo canal temático">[+ CANAL]</button>
+                            </div>
+                            <div id="channelsListContainer">
+                                <div class="space-item active" onclick="PiDotsAPI.selectChannel('ch-main', 'geral')">
+                                    <span># geral</span>
+                                    <span class="space-item-rev">MULTI-BOT</span>
+                                </div>
+                                <div class="space-item" onclick="PiDotsAPI.selectChannel('ch-eng', 'engenharia')">
+                                    <span># engenharia</span>
+                                    <span class="space-item-rev">DEV/ARCH</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seção 1C: Conversas Persistentes (Threads) -->
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    CONVERSAS (THREADS)
+                                </span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="startNewConversation()" title="Iniciar Nova Conversa">[+ NOVA]</button>
+                            </div>
+                            <div id="threadsListContainer">
+                                <div style="font-size: 10px; color: var(--ink-muted); padding: 4px;">Carregando histórico de sessões...</div>
+                            </div>
+                        </div>
+
+                        <!-- Seção 2: Diretório de Spaces (Documentos e Fichas) -->
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                    SPACES & ARTEFATOS
+                                </span>
+                                <button class="pixel-btn" style="padding: 2px 6px; font-size: 7px;" onclick="createNewSpaceCustom()" data-tooltip="Criar novo arquivo persistido no SQLite WAL">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    [NOVO]
+                                </button>
+                            </div>
+
+                            <div style="margin-bottom: 6px;">
+                                <input type="text" class="drawer-search-input" id="sidebarSpacesSearchInput" placeholder="Buscar em Spaces (KNN 64D)..." style="width: 100%; padding: 4px 6px; font-size: 10px;" oninput="PiDotsAPI.filterOrSearchSpaces(this.value)">
+                            </div>
+
+                            <div id="spacesListContainer">
+                                <div class="space-item active" onclick="loadArtifact('architecture_spec.md')">
+                                    <span>architecture_spec.md</span>
+                                    <span class="space-item-rev">REV 3.0</span>
+                                </div>
+
+                                <div class="space-item" onclick="loadArtifact('sqlite_guide.md')">
+                                    <span>sqlite_guide.md</span>
+                                    <span class="space-item-rev">REV 1.2</span>
+                                </div>
+
+                                <div class="space-item" onclick="loadArtifact('fibonacci.py')">
+                                    <span>fibonacci.py</span>
+                                    <span class="space-item-rev">SANDBOX</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seção 3: Fila Rápida HITL (Just-in-Time: Exibida apenas quando há ação retida) -->
+                        <div class="sidebar-section" id="hitlSidebarSection" style="display: none;">
+                            <div class="sidebar-title">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                    GOVERNANCA HITL
+                                </span>
+                                <span style="color: var(--thermal-amber);" id="hitlSidebarCountBadge"><span id="val-hitl">0 PENDENTES</span></span>
+                            </div>
+
+                            <div id="hitlSidebarAlertContainer">
+                                <div class="sidebar-hitl-alert" onclick="openHitlCanvas()">
+                                    <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber); margin-bottom: 2px;">
+                                        ACAO CRITICA RETIDA // WAL
+                                    </div>
+                                    <div style="font-size: 10px; color: var(--ink-secondary);" id="hitlSidebarDesc">
+                                        Nenhuma acao retida no momento.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- MODO 2: ESTÚDIO DE COWORKERS (@DOTS) & CATÁLOGO DE FERRAMENTAS -->
+                    <div class="sidebar-ctx-pane" id="sidebarCtxDots">
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span>ESTUDIO DE DOTS (@COWORKERS)</span>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7px;" onclick="openDotCreatorModal()">[+ CRIAR DOT]</button>
+                            </div>
+                            <div style="font-size: 10px; color: var(--ink-secondary); margin-bottom: 8px; line-height: 1.4;">
+                                Gerencie especialistas autônomos, prompts de sistema e poda dinâmica de ferramentas (Dynamic Tool Pruning).
+                            </div>
+                            <div id="dotsStudioRosterContainer"></div>
+                        </div>
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span>CATALOGO DE TOOLS ATIVAS</span>
+                                <span style="color: var(--phosphor-green);" id="toolsCatalogCountBadge">23 TOOLS</span>
+                            </div>
+                            <div id="toolsCatalogSidebarList" style="display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+
+                    <!-- MODO 3: ROTINAS PROATIVAS CRON (HEARTBEAT_OK) & EDGE TRIGGERS -->
+                    <div class="sidebar-ctx-pane" id="sidebarCtxTasks">
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span>TASKS PROATIVAS (CRON)</span>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7px;" onclick="PiDotsAPI.promptCreateTask()">[+ AGENDAR]</button>
+                            </div>
+                            <div style="font-size: 10px; color: var(--ink-secondary); margin-bottom: 8px; line-height: 1.4;">
+                                Tarefas executadas em background pelo EdgeScheduler com diretriz de silêncio <code>HEARTBEAT_OK</code>.
+                            </div>
+                            <div id="tasksSidebarListContainer">
+                                <div style="font-size: 10px; color: var(--ink-muted);">Carregando tarefas agendadas...</div>
+                            </div>
+                        </div>
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span>GATILHOS DE BORDA (GPIO / MQTT)</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.loadEdgeTriggersSidebar()">[ATUALIZAR]</button>
+                            </div>
+                            <div id="edgeTriggersSidebarBox" style="font-size: 10px; color: var(--ink-secondary); line-height: 1.5;">
+                                Monitorando sensores térmicos, disco MicroSD e barramento GPIO/MQTT...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODO 4: MEMÓRIA SEMÂNTICA 64D, DOT PACKS V1.1 & SERVIDORES MCP LITE -->
+                    <div class="sidebar-ctx-pane" id="sidebarCtxMemory">
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span>CORE MEMORY (PERSONA &amp; HUMAN)</span>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.saveActiveDotCoreMemory()">[SALVAR]</button>
+                            </div>
+                            <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--blueprint-cyan); display: block; margin-bottom: 3px;">BLOCO PERSONA DO DOT ATIVO:</label>
+                            <textarea class="drawer-search-input" id="sidebarCorePersonaInput" rows="3" style="width: 100%; font-size: 10px; margin-bottom: 6px; resize: vertical;" placeholder="Diretrizes permanentes da persona..."></textarea>
+                            <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--thermal-amber); display: block; margin-bottom: 3px;">BLOCO HUMAN / OPERADOR:</label>
+                            <textarea class="drawer-search-input" id="sidebarCoreHumanInput" rows="2" style="width: 100%; font-size: 10px; resize: vertical;" placeholder="Contexto do operador humano..."></textarea>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span>ARCHIVAL MEMORY (FTS5 + 64D)</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.promptInsertArchivalMemory()">[+ FATO]</button>
+                            </div>
+                            <input type="text" class="drawer-search-input" id="sidebarArchivalSearchInput" placeholder="Pesquisar fatos arquivados..." style="width: 100%; padding: 4px 6px; font-size: 10px; margin-bottom: 6px;" oninput="PiDotsAPI.searchActiveDotArchival(this.value)">
+                            <div id="sidebarArchivalListContainer" style="display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto;"></div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span>SERVIDORES MCP LITE</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.promptRegisterMcpServer()">[+ MCP]</button>
+                            </div>
+                            <div id="sidebarMcpServersList" style="font-size: 10px; color: var(--ink-muted);">Nenhum servidor MCP externo acoplado.</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </aside>
 
         <!-- -------------------------------------------------------------------
-             COLUNA 2: CENTRO (TELETIPO CONVERSACIONAL REACt)
+             COLUNA 2: CENTRO (TELETIPO CONVERSACIONAL REACt & AG-UI STREAM)
              ------------------------------------------------------------------- -->
         <main class="center-ticker-column mobile-view-active">
             <div class="ticker-header-bar">
-                <div class="ticker-channel-name" id="activeDotChannel">
-                    CANAL DE MISSAO // DOT-DEV (SESSAO #001)
+                <div class="ticker-header-left" style="display: flex; flex-direction: column; gap: 4px; min-width: 0;">
+                    <div class="ticker-channel-name" id="activeDotChannel">
+                        CANAL DE MISSAO // DOT-DEV (SESSAO #001)
+                    </div>
+                    <div class="thread-participants-bar" id="threadParticipantPills" style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                        <span class="actor-stamp stamp-supervisor" style="font-size: 7px; padding: 1px 4px;">@dot-supervisor</span>
+                        <span class="actor-stamp stamp-coder" style="font-size: 7px; padding: 1px 4px;">@dot-coder</span>
+                        <span class="actor-stamp stamp-auditor" style="font-size: 7px; padding: 1px 4px;">@dot-auditor</span>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <span style="color: var(--phosphor-green); font-size: 10px;">AG-UI STREAM PRONTO</span>
-                    <button class="pixel-btn" onclick="clearTickerStream()">[LIMPAR FITA]</button>
+                <div class="ticker-header-actions" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                    <span id="aguiStreamStatusBadge" style="color: var(--phosphor-green); font-size: 9px; font-family: var(--font-pixel);">AG-UI PRONTO</span>
+                    <button type="button" class="pixel-btn" onclick="PiDotsAPI.promptHandoffThread()" title="Transferir Liderança da Thread para outro Dot (Handoff)">[HANDOFF]</button>
+                    <button type="button" class="pixel-btn" onclick="PiDotsAPI.promptCouncilDebate()" title="Convocar Debate Multi-Bot do Conselho na Thread">[CONSELHO]</button>
+                    <button type="button" class="pixel-btn btn-cyan" id="btnSaveThreadAsSpace" onclick="PiDotsAPI.saveThreadAsSpace()" title="Salvar Conversa como Página Markdown em Spaces (Padrão OpenDots)">[SALVAR EM SPACE]</button>
+                    <button type="button" class="pixel-btn" onclick="clearTickerStream()">[LIMPAR FITA]</button>
                 </div>
             </div>
 
             <!-- Área da Bobina de Papel Central (Chat) -->
             <div class="ticker-rail-wrapper">
+                <div class="tractor-feed feed-left" aria-hidden="true"></div>
+
                 <div class="ticker-scroll-area" id="tickerScroll">
                     
                     <!-- Fita 01: Mensagem de Boas-Vindas do Sistema -->
@@ -206,7 +379,7 @@
                             <span>SEQ# 0001</span>
                         </header>
                         <section class="slip-output">
-                            <p class="slip-text" data-i18n="console.welcome_system">[SISTEMA] piDots pronto. Conexão local estabelecida com SQLite WAL. Modelo ativo: qwen3.8-27b (Memória RSS: 52 MB).</p>
+                            <p class="slip-text" data-i18n="console.welcome_system">[SISTEMA] piDots pronto. Conexão local estabelecida com SQLite WAL. Motor de inferência ativo (Memória RSS: 52 MB).</p>
                         </section>
                         <footer class="slip-perforation">
                             <span class="perforation-line"></span>
@@ -233,7 +406,7 @@
                         <section class="slip-output">
                             <p class="slip-text" data-i18n="console.welcome_agent">Olá, Lyon. O ambiente está pronto para trabalhar. O espaço de trabalho local (/workspace) está mapeado e a telemetria do hardware está estável. O que vamos construir ou revisar hoje? Você pode digitar uma tarefa diretamente, chamar outro especialista usando @coder ou pressionar F1 para abrir o manual rápido.</p>
                             
-                            <!-- Review Card HITL Embutido Diretamente no Chat (Padrão OpenDots) -->
+                            <!-- Review Card HITL Embutido Diretamente no Chat (Governança Nativa) -->
                             <div class="inline-hitl-card">
                                 <div class="inline-hitl-header">
                                     <span>ACAO CRITICA RETIDA // REQUER HOMOLOGACAO</span>
@@ -257,6 +430,8 @@
                     </article>
 
                 </div>
+
+                <div class="tractor-feed feed-right" aria-hidden="true"></div>
             </div>
 
             <!-- Barra Inferior de Entrada de Instrução com Suporte a Autocomplete @bot -->
@@ -304,10 +479,24 @@
         </main>
 
         <!-- -------------------------------------------------------------------
-             COLUNA 3: PAINEL DIREITO (LIVE CANVAS / ARTEFATOS / CRIAÇÃO)
+             COLUNA 3: PAINEL DIREITO (COMPUTADOR DE BORDA DO DOT / COAGENTS / LIVE CANVAS)
              ------------------------------------------------------------------- -->
         <aside class="right-canvas" id="rightCanvas">
-            <!-- Abas do Canvas Superior (Purificado: Foco em Criação) -->
+            <!-- Faixa Superior do Computador de Borda do Dot (Padrão OpenDots Dot's Computer) -->
+            <div class="computer-console-banner" id="computerConsoleBanner">
+                <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                    <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--blueprint-cyan);"></span>
+                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); letter-spacing: 0.06em;">COMPUTADOR DO DOT //</span>
+                    <span id="computerActiveWorkspaceBadge" style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">/workspace/dot-dev-core</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+                    <button type="button" class="pixel-btn" id="computerTakeoverBtn" style="padding: 2px 6px; font-size: 7px;" onclick="toggleComputerTakeoverMode()" title="Assumir ou devolver controle interativo do Sandbox Bubblewrap">
+                        [MODO: OBSERVACAO]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Abas do Canvas Superior (Purificado: Foco em Criação, Sandbox e CoAgents) -->
             <div class="canvas-tab-bar">
                 <button class="canvas-tab active" onclick="switchCanvasTab('canvas-artifact', this)">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -317,6 +506,10 @@
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
                     <span>[DIFFS]</span>
                 </button>
+                <button class="canvas-tab" id="canvasTabCoagents" onclick="switchCanvasTab('canvas-coagent-state', this); if (window.PiDotsAPI && PiDotsAPI.loadActiveThreadState) PiDotsAPI.loadActiveThreadState();" data-tooltip="Inspetor de Shared State CoAgents (Plano, Quadro Negro e Handoffs)">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    <span>[COAGENTS]</span>
+                </button>
                 <button class="canvas-tab" id="canvasTabHitl" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria Forense e Carimbos HITL">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <span>[HITL]</span>
@@ -325,7 +518,7 @@
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                     <span>[TELEMETRIA]</span>
                 </button>
-                <button class="canvas-tab" onclick="switchCanvasTab('canvas-terminal', this)" data-tooltip="Terminal e Logs de Sandbox">
+                <button class="canvas-tab" id="canvasTabTerminal" onclick="switchCanvasTab('canvas-terminal', this)" data-tooltip="Terminal Bubblewrap e Arquivos do Workspace">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
                     <span>[TERMINAL]</span>
                 </button>
@@ -393,10 +586,60 @@
 - Resilience: Circuit Breaker com Exponential Backoff + Jitter
 - Sandboxing: Linux Bubblewrap (bwrap) com namespace isolado
 
-## 3. Pixel Paper UI Triptych Design
+## 3. Interface Técnica Minimalista em Layout Tríptico
 - Coluna 1: Sidebar de Dots, Spaces e Fila HITL
 - Coluna 2: Teletipo ReAct com fita termica e furos de trator
 - Coluna 3: Live Canvas de Artefatos, Telemetria e Dox forense</textarea>
+                    </div>
+                </div>
+
+                <!-- ABA CANVAS COAGENTS: INSPETOR DE SHARED STATE COAGENTS -->
+                <div class="canvas-panel-view" id="canvas-coagent-state">
+                    <div style="background: var(--paper-surface); border: 2px solid var(--border-default); padding: 12px; display: flex; flex-direction: column; height: 100%; overflow-y: auto; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-default); padding-bottom: 6px;">
+                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">COAGENTS SHARED STATE // SINCRONIZACAO AG-UI</span>
+                            <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 7px;" onclick="PiDotsAPI.loadActiveThreadState()">[SINCRONIZAR]</button>
+                        </div>
+
+                        <!-- Bloco 1: Plano de 2 Estágios Ativo -->
+                        <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
+                            <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--blueprint-cyan); margin-bottom: 6px;">
+                                [1] PLANO DE EXECUCAO ATIVO (TWO-STAGE PLANNER)
+                            </div>
+                            <div id="coagentActivePlanBox" style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
+                                Nenhum plano de múltiplos estágios registrado na sessão atual.
+                            </div>
+                        </div>
+
+                        <!-- Bloco 2: Quadro Negro Compartilhado (Shared Space) -->
+                        <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
+                            <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--thermal-amber); margin-bottom: 6px;">
+                                [2] QUADRO NEGRO COMPARTILHADO (SHARED NOTES)
+                            </div>
+                            <div id="coagentSharedNotesBox" style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
+                                Nenhuma nota compartilhada entre os Dots nesta thread.
+                            </div>
+                        </div>
+
+                        <!-- Bloco 3: Handoffs, Delegações e Rodadas do Conselho -->
+                        <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
+                            <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--phosphor-green); margin-bottom: 6px;">
+                                [3] HANDOFFS, DELEGACOES &amp; CONSELHO MULTI-BOT
+                            </div>
+                            <div id="coagentHandoffsBox" style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
+                                Nenhuma transferência de titularidade ou delegação registrada.
+                            </div>
+                        </div>
+
+                        <!-- Bloco 4: Auditoria Recente de Ferramentas (tool_runs) -->
+                        <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
+                            <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); margin-bottom: 6px;">
+                                [4] AUDITORIA DE FERRAMENTAS (TOOL RUNS)
+                            </div>
+                            <div id="coagentToolRunsBox" style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-secondary); line-height: 1.4;">
+                                Carregando histórico de execuções...
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -405,8 +648,8 @@
                     <!-- Plotter 1: RAM RSS -->
                     <article class="plotter-card">
                         <div class="plotter-top">
-                            <span class="plotter-tag">TELEMETRIA // RAM RSS (TETO 300MB)</span>
-                            <span class="plotter-val" id="val-ram">118.4 MB</span>
+                            <span class="plotter-tag">TELEMETRIA // RAM RSS PROCESSO (TETO 300MB)</span>
+                            <span class="plotter-val" id="val-ram">52.4 MB</span>
                         </div>
                         <div class="plotter-frame">
                             <svg class="plotter-svg" viewBox="0 0 320 110" preserveAspectRatio="none" shape-rendering="crispEdges">
@@ -431,7 +674,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 8px; color: var(--ink-muted); margin-top: 4px;">
                             <span>FREQ: 1.0 HZ</span>
-                            <span>DELTA: -60S</span>
+                            <span id="val-ram-system">HOST RAM: -- MB</span>
                             <span style="color: var(--phosphor-green); font-weight: 700;">ESTADO NOMINAL</span>
                         </div>
                     </article>
@@ -467,21 +710,36 @@
                     </article>
                 </div>
 
-                <!-- ABA CANVAS 3: SANDBOX TERMINAL LOGS -->
+                <!-- ABA CANVAS 3: SANDBOX TERMINAL LOGS & DOT'S COMPUTER TAKEOVER -->
                 <div class="canvas-panel-view" id="canvas-terminal">
-                    <div style="background: var(--paper-surface); border: 2px solid var(--border-default); padding: 10px; display: flex; flex-direction: column; height: 100%;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-default); padding-bottom: 6px; margin-bottom: 8px;">
-                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">BUBBLEWRAP // NAMESPACES LOGS</span>
+                    <div style="background: var(--paper-surface); border: 2px solid var(--border-default); padding: 10px; display: flex; flex-direction: column; height: 100%; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-default); padding-bottom: 6px;">
+                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">BUBBLEWRAP // SANDBOX &amp; ARQUIVOS /WORKSPACE</span>
                             <div style="display: flex; gap: 6px;">
+                                <button class="pixel-btn" onclick="PiDotsAPI.loadComputerFiles()">[ARQUIVOS]</button>
                                 <button class="pixel-btn" onclick="simulateBwrapCommand()">[TESTAR BWRAP]</button>
                                 <button class="pixel-btn" onclick="clearTerminalLogs()">[LIMPAR]</button>
                             </div>
                         </div>
+
+                        <!-- Explorador Compacto de Arquivos em /workspace -->
+                        <div id="computerWorkspaceFilesBox" style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 6px 8px; font-size: 10px; max-height: 95px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+                            <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--thermal-amber);">/WORKSPACE:</span>
+                            <span style="color: var(--ink-muted);">Clique em [ARQUIVOS] para listar o diretório isolado do Dot.</span>
+                        </div>
+
                         <div id="terminalViewport" style="background: #020305; border: 1px solid var(--border-subtle); padding: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--phosphor-green); flex: 1; overflow-y: auto; line-height: 1.6;">
                             <div>[22:30:00] <span style="color: var(--blueprint-cyan);">piDots@rpi4-arm64:~$</span> bwrap --ro-bind /usr /usr --bind /workspaces/dot-dev-core /workspace --unshare-all python3 fibonacci.py</div>
                             <div>[22:30:01] <span style="color: #cbd5e1;">bwrap: namespace temporario criado em 82ms (RAM alocada: 2.1MB)</span></div>
                             <div>[22:30:01] <span style="color: var(--thermal-amber);">Fib(8) = 21</span></div>
                             <div>[22:30:02] <span style="color: var(--phosphor-green);">[EXIT CODE 0] Execucao completada com isolamento estrito.</span></div>
+                        </div>
+
+                        <!-- Barra de Execução Direta no Sandbox (Modo Takeover) -->
+                        <div id="computerTakeoverBar" style="display: flex; gap: 6px; align-items: center; border-top: 1px dashed var(--border-default); padding-top: 6px;">
+                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);">$</span>
+                            <input type="text" class="drawer-search-input" id="computerExecInput" placeholder="Comando direto no Sandbox (ex: ls -la, python3 script.py)..." style="flex: 1; padding: 6px 8px; font-size: 11px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); PiDotsAPI.executeInDotComputer();}">
+                            <button type="button" class="pixel-btn btn-cyan" onclick="PiDotsAPI.executeInDotComputer()">[EXECUTAR]</button>
                         </div>
                     </div>
                 </div>
@@ -492,7 +750,7 @@
                         <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber); margin-bottom: 8px; border-bottom: 1px solid var(--thermal-amber); padding-bottom: 4px;">
                             DOSSIE DE GOVERNANCA FORENSE // HITL-2026-X88
                         </div>
-                        <div style="font-size: 11px; line-height: 1.5; margin-bottom: 10px; color: var(--ink-secondary);">
+                        <div id="hitlDossierDetailsBox" style="font-size: 11px; line-height: 1.5; margin-bottom: 10px; color: var(--ink-secondary);">
                             <strong>AGENTE:</strong> DOT-DEV-CORE<br>
                             <strong>RISCO:</strong> CRITICO (EXCLUSAO RECURSIVA)<br>
                             <strong>ALVO:</strong> /workspace/scratch_build_cache/*
@@ -532,9 +790,6 @@
                     </div>
                 </div>
 
-            
-
-                
                 <!-- ABA CANVAS 6: CONFIGURAÇÃO DE IA E PROVEDORES (HOT-RELOAD) -->
                 <div class="canvas-panel-view" id="canvas-settings">
                     <div style="background: var(--paper-surface); border: 2px solid var(--border-default); padding: 12px; display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
@@ -552,7 +807,7 @@
 
                         <div style="margin-bottom: 10px;">
                             <label style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); display: block; margin-bottom: 4px;">MODELO ALVO</label>
-                            <input type="text" class="drawer-search-input" id="cfgModel" value="qwen3.8-27b" style="width: 100%;">
+                            <input type="text" class="drawer-search-input" id="cfgModel" value="gpt-4o-mini" style="width: 100%;">
                         </div>
 
                         <div style="margin-bottom: 10px;">
@@ -588,21 +843,21 @@
                 <div class="canvas-panel-view" id="canvas-matrix">
                     <div class="matrix-container">
                         <div class="matrix-title">
-                            <span>MATRIZ COMPARATIVA // ECOSSISTEMA DOTS</span>
+                            <span>MATRIZ COMPARATIVA // ECOSSISTEMA DE AGENTES</span>
                             <span style="color: var(--phosphor-green);">REVISAO 2026.10</span>
                         </div>
                         <div style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
-                            Comparativo estrutural entre os 4 expoentes de AI Coworkers com foco em arquitetura, hardware, consumo e soberania local.
+                            Comparativo estrutural entre diferentes arquiteturas de agentes com foco em hardware, consumo de memoria e soberania local.
                         </div>
 
                         <table class="matrix-table">
                             <thead>
                                 <tr>
                                     <th>DIMENSAO</th>
-                                    <th>OPENDOTS</th>
-                                    <th>MUSEDOTS</th>
-                                    <th>GROKDOTS</th>
-                                    <th style="color: var(--blueprint-cyan);">PIDOTS (LOCAL)</th>
+                                    <th>FRAMEWORKS SAAS NUVEM</th>
+                                    <th>AGENTES CANVAS PESADOS</th>
+                                    <th>ASSISTENTES TERMINAL FECHADOS</th>
+                                    <th style="color: var(--blueprint-cyan);">PIDOTS (EDGE SOBERANO)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -610,7 +865,7 @@
                                     <td><strong>ALVO E FOCO</strong></td>
                                     <td>Corporativo / SaaS em Nuvem</td>
                                     <td>Criativo / Spatial Canvas</td>
-                                    <td>Power-User / Terminal xAI</td>
+                                    <td>Power-User / Terminal Fechado</td>
                                     <td style="color: var(--phosphor-green);"><strong>Edge SBC / RPi4B 4GB ARM64</strong></td>
                                 </tr>
                                 <tr>
@@ -631,39 +886,39 @@
                                     <td><strong>SANDBOX EXEC</strong></td>
                                     <td>Docker / VMs na Nuvem</td>
                                     <td>Containers efêmeros em Nuvem</td>
-                                    <td>MicroVMs Firecracker xAI</td>
+                                    <td>MicroVMs Proprietárias</td>
                                     <td style="color: var(--phosphor-green);"><strong>Bubblewrap Namespaces local</strong></td>
                                 </tr>
                                 <tr class="matrix-highlight-row">
                                     <td><strong>GOVERNANCA HITL</strong></td>
                                     <td>Telas de aprovacao assincronas</td>
                                     <td>Modais basicos de permissao</td>
-                                    <td>Logs inline no chat xAI</td>
+                                    <td>Logs inline no chat</td>
                                     <td style="color: var(--thermal-amber);"><strong>Review Cards + Carimbos + Trava</strong></td>
                                 </tr>
                                 <tr>
                                     <td><strong>DESIGN SYSTEM</strong></td>
                                     <td>Tailwind / Shadcn Padrao</td>
                                     <td>WebGL / Canvas Fluido GPU</td>
-                                    <td>Dark High-Contrast xAI</td>
-                                    <td style="color: var(--blueprint-cyan);"><strong>Pixel Paper UI (Estetica 1-Bit Tatica)</strong></td>
+                                    <td>Dark High-Contrast</td>
+                                    <td style="color: var(--blueprint-cyan);"><strong>Interface Técnica Minimalista</strong></td>
                                 </tr>
                                 <tr class="matrix-highlight-row">
                                     <td><strong>INFERENCIA</strong></td>
                                     <td>Multiplas APIs Proprietarias</td>
                                     <td>Meta Llama 3 Fine-tuned</td>
-                                    <td>Grok-2 / Grok-3 APIs</td>
-                                    <td style="color: var(--phosphor-green);"><strong>Universal SDK (qwen3.8-27b)</strong></td>
+                                    <td>APIs Proprietárias Fechadas</td>
+                                    <td style="color: var(--phosphor-green);"><strong>Universal SDK (OpenAI Compatible)</strong></td>
                                 </tr>
                             </tbody>
                         </table>
 
                         <div style="background: var(--paper-surface-recessed); border: 1px dashed var(--border-default); padding: 8px; font-size: 10px; color: var(--ink-muted); line-height: 1.5;">
-                            <strong>SINTESE EXECUTIVA:</strong> O piDots absorve a co-criacao documental do openDots, a transparencia de raciocinio do grokDots e o refinamento do museDots, eliminando custos de nuvem e operando localmente em hardware de borda (SBCs / Mini PCs, benchmark: Raspberry Pi 4B) sob &lt; 300MB de RAM.
+                            <strong>SINTESE EXECUTIVA:</strong> O piDots absorve a co-criacao documental, a transparencia de raciocinio e o refinamento tecnico de agentes colaborativos, eliminando custos de nuvem e operando localmente em hardware de borda (SBCs / Mini PCs, benchmark: Raspberry Pi 4B) sob &lt; 300MB de RAM.
                         </div>
                     </div>
                 </div>
-</div>
+            </div>
         </aside>
 
     </div>
@@ -694,7 +949,7 @@
 
             <div class="guide-step">
                 <div class="step-num">PASSO 01 // ARQUITETURA TRIPTYCH</div>
-                <div class="step-heading">LAYOUT INSPIRADO EM OPENDOTS &amp; MUSEDOTS</div>
+                <div class="step-heading">LAYOUT TRÍPTICO DE ALTA DENSIDADE OPERACIONAL</div>
                 <div class="step-body">
                     A tela organiza-se em 3 paineis: Sidebar esquerda (Dots e Spaces), Centro (bobina de teletipo conversacional) e Direita (Canvas de artefatos, telemetria e governanca).
                 </div>
@@ -777,7 +1032,7 @@
             </button>
         </div>
         <div>
-            DESENVOLVIDO POR LYON CHRISTOPHER (2026) // DESIGN SYSTEM PIXEL PAPER UI
+            DESENVOLVIDO POR LYON CHRISTOPHER (2026) // INTERFACE TECNICA MINIMALISTA
         </div>
     </footer>
 
@@ -852,7 +1107,7 @@
     <div id="pixelTooltip"></div>
 
     <!-- =======================================================================
-         NOVO MOTOR DE TOUR SPOTLIGHT INTERATIVO (PIXEL PAPER UI)
+         NOVO MOTOR DE TOUR SPOTLIGHT INTERATIVO (INTERFACE TECNICA)
          ======================================================================= -->
     <!-- Camada Fixa de Foco Spotlight com Recorte Espacial -->
     <div id="pixelTourOverlay" class="pixel-tour-overlay" aria-hidden="true">
@@ -1062,7 +1317,7 @@
                             <ul class="history-ver-list">
                                 <li>Lancamento do console triptych oficial para agentes autonomos piDots.</li>
                                 <li>Implementacao do roteador de mensageria com suporte a mencao @dot e dossie HITL.</li>
-                                <li>Engine de renderizacao Pixel Paper UI e integracao com modelos LLM locais e em nuvem.</li>
+                                <li>Engine de renderizacao de interface tecnica minimalista e integracao com modelos LLM locais e em nuvem.</li>
                             </ul>
                         </div>
                     </div>
@@ -1116,6 +1371,59 @@
         <div class="pwa-banner-tractor-feed"></div>
     </aside>
 
+    <!-- =======================================================================
+         8. MODAL STUDIO DE CRIACAO E EDICAO DE DOTS (@COWORKERS)
+         ======================================================================= -->
+    <div id="pixelDotCreatorModal" class="pixel-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="dotCreatorModalTitle" style="display: none;">
+        <div class="pixel-dialog-box" style="max-width: 560px; width: 95vw; max-height: 88dvh; display: flex; flex-direction: column;">
+            <header class="dialog-header">
+                <span id="dotCreatorModalTitle">[ESTUDIO OPENDOTS // CRIAR OU EDITAR AI COWORKER]</span>
+                <button type="button" class="pixel-btn" style="padding: 1px 6px; font-size: 8px;" onclick="closeDotCreatorModal()">[ESC]</button>
+            </header>
+            <div class="dialog-body" style="overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div>
+                        <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); display: block; margin-bottom: 3px;">HANDLE ID (@DOT-ID)</label>
+                        <input type="text" class="drawer-search-input" id="dotFormId" placeholder="ex: dot-security-ops" style="width: 100%; font-size: 11px;">
+                    </div>
+                    <div>
+                        <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); display: block; margin-bottom: 3px;">NOME DE EXIBICAO</label>
+                        <input type="text" class="drawer-search-input" id="dotFormName" placeholder="ex: Security Ops Specialist" style="width: 100%; font-size: 11px;">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+                    <div>
+                        <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); display: block; margin-bottom: 3px;">PAPEL / FUNCAO OPERACIONAL</label>
+                        <input type="text" class="drawer-search-input" id="dotFormRole" placeholder="ex: Auditor de Seguranca e Redes Linux" style="width: 100%; font-size: 11px;">
+                    </div>
+                    <div>
+                        <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); display: block; margin-bottom: 3px;">ARQUETIPO</label>
+                        <select class="drawer-search-input" id="dotFormArchetype" style="width: 100%; font-size: 11px;">
+                            <option value="coder">CODER</option>
+                            <option value="architect">ARCHITECT</option>
+                            <option value="auditor">AUDITOR</option>
+                            <option value="supervisor">SUPERVISOR</option>
+                            <option value="researcher">RESEARCHER</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--blueprint-cyan); display: block; margin-bottom: 3px;">SYSTEM PROMPT (DIRETRIZES COGNITIVAS DO DOT)</label>
+                    <textarea class="drawer-search-input" id="dotFormPrompt" rows="4" style="width: 100%; font-size: 11px; resize: vertical;" placeholder="Descreva a identidade, limites operacionais e estilo de resposta deste Dot..."></textarea>
+                </div>
+                <div>
+                    <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--phosphor-green); display: block; margin-bottom: 3px;">PODA DINAMICA DE FERRAMENTAS (ALLOWED TOOLS - VAZIO = TODAS)</label>
+                    <div id="dotFormToolsCheckboxes" style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 6px 8px; max-height: 110px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 10px;">
+                    </div>
+                </div>
+            </div>
+            <footer class="dialog-footer">
+                <button type="button" class="pixel-btn" onclick="closeDotCreatorModal()">[CANCELAR]</button>
+                <button type="button" class="pixel-btn btn-cyan" onclick="PiDotsAPI.submitDotCreatorForm()">[SALVAR COWORKER]</button>
+            </footer>
+        </div>
+    </div>
 
 </body>
 </html>
+

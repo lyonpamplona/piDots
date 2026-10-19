@@ -33,12 +33,12 @@ async def main():
     original_retries = settings.ai_max_retries
 
     settings.update_ai_params(
-        model="qwen3.8-27b-custom",
+        model="custom-test-model",
         max_retries=5,
         timeout_seconds=45.0
     )
 
-    assert settings.ai_model == "qwen3.8-27b-custom", "Modelo não atualizou em memória!"
+    assert settings.ai_model == "custom-test-model", "Modelo não atualizou em memória!"
     assert settings.ai_max_retries == 5, "Max retries não atualizou em memória!"
     assert settings.ai_timeout_seconds == 45.0, "Timeout não atualizou em memória!"
     print(f"      Parâmetros atualizados: Modelo={settings.ai_model}, Retries={settings.ai_max_retries}, Timeout={settings.ai_timeout_seconds}s")

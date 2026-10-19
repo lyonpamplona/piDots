@@ -46,9 +46,23 @@
         async function testProviderConnectionCustom() {
             PixelSystem.toast('Testando conectividade com o provedor de IA...', 'info');
             try {
-                const res = await fetch('/health');
+                const payload = {
+                    base_url: document.getElementById('cfg-ai-url')?.value?.trim() || '',
+                    model: document.getElementById('cfg-ai-model')?.value?.trim() || '',
+                    api_key: document.getElementById('cfg-ai-key')?.value?.trim() || ''
+                };
+                const res = await fetch('/api/edge/settings/test-provider', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
                 if (res.ok) {
-                    PixelSystem.toast('Conexao com o servidor piDots confirmada (200 OK).', 'success');
+                    const data = await res.json();
+                    if (data.reachable || data.status === 'ok') {
+                        PixelSystem.toast(`Provedor alcancavel (${data.latency_ms || 0}ms) // Modelo: ${data.model || payload.model}`, 'success');
+                    } else {
+                        PixelSystem.toast(`Aviso do provedor: ${data.detail || 'Verifique URL/Chave'}`, 'warning');
+                    }
                 } else {
                     PixelSystem.toast(`Falha no teste: servidor retornou status ${res.status}`, 'danger');
                 }
@@ -165,9 +179,8 @@
                 document.body.classList.toggle('keyboard-open', isKeyboardOpen);
 
                 if (isKeyboardOpen) {
-                    document.body.style.height = `${vv.height}px`;
-                } else {
-                    document.body.style.height = '';
+                    // Previne que o WebKit empurre o cabecalho para coordenadas negativas
+                    window.scrollTo(0, 0);
                 }
 
                 if (currentMobileView === 'chat' && isKeyboardOpen) {
@@ -181,7 +194,11 @@
             };
 
             window.visualViewport.addEventListener('resize', handleViewportChange);
-            window.visualViewport.addEventListener('scroll', handleViewportChange);
+            window.visualViewport.addEventListener('scroll', () => {
+                if (document.body.classList.contains('keyboard-open')) {
+                    window.scrollTo(0, 0);
+                }
+            });
         }
 
         // Alternância de Abas do Canvas Direito
@@ -215,6 +232,104 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('leftSidebar');
             sidebar.classList.toggle('collapsed');
+        }
+
+        // Comutação dos 4 Modos da Sidebar OpenDots (Activity Rail)
+        let currentSidebarCtx = 'spaces';
+        function switchSidebarContext(ctxName, btnEl) {
+            currentSidebarCtx = ctxName || 'spaces';
+            const sidebar = document.getElementById('leftSidebar');
+            if (sidebar && sidebar.classList.contains('collapsed')) {
+                sidebar.classList.remove('collapsed');
+            }
+
+            const paneMap = {
+                spaces: 'sidebarCtxSpaces',
+                dots: 'sidebarCtxDots',
+                tasks: 'sidebarCtxTasks',
+                memory: 'sidebarCtxMemory'
+            };
+
+            document.querySelectorAll('.sidebar-ctx-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.querySelectorAll('.activity-rail .rail-btn[data-ctx]').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-ctx') === currentSidebarCtx);
+            });
+
+            const targetId = paneMap[currentSidebarCtx] || 'sidebarCtxSpaces';
+            const targetPane = document.getElementById(targetId);
+            if (targetPane) targetPane.classList.add('active');
+
+            // Dispara carregamento sob demanda do contexto selecionado
+            if (window.PiDotsAPI) {
+                if (currentSidebarCtx === 'dots' && typeof PiDotsAPI.loadDotsStudioPane === 'function') {
+                    PiDotsAPI.loadDotsStudioPane();
+                } else if (currentSidebarCtx === 'tasks' && typeof PiDotsAPI.loadTasksSidebar === 'function') {
+                    PiDotsAPI.loadTasksSidebar();
+                    if (typeof PiDotsAPI.loadEdgeTriggersSidebar === 'function') PiDotsAPI.loadEdgeTriggersSidebar();
+                } else if (currentSidebarCtx === 'memory' && typeof PiDotsAPI.loadMemorySidebar === 'function') {
+                    PiDotsAPI.loadMemorySidebar();
+                }
+            }
+        }
+
+        // Controle do Modal Studio de Criação/Edição de Dots (@Coworkers)
+        function openDotCreatorModal(dotId) {
+            const modal = document.getElementById('pixelDotCreatorModal');
+            if (!modal) return;
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+            if (window.PiDotsAPI && typeof PiDotsAPI.populateDotCreatorModal === 'function') {
+                PiDotsAPI.populateDotCreatorModal(dotId || null);
+            }
+        }
+
+        function closeDotCreatorModal() {
+            const modal = document.getElementById('pixelDotCreatorModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+        }
+
+        // Alternância do Modo Takeover Interativo no Computador de Borda do Dot
+        let isComputerTakeoverActive = false;
+        function toggleComputerTakeoverMode() {
+            isComputerTakeoverActive = !isComputerTakeoverActive;
+            const banner = document.getElementById('computerConsoleBanner');
+            const btn = document.getElementById('computerTakeoverBtn');
+            const takeoverBar = document.getElementById('computerTakeoverBar');
+            const tabTerminal = document.getElementById('canvasTabTerminal');
+
+            if (banner) banner.classList.toggle('takeover-active', isComputerTakeoverActive);
+            if (takeoverBar) {
+                takeoverBar.style.display = 'flex';
+                takeoverBar.classList.toggle('takeover-active', isComputerTakeoverActive);
+            }
+
+            if (isComputerTakeoverActive) {
+                if (btn) {
+                    btn.textContent = '[MODO: TAKEOVER ATIVO]';
+                    btn.classList.add('btn-amber');
+                }
+                switchCanvasTab('canvas-terminal', tabTerminal);
+                const cmdInput = document.getElementById('computerExecInput');
+                if (cmdInput) setTimeout(() => cmdInput.focus(), 50);
+                if (window.PiDotsAPI && typeof PiDotsAPI.refreshComputerWorkspaceFiles === 'function') {
+                    PiDotsAPI.refreshComputerWorkspaceFiles();
+                }
+                if (window.PixelSystem && PixelSystem.toast) {
+                    PixelSystem.toast('Modo Takeover ativado: controle interativo do Sandbox Bubblewrap assumido pelo operador.', 'warning');
+                }
+            } else {
+                if (btn) {
+                    btn.textContent = '[MODO: OBSERVACAO]';
+                    btn.classList.remove('btn-amber');
+                }
+                if (window.PixelSystem && PixelSystem.toast) {
+                    PixelSystem.toast('Modo Observacao restaurado: execucao devolvida ao Dot autonomo.', 'info');
+                }
+            }
         }
 
         // Controle de Layout: Ocultar/Exibir Canvas Direito (Split View)
@@ -262,6 +377,18 @@
             drawer.classList.toggle('open', willOpen);
             if (backdrop) backdrop.classList.toggle('open', willOpen);
 
+            const docsBtn = document.getElementById('mobileNavDocs');
+            if (docsBtn) {
+                if (willOpen) {
+                    document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+                    docsBtn.classList.add('active');
+                } else {
+                    docsBtn.classList.remove('active');
+                    const activeBtn = document.querySelector(`.mobile-nav-btn[data-view="${currentMobileView}"]`);
+                    if (activeBtn) activeBtn.classList.add('active');
+                }
+            }
+
             if (window.ScrollLockManager) {
                 if (willOpen) {
                     window.ScrollLockManager.bloquear();
@@ -276,6 +403,17 @@
             const backdrop = document.getElementById('drawerBackdrop');
             if (drawer) drawer.classList.remove('open');
             if (backdrop) backdrop.classList.remove('open');
+
+            const docsBtn = document.getElementById('mobileNavDocs');
+            if (docsBtn) {
+                docsBtn.classList.remove('active');
+                const activeBtn = document.querySelector(`.mobile-nav-btn[data-view="${currentMobileView}"]`);
+                if (activeBtn) activeBtn.classList.add('active');
+            }
+
+            if (window.ScrollLockManager) {
+                window.ScrollLockManager.desbloquear();
+            }
         }
 
         // Abertura do Painel Técnico / Gaveta de Sistema
@@ -566,9 +704,19 @@
                 PixelSystem.closeContextMenu();
                 PixelSystem.closeDialog(false);
                 closeDrawer();
+                closeDotCreatorModal();
                 if (typeof SlashCommandsEngine !== 'undefined') SlashCommandsEngine.closePopover();
                 const mentionDropdown = document.getElementById('mentionDropdown');
                 if (mentionDropdown) mentionDropdown.style.display = 'none';
+                return;
+            }
+
+            // Alt+1..4: Comutar Modos do Activity Rail da Sidebar OpenDots
+            if (e.altKey && ['1', '2', '3', '4'].includes(e.key)) {
+                e.preventDefault();
+                const ctxList = ['spaces', 'dots', 'tasks', 'memory'];
+                const targetCtx = ctxList[parseInt(e.key, 10) - 1];
+                if (targetCtx) switchSidebarContext(targetCtx);
                 return;
             }
 
@@ -682,6 +830,10 @@
     window.switchCanvasTab = switchCanvasTab;
     window.toggleTheme = toggleTheme;
     window.toggleSidebar = toggleSidebar;
+    window.switchSidebarContext = switchSidebarContext;
+    window.openDotCreatorModal = openDotCreatorModal;
+    window.closeDotCreatorModal = closeDotCreatorModal;
+    window.toggleComputerTakeoverMode = toggleComputerTakeoverMode;
     window.toggleCanvasSplit = toggleCanvasSplit;
     window.toggleCanvasExpand = toggleCanvasExpand;
     window.toggleDrawer = toggleDrawer;

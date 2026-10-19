@@ -378,16 +378,85 @@
                     showToast('Comando /telemetry executado em 4ms sem consumo de tokens!', 'info');
                 }, 150);
 
-            } else if (type === 'hitl_danger') {
-                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @dot-coder executar rm -rf /etc/systemd/system/pidots.service</div>`;
+            } else if (type === 'mcp_tools') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /mcp list</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
                 setTimeout(() => {
-                    vp.innerHTML += `<div class="sim-line danger" style="background: rgba(239, 68, 68, 0.15); border-left: 3px solid var(--stamp-danger); padding: 8px;">[VETO FORENSE HITL // MISSILE SWITCH ENGATADO]<br>Comando de risco CRITICO retido pelo HITLManager! Requer homologacao humana do operador na Arena de Governanca.</div>`;
+                    vp.innerHTML += `<div class="sim-line tool">[CLIENTE MCP LITE // PROTOCOLO JSON-RPC 2.0]<br>Servidores conectados: 2 (git-bridge, mqtt-telemetry) | Consumo RAM: 3.8 MB</div>`;
                     vp.scrollTop = vp.scrollHeight;
-                    if (statusText) statusText.innerText = 'COMANDO BLOQUEADO // AGUARDANDO APROVACAO';
-                    showToast('VETO HITL: Acao destrutiva retida com seguranca!', 'danger');
-                }, 450);
+                }, 300);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line success">[TOOL PRUNING ATIVO]<br>Ferramentas descobertas: 4 | Injetadas no prompt: 2 (apenas allowed_tools_json do @dot-coder). Zero inflacao de contexto!</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'MCP LITE CONECTADO // DYNAMIC TOOL PRUNING';
+                    showToast('Servidores MCP Lite listados com Dynamic Tool Pruning!', 'info');
+                }, 750);
+
+            } else if (type === 'coagents_state') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /coagents</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line tool">[AG-UI // COAGENTS SHARED STATE // STATE_SNAPSHOT]<br>GET /api/threads/thr_active/state -> dot_id: "dot-coder" | phase: "executing_tool" | hop_count: 1</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 250);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line success">[SSE // STATE_DELTA SINCRONIZADO AO VIVO]<br>Delta aplicado em sub-4ms: {"active_tool": "execute_shell_command", "plan_progress": 100, "process_rss_mb": 64.2}</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'COAGENTS STATE SINCRONIZADO // STATE_DELTA OK';
+                    showToast('Estado compartilhado CoAgents sincronizado ao vivo!', 'info');
+                }, 650);
+
+            } else if (type === 'dots_computer') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /computer takeover</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line tool">[DOT'S COMPUTER // COMPUTADOR DE BORDA]<br>Montando workspace isolado (/workspace/dot-coder) + Explorador de Arquivos + Terminal Bubblewrap...</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 300);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line success">[MODO TAKEOVER ATIVO // CONTROLE HUMANO DIRETO]<br>Operador assumiu o terminal bwrap em sub-12ms. Acoes sincronizadas no feed AG-UI da thread!</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'DOT COMPUTER // MODO TAKEOVER HUMANO ATIVO';
+                    showToast('Computador de Borda aberto em Modo Takeover!', 'success');
+                }, 750);
+
+            } else if (type === 'save_space') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /save-space Arquitetura_CoAgents_Edge</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line tool">[SAVE THREAD AS SPACE // POST /api/threads/thr_active/save-as-space]<br>Consolidando mensagens da thread e indexando no motor de embedding 64D unificado...</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 300);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line success">[SPACE CRIADO // REVISAO #1 GRAVADA NO SQLITE WAL]<br>Artefato "Arquitetura_CoAgents_Edge.md" disponivel no painel Spaces &amp; Canais e no Live Canvas!</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'THREAD SALVA COMO SPACE // MOTOR 64D INDEXADO';
+                    showToast('Conversa convertida em Space versionado com sucesso!', 'success');
+                }, 750);
+
+            } else if (type === 'hitl_danger') {
+                vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @dot-coder limpar logs antigos em /var/log</div>`;
+                vp.scrollTop = vp.scrollHeight;
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line danger" style="background: rgba(239, 68, 68, 0.15); border-left: 3px solid var(--stamp-danger); padding: 8px;">[GENERATIVE UI CARD // HITL RETENCAO DE SEGURANCA]<br>Tool: execute_shell_command | Args originais: {"command": "rm -rf /var/log/*"}<br>Operador editou modified_args para: {"command": "rm -f /workspace/logs/*.tmp"} e homologou!</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                }, 400);
+
+                setTimeout(() => {
+                    vp.innerHTML += `<div class="sim-line success">[HITL RESOLVE // RETOMADA AUTOMATICA DO AGENTE]<br>POST /api/hitl/apr_01/resolve (modified_args aplicado) -> Agente retomou turno automaticamente com seguranca!</div>`;
+                    vp.scrollTop = vp.scrollHeight;
+                    if (statusText) statusText.innerText = 'HITL HOMOLOGADO COM MODIFIED_ARGS // RETOMADO';
+                    showToast('HITL homologado com edicao de argumentos e retomada automatica!', 'success');
+                }, 950);
             }
         }
 
@@ -412,13 +481,21 @@
                 const cmd = text.split(' ')[0].toLowerCase();
                 const safeCmd = cmd.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
                 setTimeout(() => {
-                    vp.innerHTML += `<div class="sim-line" style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); margin-top: 4px;">=== [RECIBO DE SLASH COMMAND // INTERCEPTACAO LOCAL] ===</div>`;
+                    vp.innerHTML += `<div class="sim-line" style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); margin-top: 4px;">=== [RECIBO DE SLASH COMMAND // CATALOGO DE 34 COMANDOS] ===</div>`;
                     if (cmd === '/clear') {
-                        vp.innerHTML = `<div class="sim-line prefix">[BOOT] piDots Edge Core v1.5.0 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
+                        vp.innerHTML = `<div class="sim-line prefix">[BOOT] piDots Edge Core v1.5.3 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
                         <div class="sim-line" style="color: var(--phosphor-green);">[RECIBO] Bobina de teletipo limpa cirurgicamente via comando /clear (0 tokens consumidos).</div>`;
                         showToast('Teletipo limpo via /clear', 'info');
                     } else if (cmd === '/telemetry') {
                         executeSimulatedOrder('slash_telemetry');
+                    } else if (cmd === '/coagents') {
+                        executeSimulatedOrder('coagents_state');
+                    } else if (cmd === '/computer') {
+                        executeSimulatedOrder('dots_computer');
+                    } else if (cmd === '/save-space') {
+                        executeSimulatedOrder('save_space');
+                    } else if (cmd === '/mcp') {
+                        executeSimulatedOrder('mcp_tools');
                     } else {
                         vp.innerHTML += `<div class="sim-line success">[RECIBO] Comando ${safeCmd} executado no cliente em sub-16ms | 0 tokens gastos | Sessao intacta.</div>`;
                         showToast(`Slash command ${safeCmd} executado localmente!`, 'info');

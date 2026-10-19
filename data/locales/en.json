@@ -9,7 +9,7 @@
     "lang_toggle": "[LANG: EN | PT]",
     "pwa_install": "[INSTALL PWA]",
     "onboarding": "[TOUR]",
-    "patch_notes": "[NOTES V1.5.2]",
+    "patch_notes": "[NOTES V1.5.3]",
     "clean": "[CLEAR]",
     "split_canvas": "[CANVAS: SPLIT]",
     "manual": "[TECH MANUAL]"
@@ -43,11 +43,11 @@
     "cta_final_lead": "Clone the repository and run Docker Compose. No hidden steps, no convoluted configs, and 100% auditable code."
   },
   "console": {
-    "chat_title": "TELETYPE TICKER FEED // MULTI-BOT CHAT",
+    "chat_title": "TELETYPE TICKER FEED // AGENT CHAT",
     "canvas_title": "LIVE ARTIFACT CANVAS // DOCUMENTS",
-    "input_placeholder": "Type a task or mention @coder, @muse, @auditor...",
+    "input_placeholder": "Type a task or mention @coder, @architect, @auditor...",
     "send_btn": "[SEND]",
-    "welcome_system": "[SYSTEM] piDots ready. Local connection established with SQLite WAL. Active model: qwen3.8-27b (RSS Memory: 52 MB).",
+    "welcome_system": "[SYSTEM] piDots ready. Local connection established with SQLite WAL. Inference engine active (RSS Memory: 52 MB).",
     "welcome_agent": "Hello, Lyon. The environment is ready to work. Local workspace (/workspace) is mapped and hardware telemetry is stable. What are we building or reviewing today? You can type a task directly, summon another specialist with @coder, or press F1 to open the quick manual."
   },
   "onboarding": {
@@ -56,8 +56,8 @@
     "subtitle": "A quick 2-minute tour to master controlling your local edge agents.",
     "step1_title": "01 // CONCEPT: PERSISTENT EDGE AGENTS",
     "step1_desc": "piDots turns your edge device into a smart workstation. Lightweight async Python monolith running multiple specialists using under 70 MB RAM.",
-    "step2_title": "02 // MENTIONS & DELEGATION: @DOT",
-    "step2_desc": "Speak directly to bots by typing @coder for code, @muse for docs, and @auditor for command review. The supervisor delegates work with zero extra setup.",
+    "step2_title": "02 // MENTIONS & DELEGATION: @SPECIALIST",
+    "step2_desc": "Speak directly to coworkers by typing @coder for code, @architect for docs, and @auditor for command review. The supervisor delegates work with zero extra setup.",
     "step3_title": "03 // LIVE CANVAS & ARTIFACTS",
     "step3_desc": "Files, code diffs, and diagrams appear in the right-side canvas without cluttering the chat. Inspect diffs and restore revisions at any time.",
     "step4_title": "04 // HITL GOVERNANCE & SAFETY",
@@ -70,10 +70,10 @@
     "btn_finish": "[FINISH TOUR & START]"
   },
   "patch": {
-    "header": "PIDOTS // RELEASE NOTES - VERSION 1.5.2",
+    "header": "PIDOTS // RELEASE NOTES - VERSION 1.5.3",
     "badge": "JUST APPLIED",
-    "title": "RELEASE NOTES - VERSION 1.5.2",
-    "subtitle": "Mobile-First Engineering, Touch Ergonomics, and VisualViewport Keyboard Synchronization.",
+    "title": "RELEASE NOTES - VERSION 1.5.3",
+    "subtitle": "MCP Lite Module, Signed HITL Governance with HMAC-SHA256, Dot Packs v1.1, and Physical GPIO/MQTT Bus.",
     "tag_new": "[INCLUDED / NEW]",
     "tag_opt": "[TUNED / IMPROVED]",
     "tag_dep": "[REMOVED / DEPRECATED]",
@@ -82,20 +82,20 @@
   },
   "guide": {
     "title": "PIDOTS // OPERATIONAL ENGINEERING MANUAL",
-    "subtitle": "Step-by-step setup guide, multi-bot architecture, and continuous edge operation",
+    "subtitle": "Step-by-step setup guide, multi-agent architecture, and continuous edge operation",
     "search_placeholder": "Search concepts, routes, or commands (Ctrl+K)...",
     "step1_tag": "STEP 01 // CONCEPT & EDGE ARCHITECTURE",
     "step2_tag": "STEP 02 // INSTALLATION & DOCKER COMPOSE",
     "step3_tag": "STEP 03 // ENVIRONMENT & VARIABLES (.ENV)",
-    "step4_tag": "STEP 04 // MULTI-BOT CHAT & @DOT MENTIONS",
-    "step5_tag": "STEP 05 // DOT HEARTBEAT & TELEGRAM/WHATSAPP",
+    "step4_tag": "STEP 04 // MULTI-AGENT CHAT & SPECIALIST MENTIONS",
+    "step5_tag": "STEP 05 // AUTONOMOUS HEARTBEAT & TELEGRAM/WHATSAPP",
     "step6_tag": "STEP 06 // INTERACTIVE REST API TESTER",
     "step7_tag": "STEP 07 // AUDITING & HITL GOVERNANCE",
     "step8_tag": "STEP 08 // COMPLETE SLASH COMMANDS CATALOG (/)"
   },
   "slash": {
     "popover_title": "SLASH COMMANDS // EDGE PROTOCOL",
-    "badge": "CATALOG: 30 COMMANDS",
+    "badge": "CATALOG: 34 COMMANDS",
     "tab_all": "[ALL]",
     "tab_system": "[SYSTEM]",
     "tab_agents": "[AGENTS]",
@@ -104,5 +104,19 @@
     "tab_gov": "[GOVERNANCE]",
     "tab_data": "[DATA]",
     "tip_navigation": "Navigate with arrows, Tab to autocomplete, and Enter to execute."
+  },
+  "opendots": {
+    "rail_spaces": "SPACES",
+    "rail_dots": "DOTS",
+    "rail_tasks": "TASKS",
+    "rail_memory": "MEM",
+    "rail_hitl": "HITL",
+    "save_as_space": "[SAVE TO SPACE]",
+    "handoff": "[HANDOFF]",
+    "council": "[COUNCIL]",
+    "computer_banner": "DOT'S COMPUTER //",
+    "mode_observation": "[MODE: OBSERVING]",
+    "mode_takeover": "[MODE: TAKEOVER ACTIVE]",
+    "tab_coagents": "[COAGENTS]"
   }
 }

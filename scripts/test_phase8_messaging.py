@@ -89,7 +89,7 @@ async def run_phase8_tests():
         await db.execute(
             """
             INSERT OR REPLACE INTO dots (id, name, role, archetype, avatar_stamp, system_prompt, model, workspace_path, is_active)
-            VALUES (?, 'Dot Mensageiro', 'Operador de Integracoes', 'general', '[MSG]', 'Voce e um assistente de teste.', 'qwen3.8-27b', 'data/workspaces/bot_tester_msg', 1)
+            VALUES (?, 'Dot Mensageiro', 'Operador de Integracoes', 'general', '[MSG]', 'Voce e um assistente de teste.', 'test-model', 'data/workspaces/bot_tester_msg', 1)
             """,
             (test_dot_id,)
         )

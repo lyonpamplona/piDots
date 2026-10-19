@@ -22,19 +22,35 @@ ERROR_TYPE_PATTERN = re.compile(
 )
 
 
+MAX_HEAL_ATTEMPTS: int = 2
+
+
 class SelfHealingHarness:
     """Harness de inspeção e orientação de auto-correção para o loop do DotAgent."""
+
+    _attempt_counters: dict[str, int] = {}
+
+    @classmethod
+    def reset_attempts(cls, key: str | None = None) -> None:
+        """Reinicia contadores de tentativas para um comando específico ou globalmente."""
+        if key:
+            cls._attempt_counters.pop(key, None)
+        else:
+            cls._attempt_counters.clear()
 
     @classmethod
     def inspect_execution_result(
         cls,
         tool_name: str,
         tool_args: dict[str, Any],
-        tool_result: dict[str, Any]
+        tool_result: dict[str, Any],
+        attempt: int | None = None,
+        context_key: str | None = None
     ) -> dict[str, Any] | None:
         """
         Inspeciona o resultado da execução de ferramentas (como execute_shell_command).
-        Se detectar código de saída diferente de zero ou traceback, gera diagnóstico de cura.
+        Se detectar código de saída diferente de zero ou traceback, gera diagnóstico de cura
+        respeitando o teto estrito de MAX_HEAL_ATTEMPTS = 2 por passo.
         """
         # Apenas inspeciona ferramentas de execução de comandos ou código
         if tool_name not in ("execute_shell_command", "execute_and_verify"):
@@ -44,25 +60,43 @@ class SelfHealingHarness:
         stdout = tool_result.get("stdout", "")
         stderr = tool_result.get("stderr", "")
 
+        key = context_key or f"{tool_name}:{tool_args.get('command', '')}"
+
         # Se exit_code for 0 e não houver traceback explícito, execução foi bem-sucedida
         if exit_code == 0 and "Traceback (most recent call last):" not in stderr and "Traceback (most recent call last):" not in stdout:
+            cls._attempt_counters.pop(key, None)
             return None
 
+        # Rastreia contagem de tentativas consecutivas
+        if attempt is not None:
+            current_attempt = attempt
+        else:
+            current_attempt = cls._attempt_counters.get(key, 0) + 1
+            cls._attempt_counters[key] = current_attempt
+
         combined_output = f"{stderr}\n{stdout}".strip()
-        analysis = cls.analyze_failure(combined_output, exit_code)
+        analysis = cls.analyze_failure(combined_output, exit_code, attempt=current_attempt)
 
         logger.info(
-            "Self-Healing ativado para ferramenta '%s'. Tipo de falha: %s (Arquivo: %s, Linha: %s)",
+            "Self-Healing ativado para ferramenta '%s' (Tentativa %d/%d). Tipo de falha: %s (Arquivo: %s, Linha: %s, Teto excedido: %s)",
             tool_name,
+            current_attempt,
+            MAX_HEAL_ATTEMPTS,
             analysis["error_type"],
             analysis.get("target_file", "desconhecido"),
-            analysis.get("target_line", "desconhecido")
+            analysis.get("target_line", "desconhecido"),
+            analysis["max_attempts_exceeded"]
         )
 
         return analysis
 
     @classmethod
-    def analyze_failure(cls, output_text: str, exit_code: int | None = None) -> dict[str, Any]:
+    def analyze_failure(
+        cls,
+        output_text: str,
+        exit_code: int | None = None,
+        attempt: int = 1
+    ) -> dict[str, Any]:
         """Analisa a saída textual de erro e extrai arquivo, linha, tipo de exceção e orientação."""
         target_file = None
         target_line = None
@@ -94,6 +128,8 @@ class SelfHealingHarness:
             elif "syntax error" in output_text.lower():
                 error_type = "SyntaxError"
 
+        max_exceeded = attempt >= MAX_HEAL_ATTEMPTS
+
         # 3. Formulação da sugestão cirúrgica de auto-correção
         suggestion_parts = []
         if target_file and target_line:
@@ -105,14 +141,26 @@ class SelfHealingHarness:
             suggestion_parts.append("Falha detectada na execução do comando:")
 
         suggestion_parts.append(f"Exceção [{error_type}]: {error_message or 'Falha na execução do processo.'}")
-        suggestion_parts.append(
-            "DIRETRIZ DE AUTO-CORREÇÃO: Não conclua a tarefa com este erro. "
-            "Examine o código-fonte via 'workspace_read_file', aplique o ajuste cirúrgico via 'workspace_write_file' "
-            "e reexecute o comando/teste para comprovar a resolução antes de emitir a resposta final."
-        )
+
+        if max_exceeded:
+            suggestion_parts.append(
+                f"[TETO DE AUTO-CURA ATINGIDO]: O ciclo fechado de reparo atingiu o limite de {MAX_HEAL_ATTEMPTS} "
+                "tentativas consecutivas sem sucesso. O loop de auto-reparo foi interrompido para economizar recursos e evitar loops infinitos. "
+                "ESCALONAMENTO MANDATÓRIO: Encaminhe o traceback dissecado ao '@dot-auditor' ou solicite intervenção direta do operador humano."
+            )
+        else:
+            suggestion_parts.append(
+                f"DIRETRIZ DE AUTO-CORREÇÃO (Tentativa {attempt}/{MAX_HEAL_ATTEMPTS}): Não conclua a tarefa com este erro. "
+                "Examine o código-fonte via 'workspace_read_file', aplique o ajuste cirúrgico via 'workspace_write_file' "
+                "e reexecute o comando/teste para comprovar a resolução antes de emitir a resposta final."
+            )
 
         return {
             "needs_healing": True,
+            "attempt": attempt,
+            "max_attempts": MAX_HEAL_ATTEMPTS,
+            "max_attempts_exceeded": max_exceeded,
+            "escalate_to": "@dot-auditor" if max_exceeded else None,
             "exit_code": exit_code,
             "error_type": error_type,
             "error_message": error_message,

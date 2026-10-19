@@ -8,6 +8,8 @@ import os
 import re
 import json
 import uuid
+import hmac
+import hashlib
 import logging
 from typing import Any
 from datetime import datetime, timezone
@@ -18,17 +20,40 @@ from ..storage.db import get_db
 logger = logging.getLogger("pidots.dot_pack")
 
 DOT_PACK_FORMAT = "DotPack"
-DOT_PACK_VERSION = "1.0"
+DOT_PACK_VERSION = "1.1"
+
+PROMPT_INJECTION_PATTERNS = [
+    r"(?i)\bignore\s+(all\s+)?(previous|prior)\s+instructions\b",
+    r"(?i)\bsystem\s+override\b",
+    r"(?i)\byou\s+are\s+now\s+(dan|unrestricted|jailbroken|godmode)\b",
+    r"(?i)\bdisregard\s+(the\s+)?system\s+prompt\b",
+    r"(?i)\bbypass\s+(all\s+)?safety\b",
+    r"(?i)\bexfiltrate\s+(all\s+)?(keys|passwords|tokens|data|secrets)\b",
+    r"(?i)<script\b[^>]*>",
+    r"(?i)\bcat\s+/etc/(shadow|passwd)\b",
+]
+
+
+def compute_pack_checksum(dot_dict: dict[str, Any], core_memory: dict[str, Any], archival_memories: list[dict[str, Any]]) -> str:
+    """Calcula hash SHA-256 canônico e determinístico sobre o conteúdo do Dot Pack."""
+    canonical_payload = {
+        "dot": dot_dict,
+        "core_memory": core_memory,
+        "archival_memories": archival_memories
+    }
+    canonical_bytes = json.dumps(canonical_payload, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(canonical_bytes).hexdigest()
 
 
 class DotPackManager:
-    """Gerencia a exportação e importação atômica de pacotes de Dots."""
+    """Gerencia a exportação e importação atômica de pacotes de Dots com integridade criptográfica."""
 
     @classmethod
     async def export_dot_pack(cls, dot_id: str) -> dict[str, Any]:
         """
-        Exporta a especificação completa de um Dot em formato padronizado DotPack v1.0.
-        Inclui persona, arquétipo, ferramentas, blocos da Core Memory e memórias arquivísticas.
+        Exporta a especificação completa de um Dot em formato padronizado DotPack v1.1.
+        Inclui persona, arquétipo, ferramentas, blocos da Core Memory, memórias arquivísticas
+        e hash de integridade sha256_checksum.
         """
         async with get_db() as db:
             cursor = await db.execute("SELECT * FROM dots WHERE id = ?", (dot_id,))
@@ -64,25 +89,30 @@ class DotPackManager:
         except Exception:
             allowed_tools = []
 
+        dot_payload = {
+            "id": dot_data["id"],
+            "name": dot_data["name"],
+            "role": dot_data.get("role", "Operador de Borda"),
+            "archetype": dot_data.get("archetype", "general"),
+            "avatar_stamp": dot_data.get("avatar_stamp", "DOT"),
+            "system_prompt": dot_data.get("system_prompt", ""),
+            "model": dot_data.get("model", settings.ai_model),
+            "allowed_tools": allowed_tools
+        }
+
+        checksum = compute_pack_checksum(dot_payload, core_memory, archival_list)
+
         manifest = {
             "format": DOT_PACK_FORMAT,
             "version": DOT_PACK_VERSION,
             "exported_at": datetime.now(timezone.utc).isoformat(),
-            "dot": {
-                "id": dot_data["id"],
-                "name": dot_data["name"],
-                "role": dot_data.get("role", "Operador de Borda"),
-                "archetype": dot_data.get("archetype", "general"),
-                "avatar_stamp": dot_data.get("avatar_stamp", "DOT"),
-                "system_prompt": dot_data.get("system_prompt", ""),
-                "model": dot_data.get("model", "qwen3.8-27b"),
-                "allowed_tools": allowed_tools
-            },
+            "sha256_checksum": checksum,
+            "dot": dot_payload,
             "core_memory": core_memory,
             "archival_memories": archival_list
         }
 
-        logger.info("DotPack exportado para o Dot '%s' (Memórias Arquivísticas: %d).", dot_id, len(archival_list))
+        logger.info("DotPack v1.1 exportado para o Dot '%s' (Checksum: %s).", dot_id, checksum[:12])
         return {
             "success": True,
             "dot_id": dot_id,
@@ -96,8 +126,8 @@ class DotPackManager:
         override_id: str | None = None
     ) -> dict[str, Any]:
         """
-        Importa e restaura atomicamente um Dot a partir de um manifesto DotPack.
-        Cria o registro do Dot, seu workspace físico, blocos de Core Memory e memórias arquivísticas.
+        Importa e restaura atomicamente um Dot a partir de um manifesto DotPack v1.1.
+        Valida o checksum SHA-256 e aciona inspeção defensiva contra Prompt Injection.
         """
         if not isinstance(pack_data, dict):
             return {"success": False, "error": "Estrutura do manifesto DotPack inválida."}
@@ -110,14 +140,56 @@ class DotPackManager:
         if not dot_info.get("name"):
             return {"success": False, "error": "Campo 'name' obrigatório no manifesto do Dot."}
 
+        core_mem = pack_data.get("core_memory", {})
+        archival_list = pack_data.get("archival_memories", [])
+
+        # 1. Validação Criptográfica de Integridade SHA-256 (se presente no manifesto)
+        claimed_checksum = pack_data.get("sha256_checksum")
+        if claimed_checksum:
+            expected_checksum = compute_pack_checksum(dot_info, core_mem, archival_list)
+            if not hmac.compare_digest(claimed_checksum, expected_checksum):
+                logger.warning("Falha de integridade ao importar DotPack: checksum declarado não coincide.")
+                return {
+                    "success": False,
+                    "error": "Integridade violada: sha256_checksum do manifesto diverge do conteúdo do pacote."
+                }
+
+        # 2. Inspeção de Segurança contra Prompt Injection pelo @dot-auditor
+        system_prompt = dot_info.get("system_prompt", "")
+        for pat in PROMPT_INJECTION_PATTERNS:
+            if re.search(pat, system_prompt):
+                logger.warning("Tentativa de Prompt Injection interceptada no system_prompt do DotPack.")
+                return {
+                    "success": False,
+                    "error": "Tentativa de Prompt Injection detectada pelo @dot-auditor no system_prompt. Importação recusada."
+                }
+
+        for block_name, block_content in core_mem.items():
+            for pat in PROMPT_INJECTION_PATTERNS:
+                if re.search(pat, str(block_content)):
+                    logger.warning("Tentativa de Prompt Injection interceptada no bloco core_memory '%s'.", block_name)
+                    return {
+                        "success": False,
+                        "error": f"Tentativa de Prompt Injection detectada pelo @dot-auditor no bloco core_memory '{block_name}'. Importação recusada."
+                    }
+
+        for idx, mem in enumerate(archival_list):
+            m_text = mem.get("content", "")
+            for pat in PROMPT_INJECTION_PATTERNS:
+                if re.search(pat, m_text):
+                    logger.warning("Tentativa de Prompt Injection interceptada na memória arquivística #%d.", idx)
+                    return {
+                        "success": False,
+                        "error": f"Tentativa de Prompt Injection detectada pelo @dot-auditor na memória arquivística #{idx}. Importação recusada."
+                    }
+
         raw_dot_id = override_id or dot_info.get("id") or f"dot-{uuid.uuid4().hex[:6]}"
         target_dot_id = re.sub(r"[^\w\-_.]", "_", str(raw_dot_id).strip()).strip(".") or f"dot-{uuid.uuid4().hex[:6]}"
         name = dot_info["name"]
         role = dot_info.get("role", "Operador de Borda")
         archetype = dot_info.get("archetype", "general")
         avatar_stamp = dot_info.get("avatar_stamp", "DOT")
-        system_prompt = dot_info.get("system_prompt", "")
-        model = dot_info.get("model", "qwen3.8-27b")
+        model = dot_info.get("model", settings.ai_model)
         allowed_tools = dot_info.get("allowed_tools", [])
 
         # Garante criação segura do workspace

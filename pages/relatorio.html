@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <title>piDots: Estudo Técnico de Viabilidade e Engenharia Reversa do OpenDots no Raspberry Pi 4B</title>
-    <!-- Folhas de Estilo Modulares Pixel Paper UI -->
+    <title>piDots: Estudo Técnico de Viabilidade e Engenharia Reversa de Agentes Autônomos no Raspberry Pi 4B</title>
+    <!-- Tipografia Oficial: Silkscreen, VT323 e JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+
+    <!-- Folhas de Estilo Modulares de Interface Técnica Minimalista -->
     <link rel="stylesheet" href="/static/css/tokens.css">
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/layout.css">
@@ -56,7 +61,7 @@
             <div class="page-intro">
                 <h1 class="main-heading">Estudo de Viabilidade e Engenharia Reversa: Conceber o piDots no Raspberry Pi 4B</h1>
                 <p class="hero-desc">
-                    Diagnóstico minucioso do ecossistema OpenDots (CopilotKit/OpenDots e alternativas), dissecando gargalos de hardware, 
+                    Diagnóstico minucioso das arquiteturas tradicionais de agentes autônomos em nuvem e alternativas de mercado, dissecando gargalos de hardware, 
                     concorrência de memória e desgaste de mídia flash, apresentando a especificação arquitetural definitiva para o desenvolvimento 
                     da versão personalizada e otimizada <strong>piDots</strong>.
                 </p>
@@ -91,24 +96,24 @@
                     <h2 class="section-title">Contexto & Genealogia: Da Nuvem Proprietária ao Edge Soberano</h2>
                 </div>
                 <p class="text-block">
-                    Em 29 de setembro de 2026, a OpenAI introduziu o conceito de <strong>Dots</strong> — agentes inteligentes de inteligência artificial 
+                    Em 29 de setembro de 2026, a OpenAI introduziu o conceito de agentes inteligentes de inteligência artificial 
                     que atuam como colegas de trabalho perenes (<em>always-on AI coworkers</em>), equipados com sistemas de arquivos próprios, capacidade 
                     de executar tarefas em computadores e reter histórico prolongado de trabalho entre múltiplos canais (Web, Voz, Slack).
                 </p>
                 <p class="text-block">
                     A comunidade de código aberto respondeu imediatamente com implementações autônomas para evitar o aprisionamento tecnológico (*vendor lock-in*). 
-                    A principal referência consolidada é o <strong>CopilotKit/OpenDots</strong>, que padronizou a interação humano-agente por meio do 
+                    As referências convencionais de mercado adotam pilhas pesadas para padronizar a interação humano-agente por meio do 
                     <strong>AG-UI Protocol (Agent-User Interaction Protocol)</strong>.
                 </p>
 
                 <div class="metric-grid">
                     <div class="metric-card">
-                        <div class="metric-label">OpenAI Dots</div>
+                        <div class="metric-label">Agentes Proprietários em Nuvem</div>
                         <div class="metric-value accent-amber">Proprietário</div>
                         <div class="metric-sub">Infraestrutura fechada em nuvem, custo por minuto de execução, dependência total de fornecedor externo.</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">CopilotKit / OpenDots</div>
+                        <div class="metric-label">Frameworks Convencionais em Nuvem</div>
                         <div class="metric-value accent-blue">Open Source</div>
                         <div class="metric-sub">Padrão da comunidade, protocolo AG-UI, contêineres Docker pesados, projetado para servidores com 16GB+ RAM.</div>
                     </div>
@@ -120,14 +125,14 @@
                 </div>
             </section>
 
-            <!-- Seção 02: Engenharia Reversa do OpenDots -->
+            <!-- Seção 02: Engenharia Reversa de Arquiteturas em Nuvem -->
             <section class="report-section" id="sec-engenharia-reversa">
                 <div class="section-header">
                     <span class="section-number">PASSO 02</span>
-                    <h2 class="section-title">Engenharia Reversa da Arquitetura do OpenDots Padrão</h2>
+                    <h2 class="section-title">Engenharia Reversa da Arquitetura Tradicional de Agentes em Nuvem</h2>
                 </div>
                 <p class="text-block">
-                    A análise técnica minuciosa do repositório <code class="inline-code">CopilotKit/OpenDots</code> revela uma arquitetura desacoplada 
+                    A análise técnica minuciosa das implementações convencionais de agentes cognitivos em nuvem revela uma arquitetura desacoplada 
                     em quatro camadas principais:
                 </p>
 
@@ -214,7 +219,7 @@
                             dispara o OOM Killer em minutos, congelando o barramento LPDDR4 e destruindo a mídia flash via swap excessivo.
                         </text>
                     </svg>
-                    <div class="diagram-caption">Figura 1: Mapeamento de fluxo e pontos de saturação de memória no OpenDots original.</div>
+                    <div class="diagram-caption">Figura 1: Mapeamento de fluxo e pontos de saturação de memória em arquiteturas de nuvem convencionais.</div>
                 </div>
             </section>
 
@@ -235,7 +240,7 @@
                             <tr>
                                 <th>Componente do Pi 4B</th>
                                 <th>Especificação Limite</th>
-                                <th>Comportamento com OpenDots Original</th>
+                                <th>Comportamento em Arquiteturas Convencionais de Nuvem</th>
                                 <th>Estratégia de Correção no piDots</th>
                             </tr>
                         </thead>
@@ -283,7 +288,7 @@
 
                 <!-- Diagrama SVG Arquitetura piDots -->
                 <div class="diagram-container">
-                    <svg viewBox="0 0 900 320" width="100%" height="320" xmlns="http://www.w3.org/2000/svg">
+                    <svg viewBox="0 0 900 320" width="100%" style="height: auto; max-width: 100%; display: block;" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id="gradCore" x1="0%" y1="0%" x2="100%" y2="100%">
                                 <stop offset="0%" stop-color="#1f2a40"/>
@@ -323,7 +328,7 @@
 
                         <!-- Box AI Gateway -->
                         <rect x="645" y="65" width="220" height="90" rx="6" fill="url(#gradCore)" stroke="#f59e0b" stroke-width="1.5"/>
-                        <text x="660" y="95" fill="#f59e0b" font-family="monospace" font-size="12" font-weight="bold">AI GATEWAY qwen3.8-27b</text>
+                        <text x="660" y="95" fill="#f59e0b" font-family="monospace" font-size="12" font-weight="bold">AI GATEWAY UNIVERSAL</text>
                         <text x="660" y="118" fill="#94a3b8" font-family="sans-serif" font-size="11">Inference Gateway Externo</text>
                         <text x="660" y="138" fill="#a855f7" font-family="monospace" font-size="10">Circuit Breaker c/ Jitter (503 Shield)</text>
 
@@ -353,13 +358,13 @@
                 </div>
                 <p class="text-block">
                     Conforme as diretrizes inegociáveis do usuário, o provedor e modelo mantêm-se exatamente como configurados: 
-                    <strong>Universal Gateway qwen3.8-27b</strong>. Esta decisão é tecnicamente perfeita para o Raspberry Pi 4B por três motivos:
+                    <strong>Universal Gateway OpenAI SDK</strong>. Esta decisão é tecnicamente perfeita para o Raspberry Pi 4B por três motivos:
                 </p>
                 <div class="metric-grid">
                     <div class="metric-card">
                         <div class="metric-label">Capacidade Cognitiva</div>
-                        <div class="metric-value accent-green">27B Parâmetros</div>
-                        <div class="metric-sub">Capacidade de raciocínio, estruturação JSON e autocorreção infinitamente superior a SLMs locais de 1.5B/3B.</div>
+                        <div class="metric-value accent-green">Arquitetura BYOM</div>
+                        <div class="metric-sub">Acesso a modelos avançados via gateway assíncrono mantendo o consumo local sob estrito controle.</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-label">Preservação de RAM</div>
@@ -398,7 +403,7 @@
                         <thead>
                             <tr>
                                 <th>Subsistema</th>
-                                <th>OpenDots Original</th>
+                                <th>Arquitetura Tradicional em Nuvem</th>
                                 <th>piDots Otimizado</th>
                                 <th>Redução de Consumo</th>
                             </tr>
@@ -507,15 +512,15 @@
             <section class="report-section" id="sec-sandbox-bwrap">
                 <div class="section-header">
                     <span class="section-number">PASSO 08</span>
-                    <h2 class="section-title">Isolamento Seguro via Bubblewrap (bwrap) Sem Docker Overhead</h2>
+                    <h2 class="section-title">Computador de Borda do Agente (Dot's Computer) & Sandbox Bubblewrap</h2>
                 </div>
                 <p class="text-block">
-                    No OpenDots original, cada Dot exige um container Docker individual com overhead de ~150MB e latência de subida de mais de 1 segundo. 
-                    No piDots, a execução segura de scripts shell adota o <strong>Bubblewrap (`bwrap`)</strong> nativo do Linux:
+                    Em arquiteturas convencionais de nuvem, cada agente ativo exige um contêiner Docker individual com overhead de ~150MB e latência de subida de mais de 1 segundo. 
+                    No piDots, o <strong>Computador de Borda do Agente (Dot's Computer)</strong> adota o <strong>Bubblewrap (`bwrap`)</strong> nativo do Linux combinado com explorador de arquivos do workspace e <strong>Modo Takeover Interativo</strong> no Console `/app`:
                 </p>
 
                 <pre class="code-block">
-# Invocação ultraleve da sandbox Bubblewrap no piDots
+# Invocação ultraleve da sandbox Bubblewrap no piDots (Observação Autônoma ou Modo Takeover)
 bwrap \
   --ro-bind /usr /usr \
   --ro-bind /lib /lib \
@@ -533,7 +538,7 @@ bwrap \
                     <div class="metric-card">
                         <div class="metric-label">Tempo de Inicialização</div>
                         <div class="metric-value accent-green">&lt; 15 milissegundos</div>
-                        <div class="metric-sub">100 vezes mais rápido que o Docker run tradicional, ideal para turnos rápidos de execução.</div>
+                        <div class="metric-sub">100 vezes mais rápido que o Docker run tradicional, com suporte a Modo Takeover imediato pelo operador.</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-label">Consumo de Memória</div>
@@ -543,7 +548,7 @@ bwrap \
                     <div class="metric-card">
                         <div class="metric-label">Segurança de Sandbox</div>
                         <div class="metric-value accent-blue">Namespaces Linux</div>
-                        <div class="metric-sub">Sistema de arquivos montado como somente-leitura; escrita autorizada estritamente na pasta do Dot.</div>
+                        <div class="metric-sub">Sistema de arquivos somente-leitura; escrita autorizada estritamente na pasta do Dot com trava STRICT_SANDBOX.</div>
                     </div>
                 </div>
             </section>
@@ -556,7 +561,7 @@ bwrap \
                 </div>
                 <p class="text-block">
                     Manter um navegador Chromium com interface gráfica emulado rodando em background no Raspberry Pi 4B é a principal causa 
-                    de travamento do OpenDots padrão. O piDots introduz o modelo de <strong>Navegação Web em Duas Camadas</strong>:
+                    de travamento em arquiteturas de agentes não otimizadas. O piDots introduz o modelo de <strong>Navegação Web em Duas Camadas</strong>:
                 </p>
 
                 <div class="table-wrapper">
@@ -591,23 +596,23 @@ bwrap \
             <section class="report-section" id="sec-governanca-hitl">
                 <div class="section-header">
                     <span class="section-number">PASSO 10</span>
-                    <h2 class="section-title">Governança Rigorosa e Human-in-the-Loop (HITL)</h2>
+                    <h2 class="section-title">Governança Rigorosa, HITL com Edição de Argumentos & CoAgents State</h2>
                 </div>
                 <p class="text-block">
                     Agentes totalmente autônomos que executam comandos shell sem supervisão representam alto risco operacional. 
-                    O piDots implementa governança <strong>Deny-by-Default</strong> com pontos de checagem obrigatórios:
+                    O piDots implementa governança <strong>Deny-by-Default</strong> com cartões interativos de <strong>Interrupt-and-Resume</strong> e edição cirúrgica de parâmetros (<code class="inline-code">modified_args</code>):
                 </p>
 
                 <div class="callout-box">
-                    <div class="callout-title">Gatilhos de Congelamento e Aprovação Humana</div>
+                    <div class="callout-title">Gatilhos de Congelamento, Edição de Argumentos e Retomada</div>
                     <div class="callout-body">
-                        A execução é pausada imediatamente e emite um evento <code class="inline-code">hitl:approval_required</code> na interface web 
+                        A execução é pausada imediatamente e emite um evento <code class="inline-code">hitl:approval_required</code> (com sincronização <code class="inline-code">STATE_SNAPSHOT</code> / <code class="inline-code">STATE_DELTA</code>) na interface web 
                         sempre que o agente tentar:
                         <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
-                            <li>Executar comandos de escrita no terminal com flags destrutivas (ex: remoção recursiva, alteração de permissões).</li>
+                            <li>Executar comandos de escrita no terminal com flags destrutivas (permitindo ao operador editar o comando em <code class="inline-code">modified_args</code> antes de homologar e retomar).</li>
                             <li>Modificar arquivos de configuração fora do workspace designado.</li>
-                            <li>Acessar endpoints externos não declarados na lista segura de domínios permitidos.</li>
-                            <li>Criar ou registrar novas habilidades (skills) no sistema.</li>
+                            <li>Acessar endpoints externos ou acoplar servidores MCP Lite não autorizados no perfil de Tool Pruning.</li>
+                            <li>Importar pacotes DotPack v1.1 sem assinatura criptográfica SHA-256 íntegra.</li>
                         </ul>
                     </div>
                 </div>
@@ -617,11 +622,11 @@ bwrap \
             <section class="report-section" id="sec-roadmap">
                 <div class="section-header">
                     <span class="section-number">PASSO 11</span>
-                    <h2 class="section-title">Roadmap Técnico de Implementação Passo a Passo (Checkpoints)</h2>
+                    <h2 class="section-title">Roadmap Técnico de Implementação e Homologação (Checkpoints)</h2>
                 </div>
                 <p class="text-block">
-                    Planejamento faseado para o desenvolvimento do projeto piDots em <code class="inline-code">/mnt/storage/piDots</code>, 
-                    com checkpoints auditáveis antes de cada transição:
+                    Planejamento faseado concluído e homologado no projeto piDots em <code class="inline-code">/mnt/storage/piDots</code>, 
+                    com checkpoints auditáveis em todas as camadas:
                 </p>
 
                 <div class="checklist-panel">
@@ -630,8 +635,8 @@ bwrap \
                             <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         </div>
                         <div class="check-content">
-                            <div class="check-title">Fase 1: Setup da Base e Storage SQLite WAL</div>
-                            Estruturação do repositório em <code class="inline-code">/mnt/storage/piDots</code>, configuração do ambiente Python 3.13, criação do esquema de banco SQLite WAL com pragmas calibrados e migrações iniciais.
+                            <div class="check-title">Fase 1: Base SQLite WAL, Motor 64D Unificado e API Modular</div>
+                            Fatiamento modular em <code class="inline-code">pidots/api/</code>, motor de embedding determinístico 64D compartilhado (<code class="inline-code">embedding_engine.py</code>) e telemetria real <code class="inline-code">process_rss_mb</code>.
                         </div>
                     </div>
                     <div class="check-item">
@@ -639,8 +644,8 @@ bwrap \
                             <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         </div>
                         <div class="check-content">
-                            <div class="check-title">Fase 2: Cliente AI Gateway Resiliente e Loop Assíncrono</div>
-                            Implementação do cliente HTTP assíncrono com circuit breaker e backoff exponencial com jitter para o modelo qwen3.8-27b, e máquina de estados da thread com teto de iterações.
+                            <div class="check-title">Fase 2: Protocolo AG-UI e CoAgents Shared State</div>
+                            Streaming SSE com eventos <code class="inline-code">STATE_SNAPSHOT</code> e <code class="inline-code">STATE_DELTA</code>, endpoint <code class="inline-code">GET /api/threads/{id}/state</code> e conversão de conversa em documento (<code class="inline-code">POST /api/threads/{id}/save-as-space</code>).
                         </div>
                     </div>
                     <div class="check-item">
@@ -648,8 +653,8 @@ bwrap \
                             <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         </div>
                         <div class="check-content">
-                            <div class="check-title">Fase 3: Sandboxes Bubblewrap e Ferramentas Leves</div>
-                            Construção do executor seguro via Bubblewrap para shell isolado, scraper semântico Trafilatura e gerenciador de arquivos seguro com leitura/escrita atômica.
+                            <div class="check-title">Fase 3: Activity Rail (48px), Estúdio de Dots e Computador de Borda</div>
+                            Barra lateral com 4 gavetas contextuais (<code class="inline-code">Alt+1..4</code>), modal CRUD completo com checklist de Tool Pruning e aba Dot's Computer com Modo Takeover no Sandbox Bubblewrap.
                         </div>
                     </div>
                     <div class="check-item">
@@ -657,8 +662,8 @@ bwrap \
                             <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         </div>
                         <div class="check-content">
-                            <div class="check-title">Fase 4: Frontend PWA Estilo IDE e Streaming SSE</div>
-                            Interface web dark mode minimalista com Server-Sent Events (SSE), buffer circular de 150 nós no DOM, cartões interativos de aprovação HITL e fontes locais WOFF2.
+                            <div class="check-title">Fase 4: Generative UI Inline, HITL com modified_args e 34 Slash Commands</div>
+                            Cartões Generative UI embutidos nos recibos do teletipo, resolução HITL com edição de argumentos ao vivo e catálogo expandido para 34 Slash Commands (<code class="inline-code">/coagents</code>, <code class="inline-code">/computer</code>, <code class="inline-code">/save-space</code>, <code class="inline-code">/mcp</code>).
                         </div>
                     </div>
                     <div class="check-item">
@@ -666,8 +671,8 @@ bwrap \
                             <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         </div>
                         <div class="check-content">
-                            <div class="check-title">Fase 5: Testes de Carga, Auditoria e Empacotamento Docker Edge</div>
-                            Validação contínua sob estresse no Raspberry Pi 4B, medição de temperatura do SoC (&lt; 70°C), confirmação de consumo &lt; 250MB RAM e geração de compose final com rotação de logs.
+                            <div class="check-title">Fase 5: Homologação E2E, Testes de Estresse e Empacotamento Docker Edge</div>
+                            Validação contínua no contêiner <code class="inline-code">pidots-core</code> com consumo &lt; 250MB RAM, zero emojis e paridade documental completa.
                         </div>
                     </div>
                 </div>
@@ -716,7 +721,7 @@ bwrap \
                                     <td>Estabilidade Cognitiva e Conexão LLM</td>
                                     <td>20%</td>
                                     <td><span class="accent-green">97 / 100</span></td>
-                                    <td>Modelo qwen3.8-27b preservado com circuit breaker e blindagem contra falhas 503.</td>
+                                    <td>Motor de inferência protegido com circuit breaker e blindagem contra falhas 503.</td>
                                 </tr>
                                 <tr>
                                     <td>Segurança e Governança HITL</td>
@@ -737,8 +742,7 @@ bwrap \
                     <div class="callout-box" style="margin-top: 1.25rem; border-left-color: var(--accent-emerald);">
                         <div class="callout-title" style="color: var(--accent-emerald);">Veredito Técnico do Auditor: Aprovado para Concepção</div>
                         <div class="callout-body">
-                            A Skill operacional <code class="inline-code">opendots-pidots</code> foi gerada com sucesso em 
-                            <code class="inline-code">skills/opendots-pidots/SKILL.md</code>. 
+                            A Skill operacional <code class="inline-code">pidots-core</code> foi estruturada com sucesso no ecossistema do assistente. 
                             O projeto <strong>piDots</strong> não apenas é viável, como estabelece uma solução de referência para execução de agentes autônomos 
                             persistentes em hardware restrito e dispositivos IoT/Edge.
                         </div>
@@ -778,9 +782,9 @@ bwrap \
                     <span class="nav-step-badge">01</span>
                     <span>Contexto & Genealogia</span>
                 </a>
-                <a href="#sec-engenharia-reversa" class="nav-item-link" data-title="Engenharia Reversa OpenDots CopilotKit AG-UI Docker">
+                <a href="#sec-engenharia-reversa" class="nav-item-link" data-title="Engenharia Reversa Arquiteturas Nuvem AG-UI Docker">
                     <span class="nav-step-badge">02</span>
-                    <span>Engenharia Reversa OpenDots</span>
+                    <span>Engenharia Reversa Nuvem</span>
                 </a>
                 <a href="#sec-gargalos-hardware" class="nav-item-link" data-title="Gargalos Hardware Raspberry Pi 4B CPU RAM MicroSD">
                     <span class="nav-step-badge">03</span>
@@ -790,7 +794,7 @@ bwrap \
                     <span class="nav-step-badge">04</span>
                     <span>Arquitetura piDots Edge</span>
                 </a>
-                <a href="#sec-modelos-hibridos" class="nav-item-link" data-title="Modelos AI Gateway qwen3.8-27b Circuit Breaker 503 Resiliencia">
+                <a href="#sec-modelos-hibridos" class="nav-item-link" data-title="Modelos AI Gateway Universal Circuit Breaker 503 Resiliencia">
                     <span class="nav-step-badge">05</span>
                     <span>Inteligência Gateway & 503</span>
                 </a>

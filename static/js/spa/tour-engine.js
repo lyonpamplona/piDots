@@ -2,7 +2,7 @@
  * PIDOTS CONSOLE SPA - MOTOR DE SPOTLIGHT TOUR INTERATIVO
  * =====================================================================
  * Motor leve de guiamento visual (< 12KB) com mascara SVG dinamica,
- * caixa de recorte com pulsacao e popover pixel paper com posicionamento
+ * caixa de recorte com pulsacao e popover tatico com posicionamento
  * trigonometrico automatico para prevencao de corte de tela.
  * ZERO EMOJIS // Vanilla JS Puro // Alta Performance ARM64
  * =====================================================================

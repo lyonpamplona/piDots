@@ -67,6 +67,8 @@ class ToolRegistry:
             ):
                 if "dot_id" not in arguments:
                     arguments["dot_id"] = dot_id
+                if name in ("execute_shell_command", "execute_and_verify") and "thread_id" not in arguments and thread_id:
+                    arguments["thread_id"] = thread_id
             elif name == "recall_memory_search":
                 if "thread_id" not in arguments and thread_id:
                     arguments["thread_id"] = thread_id
@@ -734,12 +736,27 @@ class ToolRegistry:
 
     # Implementações dos Handlers
 
-    async def _tool_execute_shell(self, command: str, timeout_seconds: float = 30.0, dot_id: str = "default") -> dict[str, Any]:
+    async def _tool_execute_shell(
+        self,
+        command: str,
+        timeout_seconds: float = 30.0,
+        dot_id: str = "default",
+        thread_id: str | None = None
+    ) -> dict[str, Any]:
         result = await TerminalSandbox.execute(dot_id=dot_id, command=command, timeout_seconds=timeout_seconds)
-        healing = self._get_self_healing().inspect_execution_result("execute_shell_command", {"command": command}, result)
+        ctx_key = f"{dot_id}:{thread_id or 'default'}:{command}"
+        healing = self._get_self_healing().inspect_execution_result(
+            "execute_shell_command",
+            {"command": command},
+            result,
+            context_key=ctx_key
+        )
         if healing:
             result["self_healing_advice"] = healing["diagnosis"]
             result["self_healing_details"] = healing
+            result["max_attempts_exceeded"] = healing.get("max_attempts_exceeded", False)
+            if healing.get("max_attempts_exceeded"):
+                result["escalate_to"] = healing.get("escalate_to")
         return result
 
     async def _tool_read_web_page(self, url: str) -> dict[str, Any]:
@@ -872,15 +889,25 @@ class ToolRegistry:
         self,
         command: str,
         timeout_seconds: float = 30.0,
-        dot_id: str = "default"
+        dot_id: str = "default",
+        thread_id: str | None = None
     ) -> dict[str, Any]:
         """Executa comando de validação/teste e diagnostica falhas para auto-correção via Self-Healing."""
         result = await TerminalSandbox.execute(dot_id=dot_id, command=command, timeout_seconds=timeout_seconds)
-        healing = self._get_self_healing().inspect_execution_result("execute_and_verify", {"command": command}, result)
+        ctx_key = f"{dot_id}:{thread_id or 'default'}:{command}"
+        healing = self._get_self_healing().inspect_execution_result(
+            "execute_and_verify",
+            {"command": command},
+            result,
+            context_key=ctx_key
+        )
         if healing:
             result["verified"] = False
             result["self_healing_advice"] = healing["diagnosis"]
             result["self_healing_details"] = healing
+            result["max_attempts_exceeded"] = healing.get("max_attempts_exceeded", False)
+            if healing.get("max_attempts_exceeded"):
+                result["escalate_to"] = healing.get("escalate_to")
         else:
             result["verified"] = True
             result["verification_message"] = "Comando executado com sucesso e verificação técnica aprovada."

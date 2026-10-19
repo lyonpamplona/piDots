@@ -269,35 +269,102 @@ class MemoryManager:
         cls,
         dot_id: str,
         content: str,
-        tags: list[str] | None = None
+        tags: list[str] | None = None,
+        deduplicate: bool = True,
+        similarity_threshold: float = 0.92
     ) -> dict[str, Any]:
-        """Insere um fato ou documento na memória arquivística duradoura com projeção vetorial e FTS5."""
+        """
+        Insere ou atualiza um fato na memória arquivística duradoura com busca híbrida FTS5 BM25 + Projeção Vetorial 64d.
+        Se deduplicate=True e houver registro com similaridade >= similarity_threshold (0.92),
+        realiza o merge/update no registro existente em vez de duplicar linhas no SQLite WAL.
+        """
         if not content.strip():
             return {"success": False, "error": "Conteúdo da memória não pode ser vazio."}
 
-        mem_id = str(uuid.uuid4())
+        clean_content = content.strip()
         tags_list = tags or []
-        tags_str = json.dumps(tags_list, ensure_ascii=False)
-        vec = compute_compact_embedding(content, dim=64)
+        vec = compute_compact_embedding(clean_content, dim=64)
         vec_json = json.dumps(vec)
 
         async with get_db() as db:
+            # 1. Deduplicação semântica: verifica se já existe registro com alta similaridade (>= 0.92)
+            if deduplicate:
+                cursor = await db.execute(
+                    "SELECT id, content, tags_json, vector_json FROM archival_memories WHERE dot_id = ?",
+                    (dot_id,)
+                )
+                existing_rows = await cursor.fetchall()
+                best_match_id = None
+                best_match_content = ""
+                best_match_tags: list[str] = []
+                highest_sim = 0.0
+
+                for r in existing_rows:
+                    if not r["vector_json"]:
+                        continue
+                    try:
+                        v_loaded = json.loads(r["vector_json"])
+                        sim = cosine_similarity(vec, v_loaded)
+                        if sim > highest_sim:
+                            highest_sim = sim
+                            best_match_id = r["id"]
+                            best_match_content = r["content"]
+                            best_match_tags = json.loads(r["tags_json"]) if r["tags_json"] else []
+                    except Exception:
+                        continue
+
+                # Se a similaridade for superior ao limiar (>= 0.92), executa merge/update
+                if best_match_id and highest_sim >= similarity_threshold:
+                    merged_tags = list(dict.fromkeys(best_match_tags + tags_list))
+                    merged_tags_str = json.dumps(merged_tags, ensure_ascii=False)
+                    updated_content = clean_content if clean_content != best_match_content else best_match_content
+                    updated_vec_json = vec_json if updated_content == clean_content else json.dumps(compute_compact_embedding(updated_content, dim=64))
+
+                    await db.execute(
+                        """
+                        UPDATE archival_memories
+                        SET content = ?, tags_json = ?, vector_json = ?
+                        WHERE id = ?
+                        """,
+                        (updated_content, merged_tags_str, updated_vec_json, best_match_id)
+                    )
+                    await db.commit()
+
+                    logger.info(
+                        "Deduplicação semântica aplicada na memória arquival de '%s': ID %s mesclado (Similaridade: %.4f >= %.2f).",
+                        dot_id, best_match_id, highest_sim, similarity_threshold
+                    )
+                    return {
+                        "success": True,
+                        "id": best_match_id,
+                        "dot_id": dot_id,
+                        "tags": merged_tags,
+                        "content_length": len(updated_content),
+                        "deduplicated": True,
+                        "merged_with": best_match_id,
+                        "similarity": round(highest_sim, 4)
+                    }
+
+            # 2. Inserção convencional se não houver duplicata
+            mem_id = str(uuid.uuid4())
+            tags_str = json.dumps(tags_list, ensure_ascii=False)
             await db.execute(
                 """
                 INSERT INTO archival_memories (id, dot_id, content, tags_json, vector_json)
                 VALUES (?, ?, ?, ?, ?)
                 """,
-                (mem_id, dot_id, content.strip(), tags_str, vec_json)
+                (mem_id, dot_id, clean_content, tags_str, vec_json)
             )
             await db.commit()
 
-        logger.info("Memória arquivística gravada para Dot '%s': ID %s (%d chars).", dot_id, mem_id, len(content))
+        logger.info("Memória arquivística gravada para Dot '%s': ID %s (%d chars).", dot_id, mem_id, len(clean_content))
         return {
             "success": True,
             "id": mem_id,
             "dot_id": dot_id,
             "tags": tags_list,
-            "content_length": len(content)
+            "content_length": len(clean_content),
+            "deduplicated": False
         }
 
     @classmethod

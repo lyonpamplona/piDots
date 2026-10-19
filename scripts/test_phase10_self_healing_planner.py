@@ -100,7 +100,7 @@ async def run_phase10_tests():
             INSERT OR REPLACE INTO dots (id, name, role, system_prompt, model, workspace_path, archetype)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (test_dot_id, "Self-Healing Dot", "Engenheiro de Resiliência", "Você é um assistente autônomo com auto-correção.", "qwen3.8-27b", "/tmp", "grok")
+            (test_dot_id, "Self-Healing Dot", "Engenheiro de Resiliência", "Você é um assistente autônomo com auto-correção.", "test-model", "/tmp", "grok")
         )
         await db.execute(
             "INSERT INTO threads (id, dot_id, title) VALUES (?, ?, ?)",

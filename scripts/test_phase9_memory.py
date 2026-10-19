@@ -78,7 +78,7 @@ async def run_phase9_memory_tests():
             INSERT OR REPLACE INTO dots (id, name, role, system_prompt, model, workspace_path, archetype)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (test_dot_id, "Memory Tester", "Engenheiro Cognitivo", "Você é um assistente com auto-gestão de memória.", "qwen3.8-27b", "/tmp", "general")
+            (test_dot_id, "Memory Tester", "Engenheiro Cognitivo", "Você é um assistente com auto-gestão de memória.", "test-model", "/tmp", "general")
         )
         await db.commit()
     print(f"      Dot de teste cadastrado: '{test_dot_id}'.")

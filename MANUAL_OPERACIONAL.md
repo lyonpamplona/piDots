@@ -4,13 +4,13 @@
 **Autor e Criador:** lyon christopher  
 **Assistente:** Logger  
 **Ambiente Alvo:** Computacao de Borda e SBCs (Benchmark de Referencia: Raspberry Pi 4B 4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
-**Versão:** 1.5.2 (Produção Estável — Mobile-First, Ergonomia Touch, Bottom-Nav e Spotlight Tour)  
+**Versão:** 1.5.3 (Produção Estável — Padrão OpenDots Workspace, CoAgents Shared State, Generative UI Cards, Computador do Dot e HITL Interrupt-Resume)  
 
 ---
 
 ## 1. Visão Geral da Arquitetura
 
-O **piDots** é uma reengenharia radical do ecossistema OpenDots voltada para hardware restrito. Enquanto o OpenDots original demanda de 1,8 GB a 3,2 GB de memória RAM (dependência pesada de Node.js SSR, Chromium headless contínuo e múltiplos contêineres efêmeros), o piDots foi estruturado como um monólito modular assíncrono em Python com `uvloop`, FastAPI e persistência SQLite WAL calibrada.
+O **piDots** é uma reengenharia radical de arquiteturas corporativas de IA voltada para hardware restrito de borda. Enquanto frameworks tradicionais de mercado demandam de 1,8 GB a 3,2 GB de memória RAM (dependência pesada de Node.js SSR, Chromium headless contínuo e múltiplos contêineres efêmeros), o piDots foi estruturado como um monólito modular assíncrono em Python com `uvloop`, FastAPI e persistência SQLite WAL calibrada.
 
 ### Principais Indicadores de Recursos:
 - **Consumo Médio de Memória RAM:** ~50 MB (limite estrito de 384 MB no contêiner, com reserva operacional de 64 MB).
@@ -94,6 +94,12 @@ As solicitações podem ser resolvidas de três formas:
      -d '{"approval_id": "<APPROVAL_ID>", "approved": true, "notes": "Aprovado via smartphone"}'
    ```
 
+### 3.4 TTL de Expiração (30 Minutos) e Push Instantâneo
+Para evitar retenção indefinida de recursos computacionais e travamento de threads operacionais:
+- **Time-to-Live (TTL):** Toda solicitação HITL gerada recebe automaticamente a coluna `expires_at` calibrada para 30 minutos a partir da criação (`requested_at + 30 min`).
+- **Purga Automática:** Solicitações não homologadas em até 30 minutos transicionam automaticamente para `EXPIRED`. O guardião HITL libera o status da thread associada de volta para `idle`, registra uma mensagem de cancelamento transparente no chat e grava o log de auditoria no SQLite WAL.
+- **Push Instantâneo:** Ao reter uma ação, o motor emite os eventos SSE `hitl:pending_approval` e `hitl:approval_required`, acionando a abertura automática do dossiê de governança (`Alt + H`) no console SPA ativo.
+
 ---
 
 ## 4. Configuração de Notificações Remotas (Webhook e Telegram)
@@ -121,25 +127,55 @@ TELEGRAM_BOT_TOKEN=SEU_BOT_TOKEN_AQUI
 TELEGRAM_CHAT_ID=SEU_CHAT_ID_AQUI
 EVOLUTION_API_URL=http://host.docker.internal:8080
 EVOLUTION_API_KEY=SUA_APIKEY_AQUI
+
+# Governanca Estrita de Terminal Sandbox (true recusa shell se bwrap inexistir)
+STRICT_SANDBOX=false
 ```
+
+#### Modo de Isolamento Estrito (`STRICT_SANDBOX`):
+- `STRICT_SANDBOX=false` (Padrão): Permite execução com fallback de desenvolvimento em ambientes onde os namespaces do kernel Linux estejam bloqueados.
+- `STRICT_SANDBOX=true`: Modo de produção com isolamento compulsório. Se o utilitário Bubblewrap (`bwrap`) não estiver instalado ou falhar, a ferramenta de terminal recusa imediatamente a execução com erro HTTP/código de saída 126 e registra log de auditoria no SQLite WAL.
 
 ---
 
-## 5. Parametrização Dinâmica do Provedor de IA (Hot-Reload)
+## 5. Parametrização Dinâmica do Provedor de IA e Gateway Multi-Provedor
 
 O piDots é compatível com qualquer provedor que implemente a especificação `/chat/completions` da OpenAI API (OpenAI, Groq, OpenRouter, DeepSeek, llama-server local).
+O gateway de inferência (`pidots/providers/openai_client.py`) implementa chaveamento automático por prioridade e Circuit Breaker de 3 estados (`CLOSED`, `OPEN`, `HALF_OPEN`).
 
+### 5.1 Atualização de Parâmetros Primários e Secundários (Hot-Reload)
 Para alterar os parâmetros sem reiniciar o contêiner:
 ```bash
 curl -X POST http://localhost:8000/api/settings/ai \
   -H "Content-Type: application/json" \
   -d '{
     "base_url": "https://api.openai.com/v1",
-    "model": "qwen3.8-27b",
+    "model": "gpt-4o-mini",
     "max_retries": 3,
-    "timeout_seconds": 60.0
+    "timeout_seconds": 60.0,
+    "fallback_url": "https://openrouter.ai/api/v1",
+    "fallback_api_key": "sk-or-v1-...",
+    "fallback_model": "meta-llama/llama-3.1-8b-instruct",
+    "circuit_breaker_consecutive_failures": 3,
+    "circuit_breaker_cooldown_seconds": 60.0
   }'
 ```
+
+### 5.2 Topologia de Failover e Circuit Breaker
+1. **Operação Nominal (`CLOSED`):**
+   - Todas as requisições cognitivas são enviadas ao provedor primário (`AI_BASE_URL`).
+   - Retentativas com backoff exponencial e jitter absorvem erros esporádicos (HTTP 502/503/504 ou 429).
+2. **Ativação de Failover Transparente:**
+   - Se o primário falhar após todas as retentativas e houver `AI_FALLBACK_URL` configurada, a requisição é desviada instantaneamente para o endpoint secundário sem quebrar o ciclo cognitivo do agente.
+   - O retorno recebe o metadado `_served_by_fallback: true` para fins de auditoria e telemetria.
+3. **Circuito Aberto (`OPEN`):**
+   - Caso o primário atinja o limite consecutivo de falhas (padrão: 3 falhas), o circuito primário abre (`OPEN`) por 60 segundos (`cooldown_seconds`).
+   - Durante essa janela, todas as novas requisições desviam imediatamente para o provedor secundário sem aguardar timeouts do primário, preservando o tempo de resposta do console.
+4. **Recuperação Gradual Canário (`HALF_OPEN`):**
+   - Expirado o tempo de cooldown, o circuito transiciona para `HALF_OPEN`.
+   - A próxima chamada atua como teste canário no primário. Se responder com 200 OK, o circuito fecha (`CLOSED`) e o fluxo nominal é restabelecido. Se falhar, reabre por mais um ciclo de cooldown.
+5. **Comportamento Inócuo:**
+   - Caso `AI_FALLBACK_URL` não esteja configurada no `.env` (padrão do sistema), o Circuit Breaker não altera o comportamento atual do sistema, levantando exceções transitórias normais conforme a diretriz soberana do operador.
 
 ---
 
@@ -470,13 +506,13 @@ unzip -l workspace_dot-dev-core.zip
 ## 14. Console Web SPA Oficial, Topologia de Rotas e Operacao via Teclado
 
 O console oficial do piDots opera na porta 8000 na rota canonica `http://localhost:8000/app` (com alias `http://localhost:8000/workspace`) e oferece:
-- **Design System Pixel Paper UI:** Interface tatica minimalista com contraste marcante (Dark Noir e Blueprint), visual de papel milimetrado, tipografia tecnica crisp e estetica retro minimalista de 1-bit.
+- **Interface Tecnica Minimalista e Console Escuro Tatil:** Interface tatica minimalista com contraste marcante (Dark Noir e Blueprint), visual de matriz tecnica, tipografia crisp e estetica retro de 1-bit.
 - **Identidade e Logotipo Oficial:** Logotipo vetorial servido via rota oficial `/icon.svg` com headers de cache HTTP de 24 horas (`Cache-Control: public, max-age=86400`).
 - **Telemetria de Hardware em Tempo Real:** Indicadores integrados de SoC/CPU, RAM, temperatura do silicio e status do SQLite WAL.
 - **Visualizador de Diffs Integrado:** Na aba SPACES, o botao `[VER DIFFS]` aciona a comparacao visual das revisoes armazenadas em `space_revisions` com carimbos analogicos de status.
-- **Governanca no Feed:** Alertas de solicitacoes pendentes de comandos de risco com botoes táteis de homologacao e veto forense.
-- **Landing Page de Onboarding:** Servida na raiz `/` (com redirecionamento 308 de `/apresentacao`), com calculadora interativa de ROI e comparativo de custos Edge vs Nuvem.
-- **Guia Didatico do Operador:** Servido na rota canonica `/docs` (com redirecionamento 308 de `/guia`), estruturado em estilo passo a passo com drawer lateral retratil, Omnisearch Ctrl+K e Mini API Tester.
+- **Governanca no Feed:** Alertas de solicitacoes pendentes de comandos de risco com botoes táteis de homologacao e veto de seguranca.
+- **Landing Page de Onboarding:** Servida na raiz `/`, com calculadora interativa de ROI e comparativo de custos Edge vs Nuvem.
+- **Guia Didatico do Operador:** Servido na rota canonica `/docs`, estruturado em estilo passo a passo com drawer lateral retratil, Omnisearch Ctrl+K e Mini API Tester.
 - **OpenAPI Swagger UI:** Interface nativa do FastAPI desacoplada em `/api/docs` com esquema bruto em `/api/openapi.json`.
 
 ### 14.1 Navegacao Cruzada Rapida via Chords Globais
@@ -563,24 +599,31 @@ sqlite3 /mnt/storage/piDots/data/pidots.db \
   "SELECT a.id, a.dot_id, a.content, f.rank FROM archival_memories a JOIN archival_memories_fts f ON a.id = f.id WHERE archival_memories_fts MATCH 'MicroSD OR thermal' ORDER BY f.rank LIMIT 5;"
 ```
 
+### 15.3 Deduplicação Semântica (> 0.92) com Fusão Atômica de Tags
+Antes de gravar qualquer fato na memória duradoura via `archival_memory_insert`, o motor avalia a similaridade vetorial (cosseno sobre projeção determinística 64D):
+- **Limiar de Duplicidade:** Caso exista registro do mesmo agente com similaridade `>= 0.92`, o sistema não duplica linhas na base nem no índice FTS5.
+- **Merge/Update Atômico:** O registro pré-existente tem seu conteúdo atualizado com os novos dados complementares, suas tags são unificadas sem repetições e o trigger SQLite `trg_archival_update` sincroniza a tabela virtual FTS5 transparentemente.
+- **Retorno da Operação:** O chamador recebe `{"deduplicated": true, "merged_with": "<ID>", "similarity": <SCORE>}` comprovando a consolidação.
+
 ---
 
-## 16. Exportacao e Importacao de Dot Packs Portaveis (v1.0)
+## 16. Exportacao e Importacao de Dot Packs Portaveis (v1.1) com Assinatura SHA-256
 
-Os Dot Packs permitem migrar e instanciar agentes especialistas completos entre diferentes Raspberry Pis sem reinstalar dependencias.
+Os Dot Packs v1.1 permitem empacotar, assinar criptograficamente e instanciar agentes especialistas completos entre diferentes Raspberry Pis com garantia de integridade estrutural e defesa contra Prompt Injection.
 
-### 16.1 Exportar Manifesto Dot Pack
+### 16.1 Exportar Manifesto Dot Pack Assinado
 ```bash
-# Exporta manifesto JSON completo de um Dot especializado
+# Exporta manifesto JSON canonico com sha256_checksum integrado
 curl -s http://localhost:8000/api/dots/dot-coder/export-pack > /mnt/storage/piDots/dot_coder_pack.json
 
-# Inspeciona o cabecalho do manifesto exportado
+# Inspeciona o cabecalho e a assinatura criptografica do manifesto
 head -n 25 /mnt/storage/piDots/dot_coder_pack.json
 ```
 
-### 16.2 Importar Dot Pack Atomicamente
+### 16.2 Importar Dot Pack com Verificacao de Integridade e Auditoria
+Na rota de importacao, o sistema valida a correspondencia do hash `sha256_checksum` e submete os blocos de `core_memory` a uma varredura estatica contra padroes maliciosos de subversao de instrucao de sistema:
 ```bash
-# Instancia atomicamente o agente com seu workspace fisico, Core Memory e memórias duradouras
+# Valida a assinatura, audita as memorias contra injection e instancia o agente atomicamente
 curl -s -X POST http://localhost:8000/api/dots/import-pack \
   -H "Content-Type: application/json" \
   -d @/mnt/storage/piDots/dot_coder_pack.json
@@ -739,3 +782,80 @@ curl -s http://localhost:8000/api/spaces/relatorio_termico.md/revisions | jq .
 3. **Comutacao de Abas e Modo Foco:** Ao alternar para DOTS ou CANVAS, a classe `mode-focus-zen` e removida compulsoriamente para impedir travamentos visuais.
 4. **Acionamento do Teclado Virtual (window.visualViewport):** Ao focar `#instructionInput`, a classe `keyboard-open` e ativada no body, a barra inferior e ocultada e a altura do body e fixada na altura visivel real, mantendo o scroll do chat no final.
 5. **Atalho Mecanico Touch [/]:** O clique em `#slashTriggerBtn` abre imediatamente o popover de comandos sem exigir a subida do teclado.
+
+---
+
+## 21. Resiliência Cognitiva: Teto de Self-Healing e Consenso Antecipado do Conselho
+
+### 21.1 Teto Estrito de Tentativas no Self-Healing (`MAX_HEAL_ATTEMPTS = 2`)
+O ciclo de auto-reparo autônomo (`execute_and_verify`) possui teto calibrado para impedir consumo desnecessário de iterações e ciclos de inferência:
+- **Limite de 2 Ciclos:** Se um comando falhar com erro de compilação, sintaxe ou teste quebrado, o `SelfHealingHarness` emite a diretriz cirúrgica na primeira tentativa.
+- **Interrupção e Escalonamento:** Caso a mesma chamada falhe pela 2ª vez consecutiva, o harness marca `max_attempts_exceeded = True`, interrompe o loop e emite o evento SSE `self_healing:max_attempts_exceeded`.
+- **Trilha para o Auditor:** O traceback dissecado com arquivo, linha e escopo é automaticamente escalado para o `@dot-auditor` ou para o operador humano.
+
+### 21.2 Early Consensus Exit no Conselho Consultivo Tripartite
+Durante a deliberação formal entre Propositor (`@dot-coder`), Auditor (`@dot-auditor`) e Supervisor (`@dot-supervisor`):
+- **Detecção de Consenso:** Caso na Rodada 2 do debate (ou no parecer inicial) o `@dot-auditor` classifique a proposta como `RISK_LOW / APPROVED`, o orquestrador detecta que não existem divergências impeditivas.
+- **Saída Antecipada:** O conselho encerra o debate sem executar uma 3ª rodada desnecessária, pulando diretamente para a consolidação executiva do `@dot-supervisor`.
+- **Economia de Recursos:** Reduz latência de resposta em ~35% e economiza tokens de inferência na borda do Raspberry Pi 4B.
+
+---
+
+## 22. Operação de Extensibilidade MCP Lite, Governança Criptográfica e Borda Física (v1.5.3)
+
+### 22.1 Conexão de Servidores MCP com Dynamic Tool Pruning
+O piDots conecta servidores MCP (Model Context Protocol) externos via STDIO ou SSE sem dependências pesadas (< 5MB RAM):
+```python
+from pidots.tools.mcp_client import LiteMCPClient, MCPRegistryManager
+from pidots.tools.registry import registry
+
+# Instancia cliente para servidor MCP externo (ex: Git)
+git_mcp = LiteMCPClient(server_name="git", transport="stdio", command="mcp-server-git")
+registered_tools = await MCPRegistryManager.register_server("git", git_mcp, registry)
+# Ferramentas registradas: ["mcp_git_git_status", "mcp_git_git_diff", ...]
+```
+- **Governança de Contexto:** Agentes que não possuem `mcp_git_*` em seu `allowed_tools_json` não visualizam essas ferramentas, eliminando poluição de contexto.
+
+### 22.2 Governança HITL Remota com Assinatura HMAC-SHA256
+Ações retidas pelo guardião Deny-by-Default despacham alertas para Telegram e WhatsApp:
+- **Telegram Bot:** A mensagem inclui botões interativos `[Aprovar]` e `[Bloquear]` com callback assinado criptograficamente (`h:a:<approval_id>:<hmac>`). Ao clicar, o webhook `/api/webhooks/telegram/{dot_id}` valida o HMAC em tempo constante e homologa a operação instantaneamente.
+- **WhatsApp (Evolution API):** O operador pode aprovar respondendo `APROVAR <approval_id> <hmac>` ou bloquear com `BLOQUEAR <approval_id> <hmac>`.
+- **API Segura:** Resolução direta via `POST /api/hitl/signed-resolve` com payload contendo `approval_id`, `action`, `hmac_token`.
+
+### 22.3 Importação Segura de Dot Packs v1.1
+Ao importar manifestos JSON de agentes via `POST /api/dots/import-pack`:
+- **Integridade Criptográfica:** O sistema recalcula o hash canônico SHA-256 e compara com `sha256_checksum`. Se adulterado, a importação é sumariamente rejeitada.
+- **Defesa contra Prompt Injection:** O `@dot-auditor` inspeciona `system_prompt`, blocos de `core_memory` e memórias arquivísticas. Se forem detectados padrões de override de sistema, jailbreak ou exfiltração de chaves, a importação é bloqueada com erro de segurança.
+
+### 22.4 Monitoramento de Pinos Físicos GPIO e Barramento MQTT
+- **Leitura de GPIO do Raspberry Pi 4B:** O módulo `EdgeGPIOMonitor` monitora pinos digitais configurados (ex: pino 17 para parada de emergência). Em caso de nível ativo, classifica o incidente como `CRITICAL` e pode suspender execuções destrutivas.
+- **Barramento MQTT Assíncrono:** Sensores de temperatura ambiente, umidade ou presença podem enviar tópicos (ex: `pidots/edge/trigger/alert`) processados assincronamente pelo `EdgeMQTTListener` sem interferir no event loop do servidor.
+
+---
+
+## 23. Operação do Console `/app` Padrão OpenDots & CoAgents AG-UI (v1.6.0)
+
+### 23.1 Navegação pela Activity Rail e 4 Painéis Laterais
+Na lateral esquerda do Console `/app` (ou na visão `[O] DOTS` em dispositivos móveis), o operador dispõe da **Activity Rail** com 4 botões contextuais:
+- **`[S] SPACES`:** Filtra e alterna entre Canais Multi-Bot (`#arquitetura-geral`, `#dev-sandbox`, `#auditoria-hitl`), Threads de Conversa e Documentos persistidos em Spaces.
+- **`[D] DOTS`:** Lista os coworkers ativos, permite invocar o modal **Dots Studio** (`[+ CRIAR DOT]`) para cadastrar ou editar agentes com matriz visual de *Dynamic Tool Pruning*, e acionar **Handoff** ou **Conselho Tripartite**.
+- **`[T] TASKS`:** Gerencia rotinas autônomas Cron/Heartbeat, permitindo pausar/ativar (`PATCH /api/tasks/{id}/toggle`) ou executar imediatamente (`POST /api/tasks/{id}/run`).
+- **`[M] MEM/MCP`:** Executa buscas semânticas híbridas RRF (FTS5 BM25 + Vetor 64D) na memória arquivística e registra novos servidores MCP Lite em tempo real.
+
+### 23.2 Salvar Thread como Documento em Space (`Save as Space`)
+Para consolidar uma deliberação técnica em um documento versionado:
+- Clique no botão **`[SALVAR EM SPACE]`** no cabeçalho contextual da conversa, ou utilize o comando **`/save-space [nome_arquivo.md]`**.
+- O backend (`POST /api/threads/{thread_id}/save-as-space`) compila todas as mensagens da thread em Markdown estruturado, persiste a revisão na tabela `space_revisions` e atualiza a árvore de Spaces.
+
+### 23.3 Aprovação HITL com Edição de Argumentos (`modified_args`) e Retomada Automática
+Quando uma ferramenta de risco alto/crítico é interceptada:
+1. Um cartão **Generative UI HITL** é exibido inline no teletipo (além do dossiê `Alt+H`), contendo uma caixa de edição JSON com os argumentos propostos pelo agente.
+2. O operador pode ajustar parâmetros (ex: corrigir um caminho de arquivo ou flag de comando) e clicar em **`[HOMOLOGAR E RETOMAR]`**.
+3. O endpoint `POST /api/hitl/{approval_id}/resolve` recebe `modified_args` e dispara automaticamente `DotAgent.resume_after_hitl()` em background, retomando o raciocínio ReAct do ponto exato de parada.
+
+### 23.4 Computador do Dot (`Dot's Computer`), Modo Takeover e CoAgents Shared State
+No painel direito do Console (`/app`):
+- **Aba `[COMPUTADOR]`:** Exibe o terminal sandbox (`bwrap`) e o explorador de arquivos do workspace do agente ativo (`GET /api/edge/computer/files`). Ao ativar **`[ASSUMIR CONTROLE]`** (*Modo Takeover*), uma barra de comando interativa permite ao operador executar comandos diretamente no sandbox (`POST /api/edge/computer/exec`).
+- **Aba `[COAGENTS]`:** Inspeciona o estado compartilhado bidirecional (`STATE_SNAPSHOT` e `STATE_DELTA`) sincronizado via SSE e permite aplicar overrides manuais de variáveis JSON (`PATCH /api/threads/{thread_id}/state`).
+
+

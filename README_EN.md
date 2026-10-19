@@ -15,17 +15,19 @@
 
 ## Overview
 
-**piDots** is a platform for persistent autonomous agents (AI Coworkers) specifically designed to run 24/7 on edge computing and resource-constrained environments (SBCs, Mini PCs, and compact servers), using the **Raspberry Pi 4B with 4GB RAM (ARM64)** as its reference benchmark.
+**piDots** is an edge-native autonomous agent platform (AI Coworkers) built to run continuously 24/7 on Single Board Computers (SBCs), Mini PCs, and local servers, using the **Raspberry Pi 4B with 4GB RAM (ARM64)** as its physical benchmark.
 
-Inspired by the persistent coworker concepts of corporate OpenDots, piDots was re-engineered and optimized as a high-performance, asynchronous modular monolith. It eliminates heavy dependencies such as headless Chromium browsers, bulky vector database containers, and Node.js orchestrators, achieving an idle memory footprint of under **50 MB RAM** and less than **100 MB RAM** during simultaneous multi-agent execution.
+We designed piDots from scratch for real silicon. Traditional enterprise agent frameworks assume cloud instances with dozens of gigabytes of RAM, hidden headless browsers, and containerized vector databases. On real edge hardware, this architecture breaks down. Temperatures soar, MicroSD cards wear out quickly under relentless fsync calls, and monthly cloud bills skyrocket.
 
-The platform provides persistent agents tailored for technical workflows (DevOps, Research, Code Auditing), equipped with long-term memory, filesystem sandbox isolation, Human-in-the-Loop (HITL) governance for high-risk operations, and an ultra-responsive dark-mode SPA/PWA web interface.
+piDots solves this as an asynchronous modular monolith in Python (`FastAPI + uvloop`). By removing bloated runtimes, we deliver a deterministic engine that uses **less than 50 MB RAM at idle** and **under 80 MB during concurrent multi-agent execution**.
+
+The system provides persistent coworkers tailored for real-world tasks (coding, system architecture, security auditing, and autonomous maintenance), backed by SQLite WAL persistence, Bubblewrap sandbox containment, HMAC-SHA256 signed Human-in-the-Loop governance, and a tactical dark-mode web console.
 
 ---
 
-## Technical Comparison: piDots vs Corporate OpenDots
+## Technical Comparison: piDots vs Traditional Cloud Frameworks
 
-| Parameter | OpenDots (Corporate Standard) | piDots (Edge Computing) |
+| Parameter | Traditional Frameworks (Cloud Standard) | piDots (Edge Computing) |
 | :--- | :--- | :--- |
 | **Minimum Hardware** | x86_64 Server with 8GB to 16GB RAM | Raspberry Pi 4B (4GB RAM) / ARM64 / x86_64 |
 | **Runtime Stack** | Node.js, Electron/Next.js, Python, Redis | Python 3.11-3.13 (FastAPI, uvloop, AsyncIO) |
@@ -49,16 +51,27 @@ pidots/
 ├── __init__.py
 ├── cli.py               # Native terminal command-line interface
 ├── config.py            # Centralized configuration and environment variable resolution
-├── main.py              # FastAPI entrypoint, REST endpoints, AG-UI SSE streaming, and SPA console
+├── main.py              # FastAPI bootstrap, Lifespan manager, and middleware configuration
+├── api/                 # Decoupled modular sub-routers (APIRouters)
+│   ├── __init__.py      # Central route aggregator
+│   ├── routes_dots.py   # Agent management and Dot Packs v1.1
+│   ├── routes_threads.py # Conversation sessions, channels, and SSE streaming
+│   ├── routes_tasks.py  # Proactive schedules and maintenance
+│   ├── routes_webhooks.py # Telegram, WhatsApp, and incoming webhooks
+│   ├── routes_edge.py   # Telemetry, hardware triggers, and changelog
+│   ├── routes_hitl.py   # Governance and HMAC-SHA256 remote resolution
+│   ├── routes_mcp.py    # MCP Lite server discovery and management
+│   └── routes_static.py # Canonical delivery via EdgeAssetManager
 ├── core/
 │   ├── __init__.py
 │   ├── agent.py         # Asynchronous ReAct execution engine with Dynamic Tool Pruning
 │   ├── council.py       # Advisory Council tripartite dialectic deliberation engine
-│   ├── dot_pack.py      # Portable Dot Pack v1.0 packaging, export, and import manager
-│   ├── edge_triggers.py # Event-driven hardware triggers (Broadcom BCM2711, MicroSD, RAM)
-│   ├── hitl.py          # Human-in-the-Loop governance engine with retention queue
+│   ├── dot_pack.py      # Dot Packs v1.1 signed with SHA-256 and prompt injection defense
+│   ├── edge_triggers.py # Event-driven hardware triggers, GPIO bus, and MQTT listener
+│   ├── hitl.py          # Human-in-the-Loop governance engine with TTL expiration
+│   ├── hitl_crypto.py   # HMAC-SHA256 signature and constant-time token verification
 │   ├── messaging_gateway.py # Unified messaging gateway and collaborative channel bus
-│   ├── notifier.py      # HTTP notifier and remote webhook dispatching
+│   ├── notifier.py      # HTTP notifier and signed remote webhook alerts
 │   ├── orchestrator.py  # Multi-Bot orchestrator (Supervisor, Handoff, @dot mentions)
 │   ├── planner.py       # Two-Stage Planning engine (Goals, Milestones, and Checkpoints)
 │   ├── scheduler.py     # Proactive Dot Heartbeat engine powered by croniter and circuit breaker
@@ -66,7 +79,7 @@ pidots/
 │   └── state.py         # AG-UI protocol event definitions and session state tracking
 ├── providers/
 │   ├── __init__.py
-│   └── openai_client.py # Universal OpenAI-compatible inference client with retries
+│   └── openai_client.py # Universal inference gateway with 3-state Circuit Breaker
 ├── storage/
 │   ├── __init__.py
 │   ├── db.py            # SQLite WAL layer tuned for microSD and idempotent migrations
@@ -78,8 +91,9 @@ pidots/
 └── tools/
     ├── __init__.py
     ├── file_ops.py      # Atomic file reading, writing, and workspace listing
-    ├── registry.py      # Centralized tool registry of 23 tools with Dynamic Tool Pruning
-    ├── terminal.py      # Bubblewrap-isolated and secure subprocess shell executor
+    ├── mcp_client.py    # Async MCP Lite client over STDIO/SSE with Tool Pruning
+    ├── registry.py      # Centralized tool registry with Dynamic Tool Pruning
+    ├── terminal.py      # Bubblewrap-isolated shell executor with STRICT_SANDBOX guard
     └── web_reader.py    # Lightweight async web reader powered by Trafilatura
 ```
 
@@ -94,9 +108,9 @@ piDots provides in-process multi-agent collaboration optimized for edge resource
 - **Leadership Handoff:** The `handoff_to_dot` tool formally reassigns thread leadership to a domain specialist, persisting audit trails in `agent_handoffs`.
 - **Carbon-Copy Internal Messages:** Inter-bot exchanges are marked with `visibility: 'internal'`, keeping technical dialogues accessible for auditing without cluttering user feeds.
 - **Cognitive Archetypes:**
-  - `supervisor`: Workflow coordinator, planning, and goal tracking.
-  - `grok`: Analytical-convergent specialist for code auditing, terminal operations, and root-cause debugging.
-  - `muse`: Creative-divergent specialist for system architecture, concept synthesis, and documentation.
+  - `supervisor`: Workflow coordinator, planning, and executive goal tracking.
+  - `coder`: Software development, terminal debugging, isolated sandbox runs, and automated testing.
+  - `architect`: System architecture, data modeling, conceptual synthesis, and technical documentation.
   - `auditor`: System telemetry, integrity verification, and compliance checks.
 - **Dynamic Tool Pruning:** Agents load only the tool definitions allowed in `allowed_tools_json`, slashing prompt token overhead by up to 75% and preventing tool hallucination.
 
@@ -147,9 +161,9 @@ The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 - **Safety Ceiling:** Strict 3-round upper limit to enforce finite inference expenditure, maintaining resident RAM consumption below 53 MB.
 - **Native Tool:** Accessible to agents via `run_council_debate`.
 
-### 8. Shared Knowledge Space and Portable Dot Packs
+### 8. Shared Knowledge Space and Portable Dot Packs (v1.1)
 - **Shared Knowledge Space (`pidots/storage/shared_space.py`):** Collaborative in-thread note board indexed by `(thread_id, topic_key)` in `thread_shared_notes`. Supports atomic writes (`shared_space_write`), reads (`shared_space_read`), and collaborative overwriting across thread bots, rendered into `<shared_knowledge_space>`.
-- **Dot Packs v1.0 (`pidots/core/dot_pack.py`):** Portable JSON manifest specification packaging persona configurations, cognitive archetype, tool whitelist, Core Memory blocks, Archival Memories, and workspace files. Exported via `GET /api/dots/{dot_id}/export-pack` and imported atomically via `POST /api/dots/import-pack`.
+- **Dot Packs v1.1 with SHA-256 Signatures (`pidots/core/dot_pack.py`):** Standardized JSON manifest with an embedded cryptographic `sha256_checksum`. During atomic import (`POST /api/dots/import-pack`), the system validates manifest integrity and runs static security audits against Prompt Injection patterns in `core_memory` before instantiating the coworker.
 
 ### 9. Edge Hardware Triggers and Autonomous MicroSD Maintenance
 - **Event-Driven Hardware Triggers (`pidots/core/edge_triggers.py`):** Proactively reads SoC Broadcom BCM2711 temperatures via sysfs (`/sys/class/thermal/thermal_zone0/temp`), MicroSD free disk space, and free RAM. Automatically triggers inference throttling and dispatches HITL alerts if temperature exceeds 72°C or free storage drops below 10%. Endpoint: `GET /api/edge/triggers`.
@@ -159,9 +173,9 @@ The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 - **Vanilla JS Micro-Engine (`static/pidots-i18n.js`):** Instant language switching (< 10ms) without bloated frontend frameworks or memory overhead, persisting preference safely in `localStorage.getItem('pidots_lang')`.
 - **Atomic JSON Dictionaries (`data/locales/pt.json` and `data/locales/en.json`):** Semantic edge localization dictionaries with proactive stale-while-revalidate caching and graceful fallbacks.
 - **Strict textContent DOM Mutation:** Declarative attribute bindings via `data-i18n` and `data-i18n-attr`, guaranteeing complete immunity against cross-site scripting (XSS).
-- **Interactive Onboarding & SemVer v1.5.2 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
+- **Interactive Onboarding & SemVer v1.5.3 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
 
-### 11. Unified Slash Commands Protocol (/), Adaptive Triptych & Mobile-First Engineering (v1.5.2)
+### 11. Unified Slash Commands Protocol (/), Adaptive Triptych & Mobile-First Engineering
 - **Comprehensive 30 Slash Commands Catalog:** Commands structured across 6 operational domains (System, Agents, Memory, Tasks, Edge, Export), triggered with `/` in the teletype or via the mechanical touch button `[/]`. Local commands (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) execute client-side in under 16ms with zero LLM API calls and zero token consumption.
 - **Mechanical Slash Trigger Button [/]:** Dedicated tactile button (`#slashTriggerBtn`) inside the operational console opening the slash command popover instantly on mobile devices without requiring virtual keyboard engagement.
 - **Vanilla JS Autocomplete Popover Engine:** Lightweight client-side engine (< 10KB) providing in-memory fuzzy search, cyclic arrow key navigation (ArrowUp/ArrowDown), Tab/Enter completion, Escape dismissal, and Levenshtein fault-tolerance.
@@ -172,13 +186,27 @@ The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 - **Dynamic Virtual Keyboard Synchronization (window.visualViewport):** Reactive `window.visualViewport` listener adjusting physical body height (`document.body.style.height = ${vv.height}px`), hiding bottom navigation via the `keyboard-open` class, and auto-scrolling the ticker after 60ms to eliminate UI collisions on iOS Safari and Android Chrome.
 - **Apple WebKit Anti-Zoom Protection:** Mandatory `font-size: 16px` on mobile inputs and textareas with `touch-action: manipulation`, completely preventing Safari's destructive viewport auto-zoom.
 
-### 12. High-Performance In-Context Spotlight Tour & FTUE Onboarding (v1.5.2)
+### 12. High-Performance In-Context Spotlight Tour & FTUE Onboarding
 - **Vanilla JS PiDotsTourEngine (< 12KB):** Completely replaces static blocking modals with an in-context spotlight anchoring system in the live DOM. Uses single-layer `box-shadow: 0 0 0 9999px rgba(7, 9, 12, 0.84)` composited directly on the GPU, requiring < 1% CPU on the Raspberry Pi 4B and zero third-party dependencies.
 - **Five Canonical Walkthrough Steps:** Practical interactive guide spotlighting the Central Agent Squad, Command Terminal & Teletipo, Workspace Focus Switcher (Zen vs 50/50), Live Canvas & Diffs, and System Drawer (F1).
-- **Safe-Area Anchoring & Non-Intrusive Mobile Focus (v1.5.2):** Fixed positioning of `.pixel-tour-popover` above the bottom navigation bar respecting iOS safe areas, alongside virtual keyboard suppression during mobile walkthroughs.
+- **Safe-Area Anchoring & Non-Intrusive Mobile Focus:** Fixed positioning of `.pixel-tour-popover` above the bottom navigation bar respecting iOS safe areas, alongside virtual keyboard suppression during mobile walkthroughs.
 - **Slash Command `/tour`:** Allows revisiting the walkthrough anytime or resetting operator state via `/tour reset`.
 - **System Drawer & Context Menu Integration:** Dedicated card `[REVER GUIA OPERACIONAL SPOTLIGHT]` in the F1 drawer and rapid context menu shortcut.
 - **First-Time Access Auto-Trigger:** Automatically detects new operators via `localStorage.getItem('pidots_tour_completed')` with a smooth 600ms boot decoupling delay.
+
+### 13. MCP Lite Client (Model Context Protocol) with Dynamic Tool Pruning
+- **On-Demand External Tooling (`pidots/tools/mcp_client.py`):** Connects lightweight external MCP servers via STDIO or async Server-Sent Events (SSE) in pure Python (< 5MB RAM).
+- **Automatic Schema Conversion:** Translates JSON-RPC 2.0 tool definitions into validated Python callables registered dynamically into the `ToolRegistry`.
+- **Strict Dynamic Tool Pruning:** Connected MCP tools are bound to each agent's `allowed_tools_json` whitelist, keeping prompt tokens minimal and preventing hallucinations.
+
+### 14. Remote Signed HITL Governance with HMAC-SHA256 and TTL
+- **Mobile Action Approval (`pidots/core/hitl_crypto.py`):** Generates signed interactive approval and veto links for Telegram and WhatsApp using constant-time HMAC-SHA256 (`hmac.compare_digest`).
+- **Dedicated Endpoint (`/api/hitl/signed-resolve`):** Authorizes or rejects sensitive commands with one tap on a smartphone without needing a browser login session.
+- **Automatic Time-To-Live Expiration (TTL 30m):** Retained requests automatically transition to `EXPIRED` status after 30 minutes, freeing resources and writing an audit security record.
+
+### 15. Physical GPIO Bus and Edge MQTT Sensor Listener
+- **Hardware Direct Interfacing (`pidots/core/edge_triggers.py`):** Native pin reading on Raspberry Pi 4B GPIO (with graceful container and x86_64 fallbacks).
+- **Async MQTT Listener:** Allows local edge sensors and IoT relays to publish telemetry directly to piDots, triggering autonomous agent runs without blocking the uvloop.
 
 ---
 
@@ -213,7 +241,7 @@ Fill in your API key, target language model, and optional alert endpoints:
 ```dotenv
 AI_API_KEY=your-api-key-here
 AI_BASE_URL=https://api.openai.com/v1
-AI_MODEL=qwen3.8-27b
+AI_MODEL=gpt-4o-mini
 
 # Optional: Remote HITL Alerts & Messaging
 WEBHOOK_NOTIFICATION_URL=https://your-endpoint.com/webhook
@@ -364,32 +392,31 @@ The application exposes endpoints for external integration with Server-Sent Even
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/` | Official high-conversion landing and onboarding page in Pixel Paper UI |
-| `GET` | `/app` | Official SPA/PWA operational console in Pixel Paper UI (Dark Noir and Blueprint) |
+| `GET` | `/` | Official landing and onboarding page (ReAct simulator and silicon calculator) |
+| `GET` | `/app` | Official SPA/PWA operational console (Dark Noir and Blueprint monospace) |
 | `GET` | `/workspace` | Canonical operational alias for the SPA/PWA workspace console (`/app`) |
 | `GET` | `/docs` | Canonical operator guide with client-side search (Ctrl+K), retractable drawer, and API tester |
+| `GET` | `/relatorio` | Engineering feasibility and benchmark technical report |
 | `GET` | `/api/docs` | Decoupled interactive OpenAPI Swagger UI for developers |
 | `GET` | `/api/openapi.json` | Raw JSON structured OpenAPI 3.0 schema |
-| `GET` | `/apresentacao` | Permanent HTTP 308 redirect (RFC 7538) to root `/` |
-| `GET` | `/guia` | Permanent HTTP 308 redirect (RFC 7538) to `/docs` |
-| `GET` | `/console` | Permanent HTTP 308 redirect (RFC 7538) to `/app` |
-| `GET` | `/relatorio` | Engineering feasibility and benchmark technical report |
 | `GET` | `/health` | Hardware telemetry (SoC temperature, RAM, SQLite WAL status) |
 | `GET` | `/manifest.json` | Progressive Web App manifest for desktop and mobile installation (`start_url: /app`) |
 | `GET` | `/sw.js` | Progressive Web App Service Worker with defensive v7 cache for offline resilience |
 | `GET` | `/icon.svg` | Official vector SVG icon with 24-hour cache headers |
 | `GET` | `/static/pidots-i18n.js` | Client-side Vanilla JS internationalization micro-engine |
 | `GET` | `/data/locales/{lang}.json` | Atomic bilingual localization dictionaries (PT/EN) with edge caching |
-| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.5.2) |
+| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.5.3) |
 | `GET` | `/api/dots` | List all registered AI Coworkers with archetypes and status |
-| `GET` | `/api/dots/{id}/export-pack` | Portable DotPack v1.0 export (persona, memory stores, and workspace files) |
-| `POST` | `/api/dots/import-pack` | Atomic import of AI Coworker packages from DotPack manifest |
+| `GET` | `/api/dots/{id}/export-pack` | Portable DotPack v1.1 export with SHA-256 integrity signature |
+| `POST` | `/api/dots/import-pack` | Atomic import of AI Coworker packages from DotPack v1.1 with security audit |
 | `POST` | `/api/threads` | Create a durable conversation thread |
 | `GET` | `/api/threads/{id}/messages` | Message history with multi-actor metadata and visibility scope |
 | `POST` | `/api/threads/{id}/runs` | Execute autonomous agent loop with AG-UI SSE streaming |
 | `GET` | `/api/hitl/pending` | List pending Human-in-the-Loop approval requests |
 | `POST` | `/api/hitl/{id}/resolve` | Formally approve or reject a retained command |
+| `POST` | `/api/hitl/signed-resolve` | Remote HMAC-SHA256 signed HITL approval/rejection for Telegram/WhatsApp |
 | `POST` | `/api/hitl/webhook-callback` | Remote webhook callback for asynchronous HITL resolution |
+| `GET` | `/api/mcp/servers` | Discover connected lightweight MCP Lite external servers |
 | `GET` | `/api/spaces` | List versioned documents stored in Spaces |
 | `POST` | `/api/spaces` | Save or update a document with incremental versioning and diffs |
 | `GET` | `/api/spaces/{id}` | Retrieve full contents of a Spaces document |
@@ -418,21 +445,21 @@ The application exposes endpoints for external integration with Server-Sent Even
 
 ---
 
-### Web SPA Operational Console and Pixel Paper UI Design System
-piDots includes a native dark-mode SPA/PWA interface served on the canonical path `/app` (or `/workspace`), engineered under the **Pixel Paper UI** design system:
-- **Pixel Paper UI Aesthetics:** Tactical visual style inspired by technical teletypes, library catalog cards, and graph paper with high density, crisp technical typography, and 1-bit minimalist retro aesthetics.
+### Web SPA Operational Console and Minimalist Technical Interface
+piDots includes a native dark-mode SPA/PWA interface served on the canonical path `/app` (or `/workspace`), engineered as a tactical monospace console:
+- **High-Density Technical Aesthetics:** Tactical visual style inspired by technical matrix consoles with high information density, crisp typography, and 1-bit retro minimalism.
 - **Official Vector Logo:** piDots identity branding served via `/icon.svg` with interconnected nodes in green (#10b981) and cyan (#38bdf8).
 - **Three Ergonomic Operational Modes:**
   - *Mode 1: 50/50 Creation:* Side-by-side teletype chat and Live Canvas for simultaneous coding, artifact generation, and document review.
   - *Mode 2: Zen Focus (Claude Code / Linear style):* Collapsed sidebar and canvas, centering chat at an optimal 880px width for deep reading and continuous thought.
   - *Mode 3: Technical Management Panel:* On-demand access to hardware telemetry (SoC/RAM/WAL), LLM settings, and bubblewrap sandbox via the retractable drawer (F1 / `[SISTEMA]` or `/telemetry`).
-- **Core Specialist Squad:** Clean interface displaying only the 4 essential coworkers (Supervisor, Dev Assistant, Muse, and Auditor), eliminating the clutter of dozens of test bots.
+- **Core Specialist Squad:** Clean interface displaying only the 4 essential coworkers (Supervisor, Coder, Architect, and Auditor), eliminating the clutter of dozens of test bots.
 - **Unobstructed Teletype & Input:** Removed 20px tractor-feed margins (40px reclaimed) and rigid command prompt sign, granting maximum horizontal width for reading and drafting.
 - **Diff Viewer and Versioning:** Side-by-side inspection of file modifications persisted in SQLite WAL with analog status stamps.
-- **Just-in-Time Interactive HITL Governance:** Forensic approval and veto cards rendered only when actions are held, preserving security audit trails.
+- **Just-in-Time Interactive HITL Governance:** Security approval and veto cards rendered only when actions are held, preserving security audit trails.
 - **AG-UI Reasoning Streaming:** Progressive token-by-token display of agent thoughts and tool calls.
 - **Guided Onboarding Walkthrough:** Five-step interactive onboarding flow for first-time operators with client persistence and instant F1 replay.
-- **SemVer v1.5.2 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
+- **SemVer v1.5.3 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
 
 #### Cross-Surface Navigation via Global Keyboard Chords
 Instant, zero-friction transition between system surfaces without requiring a mouse:
@@ -448,8 +475,9 @@ Tactical terminal and artifact operations without interface friction:
 
 | Shortcut | Operational Action | Description |
 | :--- | :--- | :--- |
-| `Key /` | Autocomplete Popover | Triggers catalog of 30 Slash Commands with fuzzy search in teletype |
+| `Key /` | Autocomplete Popover | Triggers catalog of 34 Slash Commands with fuzzy search in teletype |
 | `Button [/]` | Touch Autocomplete | Opens slash command popover directly without triggering virtual keyboard |
+| `Alt+1` to `Alt+4` | Activity Rail Sidebar | Instantly switches across the 4 contextual panes (Spaces, Dots Studio, Cron Tasks, 64D Memory) |
 | `Bottom-Nav` | Mobile View Switch | Switches between [O] DOTS, [>] CHAT, [*] CANVAS, and [?] GUIDE views |
 | `Alt+B` / `Ctrl+B` | Toggle Sidebar | Toggles visibility of coworkers and spaces sidebar |
 | `Alt+I` | Inspect Artifact | Focuses and expands active artifact in Live Canvas |
@@ -468,9 +496,9 @@ The Operational SPA Console features a native slash command (`/`) engine designe
 
 | Category | Primary Commands | Usage Examples |
 | :--- | :--- | :--- |
-| **System & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/tour`, `/onboarding`, `/changelog` | `/tour`, `/tour reset`, `/telemetry`, `/theme blueprint` |
-| **Agents & Multi-Bot** | `/dots`, `/handoff`, `/council`, `/delegate`, `/archetype`, `/tools` | `/dots`, `/handoff dot-researcher`, `/council thermal analysis` |
-| **Memory & Knowledge** | `/memory`, `/archival`, `/shared`, `/spaces`, `/diff` | `/archival SQLite WAL`, `/spaces analysis.md`, `/diff` |
+| **System & UI** | `/help`, `/clear`, `/theme`, `/lang`, `/info`, `/status`, `/telemetry`, `/pwa`, `/tour`, `/onboarding`, `/changelog`, `/computer` | `/tour`, `/computer ls -la`, `/telemetry`, `/theme blueprint` |
+| **Agents & Multi-Bot** | `/dots`, `/handoff`, `/council`, `/delegate`, `/archetype`, `/tools`, `/mcp`, `/coagents` | `/dots`, `/handoff dot-auditor`, `/coagents`, `/mcp` |
+| **Memory & Knowledge** | `/memory`, `/archival`, `/shared`, `/spaces`, `/diff`, `/save-space` | `/archival SQLite WAL`, `/save-space notes.md`, `/diff` |
 | **Tasks & Heartbeat** | `/tasks`, `/cron`, `/run-task` | `/tasks`, `/cron list`, `/run-task task-001` |
 | **Governance & Edge** | `/hitl`, `/triggers`, `/maintenance`, `/backup` | `/hitl status`, `/triggers`, `/maintenance run` |
 | **Export & Data** | `/export`, `/pack` | `/export chat`, `/export canvas`, `/pack dot-dev-core` |
@@ -514,6 +542,11 @@ python3 scripts/test_phase10_self_healing_planner.py # Self-Healing Harness and 
 python3 scripts/test_phase11_council_debate.py       # Advisory Council Tripartite Deliberation
 python3 scripts/test_phase12_shared_space_dot_packs.py # Shared Knowledge Space and Dot Packs v1.0
 python3 scripts/test_phase13_edge_triggers_maintenance.py # Hardware Triggers and MicroSD Maintenance
+
+# AG-UI protocol, CoAgents Shared State, Generative UI Inline, and OpenDots Layout suites
+python3 scripts/test_phase1_opendots_agui.py
+python3 scripts/test_phase2_opendots_layout.py
+python3 scripts/test_phase3_opendots_dynamic_js.py
 
 # End-to-end resilience suite (Typed exceptions, AG-UI v1.0, 3 consumers, Circuit Breaker)
 python3 scripts/test_resilience_phases.py
@@ -585,7 +618,7 @@ python3 scripts/stress_test.py
 ├── SECURITY.md                      # Security policy and vulnerability reporting
 ├── scripts/                         # Automated test suites and stress benchmarks
 └── static/                          # High-performance frontend static assets
-    ├── css/                         # Modular Pixel Paper UI Design System
+    ├── css/                         # Modular segmented stylesheets
     │   ├── tokens.css, reset.css, layout.css, components.css, mobile.css
     │   └── spa.css, landing.css, docs.css, relatorio.css
     └── js/                          # Modular Vanilla JS runtime engines

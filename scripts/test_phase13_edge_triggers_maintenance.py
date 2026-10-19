@@ -41,7 +41,7 @@ async def run_phase13_tests():
         await db.execute(
             """
             INSERT OR REPLACE INTO dots (id, name, role, system_prompt, model, workspace_path, archetype)
-            VALUES (?, 'Dot Edge Teste', 'Monitor Hardware', 'Prompt Edge', 'qwen3.8-27b', '/tmp', 'general')
+            VALUES (?, 'Dot Edge Teste', 'Monitor Hardware', 'Prompt Edge', 'test-model', '/tmp', 'general')
             """,
             (dot_test_id,)
         )

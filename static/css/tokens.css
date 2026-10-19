@@ -18,6 +18,7 @@
     /* Dimensoes Estruturais */
     --header-height: 52px;
     --drawer-width: 380px;
+    --bottom-nav-height: 58px;
 
     /* Tipografia Tecnica Hibrida */
     --font-pixel: 'Silkscreen', monospace;
@@ -30,6 +31,10 @@
     --paper-surface: #11161d;
     --paper-surface-elevated: #182029;
     --paper-surface-recessed: #040608;
+
+    /* Aliases Canonicos de Superficie (Pixel Paper UI) */
+    --paper-noir-base:      var(--paper-base);
+    --paper-surface-sheet:  var(--paper-sheet);
 
     /* Tintas Tecnicas e Fosforo Retro */
     --ink-main: #f1f5f9;
@@ -70,10 +75,22 @@
     --border-strong: #3d5168;
     --border-accent: #38bdf8;
 
+    /* Aliases Canonicos de Bordas Pixel */
+    --border-pixel-subtle:  var(--border-subtle);
+    --border-pixel-default: var(--border-default);
+    --border-pixel-strong:  var(--border-strong);
+    --border-pixel-accent:  var(--border-accent);
+
     /* Sombras Mecanicas Solidas Duras (Zero Blur) */
     --shadow-sm: 2px 2px 0px #000000;
     --shadow-md: 4px 4px 0px #000000;
     --shadow-lg: 6px 6px 0px #000000;
+
+    /* Aliases Canonicos de Sombras Solidas */
+    --shadow-pixel-sm:      var(--shadow-sm);
+    --shadow-pixel-md:      var(--shadow-md);
+    --shadow-pixel-lg:      var(--shadow-lg);
+    --shadow-pixel-hard:    var(--shadow-sm);
 
     /* Grade Milimetrada Procedural */
     --grid-color-fine: rgba(56, 189, 248, 0.04);
@@ -125,9 +142,21 @@
     --border-strong: #475569;
     --border-accent: #0284c7;
 
+    /* Aliases Canonicos de Bordas Pixel (Blueprint) */
+    --border-pixel-subtle:  var(--border-subtle);
+    --border-pixel-default: var(--border-default);
+    --border-pixel-strong:  var(--border-strong);
+    --border-pixel-accent:  var(--border-accent);
+
     --shadow-sm: 2px 2px 0px #0f172a;
     --shadow-md: 4px 4px 0px #0f172a;
     --shadow-lg: 6px 6px 0px #0f172a;
+
+    /* Aliases Canonicos de Sombras Solidas (Blueprint) */
+    --shadow-pixel-sm:      var(--shadow-sm);
+    --shadow-pixel-md:      var(--shadow-md);
+    --shadow-pixel-lg:      var(--shadow-lg);
+    --shadow-pixel-hard:    var(--shadow-sm);
 
     --grid-color-fine: rgba(2, 132, 199, 0.06);
     --grid-color-major: rgba(2, 132, 199, 0.15);

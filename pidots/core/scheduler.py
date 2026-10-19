@@ -358,7 +358,7 @@ async def heartbeat_worker_loop(
                     _background_tasks.add(t)
                     t.add_done_callback(_background_tasks.discard)
 
-            # Monitoramento proativo de triggers de hardware a cada ~60 segundos
+            # Monitoramento proativo de triggers de hardware e expiração HITL a cada ~60 segundos
             hardware_check_ticks += 1
             if hardware_check_ticks >= max(1, 60 // check_interval_seconds):
                 hardware_check_ticks = 0
@@ -367,6 +367,12 @@ async def heartbeat_worker_loop(
                     await EdgeHardwareTriggers.evaluate_and_alert(notify_hitl=True)
                 except Exception as hw_err:
                     logger.debug("Falha na checagem de triggers de hardware no heartbeat: %s", str(hw_err))
+
+                try:
+                    from .hitl import HITLManager
+                    await HITLManager.expire_stale_approvals()
+                except Exception as hitl_err:
+                    logger.debug("Falha na varredura periódica de expiração HITL: %s", str(hitl_err))
 
             await asyncio.sleep(check_interval_seconds)
         except asyncio.CancelledError:

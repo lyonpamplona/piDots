@@ -12,6 +12,7 @@ import zlib
 import logging
 from typing import Any
 from .db import get_db
+from .memory_manager import compute_compact_embedding, cosine_similarity as mm_cosine_similarity
 
 logger = logging.getLogger("pidots.storage.vector")
 
@@ -24,39 +25,15 @@ class VectorStore:
     @staticmethod
     def _compute_embedding(text: str) -> list[float]:
         """
-        Gera um vetor numérico de dimensão fixa (64) normalizado via projeção determinística.
-        Usa zlib.crc32 para estabilidade total entre processos e reinicializações de contêiner.
+        Gera um vetor numérico de dimensão fixa (64) normalizado via projeção determinística
+        unificada com o MemoryManager (clusters de domínio + feature hashing de tokens e 3-grams).
         """
-        vec = [0.0] * VECTOR_DIM
-        words = re.findall(r"\w+", text.lower())
-
-        if not words:
-            return vec
-
-        for i, word in enumerate(words):
-            h = zlib.crc32(word.encode("utf-8"))
-            idx = h % VECTOR_DIM
-            weight = 1.0 / (1.0 + math.log(1.0 + i * 0.1))
-            vec[idx] += weight
-
-            # 2-grams para captura de contexto sintático
-            if i > 0:
-                bi_h = zlib.crc32(f"{words[i - 1]}_{word}".encode("utf-8"))
-                bi_idx = bi_h % VECTOR_DIM
-                vec[bi_idx] += 0.5 * weight
-
-        # Normalização L2 (vetor unitário)
-        norm = math.sqrt(sum(x * x for x in vec))
-        if norm > 0:
-            vec = [round(x / norm, 5) for x in vec]
-        return vec
+        return compute_compact_embedding(text, dim=VECTOR_DIM)
 
     @staticmethod
     def cosine_similarity(v1: list[float], v2: list[float]) -> float:
         """Calcula a similaridade de cosseno entre dois vetores normalizados."""
-        if len(v1) != len(v2):
-            return 0.0
-        return sum(a * b for a, b in zip(v1, v2))
+        return mm_cosine_similarity(v1, v2)
 
     @classmethod
     async def index_document(cls, space_id: str, content: str, chunk_size: int = 400) -> int:

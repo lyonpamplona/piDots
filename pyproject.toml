@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pidots"
-version = "1.5.2"
-description = "Always-On AI Coworkers persistentes e otimizados para Raspberry Pi 4B (ARM64) e Edge Computing"
+version = "1.5.3"
+description = "Always-On AI Coworkers persistentes e otimizados para Raspberry Pi 4B (ARM64) e Edge Computing com protocolo AG-UI e CoAgents"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

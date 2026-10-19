@@ -9,7 +9,7 @@
     "lang_toggle": "[IDIOMA: PT | EN]",
     "pwa_install": "[INSTALAR PWA]",
     "onboarding": "[TOUR]",
-    "patch_notes": "[NOTAS V1.5.2]",
+    "patch_notes": "[NOTAS V1.5.3]",
     "clean": "[LIMPAR]",
     "split_canvas": "[CANVAS: DIVIDIDO]",
     "manual": "[MANUAL TECNICO]"
@@ -43,11 +43,11 @@
     "cta_final_lead": "Basta clonar o repositorio e disparar o Docker Compose. Sem passos ocultos, sem configuracoes mirabolantes e com codigo 100% auditavel."
   },
   "console": {
-    "chat_title": "TELETIPO DE COMUNICACAO // CHAT MULTI-BOT",
+    "chat_title": "TELETIPO DE COMUNICACAO // CHAT DE AGENTES",
     "canvas_title": "PAINEL DE DOCUMENTOS // LIVE ARTIFACT CANVAS",
-    "input_placeholder": "Digite uma tarefa ou mencione @coder, @muse, @auditor...",
+    "input_placeholder": "Digite uma tarefa ou mencione @coder, @arquiteto, @auditor...",
     "send_btn": "[ENVIAR]",
-    "welcome_system": "[SISTEMA] piDots pronto. Conexao local estabelecida com SQLite WAL. Modelo ativo: qwen3.8-27b (Memoria RSS: 52 MB).",
+    "welcome_system": "[SISTEMA] piDots pronto. Conexao local estabelecida com SQLite WAL. Motor de inferencia ativo (Memoria RSS: 52 MB).",
     "welcome_agent": "Ola, Lyon. O ambiente esta pronto para trabalhar. O espaco de trabalho local (/workspace) esta mapeado e a telemetria do hardware esta estavel. O que vamos construir ou revisar hoje? Voce pode digitar uma tarefa diretamente, chamar outro especialista usando @coder ou pressionar F1 para abrir o manual rapido."
   },
   "onboarding": {
@@ -56,12 +56,12 @@
     "subtitle": "Um tour rapido de 2 minutos para voce dominar o controle dos seus agentes locais.",
     "step1_title": "01 // CONCEITO: AGENTES PERSISTENTES NA BORDA",
     "step1_desc": "O piDots transforma seu dispositivo de borda em uma estacao de trabalho inteligente. Monolito leve em Python assincrono que roda multiplos especialistas consumindo menos de 70 MB de RAM.",
-    "step2_title": "02 // MENCOES E DELEGACAO: @DOT",
-    "step2_desc": "Fale diretamente com os bots digitando @coder para programacao, @muse para documentacao e @auditor para revisao de comandos. O supervisor distribui o trabalho sem voce precisar configurar nada.",
+    "step2_title": "02 // MENCOES E DELEGACAO: @ESPECIALISTA",
+    "step2_desc": "Fale diretamente com os assistentes digitando @coder para programacao, @arquiteto para documentacao e @auditor para revisao de comandos. O supervisor distribui o trabalho sem voce precisar configurar nada.",
     "step3_title": "03 // LIVE CANVAS & ARTEFATOS",
     "step3_desc": "Arquivos, revisoes de codigo e diagramas aparecem no painel lateral a direita sem poluir o chat. Voce pode inspecionar diffs e restaurar versoes anteriores a qualquer momento.",
     "step4_title": "04 // GOVERNANCA E SEGURANCA HITL",
-    "step4_desc": "Comandos potencialmente perigosos (como apagar arquivos ou alterar o sistema) sao pausados na hora. Voce revisa exatamente o que o bot quer rodar antes de autorizar.",
+    "step4_desc": "Comandos potencialmente perigosos (como apagar arquivos ou alterar o sistema) sao pausados na hora. Voce revisa exatamente o que o assistente quer rodar antes de autorizar.",
     "step5_title": "05 // ATALHOS DE TECLADO & PWA",
     "step5_desc": "Operacao veloz: F1 abre o manual, Alt+I inspeciona artefatos, Ctrl+L limpa o teletipo. Instale como PWA no celular ou desktop para usar em tela cheia.",
     "btn_skip": "[PULAR INTRODUCAO]",
@@ -70,10 +70,10 @@
     "btn_finish": "[CONCLUIR TOUR & INICIAR]"
   },
   "patch": {
-    "header": "PIDOTS // NOTAS DE ATUALIZACAO - VERSAO 1.5.2",
+    "header": "PIDOTS // NOTAS DE ATUALIZACAO - VERSAO 1.5.3",
     "badge": "RECEM APLICADO",
-    "title": "NOTAS DE ATUALIZACAO - VERSAO 1.5.2",
-    "subtitle": "Consolidacao da Engenharia Mobile-First, Ergonomia Touch e Sincronizacao de Teclado VisualViewport.",
+    "title": "NOTAS DE ATUALIZACAO - VERSAO 1.5.3",
+    "subtitle": "Modulo MCP Lite, Governanca HITL Assinada com HMAC-SHA256, Dot Packs v1.1 e Barramento Fisico GPIO/MQTT.",
     "tag_new": "[INCLUIDO / NOVO]",
     "tag_opt": "[AJUSTADO / MELHORADO]",
     "tag_dep": "[REMOVIDO / DEPRECIADO]",
@@ -82,20 +82,20 @@
   },
   "guide": {
     "title": "PIDOTS // MANUAL OPERACIONAL DE ENGENHARIA",
-    "subtitle": "Guia passo a passo de configuracao, arquitetura multi-bot e operacao continua de borda",
+    "subtitle": "Guia passo a passo de configuracao, arquitetura de agentes locais e operacao continua de borda",
     "search_placeholder": "Pesquisar conceitos, rotas ou comandos (Ctrl+K)...",
     "step1_tag": "PASSO 01 // CONCEITO E ARQUITETURA DE BORDA",
     "step2_tag": "PASSO 02 // INSTALACAO E DOCKER COMPOSE",
     "step3_tag": "PASSO 03 // AMBIENTE E VARIAVEIS (.ENV)",
-    "step4_tag": "PASSO 04 // CHAT MULTI-BOT E MENCOES @DOT",
-    "step5_tag": "PASSO 05 // DOT HEARTBEAT E TELEGRAM/WHATSAPP",
+    "step4_tag": "PASSO 04 // CHAT DE AGENTES E MENCOES @COWORKER",
+    "step5_tag": "PASSO 05 // HEARTBEAT AUTONOMO E TELEGRAM/WHATSAPP",
     "step6_tag": "PASSO 06 // TESTADOR INTERATIVO DE API REST",
     "step7_tag": "PASSO 07 // AUDITORIA E GOVERNANCA HITL",
     "step8_tag": "PASSO 08 // CATALOGO COMPLETO DE SLASH COMMANDS (/)"
   },
   "slash": {
     "popover_title": "SLASH COMMANDS // PROTOCOLO DE BORDA",
-    "badge": "CATALOGO: 30 COMANDOS",
+    "badge": "CATALOGO: 34 COMANDOS",
     "tab_all": "[TODOS]",
     "tab_system": "[SISTEMA]",
     "tab_agents": "[AGENTES]",
@@ -104,5 +104,19 @@
     "tab_gov": "[GOVERNANCA]",
     "tab_data": "[DADOS]",
     "tip_navigation": "Navegue com setas, Tab para autocompletar e Enter para executar."
+  },
+  "opendots": {
+    "rail_spaces": "SPACES",
+    "rail_dots": "DOTS",
+    "rail_tasks": "TASKS",
+    "rail_memory": "MEM",
+    "rail_hitl": "HITL",
+    "save_as_space": "[SALVAR EM SPACE]",
+    "handoff": "[HANDOFF]",
+    "council": "[CONSELHO]",
+    "computer_banner": "COMPUTADOR DO DOT //",
+    "mode_observation": "[MODO: OBSERVACAO]",
+    "mode_takeover": "[MODO: TAKEOVER ATIVO]",
+    "tab_coagents": "[COAGENTS]"
   }
 }
