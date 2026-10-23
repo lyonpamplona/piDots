@@ -15,10 +15,15 @@
     --safe-left: env(safe-area-inset-left, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
 
-    /* Dimensoes Estruturais */
-    --header-height: 52px;
+    /* Dimensoes Estruturais OpenDots Spatial */
+    --header-height: 48px;
+    --header-total-height: calc(var(--header-height, 48px) + var(--safe-top, 0px));
+    --subheader-height: 38px;
     --drawer-width: 380px;
-    --bottom-nav-height: 58px;
+    --bottom-nav-height: 54px;
+    --mobile-nav-height: 54px;
+    --rail-left-width: 270px;
+    --rail-right-width: 340px;
 
     /* Tipografia Tecnica Hibrida */
     --font-pixel: 'Silkscreen', monospace;
@@ -69,17 +74,27 @@
     --accent-amber:   var(--thermal-amber);
     --accent-rose:    var(--stamp-danger);
 
+    /* Aliases Curtos de Governanca e Cores Primarias */
+    --cyan:           var(--blueprint-cyan);
+    --green:          var(--phosphor-green);
+    --amber:          var(--thermal-amber);
+    --red:            var(--stamp-danger);
+
     /* Bordas e Contornos Tecnicos */
     --border-subtle: #1c2633;
     --border-default: #283340;
     --border-strong: #3d5168;
     --border-accent: #38bdf8;
+    --border-crisp:  #283340;
+    --border-bright: #475569;
 
     /* Aliases Canonicos de Bordas Pixel */
     --border-pixel-subtle:  var(--border-subtle);
     --border-pixel-default: var(--border-default);
     --border-pixel-strong:  var(--border-strong);
     --border-pixel-accent:  var(--border-accent);
+    --border-pixel-crisp:   var(--border-crisp);
+    --border-pixel-bright:  var(--border-bright);
 
     /* Sombras Mecanicas Solidas Duras (Zero Blur) */
     --shadow-sm: 2px 2px 0px #000000;
@@ -137,16 +152,25 @@
     --accent-amber:   var(--thermal-amber);
     --accent-rose:    var(--stamp-danger);
 
+    --cyan:           var(--blueprint-cyan);
+    --green:          var(--phosphor-green);
+    --amber:          var(--thermal-amber);
+    --red:            var(--stamp-danger);
+
     --border-subtle: #cbd5e1;
     --border-default: #94a3b8;
     --border-strong: #475569;
     --border-accent: #0284c7;
+    --border-crisp:  #94a3b8;
+    --border-bright: #64748b;
 
     /* Aliases Canonicos de Bordas Pixel (Blueprint) */
     --border-pixel-subtle:  var(--border-subtle);
     --border-pixel-default: var(--border-default);
     --border-pixel-strong:  var(--border-strong);
     --border-pixel-accent:  var(--border-accent);
+    --border-pixel-crisp:   var(--border-crisp);
+    --border-pixel-bright:  var(--border-bright);
 
     --shadow-sm: 2px 2px 0px #0f172a;
     --shadow-md: 4px 4px 0px #0f172a;

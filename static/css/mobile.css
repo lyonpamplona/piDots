@@ -78,6 +78,22 @@ nav.mobile-bottom-nav {
     letter-spacing: 0.06em;
 }
 
+.mobile-nav-badge {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    background: var(--thermal-amber);
+    color: #000000;
+    font-family: var(--font-pixel);
+    font-size: 6px;
+    font-weight: 700;
+    padding: 1px 3px;
+    border: 1px solid #000000;
+    line-height: 1;
+    box-shadow: 1px 1px 0px #000000;
+    pointer-events: none;
+}
+
 .send-btn-short {
     display: none;
 }
@@ -97,19 +113,34 @@ nav.mobile-bottom-nav {
         display: flex !important;
     }
 
-    /* Cabecalho compacto mobile em linha unica com rolagem horizontal suave */
-    header.mission-header {
-        padding: 6px 10px !important;
-        padding-top: max(6px, var(--safe-top)) !important;
-        padding-left: max(10px, var(--safe-left)) !important;
-        padding-right: max(10px, var(--safe-right)) !important;
-        overflow-x: auto !important;
-        scrollbar-width: none !important;
+    /* Cabecalho compacto mobile em linha unica com Safe Area dinamica */
+    header.top-deck,
+    header.mission-header,
+    header.landing-header,
+    header.guide-header,
+    header.top-bar {
+        height: 48px; /* Altura base nominal de 48px do cabecalho */
+        min-height: 48px;
+        height: calc(var(--header-height, 48px) + var(--safe-top, 0px)) !important;
+        min-height: calc(var(--header-height, 48px) + var(--safe-top, 0px)) !important;
+        max-height: calc(var(--header-height, 48px) + var(--safe-top, 0px)) !important;
+        padding: 4px 8px !important;
+        padding-top: max(4px, var(--safe-top, 0px)) !important;
+        padding-left: max(8px, var(--safe-left, 0px)) !important;
+        padding-right: max(8px, var(--safe-right, 0px)) !important;
         flex-wrap: nowrap !important;
+        gap: 6px !important;
     }
 
+    header.top-deck::-webkit-scrollbar,
     header.mission-header::-webkit-scrollbar {
         display: none;
+    }
+
+    .top-deck-right .desktop-only-btn,
+    .top-deck-right #btn-lang-toggle,
+    .top-deck-right #btn-theme-toggle {
+        display: none !important;
     }
 
     .mission-header .brand-title,
@@ -117,9 +148,16 @@ nav.mobile-bottom-nav {
         display: none !important; /* Oculta titulo extenso no cabecalho compacto do SPA */
     }
 
+    .header-breadcrumb-agent,
+    #headerBreadcrumbAgent {
+        display: none !important; /* Evita que o breadcrumb de agente colida no cabecalho mobile */
+    }
+
     #btnSidebarToggle,
-    .header-center-controls {
-        display: none !important; /* Oculta acoes redundantes/pesadas no cabecalho mobile */
+    .header-center-controls,
+    .spa-shell #btn-lang-toggle,
+    .spa-shell #btn-theme-toggle {
+        display: none !important; /* Controles secundarios acessiveis via #mobileQuickControlsBar no Drawer */
     }
 
     /* Surface Switcher ultracompacto no Mobile (< 768px) */
@@ -238,6 +276,9 @@ nav.mobile-bottom-nav {
 
     /* Otimizacoes da Bobina de Teletipo (Chat) */
     .ticker-header-bar {
+        height: auto !important;
+        min-height: 38px !important;
+        max-height: none !important;
         padding: 6px 10px !important;
         flex-wrap: wrap !important;
         gap: 6px !important;

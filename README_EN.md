@@ -173,7 +173,7 @@ The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 - **Vanilla JS Micro-Engine (`static/pidots-i18n.js`):** Instant language switching (< 10ms) without bloated frontend frameworks or memory overhead, persisting preference safely in `localStorage.getItem('pidots_lang')`.
 - **Atomic JSON Dictionaries (`data/locales/pt.json` and `data/locales/en.json`):** Semantic edge localization dictionaries with proactive stale-while-revalidate caching and graceful fallbacks.
 - **Strict textContent DOM Mutation:** Declarative attribute bindings via `data-i18n` and `data-i18n-attr`, guaranteeing complete immunity against cross-site scripting (XSS).
-- **Interactive Onboarding & SemVer v1.5.3 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
+- **Interactive Onboarding & SemVer v1.5.5 Patch Notes:** Five-step first-run walkthrough with persistent client completion and dynamic patch notes modal synchronized via `/api/changelog`.
 
 ### 11. Unified Slash Commands Protocol (/), Adaptive Triptych & Mobile-First Engineering
 - **Comprehensive 30 Slash Commands Catalog:** Commands structured across 6 operational domains (System, Agents, Memory, Tasks, Edge, Export), triggered with `/` in the teletype or via the mechanical touch button `[/]`. Local commands (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) execute client-side in under 16ms with zero LLM API calls and zero token consumption.
@@ -207,6 +207,33 @@ The `pidots/core/council.py` module coordinates formal multi-agent deliberation:
 ### 15. Physical GPIO Bus and Edge MQTT Sensor Listener
 - **Hardware Direct Interfacing (`pidots/core/edge_triggers.py`):** Native pin reading on Raspberry Pi 4B GPIO (with graceful container and x86_64 fallbacks).
 - **Async MQTT Listener:** Allows local edge sensors and IoT relays to publish telemetry directly to piDots, triggering autonomous agent runs without blocking the uvloop.
+
+### 16. Community Dot Packs v1.1 Catalog Signed with SHA-256
+- **Standardized Official Distribution (`data/packs/`):** Three community-signed manifests ready for use:
+  - `@dot-secops`: Security Sentinel for port scanning, SSH log auditing, and Linux compliance.
+  - `@dot-homelab`: Homelab Orchestrator managing Docker containers, physical GPIO/MQTT sensors, and disk wear.
+  - `@dot-finops`: Telemetry Analyst tracking token usage, CPU load, and inference power efficiency.
+- **Catalog and 1-Click Install Endpoints:**
+  - `GET /api/dots/packs/catalog`: Lists available manifests with tool counts and archival memory facts.
+  - `POST /api/dots/packs/install/{pack_id}`: Verifies canonical SHA-256 checksum, triggers `@dot-auditor` Prompt Injection inspection, and restores the Dot into the SQLite WAL atomically.
+
+### 17. Static Asset Offloading with Multi-Port Alpine Nginx and Strict Sandboxing
+- **Multi-Port Nginx Alpine Container (`nginx/nginx.conf`):** Lightweight reverse proxy (< 6MB RAM) listening on four decoupled edge ports (`8081` Landing, `8082` Workspace, `8083` Docs, and `8088` Gateway), serving `/static/` and `/data/locales/` directly in C with `Cache-Control: immutable` headers and SSE streaming with `proxy_buffering off`, preserving 100% of FastAPI CPU for ReAct and SQLite WAL.
+- **Strict Sandbox Guard (`STRICT_SANDBOX`):** When enabled in `.env`, terminal tools reject execution (`exit_code: 126`) if Bubblewrap (`bwrap`) namespaces are missing from the container, preventing unprotected command execution.
+
+### 18. Centaur Engineering Manifesto and Multi-Arch CI
+- **Centaur Engineering Manifesto (`AI_MANIFESTO.md`):** Public declaration of human-AI collaborative craftsmanship, establishing radical honesty regarding physical silicon constraints (BCM2711, 4GB RAM, flash wear, 78°C thermal ceiling) and absolute zero emojis/AI slop.
+- **Multi-Arch CI Pipeline (`.github/workflows/ci.yml`):** Automated parallel builds for `linux/amd64` and `linux/arm64` via QEMU and Buildx, verifying 24 test suites on every commit.
+
+### 19. Edge Port Decoupling & Cloudflare Tunnel Integration (v1.5.5)
+- **Isolated Edge Surfaces:**
+  - `http://localhost:8081`: Official Overview / Landing Page with live ReAct simulator.
+  - `http://localhost:8082`: Operational Workspace Console SPA / PWA (recommended Cloudflare Zero Trust Access protection).
+  - `http://localhost:8083`: Interactive User Guide & Reverse Engineering Studies (`/relatorio`).
+  - `http://localhost:8088`: Unified Gateway supporting canonical paths and HTTP 308 redirects.
+  - `http://localhost:8000`: Dedicated internal FastAPI Core backend.
+- **Intelligent Cross-Surface Router (`cross-surface-router.js`):** Dynamically detects local ports, LAN IP addresses, and Cloudflare Tunnel subdomains (`app.*`, `docs.*`, `pidots.*`), providing instant surface transitions and universal keyboard chords (`g h`, `g w`, `g d`).
+- **Edge Tunnel Automation (`cloudflared/`):** Bundled `setup-tunnel.sh` script and `config.yml.example` template with QUIC protocol for NAT Traversal and 24/7 remote exposure without open router ports.
 
 ---
 
@@ -259,9 +286,15 @@ docker compose up -d
 4. Verify telemetry and application health:
 ```bash
 docker compose ps
-docker compose logs -f pidots-core
+docker compose logs -f pidots-core pidots-nginx
 ```
-The server will be reachable on port `8000` (`http://localhost:8000`).
+
+Edge surfaces will be immediately available:
+- **Landing Page / Overview:** `http://localhost:8081`
+- **Operational Workspace Console SPA:** `http://localhost:8082`
+- **User Guide & Technical Studies:** `http://localhost:8083`
+- **Unified Edge Gateway:** `http://localhost:8088`
+- **Internal FastAPI Core:** `http://localhost:8000` (health: `curl http://localhost:8000/health`)
 
 ---
 
@@ -405,7 +438,7 @@ The application exposes endpoints for external integration with Server-Sent Even
 | `GET` | `/icon.svg` | Official vector SVG icon with 24-hour cache headers |
 | `GET` | `/static/pidots-i18n.js` | Client-side Vanilla JS internationalization micro-engine |
 | `GET` | `/data/locales/{lang}.json` | Atomic bilingual localization dictionaries (PT/EN) with edge caching |
-| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.5.3) |
+| `GET` | `/api/changelog` | SemVer release history and categorized update notes (Patch Notes v1.5.5) |
 | `GET` | `/api/dots` | List all registered AI Coworkers with archetypes and status |
 | `GET` | `/api/dots/{id}/export-pack` | Portable DotPack v1.1 export with SHA-256 integrity signature |
 | `POST` | `/api/dots/import-pack` | Atomic import of AI Coworker packages from DotPack v1.1 with security audit |
@@ -445,8 +478,12 @@ The application exposes endpoints for external integration with Server-Sent Even
 
 ---
 
-### Web SPA Operational Console and Minimalist Technical Interface
-piDots includes a native dark-mode SPA/PWA interface served on the canonical path `/app` (or `/workspace`), engineered as a tactical monospace console:
+### Web SPA Operational Console and Minimalist Technical Interface (OpenDots Spatial Redesign)
+piDots includes a native dark-mode SPA/PWA interface served on the canonical path `/app` (or `/workspace`), engineered as a tactical monospace console in the OpenDots Spatial paradigm:
+- **Canonical 48px Top Deck:** Geometrically calibrated 48px top bar with triple alignment (.top-deck-left, .top-deck-center, .top-deck-right), preventing bar stacking and decluttering smartphone screens.
+- **Hero Split-Screen & Bento Grid (Landing Page):** Developer-First storefront at `/` with silicon badges (52 MB RAM RSS), continuous Pixel Paper UI ticker tape with tractor holes and interactive HMAC-SHA256 HITL demonstrator, accompanied by a 4-Card Silicon Bento Grid.
+- **48px Modular Activity Rail & OpenDots Triptych:** Four contextual vertical panels (`Spaces & Channels`, `Dots Studio & Tool Pruning`, `Scheduled Tasks & Sensors`, `Hybrid Memory 64D & MCP Lite`) and 38px mission subheader.
+- **Full-Width Guides and Reports:** `/docs` and `/relatorio` engineered strictly with a retractable right drawer, step-by-step progressive disclosure, client-side Ctrl+K search and full viewport width.
 - **High-Density Technical Aesthetics:** Tactical visual style inspired by technical matrix consoles with high information density, crisp typography, and 1-bit retro minimalism.
 - **Official Vector Logo:** piDots identity branding served via `/icon.svg` with interconnected nodes in green (#10b981) and cyan (#38bdf8).
 - **Three Ergonomic Operational Modes:**
@@ -459,7 +496,7 @@ piDots includes a native dark-mode SPA/PWA interface served on the canonical pat
 - **Just-in-Time Interactive HITL Governance:** Security approval and veto cards rendered only when actions are held, preserving security audit trails.
 - **AG-UI Reasoning Streaming:** Progressive token-by-token display of agent thoughts and tool calls.
 - **Guided Onboarding Walkthrough:** Five-step interactive onboarding flow for first-time operators with client persistence and instant F1 replay.
-- **SemVer v1.5.3 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
+- **SemVer v1.5.5 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
 
 #### Cross-Surface Navigation via Global Keyboard Chords
 Instant, zero-friction transition between system surfaces without requiring a mouse:
@@ -551,6 +588,10 @@ python3 scripts/test_phase3_opendots_dynamic_js.py
 # End-to-end resilience suite (Typed exceptions, AG-UI v1.0, 3 consumers, Circuit Breaker)
 python3 scripts/test_resilience_phases.py
 
+# Port Decoupling & Cross-Surface Routing Test Suites
+python3 scripts/test_phase20_port_decoupling_nginx.py
+node scripts/test_cross_surface_router.js
+
 # Full edge load and concurrency stress test
 python3 scripts/stress_test.py
 ```
@@ -567,15 +608,25 @@ python3 scripts/stress_test.py
 ├── .gitignore
 ├── ARCHITECTURE.md                  # In-depth architectural and I/O specifications
 ├── CONTRIBUTING.md                  # Technical contribution guidelines
+├── cloudflared/                     # Cloudflare secure tunnel configs and automation
+│   ├── config.yml.example           # Decoupled subdomains ingress template
+│   └── setup-tunnel.sh              # Interactive setup and installation script
 ├── data/                            # Static application data, changelog, and localization dictionaries
-│   ├── changelog.json               # SemVer v1.5.2 release history and categorized update notes
+│   ├── changelog.json               # SemVer v1.5.5 release history and update notes
 │   └── locales/                     # Atomic internationalization dictionaries (i18n)
 │       ├── en.json                  # English localization terms
 │       └── pt.json                  # Brazilian Portuguese localization terms
-├── docker-compose.yml               # Official Docker Compose orchestration
+├── docker-compose.yml               # Production multi-port Docker orchestration
 ├── Dockerfile                       # Lean image based on python:3.13-slim
 ├── LICENSE                          # MIT License
 ├── MANUAL_OPERACIONAL.md            # Operational administration guide
+├── nginx/                           # Lightweight edge reverse proxy (< 6MB RAM)
+│   └── nginx.conf                   # Four listening servers (8081, 8082, 8083, 8088)
+├── pages/                           # Decoupled HTML monolithic surfaces
+│   ├── docs.html                    # Step-by-step user guide and interactive manual
+│   ├── landing.html                 # Official product showcase and onboarding
+│   ├── relatorio.html               # Reverse engineering report and ARM64 benchmarks
+│   └── spa.html                     # Operational Workspace SPA/PWA console
 ├── pidots/                          # Core application package source code
 │   ├── config.py                    # Pydantic configuration and environment variables
 │   ├── main.py                      # FastAPI server, REST endpoints, and SSE streaming

@@ -358,37 +358,131 @@ class EdgeHardwareTriggers:
         }
 
     @classmethod
+    async def wake_supervisor_on_trigger(
+        cls,
+        trigger_source: str,
+        event_summary: str,
+        severity: str = "WARNING"
+    ) -> dict[str, Any]:
+        """
+        Desperta proativamente o @dot-supervisor no SQLite WAL quando um evento crítico
+        de pino físico GPIO, tópico MQTT ou limiar de silício é detectado no nó de borda.
+        Registra a ocorrência na thread proativa de supervisão e no quadro negro compartilhado (CoAgents).
+        """
+        import uuid
+        from ..storage.db import get_db
+
+        thread_id = "edge-supervisor-wakeup"
+        msg_id = str(uuid.uuid4())
+        now_iso = datetime.now(timezone.utc).isoformat()
+        alert_content = (
+            f"[DESPERTAR PROATIVO DE BORDA // {trigger_source}]\n"
+            f"Severidade: {severity}\n"
+            f"Evento: {event_summary}\n"
+            f"Timestamp: {now_iso}"
+        )
+
+        async with get_db() as db:
+            # Garante que o @dot-supervisor exista
+            cur = await db.execute("SELECT id FROM dots WHERE id = 'dot-supervisor'")
+            if not await cur.fetchone():
+                await db.execute(
+                    """
+                    INSERT OR IGNORE INTO dots (id, name, role, archetype, system_prompt, model, workspace_path)
+                    VALUES ('dot-supervisor', 'Dot Supervisor', 'Orquestrador de Borda', 'supervisor', 'Supervisor de hardware e missão.', ?, 'workspaces/dot-supervisor')
+                    """,
+                    (settings.ai_model,)
+                )
+
+            await db.execute(
+                """
+                INSERT INTO threads (id, dot_id, title, status)
+                VALUES (?, 'dot-supervisor', 'Monitoramento Fisico GPIO/MQTT', 'proactive')
+                ON CONFLICT(id) DO UPDATE SET
+                    status = 'proactive',
+                    updated_at = CURRENT_TIMESTAMP
+                """,
+                (thread_id,)
+            )
+
+            await db.execute(
+                """
+                INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
+                VALUES (?, ?, 'system', ?, 'dot-supervisor', 'dot', 'public')
+                """,
+                (msg_id, thread_id, alert_content)
+            )
+
+            await db.execute(
+                """
+                INSERT INTO thread_shared_notes (id, thread_id, dot_id, topic_key, content)
+                VALUES (?, ?, 'dot-supervisor', ?, ?)
+                ON CONFLICT(thread_id, topic_key) DO UPDATE SET
+                    content = excluded.content,
+                    dot_id = 'dot-supervisor',
+                    updated_at = CURRENT_TIMESTAMP
+                """,
+                (str(uuid.uuid4()), thread_id, f"trigger_{trigger_source.lower()}", alert_content)
+            )
+            await db.commit()
+
+        logger.info("Despertar proativo de @dot-supervisor registrado na thread '%s' (Fonte: %s).", thread_id, trigger_source)
+        return {
+            "woke_supervisor": True,
+            "supervisor_dot_id": "dot-supervisor",
+            "thread_id": thread_id,
+            "message_id": msg_id,
+            "trigger_source": trigger_source,
+            "severity": severity,
+            "timestamp": now_iso
+        }
+
+    @classmethod
     async def evaluate_and_alert(
         cls,
         notify_hitl: bool = True,
+        wake_supervisor: bool = True,
         thermal_limit: float | None = None,
         disk_min_free_percent: float | None = None
     ) -> dict[str, Any]:
         """
         Avalia os triggers de hardware e, se anomalia detectada, despacha notificação
-        imediata ao operador através do canal HITL sem aguardar comando do usuário.
+        imediata ao operador através do canal HITL e desperta @dot-supervisor no SQLite WAL.
         """
         report = cls.check_triggers(
             thermal_limit=thermal_limit,
             disk_min_free_percent=disk_min_free_percent
         )
 
-        if report["status"] != "OK" and notify_hitl:
-            from .notifier import HITLNotifier
+        if report["status"] != "OK":
             events_summary = " | ".join(
                 f"[{ev['severity']}] {ev['trigger']}: {ev['message']}"
                 for ev in report["triggered_events"]
             )
             logger.warning("Alerta de Hardware Edge disparado: %s", events_summary)
-            try:
-                await HITLNotifier.notify_approval_requested(
-                    approval_id=f"edge-hw-{datetime.now(timezone.utc).strftime('%H%M%S')}",
-                    dot_id="system-monitor",
-                    action_type="hardware_trigger_alert",
-                    risk_level=report["status"],
-                    payload=f"Status: {report['status']} | Eventos: {events_summary}"
-                )
-            except Exception as e:
-                logger.error("Falha ao despachar notificação de hardware trigger: %s", str(e))
+
+            if wake_supervisor:
+                try:
+                    wakeup_info = await cls.wake_supervisor_on_trigger(
+                        trigger_source="HARDWARE_SENSOR_BUS",
+                        event_summary=events_summary,
+                        severity=report["status"]
+                    )
+                    report["supervisor_wakeup"] = wakeup_info
+                except Exception as wake_err:
+                    logger.error("Falha ao despertar @dot-supervisor em trigger fisico: %s", str(wake_err))
+
+            if notify_hitl:
+                from .notifier import HITLNotifier
+                try:
+                    await HITLNotifier.notify_approval_requested(
+                        approval_id=f"edge-hw-{datetime.now(timezone.utc).strftime('%H%M%S')}",
+                        dot_id="system-monitor",
+                        action_type="hardware_trigger_alert",
+                        risk_level=report["status"],
+                        payload=f"Status: {report['status']} | Eventos: {events_summary}"
+                    )
+                except Exception as e:
+                    logger.error("Falha ao despachar notificação de hardware trigger: %s", str(e))
 
         return report

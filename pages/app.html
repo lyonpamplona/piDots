@@ -38,6 +38,7 @@
     <script defer src="/static/js/core/pidots-i18n.js"></script>
     <script defer src="/static/js/core/scroll-lock.js"></script>
     <script defer src="/static/js/core/pixel-system.js"></script>
+    <script defer src="/static/js/core/cross-surface-router.js"></script>
     <script defer src="/static/js/spa/pidots-api.js"></script>
     <script defer src="/static/js/spa/slash-commands.js"></script>
     <script defer src="/static/js/spa/tour-engine.js"></script>
@@ -46,8 +47,8 @@
 </head>
 <body class="spa-shell">
 
-    <!-- CABEÇALHO OPERACIONAL MINIMALISTA (TOP BAR) -->
-    <header class="mission-header">
+    <!-- CABEÇALHO OPERACIONAL MINIMALISTA (TOP DECK UNIFICADO 48PX) -->
+    <header class="top-deck mission-header">
         <div class="header-brand" style="display: flex; align-items: center; gap: 8px;">
             <button class="pixel-btn" id="btnSidebarToggle" onclick="toggleSidebar()" title="Alternar Barra Lateral (Atalho: Ctrl+B)">
                 [PAINEL]
@@ -335,6 +336,28 @@
                             </div>
                             <div id="sidebarMcpServersList" style="font-size: 10px; color: var(--ink-muted);">Nenhum servidor MCP externo acoplado.</div>
                         </div>
+
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span>DOT PACKS V1.1 (SHA-256)</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.loadDotPacksCatalogSidebar()">[CATALOGO]</button>
+                            </div>
+                            <div id="sidebarDotPacksCatalogList" style="display: flex; flex-direction: column; gap: 4px; font-size: 9.5px; color: var(--ink-secondary);">
+                                Carregando pacotes oficiais (@dot-secops, @dot-homelab, @dot-finops)...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RODAPÉ FIXO DE TELEMETRIA FÍSICA EM ASCII (PADRAO OPENDOTS EDGE) -->
+                    <div class="sidebar-hardware-footer" id="sidebarHardwareFooter" onclick="switchCanvasTab('canvas-telemetry', document.querySelector('[onclick*=canvas-telemetry]')); if (window.innerWidth <= 768 && typeof setMobileView === 'function') setMobileView('canvas');" title="Clique para abrir o Osciloscópio de Telemetria ARM64">
+                        <div class="shf-row">
+                            <span class="shf-label">RAM RSS:</span>
+                            <span class="shf-ascii" id="sidebarAsciiRamBar">[|||.......] 52MB</span>
+                        </div>
+                        <div class="shf-row">
+                            <span class="shf-label">SOC / WAL:</span>
+                            <span class="shf-val"><span id="sidebarAsciiTemp" style="color: var(--phosphor-green);">48.2°C</span> // <span id="sidebarAsciiWal" style="color: var(--blueprint-cyan);">WAL OK</span></span>
+                        </div>
                     </div>
 
                 </div>
@@ -508,7 +531,7 @@
                 </button>
                 <button class="canvas-tab" id="canvasTabCoagents" onclick="switchCanvasTab('canvas-coagent-state', this); if (window.PiDotsAPI && PiDotsAPI.loadActiveThreadState) PiDotsAPI.loadActiveThreadState();" data-tooltip="Inspetor de Shared State CoAgents (Plano, Quadro Negro e Handoffs)">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                    <span>[COAGENTS]</span>
+                    <span id="canvasTabCoagentsLabel">[COAGENTS]</span>
                 </button>
                 <button class="canvas-tab" id="canvasTabHitl" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria Forense e Carimbos HITL">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
@@ -638,6 +661,17 @@
                             </div>
                             <div id="coagentToolRunsBox" style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-secondary); line-height: 1.4;">
                                 Carregando histórico de execuções...
+                            </div>
+                        </div>
+
+                        <!-- Bloco 5: Inspetor Rápido MemGPT (Core & Archival Memory 64D) -->
+                        <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--blueprint-cyan);">[5] INSPETOR MEMGPT // CORE &amp; ARCHIVAL 64D</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="switchSidebarContext('memory'); if (window.innerWidth <= 768 && typeof setMobileView === 'function') setMobileView('dots');">[EDITAR MEMORIA]</button>
+                            </div>
+                            <div id="coagentMemgptBox" style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-secondary); line-height: 1.45;">
+                                Sincronizando blocos Core Memory (Persona / Human) e fatos Archival...
                             </div>
                         </div>
                     </div>
@@ -936,6 +970,17 @@
         </div>
 
         <div class="drawer-content" id="drawerContentList">
+            <!-- CONTROLES RÁPIDOS MOBILE (ESPELHADOS DO CABEÇALHO PARA TELAS <= 768PX) -->
+            <div class="mobile-quick-controls-bar" id="mobileQuickControlsBar" style="padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-default); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 6px;">
+                <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--thermal-amber); letter-spacing: 0.05em;">[ATALHOS DE SESSAO &amp; INTERFACE]</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <button type="button" class="pixel-btn btn-cyan" onclick="toggleDrawer(); startNewConversation();" style="justify-content: center; font-size: 8px;">[+ NOVA CONVERSA]</button>
+                    <button type="button" class="pixel-btn" onclick="toggleWorkspaceMode();" style="justify-content: center; font-size: 8px;">[MODO FOCO / SPLIT]</button>
+                    <button type="button" class="pixel-btn" onclick="PiDotsI18n.toggleLanguage();" style="justify-content: center; font-size: 8px;">[IDIOMA PT | EN]</button>
+                    <button type="button" class="pixel-btn" onclick="toggleTheme();" style="justify-content: center; font-size: 8px;">[ALTERNAR TEMA]</button>
+                </div>
+            </div>
+
             <!-- RECURSO DIDÁTICO INTERATIVO SPOTLIGHT -->
             <div style="padding: 12px; margin-bottom: 14px; border: 1px solid var(--blueprint-cyan); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 8px;">
                 <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); letter-spacing: 0.05em; text-transform: uppercase;">[RECURSO DIDÁTICO INTERATIVO]</div>
@@ -1011,6 +1056,7 @@
         <button class="mobile-nav-btn" id="mobileNavCanvas" data-view="canvas" onclick="setMobileView('canvas')">
             <span class="mobile-nav-icon">[*]</span>
             <span class="mobile-nav-label">CANVAS</span>
+            <span class="mobile-nav-badge" id="mobileCanvasBadge" style="display: none;">NOVO</span>
         </button>
         <button class="mobile-nav-btn" id="mobileNavDocs" data-view="docs" onclick="toggleDrawer()">
             <span class="mobile-nav-icon">[?]</span>

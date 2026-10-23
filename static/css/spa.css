@@ -9,8 +9,8 @@
            COLUNA 1: SIDEBAR ESQUERDA (ACTIVITY RAIL + CONTEXT STACK OPENDOTS)
            --------------------------------------------------------------------- */
         aside.left-sidebar {
-            width: 290px;
-            min-width: 290px;
+            width: var(--rail-left-width, 270px);
+            min-width: var(--rail-left-width, 270px);
             background: var(--paper-sheet);
             border-right: 2px solid var(--border-default);
             display: flex;
@@ -119,6 +119,56 @@
 
         .sidebar-ctx-pane.active {
             display: flex;
+            flex: 1;
+        }
+
+        /* Rodapé Fixo de Telemetria Física em ASCII (Base da Sidebar Esquerda) */
+        .sidebar-hardware-footer {
+            margin-top: auto;
+            position: sticky;
+            bottom: 0;
+            background: var(--paper-surface-recessed);
+            border-top: 2px solid var(--border-default);
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+            z-index: 10;
+            user-select: none;
+            transition: background 0.05s steps(1), border-color 0.05s steps(1);
+        }
+
+        .sidebar-hardware-footer:hover {
+            background: var(--paper-surface);
+            border-top-color: var(--blueprint-cyan);
+        }
+
+        .sidebar-hardware-footer .shf-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9.5px;
+            font-family: var(--font-mono);
+        }
+
+        .sidebar-hardware-footer .shf-label {
+            font-family: var(--font-pixel);
+            font-size: 7px;
+            color: var(--ink-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-hardware-footer .shf-ascii {
+            color: var(--thermal-amber);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .sidebar-hardware-footer .shf-val {
+            font-size: 9px;
+            font-weight: 600;
         }
 
         /* Faixa Superior do Computador de Borda do Dot (Dot's Computer Banner) */
@@ -286,13 +336,42 @@
         }
 
         .ticker-header-bar {
+            height: var(--subheader-height, 38px);
+            min-height: var(--subheader-height, 38px);
+            max-height: var(--subheader-height, 38px);
+            box-sizing: border-box;
             background: var(--paper-sheet);
             border-bottom: 1px solid var(--border-default);
-            padding: 8px 16px;
+            padding: 0 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 11px;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none;
+            gap: 12px;
+        }
+
+        .ticker-header-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .ticker-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+
+        .ticker-header-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: nowrap;
+            flex-shrink: 0;
         }
 
         .ticker-channel-name {
@@ -780,12 +859,23 @@
             border-color: var(--border-accent);
         }
 
+        .slash-trigger-btn,
+        #sendBtn {
+            height: 38px;
+            min-height: 38px;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* ---------------------------------------------------------------------
            COLUNA 3: PAINEL DIREITO (LIVE CANVAS / ARTEFATOS / TELEMETRIA)
            --------------------------------------------------------------------- */
         aside.right-canvas {
-            width: 440px;
-            min-width: 440px;
+            width: var(--rail-right-width, 340px);
+            min-width: 320px;
+            max-width: 460px;
             background: var(--paper-sheet);
             display: flex;
             flex-direction: column;
@@ -848,8 +938,16 @@
         .canvas-controls {
             margin-left: auto;
             display: flex;
+            align-items: center;
             gap: 4px;
-            padding: 4px;
+            padding: 4px 6px;
+            position: sticky;
+            right: 0;
+            background: var(--paper-surface-recessed);
+            z-index: 10;
+            flex-shrink: 0;
+            border-left: 1px solid var(--border-default);
+            box-shadow: -4px 0px 0px var(--paper-surface-recessed);
         }
 
         .canvas-content-area {
@@ -1588,7 +1686,7 @@
             background: rgba(0, 0, 0, 0.45);
             border: 1px solid var(--border-default, #283340);
             color: var(--ink-muted, #64748b);
-            border-radius: 2px;
+            border-radius: 0;
             letter-spacing: 0.5px;
         }
         @media (max-width: 1440px) {
@@ -1621,7 +1719,7 @@
                 z-index: 50;
                 width: 260px;
                 min-width: 260px;
-                box-shadow: 4px 0 16px rgba(0, 0, 0, 0.7);
+                box-shadow: 4px 0 0px #000000;
             }
             aside.left-sidebar.collapsed {
                 width: 0px !important;

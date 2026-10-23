@@ -341,6 +341,13 @@
                 title: 'Protocolo de 34 Slash Commands (/) & Interface de Borda de Alta Velocidade',
                 keywords: 'slash commands barra popover autocomplete catalogo 34 comandos teletipo slips levenshtein export pack hitl telemetry coagents computer save-space mcp clear theme',
                 desc: 'Catalogo unificado de 34 comandos em 6 categorias (incluindo /coagents, /computer, /save-space e /mcp), execucao no cliente em < 16ms e recibos tatis.'
+            },
+            {
+                id: 'passo-14',
+                step: 'PASSO 14',
+                title: 'Desacoplamento por Portas & Cloudflare Tunnel (8081, 8082, 8083)',
+                keywords: 'cloudflare tunnel cloudflared desacoplamento portas 8081 8082 8083 nginx reverse proxy zero trust nat traversal ingress arm64',
+                desc: 'Exposicao remota segura de nós Raspberry Pi sem abertura de portas no roteador, mapeamento de subdominios dedicados e protecao Zero Trust no Workspace.'
             }
         ];
 
@@ -562,38 +569,7 @@
             }
         })();
 
-        // Navegacao Global por Teclado (Go-to Chords: g h, g w, g d)
-        (function() {
-            let lastKeyTime = 0;
-            let pendingPrefix = false;
-
-            window.addEventListener('keydown', function(e) {
-                const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
-                if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) return;
-                if (e.metaKey || e.ctrlKey || e.altKey) return;
-
-                const key = e.key.toLowerCase();
-                const now = Date.now();
-
-                if (pendingPrefix && (now - lastKeyTime < 1000)) {
-                    pendingPrefix = false;
-                    if (key === 'h' || key === 'v') {
-                        window.location.href = '/';
-                    } else if (key === 'w' || key === 'a') {
-                        window.location.href = '/app';
-                    } else if (key === 'd' || key === 'g') {
-                        window.location.href = '/docs';
-                    }
-                    return;
-                }
-
-                if (key === 'g') {
-                    pendingPrefix = true;
-                    lastKeyTime = now;
-                    setTimeout(() => { pendingPrefix = false; }, 1000);
-                }
-            });
-        })();
+        // Navegacao Global por Teclado e Resolucao de Superficies delegada ao CrossSurfaceRouter (static/js/core/cross-surface-router.js)
 
         // Integracao PWA & Service Worker no Guia Operacional Didatico
         const PiDotsDocsPWA = (function() {

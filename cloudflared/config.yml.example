@@ -1,0 +1,74 @@
+# ==============================================================================
+# piDots Edge Tunnel — Configuracao Oficial do Cloudflare Tunnel (cloudflared)
+# Arquitetura de Desacoplamento por Portas (Landing: 8081 | App: 8082 | Docs: 8083)
+# Calibrado para Raspberry Pi 4B (ARM64) sob Linux e Systemd
+# Zero Port Forwarding / Zero Portas Abertas no Roteador (NAT Traversal Seguro)
+# ==============================================================================
+
+# Identificador unico do tunel gerado via 'cloudflared tunnel create pidots-edge'
+tunnel: 00000000-0000-0000-0000-000000000000
+
+# Caminho para o arquivo de credenciais gerado pelo comando de criacao
+credentials-file: /etc/cloudflared/00000000-0000-0000-0000-000000000000.json
+
+# Configuracoes de conexao otimizadas para hardware de borda ARM64
+# (Caso sua rede bloqueie trafego UDP de saida na porta 7844, utilize 'protocol: http2')
+protocol: quic
+loglevel: info
+transport-loglevel: warn
+
+# Regras de Ingress (Mapeamento de Hostnames para Portas Locais do Nginx)
+ingress:
+  # ----------------------------------------------------------------------------
+  # 1. LANDING PAGE & ONBOARDING (PORTA 8081)
+  # Vitrine institucional publica, simulador de terminal e apresentacao técnica
+  # ----------------------------------------------------------------------------
+  - hostname: pidots.seudominio.com
+    service: http://localhost:8081
+    originRequest:
+      connectTimeout: 10s
+      noTLSVerify: true
+      keepAliveConnections: 16
+
+  # ----------------------------------------------------------------------------
+  # 2. CONSOLE WORKSPACE (PORTA 8082)
+  # App SPA / PWA de operacao de agentes autônomos (OpenDots / CoAgents AG-UI)
+  # Recomendacao de Seguranca: Proteger este subdominio com Cloudflare Zero Trust (Access)
+  # Requisito: Suporte completo a WebSockets e Streaming Server-Sent Events (SSE)
+  # ----------------------------------------------------------------------------
+  - hostname: app.seudominio.com
+    service: http://localhost:8082
+    originRequest:
+      connectTimeout: 15s
+      noTLSVerify: true
+      keepAliveConnections: 32
+      proxyType: ""
+      http2Origin: false
+
+  # ----------------------------------------------------------------------------
+  # 3. DOCUMENTACAO & RELATORIOS (PORTA 8083)
+  # Guia Didatico, Manuais de Engenharia e Estudos de Viabilidade (/relatorio)
+  # ----------------------------------------------------------------------------
+  - hostname: docs.seudominio.com
+    service: http://localhost:8083
+    originRequest:
+      connectTimeout: 10s
+      noTLSVerify: true
+      keepAliveConnections: 16
+
+  # ----------------------------------------------------------------------------
+  # 4. GATEWAY UNIFICADO RETROCOMPATIVEL (PORTA 8088 - OPCIONAL)
+  # Acesso unificado path-based legado (/, /app, /docs, /relatorio)
+  # ----------------------------------------------------------------------------
+  - hostname: gateway.seudominio.com
+    service: http://localhost:8088
+    originRequest:
+      connectTimeout: 10s
+      noTLSVerify: true
+      keepAliveConnections: 16
+
+  # ----------------------------------------------------------------------------
+  # REGRA CATCH-ALL OBRIGATORIA
+  # Qualquer requisicao para dominios nao mapeados retorna 404 seguro
+  # ----------------------------------------------------------------------------
+  - service: http_status:404

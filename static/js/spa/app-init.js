@@ -47,9 +47,9 @@
             PixelSystem.toast('Testando conectividade com o provedor de IA...', 'info');
             try {
                 const payload = {
-                    base_url: document.getElementById('cfg-ai-url')?.value?.trim() || '',
-                    model: document.getElementById('cfg-ai-model')?.value?.trim() || '',
-                    api_key: document.getElementById('cfg-ai-key')?.value?.trim() || ''
+                    base_url: (document.getElementById('cfgBaseUrl')?.value || document.getElementById('cfg-ai-url')?.value || '').trim(),
+                    model: (document.getElementById('cfgModel')?.value || document.getElementById('cfg-ai-model')?.value || '').trim(),
+                    api_key: (document.getElementById('cfgApiKey')?.value || document.getElementById('cfg-ai-key')?.value || '').trim()
                 };
                 const res = await fetch('/api/edge/settings/test-provider', {
                     method: 'POST',
@@ -135,9 +135,11 @@
                 btn.classList.toggle('active', btnView === viewName);
             });
 
-            // Se for para o canvas, garante que não fique colapsado
+            // Se for para o canvas, garante que não fique colapsado e limpa badge mobile
             if (viewName === 'canvas') {
                 canvas.classList.remove('collapsed');
+                const badge = document.getElementById('mobileCanvasBadge');
+                if (badge) badge.style.display = 'none';
             }
 
             // Rola chat para o final ao voltar para o chat
@@ -146,6 +148,18 @@
                 if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
                 if (window.PiDotsAPI && typeof PiDotsAPI.enforceDomCeiling === 'function') {
                     PiDotsAPI.enforceDomCeiling();
+                }
+            }
+        }
+
+        function notifyMobileCanvasUpdate(label) {
+            const badge = document.getElementById('mobileCanvasBadge');
+            if (!badge) return;
+            if (window.innerWidth <= 768 && currentMobileView !== 'canvas') {
+                badge.textContent = label || 'NOVO';
+                badge.style.display = 'inline-block';
+                if (navigator.vibrate) {
+                    try { navigator.vibrate(12); } catch (_) {}
                 }
             }
         }
@@ -652,38 +666,7 @@
             }
         });
 
-        // Navegacao Global por Teclado (Go-to Chords: g h, g w, g d)
-        (function() {
-            let lastKeyTime = 0;
-            let pendingPrefix = false;
-
-            window.addEventListener('keydown', function(e) {
-                const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
-                if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) return;
-                if (e.metaKey || e.ctrlKey || e.altKey) return;
-
-                const key = e.key.toLowerCase();
-                const now = Date.now();
-
-                if (pendingPrefix && (now - lastKeyTime < 1000)) {
-                    pendingPrefix = false;
-                    if (key === 'h' || key === 'v') {
-                        window.location.href = '/';
-                    } else if (key === 'w' || key === 'a') {
-                        window.location.href = '/app';
-                    } else if (key === 'd' || key === 'g') {
-                        window.location.href = '/docs';
-                    }
-                    return;
-                }
-
-                if (key === 'g') {
-                    pendingPrefix = true;
-                    lastKeyTime = now;
-                    setTimeout(() => { pendingPrefix = false; }, 1000);
-                }
-            });
-        })();
+        // Navegacao Global por Teclado e Resolucao de Superficies delegada ao CrossSurfaceRouter (static/js/core/cross-surface-router.js)
 
         // Eventos Globais: Menu de Contexto, Tooltips e Tecla ESC
         window.addEventListener('contextmenu', (e) => {
@@ -826,6 +809,7 @@
     window.resolveHitlFull = resolveHitlFull;
     window.resolveHitlQuick = resolveHitlQuick;
     window.setMobileView = setMobileView;
+    window.notifyMobileCanvasUpdate = notifyMobileCanvasUpdate;
     window.syncResponsiveLayout = syncResponsiveLayout;
     window.switchCanvasTab = switchCanvasTab;
     window.toggleTheme = toggleTheme;

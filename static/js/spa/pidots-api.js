@@ -139,6 +139,11 @@
                     if (compactNodeEl) compactNodeEl.textContent = `${data.soc_temperature_celsius}°C`;
                     const plotterTempEl = document.querySelector('.plotter-card:nth-child(2) .plotter-val');
                     if (plotterTempEl) plotterTempEl.textContent = `${data.soc_temperature_celsius} °C`;
+                    const asciiTempEl = document.getElementById('sidebarAsciiTemp');
+                    if (asciiTempEl) {
+                        asciiTempEl.textContent = `${data.soc_temperature_celsius}°C`;
+                        asciiTempEl.style.color = data.soc_temperature_celsius >= 72 ? 'var(--thermal-amber)' : 'var(--phosphor-green)';
+                    }
 
                     this.telemetryHistory.temp.push(data.soc_temperature_celsius);
                     if (this.telemetryHistory.temp.length > 10) this.telemetryHistory.temp.shift();
@@ -152,6 +157,14 @@
                     const plotterRamEl = document.querySelector('.plotter-card:nth-child(1) .plotter-val');
                     if (plotterRamEl) plotterRamEl.textContent = `${rssMb} MB RSS`;
 
+                    const asciiRamEl = document.getElementById('sidebarAsciiRamBar');
+                    if (asciiRamEl) {
+                        const ceilingMb = 300;
+                        const filled = Math.max(1, Math.min(10, Math.round((rssMb / ceilingMb) * 10)));
+                        const barStr = '[' + '|'.repeat(filled) + '.'.repeat(10 - filled) + ']';
+                        asciiRamEl.textContent = `${barStr} ${Math.round(rssMb)}MB`;
+                    }
+
                     this.telemetryHistory.ram.push(rssMb);
                     if (this.telemetryHistory.ram.length > 10) this.telemetryHistory.ram.shift();
                     this.updateRamSvg();
@@ -160,6 +173,8 @@
                 if (data.database && data.database.mode) {
                     const walEl = document.querySelector('.telemetry-chip.desktop-only .chip-value');
                     if (walEl) walEl.textContent = `${data.database.mode} (ATIVO)`;
+                    const asciiWalEl = document.getElementById('sidebarAsciiWal');
+                    if (asciiWalEl) asciiWalEl.textContent = `${String(data.database.mode).toUpperCase()} OK`;
                 }
             } catch (e) {
                 console.warn('Telemetria offline ou isolada:', e);
@@ -271,6 +286,13 @@
             this.activeThreadId = null;
             this.loadSpaces();
             this.loadThreads();
+
+            const inputEl = document.getElementById('instructionInput');
+            if (inputEl && inputEl.value.trim() === '') {
+                inputEl.value = `@${dotId} `;
+                inputEl.focus();
+            }
+
             PixelSystem.toast(`Coworker '${dot ? dot.name : dotId}' selecionado como ativo.`, 'info');
         },
 
@@ -617,9 +639,13 @@
                 if (!this.activeThreadId && this.threadsCache.length > 0) {
                     this.activeThreadId = this.threadsCache[0].id;
                 }
-                const toolRunsRes = await fetch('/api/edge/tool-runs?limit=10');
+                const [toolRunsRes, memRes] = await Promise.all([
+                    fetch('/api/edge/tool-runs?limit=10'),
+                    fetch(`/api/dots/${encodeURIComponent(this.activeDotId)}/memory`)
+                ]);
                 const toolRunsData = toolRunsRes.ok ? await toolRunsRes.json() : [];
                 const fallbackRuns = Array.isArray(toolRunsData) ? toolRunsData : (toolRunsData.runs || []);
+                const memData = memRes.ok ? await memRes.json() : null;
 
                 let stateData = null;
                 if (this.activeThreadId) {
@@ -627,17 +653,19 @@
                     if (res.ok) stateData = await res.json();
                 }
 
-                this.renderCoAgentStateInspector(stateData, fallbackRuns);
+                this.renderCoAgentStateInspector(stateData, fallbackRuns, memData);
             } catch (e) {
                 console.warn('Erro ao sincronizar CoAgents Shared State:', e);
             }
         },
 
-        renderCoAgentStateInspector(stateData, fallbackToolRuns) {
+        renderCoAgentStateInspector(stateData, fallbackToolRuns, memData) {
             const planBox = document.getElementById('coagentActivePlanBox');
             const notesBox = document.getElementById('coagentSharedNotesBox');
             const handoffsBox = document.getElementById('coagentHandoffsBox');
             const toolsBox = document.getElementById('coagentToolRunsBox');
+            const memgptBox = document.getElementById('coagentMemgptBox');
+            const coagentTabLabel = document.getElementById('canvasTabCoagentsLabel');
 
             if (stateData && stateData.participants) {
                 this.renderThreadParticipants(stateData.participants);
@@ -647,14 +675,20 @@
                 const plan = stateData?.active_plan;
                 const stepsList = (plan && (plan.milestones || plan.steps)) ? (plan.milestones || plan.steps) : [];
                 if (Array.isArray(stepsList) && stepsList.length) {
+                    let completedCount = 0;
                     planBox.innerHTML = stepsList.map((st, idx) => {
                         const status = (st.status || 'PENDING').toUpperCase();
-                        const color = status === 'DONE' || status === 'COMPLETED' ? 'var(--phosphor-green)' : 'var(--blueprint-cyan)';
+                        const isDone = status === 'DONE' || status === 'COMPLETED';
+                        if (isDone) completedCount++;
+                        const color = isDone ? 'var(--phosphor-green)' : 'var(--blueprint-cyan)';
                         const stepText = st.title || st.description || st.step || JSON.stringify(st);
                         return `<div style="margin-bottom: 4px;"><strong style="color: ${color};">[${idx + 1}. ${safeEscape(status)}]</strong> ${safeEscape(stepText)}</div>`;
                     }).join('');
+                    const pct = Math.round((completedCount / stepsList.length) * 100);
+                    if (coagentTabLabel) coagentTabLabel.textContent = `[COAGENTS // ${pct}%]`;
                 } else {
                     planBox.textContent = 'Nenhum plano multi-estagio ativo nesta thread.';
+                    if (coagentTabLabel) coagentTabLabel.textContent = '[COAGENTS]';
                 }
             }
 
@@ -709,6 +743,17 @@
                     toolsBox.textContent = 'Nenhuma execucao de ferramenta auditada recentemente.';
                 }
             }
+
+            if (memgptBox) {
+                const personaStr = memData?.core_memory?.persona || 'Diretrizes padrao do especialista ativo.';
+                const humanStr = memData?.core_memory?.human || 'Operador humano autenticado no console.';
+                const archivalList = memData?.archival_memories || memData?.archival_memory || [];
+                memgptBox.innerHTML = `
+                    <div style="margin-bottom: 4px;"><strong style="color: var(--blueprint-cyan);">[PERSONA @${safeEscape(this.activeDotId)}]:</strong> ${safeEscape(String(personaStr).slice(0, 110))}</div>
+                    <div style="margin-bottom: 4px;"><strong style="color: var(--thermal-amber);">[HUMAN]:</strong> ${safeEscape(String(humanStr).slice(0, 110))}</div>
+                    <div style="color: var(--phosphor-green); font-size: 9.5px;">[ARCHIVAL 64D + FTS5]: ${archivalList.length} fato(s) indexado(s) no SQLite WAL.</div>
+                `;
+            }
         },
 
         // 4. Spaces e Artefatos (/api/spaces) + Busca Semântica KNN 64D
@@ -733,7 +778,7 @@
                 }
 
                 if (spaces.length > 0 && !this.activeSpaceId) {
-                    this.loadArtifact(spaces[0].id);
+                    this.loadArtifact(spaces[0].id, null, true);
                 }
             } catch (e) {
                 console.warn('Erro ao carregar Spaces:', e);
@@ -754,7 +799,7 @@
                 const item = document.createElement('div');
                 const isActive = this.activeSpaceId ? sp.id === this.activeSpaceId : idx === 0;
                 item.className = `space-item ${isActive ? 'active' : ''}`;
-                item.onclick = () => this.loadArtifact(sp.id, item);
+                item.onclick = () => this.loadArtifact(sp.id, item, false);
                 const badgeText = sp.score !== undefined ? `${Math.round(sp.score * 100)}%` : `REV ${sp.version || 1}`;
                 item.innerHTML = `
                     <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${safeEscape(sp.filename)}</span>
@@ -793,7 +838,7 @@
             if (!filename) return;
             const doc = (this.spacesCache || []).find(s => s.filename === filename);
             if (doc) {
-                this.loadArtifact(doc.id);
+                this.loadArtifact(doc.id, null, false);
             } else if (typeof artifactDocs !== 'undefined' && artifactDocs[filename]) {
                 const titleEl = document.getElementById('currentArtifactTitle');
                 if (titleEl) titleEl.textContent = filename;
@@ -803,7 +848,7 @@
             }
         },
 
-        async loadArtifact(spaceId, el) {
+        async loadArtifact(spaceId, el, silentMobile = false) {
             try {
                 const res = await fetch(`/api/spaces/${spaceId}`);
                 if (!res.ok) return;
@@ -839,7 +884,7 @@
                     switchCanvasTab('canvas-artifact', tabs[0]);
                 }
 
-                if (window.innerWidth <= 768) {
+                if (window.innerWidth <= 768 && !silentMobile) {
                     setMobileView('canvas');
                 }
             } catch (e) {
@@ -1371,6 +1416,44 @@
                 console.warn('Erro ao carregar memoria do Dot:', e);
             }
             await this.loadMcpServersSidebar();
+            await this.loadDotPacksCatalogSidebar();
+        },
+
+        async loadDotPacksCatalogSidebar() {
+            const box = document.getElementById('sidebarDotPacksCatalogList');
+            if (!box) return;
+            try {
+                const res = await fetch('/api/dots/packs/catalog');
+                if (!res.ok) return;
+                const data = await res.json();
+                const packs = data.packs || [];
+                if (!packs.length) {
+                    box.innerHTML = 'Nenhum pacote encontrado em data/packs/.';
+                    return;
+                }
+                box.innerHTML = packs.map(p => `
+                    <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 5px 6px; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+                        <div style="min-width: 0;">
+                            <div style="color: var(--blueprint-cyan); font-weight: 700; font-size: 9.5px;">@${safeEscape(p.dot_id)} <span style="color: var(--phosphor-green); font-size: 8px;">[SHA256:${safeEscape(String(p.sha256_checksum).slice(0, 6))}]</span></div>
+                            <div style="color: var(--ink-muted); font-size: 8.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${safeEscape(p.role)}</div>
+                        </div>
+                        <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 5px; font-size: 7px; flex-shrink: 0;" onclick="PiDotsAPI.installOfficialDotPack('${safeEscape(p.pack_id)}')">[INSTALAR]</button>
+                    </div>
+                `).join('');
+            } catch (_) {}
+        },
+
+        async installOfficialDotPack(packId) {
+            if (!packId) return;
+            try {
+                const res = await fetch(`/api/dots/packs/install/${encodeURIComponent(packId)}`, { method: 'POST' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+                PixelSystem.toast(`DotPack '${packId}' validado (SHA-256) e instalado como @${data.dot_id}!`, 'success');
+                await this.loadDots();
+            } catch (e) {
+                PixelSystem.toast(`Falha ao instalar DotPack: ${e.message || e}`, 'danger');
+            }
         },
 
         renderArchivalSidebarList(items) {
@@ -1763,7 +1846,10 @@
                                     this.appendGenerativeUiCard(genUiEl, evData);
                                     await this.loadSpaces();
                                     if (evData.space_id || evData.filename) {
-                                        await this.loadArtifact(evData.space_id || evData.filename);
+                                        await this.loadArtifact(evData.space_id || evData.filename, null, true);
+                                    }
+                                    if (typeof window.notifyMobileCanvasUpdate === 'function') {
+                                        window.notifyMobileCanvasUpdate('DOC');
                                     }
                                 }
                                 if (evData.handoff && thoughtEl) {
@@ -1792,10 +1878,16 @@
                                     if (artEl && patchContent) {
                                         artEl.value = patchContent;
                                         PixelSystem.toast('CANVAS ATUALIZADO: Documento editado ao vivo pelo agente', 'info');
+                                        if (typeof window.notifyMobileCanvasUpdate === 'function') {
+                                            window.notifyMobileCanvasUpdate('NOVO');
+                                        }
                                     }
                                 }
                                 if (evData.event === 'state:sync') {
                                     this.loadActiveThreadState();
+                                    if (typeof window.notifyMobileCanvasUpdate === 'function') {
+                                        window.notifyMobileCanvasUpdate('PLAN');
+                                    }
                                 }
                                 if (evData.error && thoughtEl) {
                                     thoughtEl.textContent += '\n[AVISO CIRCUIT BREAKER]: ' + evData.error;

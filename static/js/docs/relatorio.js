@@ -26,9 +26,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // Exporta globalmente para compatibilidade de atalhos e inline onclick
     window.toggleDrawer = toggleDrawer;
 
+    function openDrawerWithSearch() {
+        if (!document.body.classList.contains('drawer-open')) {
+            toggleDrawer();
+        }
+        if (searchInput) {
+            setTimeout(() => {
+                searchInput.focus();
+                searchInput.select();
+            }, 100);
+        }
+    }
+    window.openDrawerWithSearch = openDrawerWithSearch;
+
+    const headerSearchBox = document.getElementById('headerRelatorioSearchBox');
+    if (headerSearchBox) {
+        headerSearchBox.addEventListener('click', openDrawerWithSearch);
+    }
+
     if (drawerToggleBtn) drawerToggleBtn.addEventListener('click', toggleDrawer);
     if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', toggleDrawer);
     if (drawerBackdrop) drawerBackdrop.addEventListener('click', toggleDrawer);
+
+    // Atalhos Globais de Teclado (Ctrl+K ou / para Pesquisa)
+    document.addEventListener('keydown', (e) => {
+        const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+            e.preventDefault();
+            openDrawerWithSearch();
+        } else if (e.key === '/' && !isInput) {
+            e.preventDefault();
+            openDrawerWithSearch();
+        } else if (e.key === 'Escape' && document.body.classList.contains('drawer-open')) {
+            toggleDrawer();
+        }
+    });
 
     // Filtro de Pesquisa em Tempo Real
     if (searchInput) {

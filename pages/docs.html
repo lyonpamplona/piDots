@@ -41,6 +41,7 @@
     <!-- Motores JavaScript Desacoplados (Fase 2) -->
     <script defer src="/static/js/core/pidots-i18n.js"></script>
     <script defer src="/static/js/core/scroll-lock.js"></script>
+    <script defer src="/static/js/core/cross-surface-router.js"></script>
     <script defer src="/static/js/docs/docs.js"></script>
 </head>
 <body>
@@ -50,46 +51,50 @@
         <div id="readingProgressThumb" class="reading-progress-thumb"></div>
     </div>
 
-    <!-- CABECALHO FIXO TECNICO (INTERFACE TECNICA MINIMALISTA) -->
-    <header class="guide-header">
-        <a href="/" class="brand-unit" aria-label="Ir para Apresentacao Oficial piDots">
-            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" class="ui-icon" style="width: 24px; height: 24px;">
-                <rect width="28" height="28" rx="4" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
-                <circle cx="8.5" cy="14" r="3.5" fill="#33ff66"/>
-                <circle cx="19.5" cy="14" r="3.5" fill="#38bdf8"/>
-                <path d="M12 14h4" stroke="#f1f5f9" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <span class="brand-badge">PIDOTS // 2026</span>
-            <span class="brand-title">MANUAL OPERACIONAL // GUIA</span>
-        </a>
-
-        <!-- Comutador Canônico de Superfícies de Produto -->
-        <nav class="surface-switcher" aria-label="Superficies de Produto">
-            <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
-                <span class="tab-idx">01</span>
-                <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
-                <span class="tab-chord">g h</span>
+    <!-- CABECALHO FIXO TECNICO (TOP-DECK UNIFICADO 48PX) -->
+    <header class="top-deck guide-header">
+        <div class="top-deck-left">
+            <a href="/" class="brand-unit" aria-label="Ir para Apresentacao Oficial piDots">
+                <svg width="24" height="24" viewBox="0 0 28 28" fill="none" class="ui-icon" style="width: 24px; height: 24px;">
+                    <rect width="28" height="28" rx="4" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
+                    <circle cx="8.5" cy="14" r="3.5" fill="#33ff66"/>
+                    <circle cx="19.5" cy="14" r="3.5" fill="#38bdf8"/>
+                    <path d="M12 14h4" stroke="#f1f5f9" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span class="brand-badge">PIDOTS</span>
+                <span class="brand-title">MANUAL OPERACIONAL // GUIA</span>
             </a>
-            <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
-                <span class="tab-idx">02</span>
-                <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
-                <span class="tab-chord">g w</span>
-            </a>
-            <a href="/docs" class="surface-tab active" id="tab-docs" title="Atalho: G D">
-                <span class="tab-idx">03</span>
-                <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
-                <span class="tab-chord">g d</span>
-            </a>
-        </nav>
-
-        <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch (Desktop) -->
-        <div class="header-search-box" onclick="abrirOmnisearch()" style="cursor: pointer;" title="Abrir Omnisearch (Atalho: Ctrl+K ou /)">
-            <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (CTRL+K OU /)..." data-i18n-placeholder="guide.search_placeholder" readonly style="cursor: pointer;">
-            <kbd class="kbd-badge">CTRL+K</kbd>
         </div>
 
-        <div class="header-actions">
+        <!-- Comutador Canônico de Superfícies de Produto -->
+        <div class="top-deck-center">
+            <nav class="surface-switcher" aria-label="Superficies de Produto">
+                <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
+                    <span class="tab-idx">01</span>
+                    <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
+                    <span class="tab-chord">g h</span>
+                </a>
+                <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
+                    <span class="tab-idx">02</span>
+                    <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
+                    <span class="tab-chord">g w</span>
+                </a>
+                <a href="/docs" class="surface-tab active" id="tab-docs" title="Atalho: G D">
+                    <span class="tab-idx">03</span>
+                    <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
+                    <span class="tab-chord">g d</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="top-deck-right header-actions">
+            <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch (Desktop) -->
+            <div class="header-search-box" onclick="abrirOmnisearch()" style="cursor: pointer;" title="Abrir Omnisearch (Atalho: Ctrl+K ou /)">
+                <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (CTRL+K OU /)..." data-i18n-placeholder="guide.search_placeholder" readonly style="cursor: pointer;">
+                <kbd class="kbd-badge">CTRL+K</kbd>
+            </div>
+
             <div class="node-telemetry-badge" id="headerNodeBadge" title="Nó Edge Raspberry Pi 4B ARM64 Operacional" data-i18n-title="telemetry.node_title">
                 <span class="telemetry-led"></span>
                 <span>NO: ONLINE</span>
@@ -106,13 +111,13 @@
             </button>
 
             <!-- Comutador Bilíngue de Idioma [PT | EN] -->
-            <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
+            <button class="pixel-btn lang-toggle-btn desktop-only-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
                 <span class="lang-text-full">[IDIOMA: PT | EN]</span>
                 <span class="lang-text-short">[PT]</span>
             </button>
 
             <!-- Alternador de Tema Dark Noir vs Blueprint -->
-            <button class="pixel-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
+            <button class="pixel-btn desktop-only-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
                 <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 <span class="theme-btn-label" data-i18n="nav.theme">[TEMA]</span>
             </button>
@@ -312,7 +317,7 @@
                     </div>
                 </div>
                 <div class="step-module-footer">
-                    <span class="step-counter-tag">PASSO 01 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 01 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-2')">
                         <span>AVANCAR: CHAT MULTI-BOT &amp; FITAS DE CARBONO</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -411,7 +416,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 02 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 02 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-3')">
                         <span>AVANCAR: DOT HEARTBEAT &amp; SILENCIO</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -505,7 +510,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 03 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 03 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-4')">
                         <span>AVANCAR: GATEWAY DE MENSAGERIA &amp; SALAS</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -614,7 +619,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 04 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 04 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-5')">
                         <span>AVANCAR: ARSENAL DE TOOLS &amp; TOOL PRUNING</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -833,7 +838,7 @@
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 05 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 05 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-6')">
                         <span>AVANCAR: OPERACIONAL &amp; PRESERVACAO FLASH</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -934,7 +939,10 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/data/locales/pt.json', '')">[GET /data/locales/pt.json]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/changelog', '')">[GET /api/changelog]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/triggers', '')">[GET /api/edge/triggers]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/dot-supervisor/export-pack', '')">[GET /export-pack (v1.1)]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/packs/catalog', '')">[GET /packs/catalog]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/dots/packs/install/dot-secops', '')">[POST /install/dot-secops]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/expire-stale', '')">[POST /hitl/expire-stale]</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/triggers/simulate', '{\x22gpio_pin\x22: 17, \x22gpio_value\x22: 1, \x22wake_supervisor\x22: true}')">[POST /triggers/simulate]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/signed-resolve', '{\x22action_id\x22: \x22demo_1\x22, \x22approved\x22: true, \x22token\x22: \x22demo_hmac\x22}')">[POST /hitl/signed-resolve]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/maintenance', '{\x22days_threshold\x22: 7, \x22create_backup\x22: true}')">[POST /maintenance]</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/threads', '{\x22dot_id\x22: \x22dot-supervisor\x22, \x22title\x22: \x22Sessao Auditoria Edge\x22}')">[POST /api/threads]</button>
@@ -986,11 +994,12 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                                 <strong>/app e /workspace :</strong> Console Operacional SPA/PWA com Activity Rail (48px), CoAgents State e Dot's Computer.<br>
                                 <strong>/docs :</strong> Guia Didático com busca client-side e Mini API Tester.<br>
                                 <strong>/api/docs :</strong> Swagger UI OpenAPI 3.1 interativo.<br>
-                                <strong>pidots/api/routes_dots.py :</strong> CRUD completo de agentes (GET/POST/PUT/DELETE), <code>/api/tools</code> e Dot Packs v1.1 SHA-256.<br>
+                                <strong>pidots/api/routes_dots.py :</strong> CRUD completo de agentes (GET/POST/PUT/DELETE), <code>/api/tools</code>, <code>/api/dots/packs/catalog</code> e instalação 1-clique com SHA-256 (<code>/api/dots/packs/install/{pack_id}</code>).<br>
                                 <strong>pidots/api/routes_threads.py :</strong> Sessões, <code>/state</code> (CoAgents Shared State), <code>/save-as-space</code> e streaming AG-UI SSE.<br>
                                 <strong>pidots/api/routes_tasks.py :</strong> Agendamentos cron, disparo imediato (<code>/run</code>), toggle e quadro Spaces.<br>
-                                <strong>pidots/api/routes_hitl.py :</strong> Governança HITL com edição de argumentos (<code>modified_args</code>) e retomada imediata.<br>
-                                <strong>pidots/api/routes_edge.py :</strong> Telemetria RSS real (<code>process_rss_mb</code>), Dot's Computer (<code>/computer/files</code> e <code>/computer/exec</code>) e MCP Lite (<code>/api/mcp/servers</code>).
+                                <strong>pidots/api/routes_hitl.py :</strong> Governança HITL com edição de argumentos (<code>modified_args</code>), retomada imediata e expiração determinística TTL (<code>/api/hitl/expire-stale</code>).<br>
+                                <strong>pidots/api/routes_edge.py :</strong> Telemetria RSS real (<code>process_rss_mb</code>), Dot's Computer (<code>/computer/files</code> e <code>/computer/exec</code>), MCP Lite (<code>/api/mcp/servers</code>) e simulação de gatilhos GPIO/MQTT (<code>/api/edge/triggers/simulate</code>).<br>
+                                <strong>pidots/api/routes_pwa.py :</strong> PWA Manifest, Service Worker e controle de redirects legados (<code>ENABLE_LEGACY_REDIRECTS</code>).
                             </p>
                         </article>
 
@@ -1077,10 +1086,10 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                     <div class="pixel-callout info">
                         <div class="pixel-callout-header">
                             <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                            ACESSO REMOTO SEGURO COM CLOUDFLARE TUNNEL
+                            ACESSO REMOTO SEGURO COM CLOUDFLARE TUNNEL &amp; PORTAS DESACOPLADAS
                         </div>
                         <div class="pixel-callout-text">
-                            Para acessar o console SPA e receber webhooks fora da sua rede local sem abrir portas no roteador, execute o <code>cloudflared tunnel</code> no Raspberry Pi direcionando para a porta <code>8000</code>. Suas comunicacoes serao blindadas com TLS de ponta a ponta.
+                            Para acessar o console SPA, documentação e receber webhooks fora da sua rede local com isolamento de portas e sem abrir portas no roteador, utilize o Cloudflare Tunnel automatizado via <code>./cloudflared/setup-tunnel.sh</code> (detalhado no Passo 14). Suas comunicacoes serao blindadas com TLS e Zero Trust de ponta a ponta.
                         </div>
                     </div>
                 </div>
@@ -1089,7 +1098,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 06 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 06 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-7')">
                         <span>AVANCAR: MEMORIA HIERARQUICA (MEMGPT)</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1177,7 +1186,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 07 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 07 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-8')">
                         <span>AVANCAR: SELF-HEALING &amp; TWO-STAGE PLANNER</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1311,7 +1320,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 08 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 08 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-9')">
                         <span>AVANCAR: CONSELHO CONSULTIVO MULTI-BOT</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1421,7 +1430,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 09 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 09 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-10')">
                         <span>AVANCAR: SHARED SPACE &amp; DOT PACKS</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1472,12 +1481,20 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                             <span class="terminal-circle"></span>
                             <span class="terminal-circle"></span>
                             <span class="terminal-circle"></span>
-                            <span class="terminal-title">EXEMPLO // EXPORTACAO E IMPORTACAO VIA ENDPOINTS REST</span>
+                            <span class="terminal-title">EXEMPLO // CATALOGO E INSTALACAO DE DOT PACKS ASSINADOS (SHA-256)</span>
                         </div>
-                        <pre class="terminal-pre"><code># 1. Exportar manifesto completo assinado com hash SHA-256
+                        <pre class="terminal-pre"><code># 1. Consultar catalogo oficial de Dot Packs comunitarios (data/packs/)
+curl -s http://localhost:8000/api/dots/packs/catalog | jq .
+
+# 2. Instalar Dot Pack oficial em 1 clique com validacao SHA-256 e inspecao anti-injection
+curl -s -X POST http://localhost:8000/api/dots/packs/install/dot-secops
+curl -s -X POST http://localhost:8000/api/dots/packs/install/dot-homelab
+curl -s -X POST http://localhost:8000/api/dots/packs/install/dot-finops
+
+# 3. Exportar manifesto completo de especialista ativo com hash SHA-256
 curl -s http://localhost:8000/api/dots/dot-coder/export-pack > dot_coder_pack.json
 
-# 2. Importar e instanciar com validacao criptografica e inspecao anti-injection
+# 4. Importar manifesto customizado com validacao criptografica
 curl -s -X POST http://localhost:8000/api/dots/import-pack \
   -H "Content-Type: application/json" \
   -d @dot_coder_pack.json</code></pre>
@@ -1488,7 +1505,7 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 10 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 10 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-11')">
                         <span>AVANCAR: TRIGGERS &amp; MANUTENCAO MICROSD</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1634,7 +1651,15 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                         <pre class="terminal-pre"><code># 1. Consultar telemetria de hardware e status de triggers
 curl -s http://localhost:8000/api/edge/triggers
 
-# 2. Disparar manutencao noturna com backup atomico
+# 2. Simular sinal fisico de pino GPIO (despertando @dot-supervisor no SQLite WAL)
+curl -s -X POST http://localhost:8000/api/edge/triggers/simulate \
+  -H "Content-Type: application/json" \
+  -d '{"gpio_pin": 17, "gpio_value": 1, "wake_supervisor": true}'
+
+# 3. Executar varredura deterministica de expiracao de acoes HITL pendentes (TTL 30 min)
+curl -s -X POST http://localhost:8000/api/hitl/expire-stale
+
+# 4. Disparar manutencao noturna com backup atomico
 curl -s -X POST http://localhost:8000/api/edge/maintenance \
   -H "Content-Type: application/json" \
   -d '{"days_threshold": 7, "create_backup": true}'</code></pre>
@@ -1645,7 +1670,7 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 11 DE 13 // GUIA DIDATICO</span>
+                    <span class="step-counter-tag">PASSO 11 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-12')">
                         <span>AVANCAR: MOTOR I18N &amp; DICIONARIOS JSON</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1728,7 +1753,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">PASSO 12 DE 13</span>
+                    <span class="step-counter-tag">PASSO 12 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-green" onclick="scrollToStep('passo-13')">
                         <span>PROXIMO PASSO</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1761,7 +1786,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
 
                     <!-- TABELA DE SISTEMA & UI -->
                     <h3 class="step-subheading">[01] SISTEMA &amp; UI (10 COMANDOS)</h3>
-                    <div class="table-responsive">
+                    <div class="table-paper-container">
                         <table class="pixel-table">
                             <thead>
                                 <tr>
@@ -1844,7 +1869,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
 
                     <!-- TABELA DE AGENTES & MULTI-BOT -->
                     <h3 class="step-subheading" style="margin-top: 24px;">[02] AGENTES &amp; MULTI-BOT (7 COMANDOS)</h3>
-                    <div class="table-responsive">
+                    <div class="table-paper-container">
                         <table class="pixel-table">
                             <thead>
                                 <tr>
@@ -1903,7 +1928,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
 
                     <!-- TABELA DE MEMORIA, TAREFAS, GOVERNANCA E DADOS -->
                     <h3 class="step-subheading" style="margin-top: 24px;">[03] MEMORIA, TAREFAS, GOVERNANCA, COMPUTADOR E EXPORTACAO (17 COMANDOS)</h3>
-                    <div class="table-responsive">
+                    <div class="table-paper-container">
                         <table class="pixel-table">
                             <thead>
                                 <tr>
@@ -2054,8 +2079,129 @@ Throttle Automatico     : DESATIVADO (NORMAL)
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
-                    <span class="step-counter-tag">CONCLUSAO DO GUIA (13 DE 13)</span>
-                    <a href="/app" class="pixel-btn btn-green">
+                    <span class="step-counter-tag">PASSO 13 DE 14</span>
+                    <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-14')">
+                        <span>PROXIMO PASSO</span>
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ===============================================================
+                 PASSO 14: DESACOPLAMENTO DE PORTAS & CLOUDFLARE TUNNEL
+                 =============================================================== -->
+            <section class="step-module" id="passo-14">
+                <div class="step-module-header">
+                    <span class="step-badge">PASSO 14 // REDE &amp; BORDA</span>
+                    <h2 class="step-title">Desacoplamento por Portas &amp; Cloudflare Tunnel</h2>
+                </div>
+
+                <div class="step-module-body">
+                    <p class="step-paragraph">
+                        Para viabilizar a exposição remota segura de nós Raspberry Pi 4B sem necessidade de IP público estático, abertura de portas no roteador doméstico (Port Forwarding) ou vulnerabilidades de NAT, o piDots v1.5.5 adota a arquitetura de <strong>Desacoplamento por Portas</strong> combinada ao <strong>Cloudflare Tunnel (cloudflared)</strong>.
+                    </p>
+                    <p class="step-paragraph">
+                        Sob esta topologia, o proxy reverso Nginx Alpine (< 8MB RAM) atua na borda local escutando em portas independentes para cada superfície de produto. Em seguida, o daemon <code>cloudflared</code> estabelece túneis criptografados de saída (outbound-only) via protocolo QUIC/HTTP2 diretamente para os data centers globais da Cloudflare, permitindo mapear subdomínios dedicados com isolamento de privilégios.
+                    </p>
+
+                    <div class="pixel-card-grid">
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">
+                                    <span class="brand-badge" style="color: var(--blueprint-cyan); border-color: var(--blueprint-cyan);">8081</span>
+                                    LANDING PAGE
+                                </span>
+                                <span class="pixel-stamp stamp-notice" style="font-size: 6px; padding: 2px 4px;">ACESSO PUBLICO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Rota Raiz:</strong> <code>/</code> | <strong>Subdominio Sugerido:</strong> <code>pidots.seudominio.com</code><br>
+                                <strong>Funcao:</strong> Vitrine institucional de atrito zero, onboarding rapido, simulador interativo de teletipo e download do manifesto PWA. Cache agressivo de assets estaticos em RAM.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">
+                                    <span class="brand-badge" style="color: var(--phosphor-green); border-color: var(--phosphor-green);">8082</span>
+                                    CONSOLE WORKSPACE
+                                </span>
+                                <span class="pixel-stamp stamp-approved" style="font-size: 6px; padding: 2px 4px;">ZERO TRUST ACCESS</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Rota Raiz:</strong> <code>/</code> | <strong>Subdominio Sugerido:</strong> <code>app.seudominio.com</code><br>
+                                <strong>Funcao:</strong> Ambiente operacional principal com SPA OpenDots, suporte a Streaming SSE AG-UI e WebSockets bidirecionais. Recomenda-se proteger via Cloudflare Zero Trust.
+                            </p>
+                        </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">
+                                    <span class="brand-badge" style="color: var(--thermal-amber); border-color: var(--thermal-amber);">8083</span>
+                                    DOCUMENTACAO &amp; DOCS
+                                </span>
+                                <span class="pixel-stamp stamp-amber" style="font-size: 6px; padding: 2px 4px;">BASE DE CONHECIMENTO</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Rota Raiz:</strong> <code>/</code> | <strong>Subdominio Sugerido:</strong> <code>docs.seudominio.com</code><br>
+                                <strong>Funcao:</strong> Acesso direto ao Manual Operacional de 14 passos e ao Relatorio de Engenharia Reversa (<code>/relatorio</code>). Navegacao client-side otimizada sem recargas pesadas.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="slip-perforation">
+                        <span class="perforation-line"></span>
+                    </div>
+
+                    <h3 class="step-subheading">Passo a Passo: Ativando o Cloudflare Tunnel no Raspberry Pi</h3>
+                    <p class="step-paragraph">
+                        O processo de configuracao leva menos de 5 minutos e nao expoe o endereco IP fisico do nó. Siga a esteira recomendada:
+                    </p>
+
+                    <div class="terminal-card">
+                        <div class="terminal-card-header">
+                            <span class="terminal-title">TERMINAL // INSTALACAO E ROTEAMENTO CLOUDFLARED ARM64</span>
+                            <span class="terminal-tag">BASH LINUX</span>
+                        </div>
+                        <pre class="terminal-pre"><code># 1. Executar o assistente automatizado do piDots:
+./cloudflared/setup-tunnel.sh
+
+# 2. Autenticar a sessao na sua conta Cloudflare:
+cloudflared tunnel login
+
+# 3. Criar o tunel edge dedicado:
+cloudflared tunnel create pidots-edge
+
+# 4. Roteamento de subdominios DNS no painel Cloudflare:
+cloudflared tunnel route dns pidots-edge pidots.seudominio.com
+cloudflared tunnel route dns pidots-edge app.seudominio.com
+cloudflared tunnel route dns pidots-edge docs.seudominio.com
+
+# 5. Instalar o arquivo de configuracao oficial:
+sudo cp cloudflared/config.yml.example /etc/cloudflared/config.yml
+# (Edite /etc/cloudflared/config.yml inserindo o UUID gerado no passo 3)
+
+# 6. Ativar e iniciar o servico em segundo plano 24/7 (systemd):
+sudo cloudflared service install
+sudo systemctl enable --now cloudflared
+sudo systemctl status cloudflared</code></pre>
+                    </div>
+
+                    <h3 class="step-subheading">Protecao de Seguranca Zero Trust para o Console (/app na Porta 8082)</h3>
+                    <p class="step-paragraph">
+                        Como a porta <code>8082</code> permite interagir diretamente com o terminal de comandos bash dos Dots e ferramentas de gerenciamento de arquivos do Raspberry Pi, a melhor pratica de seguranca consiste em aplicar uma politica do <strong>Cloudflare Zero Trust Access</strong> para o subdominio <code>app.seudominio.com</code>.
+                    </p>
+                    <p class="step-paragraph">
+                        Dessa forma, qualquer tentativa de acesso ao Workspace remoto exigira autenticacao previa por e-mail (Magic Link) ou Provedor de Identidade (GitHub, Google, Okta) antes que a requisicao atinja o hardware de borda, garantindo imunidade total contra bots maliciosos e varreduras de portas.
+                    </p>
+                </div>
+
+                <div class="step-module-footer">
+                    <button class="pixel-btn" onclick="scrollToStep('passo-13')">
+                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>PASSO ANTERIOR</span>
+                    </button>
+                    <span class="step-counter-tag">CONCLUSAO DO GUIA (14 DE 14)</span>
+                    <a href="/app" data-surface="workspace" class="pixel-btn btn-green">
                         <span>ABRIR CONSOLE OPERACIONAL SPA</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </a>
@@ -2162,11 +2308,23 @@ Throttle Automatico     : DESATIVADO (NORMAL)
                         <span>Slash Commands &amp; Protocolo de Borda</span>
                     </a>
                 </li>
+                <li class="drawer-item" data-keywords="cloudflare tunnel cloudflared desacoplamento portas 8081 8082 8083 nginx reverse proxy zero trust nat traversal ingress">
+                    <a href="#passo-14" class="drawer-link" onclick="handleDrawerNav(event, 'passo-14')">
+                        <span class="drawer-step-idx">14</span>
+                        <span>Desacoplamento por Portas &amp; Cloudflare Tunnel</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="relatorio engenharia reversa estudo arquitetura benchmarks arm64 sbc raspberry">
+                    <a href="/relatorio" data-surface="report" class="drawer-link" style="color: var(--blueprint-cyan);">
+                        <span class="drawer-step-idx">++</span>
+                        <span>Estudo Tecnico // Engenharia Reversa ARM64</span>
+                    </a>
+                </li>
             </ul>
 
             <div class="drawer-bottom-bar">
                 <span>PIDOTS // INTERFACE TECNICA</span>
-                <span>13 PASSOS DISPONIVEIS</span>
+                <span>14 PASSOS DISPONIVEIS</span>
             </div>
         </aside>
 
@@ -2181,14 +2339,14 @@ Throttle Automatico     : DESATIVADO (NORMAL)
         <div class="omnisearch-header">
             <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input type="text" id="omnisearchInput" class="omnisearch-input" placeholder="DIGITE TERMO DE BUSCA (EX: HITL, SPACES, DOCKER, WAL)..." autocomplete="off">
-            <span class="omnisearch-counter" id="omnisearchCounter">13 PASSOS</span>
+            <span class="omnisearch-counter" id="omnisearchCounter">14 PASSOS</span>
             <button class="pixel-btn" onclick="fecharOmnisearch()" style="padding: 3px 6px;">[ESC]</button>
         </div>
         <div class="omnisearch-hint-bar">
             <span>[SETAS ↑ / ↓] NAVEGAR</span>
             <span>[ENTER] ABRIR</span>
             <span>[ESC] FECHAR</span>
-            <span id="omnisearchTotalMatches" style="color: var(--phosphor-green);">13 SECOES INDEXADAS</span>
+            <span id="omnisearchTotalMatches" style="color: var(--phosphor-green);">14 SECOES INDEXADAS</span>
         </div>
         <div class="omnisearch-results-list" id="omnisearchResults">
             <!-- Itens gerados dinamicamente via JavaScript -->

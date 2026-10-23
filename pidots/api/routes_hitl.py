@@ -36,6 +36,18 @@ async def list_pending_hitl():
         return [dict(row) for row in rows]
 
 
+@router.post("/api/hitl/expire-stale")
+async def trigger_expire_stale_hitl():
+    """Executa varredura imediata de TTL (30 min) nas solicitações HITL pendentes e retorna os IDs expirados."""
+    expired_ids = await HITLManager.expire_stale_approvals()
+    return {
+        "status": "success",
+        "event": "hitl:expired",
+        "expired_count": len(expired_ids),
+        "expired_ids": expired_ids
+    }
+
+
 @router.get("/api/hitl/history")
 async def list_hitl_history(limit: int = 30):
     """Lista o histórico forense de aprovações, vetos e expirações HITL."""

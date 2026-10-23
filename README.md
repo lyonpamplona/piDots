@@ -173,7 +173,7 @@ O módulo `pidots/core/council.py` implementa deliberação dialética formal en
 - **Micro-Motor Vanilla JS (`static/pidots-i18n.js`):** Alternância instantânea de idioma (< 10ms) sem frameworks pesados ou consumo extra de RAM, com detecção e persistência segura em `localStorage.getItem('pidots_lang')`.
 - **Dicionários Atômicos JSON (`data/locales/pt.json` e `data/locales/en.json`):** Dicionários semânticos servidos com cache de borda e fallback defensivo inteligente.
 - **Mutação Estrita via textContent:** Mecanismo declarativo baseado em atributos `data-i18n` e `data-i18n-attr`, com imunidade total a injeções de script (XSS).
-- **Onboarding e Patch Notes SemVer v1.5.3:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
+- **Onboarding e Patch Notes SemVer v1.5.5:** Esteira de ativação guiada de primeiro acesso e modal de patch notes dinâmico com categorização semântica das atualizações (`/api/changelog`).
 
 ### 11. Protocolo Unificado de Slash Commands (/), Tríptico Adaptativo e Engenharia Mobile-First
 - **Catálogo Completo de 30 Slash Commands:** Comandos categorizados em 6 grupos operacionais (Sistema, Agentes, Memória, Tarefas, Borda, Exportação), invocados com `/` no teletipo ou via botão mecânico touch `[/]`. Comandos locais (`/clear`, `/theme`, `/lang`, `/telemetry`, etc.) executam instantaneamente no cliente (< 16ms) com zero chamadas externas e zero consumo de tokens.
@@ -207,6 +207,33 @@ O módulo `pidots/core/council.py` implementa deliberação dialética formal en
 ### 15. Barramento Físico GPIO e Sensores MQTT de Borda
 - **Leitura Direta de Hardware (`pidots/core/edge_triggers.py`):** Suporte nativo à leitura de pinos GPIO físicos no Raspberry Pi 4B (com fallback defensivo caso execute em containers sem privilégios de hardware ou sistemas x86_64).
 - **Listener MQTT Assíncrono:** Permite que sensores locais despachem tópicos de telemetria diretamente ao piDots, disparando missões de agentes autônomos ou rotinas do `EdgeScheduler` sem bloquear o loop de eventos.
+
+### 16. Catálogo Comunitário de Dot Packs v1.1 Assinados com SHA-256
+- **Distribuição Oficial Padronizada (`data/packs/`):** Três manifestos comunitários assinados prontos para uso:
+  - `@dot-secops`: Sentinel especializado em auditoria de portas, análise de logs SSH e conformidade Linux.
+  - `@dot-homelab`: Orquestrador de contêineres Docker, sensores físicos e saúde de armazenamento Flash.
+  - `@dot-finops`: Analista de telemetria de tokens, consumo de CPU e eficiência energética de inferência.
+- **Endpoints de Catálogo e Instalação em 1 Clique:**
+  - `GET /api/dots/packs/catalog`: Lista manifestos disponíveis com contagem de ferramentas e fatos arquivais.
+  - `POST /api/dots/packs/install/{pack_id}`: Valida a assinatura SHA-256 canônica, aciona inspeção do `@dot-auditor` contra Prompt Injection e restaura atomicamente o Dot no SQLite WAL.
+
+### 17. Desoneração de Assets com Nginx Alpine Multi-Porta e Sandbox Estrito
+- **Contêiner Nginx Alpine Multi-Porta (`nginx/nginx.conf`):** Atua como proxy reverso leve (< 6MB RAM) escutando em quatro portas de borda desacopladas (`8081` Landing, `8082` Workspace, `8083` Docs e `8088` Gateway), assumindo a entrega estática em C de `/static/` e `/data/locales/` com cabeçalhos `Cache-Control: immutable` e streaming SSE com `proxy_buffering off`, liberando 100% da CPU do FastAPI para o motor ReAct e SQLite WAL.
+- **Trava de Sandbox Estrito (`STRICT_SANDBOX`):** Quando ativado no `.env`, comandos de terminal recusam execução (`exit_code: 126`) caso o isolamento por namespaces Bubblewrap (`bwrap`) não esteja instalado no contêiner, eliminando execuções abertas sem governança.
+
+### 18. Manifesto de Engenharia Centauro e CI Multi-Arquitetura
+- **Manifesto de Engenharia Centauro (`AI_MANIFESTO.md`):** Documento público de coautoria humano-IA, estabelecendo regras de honestidade radical sobre hardware real (BCM2711, 4GB RAM, flash wear, teto térmico de 78°C) e erradicação de AI slop e emojis.
+- **Pipeline de Integração Contínua Multi-Arch (`.github/workflows/ci.yml`):** Compilação paralela para `linux/amd64` e `linux/arm64` via QEMU e Buildx com 24 baterias de testes automatizados validados a cada commit.
+
+### 19. Desacoplamento por Portas & Integração com Cloudflare Tunnel (v1.5.5)
+- **Superfícies de Borda Isoladas:**
+  - `http://localhost:8081`: Apresentação / Landing Page oficial com simulador ReAct.
+  - `http://localhost:8082`: Console Operacional Workspace SPA / PWA (recomendada proteção Cloudflare Zero Trust Access).
+  - `http://localhost:8083`: Guia Didático Oficial e Estudos Técnicos de Engenharia Reversa (`/relatorio`).
+  - `http://localhost:8088`: Gateway Unificado com suporte a rotas canônicas e redirects HTTP 308.
+  - `http://localhost:8000`: Backend Uvicorn / FastAPI Core interno.
+- **Roteamento Cruzado Inteligente (`cross-surface-router.js`):** Detecta dinamicamente se a conexão provém de portas locais, rede LAN ou subdomínios Cloudflare Tunnel (`app.*`, `docs.*`, `pidots.*`), garantindo navegação instantânea e comutação por acordes de teclado (`g h`, `g w`, `g d`).
+- **Automação de Túnel de Borda (`cloudflared/`):** Script `setup-tunnel.sh` e modelo `config.yml.example` com protocolo QUIC para NAT Traversal seguro e publicação 24/7 sem abrir portas no roteador.
 
 ---
 
@@ -259,9 +286,15 @@ docker compose up -d
 4. Verifique a telemetria e a saude da aplicacao:
 ```bash
 docker compose ps
-docker compose logs -f pidots-core
+docker compose logs -f pidots-core pidots-nginx
 ```
-O servidor estara acessivel na porta `8000` (`http://localhost:8000`).
+
+As superficies de borda estarao imediatamente acessiveis:
+- **Landing Page / Visao Geral:** `http://localhost:8081`
+- **Console Operacional Workspace SPA:** `http://localhost:8082`
+- **Guia Didatico & Estudos Tecnicos:** `http://localhost:8083`
+- **Gateway Unificado de Borda:** `http://localhost:8088`
+- **FastAPI Core Interno:** `http://localhost:8000` (saude: `curl http://localhost:8000/health`)
 
 ---
 
@@ -405,7 +438,7 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 | `GET` | `/icon.svg` | Logotipo vetorial oficial em formato SVG com cache prolongado |
 | `GET` | `/static/pidots-i18n.js` | Micro-motor Vanilla JS de internacionalizacao client-side |
 | `GET` | `/data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
-| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.5.3) |
+| `GET` | `/api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.5.5) |
 | `GET` | `/api/dots` | Listagem de AI Coworkers com arquetipos e status |
 | `GET` | `/api/dots/{id}/export-pack` | Exportacao portavel de DotPack v1.1 assinado com SHA-256 |
 | `POST` | `/api/dots/import-pack` | Importacao atomica de novos agentes a partir de DotPack v1.1 com auditoria |
@@ -445,8 +478,12 @@ A aplicacao expoe endpoints para integracao externa com suporte a streaming Serv
 
 ---
 
-### Console Operacional Web SPA e Interface Tecnica Minimalista
-O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota canonica `/app` (ou `/workspace`), projetada como um console escuro tatil:
+### Console Operacional Web SPA e Interface Tecnica Minimalista (Redesign Visual OpenDots Spatial)
+O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota canonica `/app` (ou `/workspace`), projetada como um console escuro tatil no padrao OpenDots Spatial:
+- **Top Deck Canonico de 48px:** Barra superior geometricamente calibrada em 48px com alinhamento triplo (.top-deck-left, .top-deck-center, .top-deck-right), eliminando empilhamento de barras e desobstruindo a visualizacao em smartphones.
+- **Hero Split-Screen e Bento Grid (Landing Page):** Vitrine Developer-First na rota `/` apresentando badges de silicio (52 MB RAM RSS), fita continua Pixel Paper UI com furos de trator e demonstrador HITL interativo homologado via HMAC-SHA256, complementada por Bento Grid de 4 Cards de Silicio.
+- **Activity Rail Modular de 48px e Tríptico OpenDots:** Quatro painéis verticais contextuais (`Spaces & Canais`, `Estúdio de Dots & Tool Pruning`, `Tasks Agendadas & Sensores`, `Memória Híbrida 64D & MCP Lite`) e subheader de missão de 38px.
+- **Guias e Relatorios em Largura Total:** `/docs` e `/relatorio` implementados estritamente com menu lateral direito retrátil (drawer abre/fecha), estilo passo a passo com leitura progressiva, busca instantânea Ctrl+K e largura total sem centralização restritiva.
 - **Estetica de Alta Densidade:** Visual tatico inspirado em matrizes tecnicas com alta densidade de informacoes, tipografia crisp e estetica retro minimalista de 1-bit.
 - **Logotipo Vetorial Oficial:** Marca de identidade do piDots servida via `/icon.svg` com nos interconectados em verde (#10b981) e ciano (#38bdf8).
 - **Tres Modos de Operacao Ergonomicos:**
@@ -459,7 +496,7 @@ O piDots disponibiliza uma interface SPA/PWA nativa dark mode servida na rota ca
 - **Governanca Interativa HITL Just-in-Time:** Cartoes de aprovacao e veto de seguranca exibidos apenas quando ha acoes retidas, com persistencia de logs de seguranca.
 - **Streaming de Raciocinio AG-UI:** Exibicao token a token de pensamentos e chamadas de ferramentas.
 - **Onboarding Walkthrough Guiado:** Esteira interativa de 5 passos para novos operadores com retencao de conclusao no cliente e reabertura via atalho F1.
-- **Central de Patch Notes SemVer (v1.5.3):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
+- **Central de Patch Notes SemVer (v1.5.5):** Modal dinâmico sincronizado com `/api/changelog`, categorizando novidades em Quatro Pilares: Incluido, Ajustado, Removido e Seguranca & Borda.
 
 #### Navegacao Cruzada via Chords Globais de Teclado
 Para transicao instantanea entre as superficies do sistema sem necessidade de mouse:
@@ -551,6 +588,10 @@ python3 scripts/test_phase3_opendots_dynamic_js.py
 # Teste de resiliencia integral (Tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
 python3 scripts/test_resilience_phases.py
 
+# Testes de Desacoplamento de Portas e Roteamento Cruzado
+python3 scripts/test_phase20_port_decoupling_nginx.py
+node scripts/test_cross_surface_router.js
+
 # Teste de carga e concorrencia sob estresse (Edge Stress Test)
 python3 scripts/stress_test.py
 ```
@@ -567,15 +608,25 @@ python3 scripts/stress_test.py
 ├── .gitignore
 ├── ARCHITECTURE.md                  # Especificacao detalhada de arquitetura e I/O
 ├── CONTRIBUTING.md                  # Diretrizes para contribuicao tecnica ao projeto
+├── cloudflared/                     # Configuracoes e automacoes de tunel seguro Cloudflare
+│   ├── config.yml.example           # Modelo de ingress com subdominios desacoplados
+│   └── setup-tunnel.sh              # Script interativo de instalacao e configuracao
 ├── data/                            # Dados estaticos, changelog e dicionarios de localizacao
-│   ├── changelog.json               # Historico de versoes e notas de atualizacao SemVer v1.5.2
+│   ├── changelog.json               # Historico de versoes e notas de atualizacao SemVer v1.5.5
 │   └── locales/                     # Dicionarios de internacionalizacao atomicos (i18n)
 │       ├── en.json                  # Dicionario de termos em Ingles Tecnico
 │       └── pt.json                  # Dicionario de termos em Portugues do Brasil
-├── docker-compose.yml               # Configuracao oficial de orquestracao Docker
+├── docker-compose.yml               # Configuracao oficial de orquestracao Docker (multi-porta)
 ├── Dockerfile                       # Imagem otimizada baseada em python:3.13-slim
 ├── LICENSE                          # Licenca MIT
 ├── MANUAL_OPERACIONAL.md            # Guia operacional de administracao e comandos
+├── nginx/                           # Configuracao de proxy reverso leve (< 6MB RAM)
+│   └── nginx.conf                   # Quatro blocos de escuta (8081, 8082, 8083, 8088)
+├── pages/                           # Superficies HTML monoliticas desacopladas
+│   ├── docs.html                    # Guia didatico e manual operacional passo a passo
+│   ├── landing.html                 # Pagina de apresentacao oficial e onboarding
+│   ├── relatorio.html               # Relatorio de engenharia reversa e benchmarks ARM64
+│   └── spa.html                     # Console operacional Workspace SPA/PWA
 ├── pidots/                          # Pacote de codigo-fonte principal
 │   ├── config.py                    # Configuracoes Pydantic e variaveis de ambiente
 │   ├── main.py                      # Servidor FastAPI, endpoints REST e streaming SSE

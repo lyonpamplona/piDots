@@ -4,7 +4,7 @@
 **Autor e Criador:** lyon christopher  
 **Assistente:** Logger  
 **Ambiente Alvo:** Computacao de Borda e SBCs (Benchmark de Referencia: Raspberry Pi 4B 4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
-**Versão:** 1.5.3 (Produção Estável — Padrão OpenDots Workspace, CoAgents Shared State, Generative UI Cards, Computador do Dot e HITL Interrupt-Resume)  
+**Versão:** 1.5.5 (Produção Estável — Desacoplamento Multi-Porta Nginx, Cloudflare Tunnel Zero Trust, Padrão OpenDots Spatial, CoAgents Shared State e HITL HMAC-SHA256)  
 
 ---
 
@@ -338,28 +338,34 @@ Todos os scripts reportam o consumo real de memoria RSS (mantendo-se < 100 MB de
 
 ---
 
-## 10. Acesso Remoto Seguro 24/7 via Cloudflared
+## 10. Acesso Remoto Seguro 24/7 via Cloudflare Tunnel (cloudflared)
 
-Para acessar o console SPA e a API a partir de redes externas ou no celular sem expor portas nem alterar configurações de NAT no roteador:
+Para acessar o console SPA, documentação e receber webhooks a partir de redes externas ou em smartphones sem expor portas nem alterar configurações de NAT no roteador:
 
-### 10.1 Instalação do Cloudflared no Raspberry Pi
+### 10.1 Instalação Automatizada no Raspberry Pi (ARM64 / x86_64)
+Utilize o script oficial automatizado de deploy do túnel:
 ```bash
-curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64.deb
-sudo dpkg -i cloudflared.deb
-rm cloudflared.deb
+./cloudflared/setup-tunnel.sh
 ```
+O assistente detectará a arquitetura do processador, fará o download do pacote oficial mais recente e guiará a autenticação com a Cloudflare.
 
-### 10.2 Execução de Túnel Imediato
+### 10.2 Configuração com Superfícies Desacopladas (Ingress Rules)
+Copie o modelo de regras de ingress para o diretório de sistema:
 ```bash
-cloudflared tunnel --url http://localhost:8000
+sudo cp cloudflared/config.yml.example /etc/cloudflared/config.yml
+# Edite o arquivo inserindo o UUID do túnel e seus subdomínios:
+# - app.seudominio.com   -> http://localhost:8082 (Workspace SPA)
+# - docs.seudominio.com  -> http://localhost:8083 (Docs & Guias)
+# - pidots.seudominio.com -> http://localhost:8081 (Landing Page)
 ```
-O Cloudflare gerará uma URL pública HTTPS segura (`https://*.trycloudflare.com`) que pode ser aberta no smartphone ou instalada como PWA.
+Consulte o passo a passo completo e a blindagem Zero Trust na [Seção 27](#27-operacao-do-cloudflare-tunnel--portas-desacopladas-v155).
 
-### 10.3 Configuração como Serviço Persistente (systemd)
-Para manter o túnel ativo 24/7 mesmo após reinicializações do Raspberry Pi:
+### 10.3 Execução como Serviço de Sistema Persistente (systemd)
+Para manter o túnel ativo 24/7 com reinicialização automática pós-boot:
 ```bash
-sudo cloudflared service install <TOKEN_DO_SEU_TUNEL>
+sudo cloudflared service install
 sudo systemctl enable --now cloudflared
+sudo systemctl status cloudflared
 ```
 
 ---
@@ -398,14 +404,14 @@ O piDots implementa proteções ativas contra esse fenômeno:
 
 ## 13. Procedimentos de Diagnóstico e Resolução de Problemas
 
-### 13.1 O Contêiner não inicia
-- Verifique se a porta 8000 já está em uso por outro serviço:
+### 13.1 O Contêiner não inicia ou portas em conflito
+- Verifique se as portas desacopladas do piDots estão em uso por outro processo:
   ```bash
-  sudo netstat -tlpn | grep 8000
+  sudo ss -tulpn | grep -E '8081|8082|8083|8088|8000'
   ```
-- Inspecione logs detalhados do Docker:
+- Inspecione logs detalhados dos serviços Docker:
   ```bash
-  docker compose logs pidots-core
+  docker compose logs pidots-core pidots-nginx
   ```
 
 ### 13.2 Diagnóstico e Resolução de Falhas de Conexão com o Provedor de IA
@@ -505,7 +511,14 @@ unzip -l workspace_dot-dev-core.zip
 
 ## 14. Console Web SPA Oficial, Topologia de Rotas e Operacao via Teclado
 
-O console oficial do piDots opera na porta 8000 na rota canonica `http://localhost:8000/app` (com alias `http://localhost:8000/workspace`) e oferece:
+O ecossistema piDots opera sob topologia de portas desacopladas com proxy reverso Nginx Alpine e fallback direto no FastAPI Core:
+- **Porta 8082 (Workspace SPA/PWA):** `http://localhost:8082/` (ou `http://localhost:8088/app` no Gateway Unificado).
+- **Porta 8081 (Landing Page / Onboarding):** `http://localhost:8081/` (ou `http://localhost:8088/` no Gateway).
+- **Porta 8083 (Documentação Didática & Estudos):** `http://localhost:8083/` e `http://localhost:8083/relatorio`.
+- **Porta 8088 (Gateway Unificado de Borda):** Ponto de entrada consolidado path-based.
+- **Porta 8000 (FastAPI Core):** Motor Uvicorn interno (`http://localhost:8000/app` e `http://localhost:8000/docs`).
+
+O console oficial oferece:
 - **Interface Tecnica Minimalista e Console Escuro Tatil:** Interface tatica minimalista com contraste marcante (Dark Noir e Blueprint), visual de matriz tecnica, tipografia crisp e estetica retro de 1-bit.
 - **Identidade e Logotipo Oficial:** Logotipo vetorial servido via rota oficial `/icon.svg` com headers de cache HTTP de 24 horas (`Cache-Control: public, max-age=86400`).
 - **Telemetria de Hardware em Tempo Real:** Indicadores integrados de SoC/CPU, RAM, temperatura do silicio e status do SQLite WAL.
@@ -857,5 +870,125 @@ Quando uma ferramenta de risco alto/crítico é interceptada:
 No painel direito do Console (`/app`):
 - **Aba `[COMPUTADOR]`:** Exibe o terminal sandbox (`bwrap`) e o explorador de arquivos do workspace do agente ativo (`GET /api/edge/computer/files`). Ao ativar **`[ASSUMIR CONTROLE]`** (*Modo Takeover*), uma barra de comando interativa permite ao operador executar comandos diretamente no sandbox (`POST /api/edge/computer/exec`).
 - **Aba `[COAGENTS]`:** Inspeciona o estado compartilhado bidirecional (`STATE_SNAPSHOT` e `STATE_DELTA`) sincronizado via SSE e permite aplicar overrides manuais de variáveis JSON (`PATCH /api/threads/{thread_id}/state`).
+
+---
+
+## 24. Operação do Catálogo de Dot Packs Oficiais (v1.6.1)
+
+### 24.1 Listar o Catálogo de Pacotes Assinados
+Para verificar os pacotes oficiais homologados disponíveis em `data/packs/`:
+```bash
+curl -s http://localhost:8000/api/dots/packs/catalog | jq .
+```
+
+### 24.2 Instalar Especialista Oficial em 1 Clique
+A instalação verifica a assinatura SHA-256 e aciona a auditoria contra Prompt Injection antes da persistência:
+```bash
+# Especialista SecOps Sentinel (Auditoria e Hardening)
+curl -s -X POST http://localhost:8000/api/dots/packs/install/dot-secops | jq .
+
+# Especialista Homelab Orchestrator (Docker e Sensores)
+curl -s -X POST http://localhost:8000/api/dots/packs/install/dot-homelab | jq .
+
+# Especialista FinOps Telemetry Analyst (Eficiência e Custos)
+curl -s -X POST http://localhost:8000/api/dots/packs/install/dot-finops | jq .
+```
+
+---
+
+## 25. Operação de Infraestrutura Nginx Alpine & Gatilhos Físicos
+
+### 25.1 Operação do Proxy Nginx Alpine Multi-Porta
+O contêiner `pidots-nginx` opera servindo assets estáticos diretamente do disco e proxy de APIs nas portas 8081, 8082, 8083 e 8088:
+```bash
+# Iniciar ambos os serviços no host
+docker compose up -d
+
+# Testar entrega direta em C pelo Nginx na porta 8081
+curl -I http://localhost:8081/static/css/landing.css
+
+# Testar endpoint de saúde através do Nginx em qualquer porta
+curl -s http://localhost:8081/health | jq .
+curl -s http://localhost:8082/health | jq .
+curl -s http://localhost:8083/health | jq .
+curl -s http://localhost:8088/health | jq .
+```
+
+### 25.2 Simulação de Gatilho Físico GPIO e Despertar do Supervisor
+Para simular um pulso físico de botão de emergência ou sensor de rack:
+```bash
+curl -s -X POST http://localhost:8000/api/edge/triggers/simulate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "gpio_pin": 17,
+    "gpio_value": 1,
+    "wake_supervisor": true
+  }' | jq .
+```
+O evento desperta o `@dot-supervisor` na thread `edge-supervisor-wakeup` e grava nota no quadro compartilhado do SQLite WAL.
+
+### 25.3 Expiração Determinística de Solicitações HITL Pendentes
+Para varrer e expirar ações retidas que ultrapassaram o teto de 30 minutos:
+```bash
+curl -s -X POST http://localhost:8000/api/hitl/expire-stale | jq .
+```
+
+---
+
+## 26. Navegação e Operação com Top Deck de 48px e Padrão OpenDots Spatial
+
+### 26.1 Navegação Cruzada via Teclas Sequenciais (Chords)
+O piDots implementa navegação global sem mouse através do topo unificado `header.top-deck` e do motor `CrossSurfaceRouter`:
+- `g` seguido de `h` -> Alterna instantaneamente para a Landing Page (porta 8081 ou `pidots.*`).
+- `g` seguido de `w` -> Alterna instantaneamente para o Console Workspace (porta 8082 ou `app.*`).
+- `g` seguido de `d` -> Alterna instantaneamente para a Documentação Técnica (porta 8083 ou `docs.*`).
+
+### 26.2 Menu Lateral Direito Retrátil e Pesquisa Instantânea
+Em `/docs` e `/relatorio`:
+- Pressione `Ctrl+K` ou digite `/` no cabeçalho para acionar o campo de busca com filtro instantâneo em memória.
+- Pressione o botão `[INDICE GUIA]` no canto superior direito para abrir a gaveta retrátil de navegação passo a passo, equipada com bloqueio de vazamento de rolagem para dispositivos móveis.
+- Pressione `Esc` para fechar modais, janelas suspensas e a gaveta lateral.
+
+---
+
+## 27. Operação do Cloudflare Tunnel & Portas Desacopladas (v1.5.5)
+
+### 27.1 Diagnóstico de Portas de Borda no Raspberry Pi
+Para verificar se todos os serviços de rede do piDots estão escutando corretamente:
+```bash
+# Inspecionar portas TCP ativas no host Linux
+ss -tulpn | grep -E "8081|8082|8083|8088|8000"
+
+# Testar cabeçalhos de serviço customizados do Nginx
+curl -sI http://localhost:8081/ | grep "X-Edge-Service"  # Retorna: landing-surface
+curl -sI http://localhost:8082/ | grep "X-Edge-Service"  # Retorna: app-console-root
+curl -sI http://localhost:8083/ | grep "X-Edge-Service"  # Retorna: docs-guide-root
+```
+
+### 27.2 Inicialização e Gerenciamento do Daemon cloudflared
+```bash
+# 1. Instalar e autenticar via script assistente
+./cloudflared/setup-tunnel.sh
+
+# 2. Inspecionar status do serviço systemd no Raspberry Pi
+sudo systemctl status cloudflared
+
+# 3. Visualizar logs em tempo real do túnel
+journalctl -u cloudflared -f -n 50
+
+# 4. Validar conectividade com a rede edge da Cloudflare
+cloudflared tunnel info pidots-edge
+```
+
+### 27.3 Teste de Streaming SSE AG-UI na Porta 8082
+Para testar a ausência de buffering de proxy no streaming de inferência dos Dots:
+```bash
+# Dispara criação de thread e stream de execução sem buffer
+curl -N -H "Accept: text/event-stream" \
+  http://localhost:8082/api/threads/default/runs \
+  -d '{"dot_id":"dev-assistant","prompt":"Teste de streaming SSE"}'
+```
+
+
 
 

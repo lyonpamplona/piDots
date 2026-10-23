@@ -85,6 +85,12 @@ class Settings(BaseSettings):
     port: int = Field(default=8000, description="Porta de escuta do servidor FastAPI")
     debug: bool = Field(default=False, description="Modo debug")
 
+    # Desacoplamento de Portas Edge (Cloudflare Tunnel & Nginx)
+    port_landing: int = Field(default=8081, description="Porta de escuta da Landing Page de apresentacao")
+    port_app: int = Field(default=8082, description="Porta de escuta do console Workspace SPA dos agentes")
+    port_docs: int = Field(default=8083, description="Porta de escuta do Guia Didatico e documentacao")
+    port_gateway: int = Field(default=8088, description="Porta do gateway unificado de desenvolvimento")
+
     # Armazenamento e Diretórios
     sqlite_db_path: str = Field(
         default_factory=_resolve_default_db_path,
@@ -99,6 +105,10 @@ class Settings(BaseSettings):
     strict_sandbox: bool = Field(
         default=False,
         description="Se verdadeiro, recusa comandos shell caso o Bubblewrap (bwrap) não esteja disponível ou falhe"
+    )
+    enable_legacy_redirects: bool = Field(
+        default=True,
+        description="Se verdadeiro, mantém redirecionamentos 308 (/apresentacao, /guia, /console) no FastAPI; desative se delegados exclusivamente ao Nginx"
     )
     max_iterations_per_goal: int = Field(
         default=8,

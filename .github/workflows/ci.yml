@@ -1,4 +1,4 @@
-name: Integracao Continua e Validacao de Borda (CI)
+name: Integracao Continua e Validacao Multi-Arch de Borda (CI)
 
 "on":
   push:
@@ -62,13 +62,19 @@ jobs:
         run: |
           pidots init
 
-      - name: Execucao das Suites de Testes de Regressao
+      - name: Execucao das Suites de Testes de Regressao e Governanca
         run: |
           python scripts/test_phase1.py
           python scripts/test_phase2.py
           python scripts/test_phase3.py
           python scripts/test_phase4.py
           python scripts/test_phase5.py
+          python scripts/test_phase14_strict_sandbox_and_routers.py
+          python scripts/test_phase1_opendots_agui.py
+          python scripts/test_phase2_opendots_layout.py
+          python scripts/test_phase3_opendots_dynamic_js.py
+          python scripts/test_phase4_opendots_homologation.py
+          python scripts/test_phase16_19_roadmap_evolution.py
 
       - name: Execucao do Teste de Concorrencia e Estresse de Borda
         run: |
@@ -79,16 +85,29 @@ jobs:
           pidots --version
           pidots status
 
-  docker-build:
-    name: Validacao de Build da Imagem Docker
+  docker-multiarch-build:
+    name: Build Multi-Arquitetura Docker (linux/arm64 & linux/amd64)
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Checkout do Repositorio
         uses: actions/checkout@v4
 
-      - name: Configuracao do Docker Buildx
+      - name: Configuracao do QEMU para Emulacao ARM64 (Raspberry Pi 4B)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64,amd64
+
+      - name: Configuracao do Docker Buildx Multi-Arch
         uses: docker/setup-buildx-action@v3
 
-      - name: Build da Imagem Docker do piDots
-        run: |
-          docker build -t pidots:ci .
+      - name: Build e Validacao Multi-Arch (linux/amd64,linux/arm64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: ghcr.io/lyonchristopher/pidots:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,48 +1,69 @@
 {
   "system": "piDots",
   "app_name": "piDots Edge Console",
-  "current_version": "1.5.3",
-  "release_date": "2026-10-18",
-  "build": "20261018-ARM64-EDGE-FEATURES",
-  "commit_hash": "e81d7f2",
+  "current_version": "1.5.5",
+  "release_date": "2026-10-19",
+  "build": "20261019-ARM64-REDESIGN-VISUAL-OPENDOTS",
+  "commit_hash": "e89b21f",
   "channel": "stable",
   "patch_notes": {
-    "version": "1.5.3",
-    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.5.3 - NOVAS FUNCIONALIDADES DE BORDA & GOVERNANCA",
-    "summary": "Consolidacao do Roadmap de Extensibilidade e Seguranca no piDots: Cliente MCP Lite ultraleve com Dynamic Tool Pruning (< 5MB RAM), Governanca HITL Interativa via Telegram e WhatsApp assinada com HMAC-SHA256, Dot Packs v1.1 com integridade criptografica SHA-256 e inspecao de Prompt Injection pelo @dot-auditor, e Barramento Fisico GPIO & MQTT Edge Triggers para sensores de borda.",
+    "version": "1.5.5",
+    "title": "NOTAS DE ATUALIZACAO // VERSAO 1.5.5 - REDESIGN VISUAL OPENDOTS SPATIAL",
+    "summary": "Conclusao e homologacao integrada do Roadmap de Redesign Visual: Top Deck canonico unificado de 48px em todas as 4 superficies (/ , /app, /docs, /relatorio), Hero Split-Screen OpenDots e Bento Grid de 4 Cards de Silicio na Landing Page, calibração milimetrica do triptico e subheader de missao de 38px no /app, e alinhamento estrito dos guias com menu lateral direito retratil, passo a passo, busca Ctrl+K e largura total.",
     "categories": {
       "included": [
-        "Layout Composto OpenDots + Pixel Paper UI (/app): Activity Rail (Alt+1..4) com 4 paineis contextuais (Spaces & Canais, Estúdio de Dots & Tools, Tasks Cron & Sensores, Memoria 64D & MCP Lite), Header Contextual Multi-Bot com [HANDOFF], [CONSELHO] e [SALVAR EM SPACE].",
-        "Protocolo CopilotKit AG-UI & Generative UI Cards Inline: Fichas catalograficas táticas (.gen-ui-card) renderizadas ao vivo no fluxo do teletipo para tool_call:start, tool_call:result e artifact:updated, mais aba [COAGENTS] com inspetor de Shared State.",
-        "Computador de Borda do Dot (Dot's Computer) com Modo Takeover: Explorador interativo de /workspace/{dot_id}, terminal Bubblewrap com modo Takeover ao vivo (/api/edge/computer/exec) e telemetria real de memoria RSS do processo Python (process_rss_mb).",
-        "Unificacao do Motor de Embedding 64D: Convergencia matematica entre VectorStore e MemoryManager (trigram hashing 64D + ativacao semantica + L2 normalization) garantindo deduplicacao precisa (>= 0.92).",
-        "Cliente MCP Lite com Tool Pruning (Fase 14): Integracao assincrona em Python puro (< 5MB RAM) para servidores MCP externos via STDIO ou SSE, com filtragem automatica por allowed_tools_json para zero poluicao de contexto.",
-        "Governanca HITL Interativa via Telegram e WhatsApp (Fase 15): Alertas remotos com botoes inline assinados com HMAC-SHA256 em tempo constante, permitindo autorizar ou bloquear comandos criticos diretamente pelo celular com nao-repudio.",
-        "Dot Packs v1.1 Assinados Criptograficamente (Fase 16): Campo sha256_checksum no manifesto com validacao de integridade e inspecao defensiva de seguranca contra Prompt Injection nos blocos de memoria.",
-        "Barramento Fisico GPIO & MQTT Edge Triggers (Fase 17): Leitura de pinos fisicos GPIO (sysfs/gpiod) e listener MQTT assincrono para sensores ambientais de borda no Raspberry Pi 4B sem bloquear o loop de eventos uvloop.",
-        "Topologia Modular de Rotas (APIRouters): Fatiamento completo do entrypoint FastAPI em pidots/api/, desacoplando rotas de Dots, Threads, Tasks, Canais, Webhooks, Telemetria Edge e PWA.",
-        "Isolamento Estrito de Terminal (STRICT_SANDBOX): Trava configuravel que recusa execucao em subprocesso caso o Bubblewrap (bwrap) nao esteja instalado, retornando saida 126 com auditoria SQLite WAL.",
-        "Preload Estrategico no Frontend: Inclusao de tags link rel='preload' no cabecalho de todas as superficies HTML para tokens CSS e scripts criticos de inicializacao.",
-        "Gateway Multi-Provedor com Failover Transparente: Chaveamento automatico para endpoint secundario (AI_FALLBACK_URL) quando o primario falhar por erros HTTP 5xx ou timeout, preservando o fluxo cognitivo do agente.",
-        "Circuit Breaker de Inferencia de 3 Estados: Maquina de estados (CLOSED, OPEN, HALF_OPEN) em openai_client.py com desvio imediato ao fallback e recuperacao canario.",
-        "Governanca HITL com TTL de 30 Minutos: Coluna expires_at com purga automatica para status EXPIRED, liberacao de threads retidas e envio de push instantaneo SSE (hitl:pending_approval) para abertura automatica do modal Alt+H.",
-        "Teto Estrito de Tentativas no Self-Healing: Limitador rigido MAX_HEAL_ATTEMPTS = 2 em execute_and_verify evitando loops infinitos e escalando traceback dissecado diretamente ao @dot-auditor.",
-        "Early Consensus Exit no Conselho Consultivo: Encerramento antecipado do debate na Rodada 2 quando o @dot-auditor aprovar a proposta com parecer RISK_LOW / APPROVED, poupando tokens e latencia na borda.",
-        "Deduplicacao Semantica na Memoria Arquival: Merge/update automatico de registros com similaridade >= 0.92, unificando tags sem duplicar linhas no SQLite WAL nem na tabela virtual FTS5."
+        "Desacoplamento de Acessos por Portas de Borda: Landing Page na porta 8081, Console Workspace na porta 8082, Documentacao & Estudos na porta 8083, Gateway Unificado na porta 8088 e FastAPI Core na porta 8000.",
+        "Engenharia Nginx Alpine Multi-Porta (nginx/nginx.conf): Quatro blocos de escuta com consumo < 6MB de RAM, streaming SSE AG-UI e WebSockets sem buffering (proxy_buffering off).",
+        "Roteamento Cruzado Inteligente (static/js/core/cross-surface-router.js): Resolucao dinamica entre portas locais (:8081, :8082, :8083), IPs da LAN e subdominios Cloudflare Tunnel (app.*, docs.*, pidots.*).",
+        "Template Oficial Cloudflare Tunnel (cloudflared/config.yml.example e setup-tunnel.sh): Roteamento seguro de borda com NAT Traversal sem portas abertas no roteador e suporte a Zero Trust.",
+        "Passo 14 no Guia Tecnico (pages/docs.html e static/js/docs/docs.js): Guia passo a passo de configuracao do Cloudflare Tunnel e isolamento Zero Trust integrado ao Omnisearch Ctrl+K.",
+        "Top Deck Canonico Unificado de 48px (static/css/layout.css): Barra superior com alinhamento triplo (.top-deck-left, .top-deck-center, .top-deck-right), eliminando empilhamento vertical e desobstruindo a area util em smartphones.",
+        "Hero Split-Screen OpenDots (pages/landing.html): Coluna esquerda com badges de silicio (52 MB RAM RSS, ARM64 BCM2711) e acoes taticas; coluna direita com fita Pixel Paper UI de perfuracao continua e card HITL interativo de demonstracao.",
+        "Bento Grid de Telemetria de Borda (pages/landing.html): Quatro cards modulares de alto contraste demonstrando folga de silicio (52 MB RSS), 4 especialistas com Tool Pruning, persistencia SQLite WAL 64D e governanca com HMAC-SHA256.",
+        "Subheader Contextual de 38px no /app (static/css/spa.css): Sincronizacao geometrica rigida da barra de canal de missao e status AG-UI PRONTO.",
+        "Padronizacao de Guias HTML (pages/docs.html e pages/relatorio.html): Cumprimento estrito da diretriz operacional com menu lateral direito retratil, estilo passo a passo com leitura progressiva, busca instantanea Ctrl+K e largura total.",
+        "Consolidacao de Utilitarios Pixel Paper UI (static/css/components.css): .paper-slip, .tractor-strip, .picote-line, .thought-notebook, .hitl-box e .silicon-badge universalizados."
       ],
       "adjusted": [
-        "Truncamento Defensivo de Terminal: Limitador rigido de 10KB para saidas de comandos com aviso explicito de truncamento para poupar a memoria RAM e o canal SSE.",
-        "Refatoracao Enxuta de main.py: Reducao de 1.451 linhas para 273 linhas (-1.208 linhas), mantendo 100% de retrocompatibilidade de endpoints.",
-        "Prevencao de Auto-Zoom no iOS: font-size: 16px obrigatorio para todos os inputs e textareas no mobile com touch-action: manipulation.",
-        "Cascata CSS Otimizada: Inversao da precedencia para carregar mobile.css por ultimo em todas as 4 paginas, garantindo soberania das regras de tela pequena."
+        "Tokens Globais (tokens.css): --header-height padronizado em 48px, --subheader-height em 38px, --rail-left-width em 270px e --rail-right-width em 340px.",
+        "Agilidade de Mencoes no Swarm (pidots-api.js): Clicar em um agente da barra lateral insere automaticamente a mencao direta @dot-id no input.",
+        "Porta Nginx no Docker Compose ajustada para 8088 prevenindo colisoes de porta em ambientes de desenvolvimento."
       ],
       "removed": [
-        "Eliminacao de Menções Obsoletas: Remocao cirurgica de mencoes a provedores ou modelos de exemplo que nao estao ativos.",
-        "Eliminacao de Blur e Sombras Difusas Residuais: Remocao de box-shadow disperso sob a borda ciano ativa da barra inferior, assegurando fidelidade visual 1-bit ao console escuro minimalista."
+        "Remocao de duplicacoes de estilos entre spa.css e landing.css em favor de components.css."
+      ],
+      "security_and_edge": [
+        "Desacoplamento de Acessos por Portas de Borda (:8081 Landing, :8082 Workspace, :8083 Docs, :8088 Gateway, :8000 Core API).",
+        "Integracao Oficial com Cloudflare Tunnel (cloudflared): Roteamento seguro NAT Traversal com protocolo QUIC e Zero Trust Access no subdominio app.*.",
+        "Roteamento Cruzado Inteligente de Superficies (cross-surface-router.js) com resolucao dinamica entre portas locais, LAN e subdominios.",
+        "Assinatura Criptografica HMAC-SHA256 para intervencoes Human-in-the-Loop (HITL) e tokens de auditoria.",
+        "Isolamento Sandbox Bwrap e protecao termica BCM2711 com teto de 78C e auto-throttling."
       ]
     }
   },
   "history": [
+    {
+      "version": "1.5.4",
+      "release_date": "2026-10-19",
+      "type": "FEATURE RELEASE",
+      "highlights": [
+        "Catalogo Oficial Comunitario de Dot Packs v1.1 assinados com SHA-256.",
+        "Infraestrutura de Borda Nginx Alpine para entrega estatica em C de assets.",
+        "Manifesto de Engenharia Centauro (AI_MANIFESTO.md) e CI Multi-Arquitetura."
+      ]
+    },
+    {
+      "version": "1.5.3",
+      "release_date": "2026-10-18",
+      "type": "FEATURE RELEASE",
+      "highlights": [
+        "Layout Composto OpenDots + Pixel Paper UI (/app) com Activity Rail de 48px e 4 painéis contextuais.",
+        "Protocolo CopilotKit AG-UI & Generative UI Cards Inline com CoAgents Shared State ao vivo.",
+        "Computador de Borda do Dot (Dot's Computer) com Modo Takeover e terminal Bubblewrap.",
+        "Cliente MCP Lite com Tool Pruning (< 5MB RAM) e Governança HITL com HMAC-SHA256.",
+        "Barramento Físico GPIO & MQTT Edge Triggers para sensores de borda."
+      ]
+    },
     {
       "version": "1.5.0",
       "release_date": "2026-10-16",

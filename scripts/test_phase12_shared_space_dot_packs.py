@@ -137,7 +137,7 @@ async def run_phase12_tests():
     manifest = export_res["manifest"]
 
     assert manifest["format"] == "DotPack"
-    assert manifest["version"] == "1.0"
+    assert manifest["version"] in ("1.0", "1.1")
     assert manifest["dot"]["id"] == dot_author_1
     assert "persona" in manifest["core_memory"]
     assert len(manifest["archival_memories"]) >= 1

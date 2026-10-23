@@ -131,12 +131,60 @@ async def health_check():
     }
 
 
+class TriggerSimulationPayload(BaseModel):
+    gpio_pin: int | None = None
+    gpio_value: int | None = None
+    mqtt_topic: str | None = None
+    mqtt_payload: dict[str, Any] | str | None = None
+    wake_supervisor: bool = True
+
+
 @router.get("/api/edge/triggers")
 async def get_edge_hardware_triggers():
     """Retorna o status em tempo real dos triggers de hardware (SoC Broadcom, MicroSD, RAM + RSS do processo)."""
     data = EdgeHardwareTriggers.check_triggers()
     data["process_rss_mb"] = get_process_rss_mb()
     return data
+
+
+@router.post("/api/edge/triggers/simulate")
+async def simulate_edge_physical_trigger(payload: TriggerSimulationPayload):
+    """
+    Simula um sinal físico de pino GPIO ou mensagem no barramento MQTT de borda,
+    avalia os limiares e desperta proativamente o @dot-supervisor no SQLite WAL.
+    """
+    from ..core.edge_triggers import EdgeGPIOMonitor, EdgeMQTTListener
+
+    mqtt_dispatched = 0
+    wakeup_result = None
+
+    if payload.gpio_pin is not None and payload.gpio_value is not None:
+        EdgeGPIOMonitor.set_pin_simulation(payload.gpio_pin, payload.gpio_value)
+
+    if payload.mqtt_topic:
+        mqtt_dispatched = await EdgeMQTTListener.simulate_incoming_message(
+            payload.mqtt_topic,
+            payload.mqtt_payload if payload.mqtt_payload is not None else {"status": "triggered"}
+        )
+        if payload.wake_supervisor:
+            wakeup_result = await EdgeHardwareTriggers.wake_supervisor_on_trigger(
+                trigger_source=f"MQTT:{payload.mqtt_topic}",
+                event_summary=f"Mensagem recebida em {payload.mqtt_topic}: {payload.mqtt_payload}",
+                severity="WARNING"
+            )
+
+    report = await EdgeHardwareTriggers.evaluate_and_alert(
+        notify_hitl=False,
+        wake_supervisor=payload.wake_supervisor
+    )
+
+    if payload.gpio_pin is not None:
+        EdgeGPIOMonitor.clear_simulation()
+
+    if wakeup_result and "supervisor_wakeup" not in report:
+        report["supervisor_wakeup"] = wakeup_result
+    report["mqtt_handlers_dispatched"] = mqtt_dispatched
+    return report
 
 
 @router.get("/api/edge/tool-runs")

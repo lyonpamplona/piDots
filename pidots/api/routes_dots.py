@@ -88,6 +88,53 @@ async def list_dots(core_only: bool = True):
         return [dict(row) for row in rows]
 
 
+@router.get("/api/dots/packs/catalog")
+async def list_dot_packs_catalog():
+    """Lista o catálogo comunitário oficial de Dot Packs v1.1 assinados com SHA-256 disponíveis em data/packs/."""
+    packs_dir = Path(__file__).resolve().parent.parent.parent / "data" / "packs"
+    catalog: list[dict[str, Any]] = []
+    if packs_dir.exists():
+        for p_file in sorted(packs_dir.glob("*.json")):
+            try:
+                data = json.loads(p_file.read_text(encoding="utf-8"))
+                dot_info = data.get("dot", {})
+                catalog.append({
+                    "pack_id": p_file.stem,
+                    "filename": p_file.name,
+                    "format": data.get("format", "DotPack"),
+                    "version": data.get("version", "1.1"),
+                    "sha256_checksum": data.get("sha256_checksum", ""),
+                    "dot_id": dot_info.get("id", p_file.stem),
+                    "name": dot_info.get("name", p_file.stem),
+                    "role": dot_info.get("role", ""),
+                    "archetype": dot_info.get("archetype", "general"),
+                    "tools_count": len(dot_info.get("allowed_tools", [])),
+                    "archival_facts_count": len(data.get("archival_memories", []))
+                })
+            except Exception:
+                continue
+    return {"packs": catalog, "count": len(catalog)}
+
+
+@router.post("/api/dots/packs/install/{pack_id}")
+async def install_official_dot_pack(pack_id: str):
+    """Valida a assinatura SHA-256 e instala um Dot Pack oficial do catálogo data/packs/ no SQLite WAL."""
+    from ..core.dot_pack import DotPackManager
+    safe_id = re.sub(r"[^a-zA-Z0-9\-_]", "", pack_id)
+    pack_path = Path(__file__).resolve().parent.parent.parent / "data" / "packs" / f"{safe_id}.json"
+    if not pack_path.exists():
+        raise HTTPException(status_code=404, detail=f"Dot Pack oficial '{safe_id}' não encontrado em data/packs/.")
+    try:
+        pack_data = json.loads(pack_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Manifesto JSON inválido: {exc}")
+
+    result = await DotPackManager.import_dot_pack(pack_data=pack_data)
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("error", "Falha na validação SHA-256 ou auditoria do pacote."))
+    return result
+
+
 @router.get("/api/dots/{dot_id}")
 async def get_dot_detail(dot_id: str):
     """Retorna os metadados completos de um especialista Dot."""

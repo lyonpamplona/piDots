@@ -884,9 +884,9 @@ A versao 1.5.3 consolida as novas capacidades operacionais de extensao e seguran
 
 ---
 
-## 22. Padrao OpenDots & CopilotKit CoAgents / AG-UI Protocol (v1.6.0)
+## 22. Padrao OpenDots & CopilotKit CoAgents / AG-UI Protocol (v1.5.3)
 
-A versao 1.6.0 integra os paradigmas do ecossistema **CopilotKit/OpenDots** e do protocolo **AG-UI / CoAgents** diretamente no monólito modular do piDots e na estetica **Pixel Paper UI** do console `/app`:
+A versao 1.5.3 integra os paradigmas do ecossistema **CopilotKit/OpenDots** e do protocolo **AG-UI / CoAgents** diretamente no monólito modular do piDots e na estetica **Pixel Paper UI** do console `/app`:
 
 ### 22.1 Activity Rail Lateral e 4 Paineis Contextuais
 - **Activity Rail (48px):** Barra vertical esquerda inspirada no padrao OpenDots, permitindo alternancia instantanea entre 4 paineis operacionais sem recarregar a pagina:
@@ -902,6 +902,111 @@ A versao 1.6.0 integra os paradigmas do ecossistema **CopilotKit/OpenDots** e do
 ### 22.3 CoAgents Shared State (`STATE_SNAPSHOT` e `STATE_DELTA`) e Computador do Dot
 - **Estado Compartilhado Bidirecional:** O motor emite `state:snapshot` no inicio de cada turno e `state:delta` a cada transicao de no cognitivo (`router -> thinker -> tool_executor -> verifier -> responder`), sincronizando a aba `[COAGENTS]` em tempo real e aceitando overrides manuais via `PATCH /api/threads/{id}/state`.
 - **Computador do Dot (`Dot's Computer`) e Modo Takeover:** O painel direito unifica terminal sandbox (`POST /api/edge/computer/exec`), navegador de arquivos de workspace (`GET /api/edge/computer/files`), editor de artefatos, CoAgents State e telemetria termica, contando com **Modo Takeover** para execucao manual direta pelo operador humano.
+
+---
+
+## 23. Desoneração de Assets via Nginx Alpine Multi-Porta & Catálogo de Dot Packs (v1.5.4)
+
+### 23.1 Nginx Alpine como Proxy Reverso de Borda Multi-Porta
+- **Topologia Desacoplada:** O serviço `pidots-nginx` (`nginx:1.27-alpine`) roda em contêiner de menos de 6MB de memória RAM, escutando simultaneamente nas portas `8081` (Landing), `8082` (Workspace), `8083` (Docs) e `8088` (Gateway Unificado), servindo `/static/` e `/data/locales/` com cabeçalho `Cache-Control: public, max-age=31536000, immutable`.
+- **Streaming SSE e WebSockets:** Configurado com `proxy_buffering off` e headers de upgrade para evitar retenção de buffers e latência em eventos de streaming `text/event-stream`.
+- **FastAPI Dedicado:** O processo Uvicorn na porta 8000 dedica 100% dos ciclos de CPU do Broadcom BCM2711 para o motor ReAct, inferência e operações no SQLite WAL.
+
+### 23.2 Catálogo Comunitário de 3 Dot Packs Oficiais Assinados
+- **Manifestos Padronizados em `data/packs/`:**
+  1. `dot-secops.json` (SHA-256: `29bf745599...`): Especialista em auditoria e hardening.
+  2. `dot-homelab.json` (SHA-256: `a343aa2712...`): Orquestrador de infraestrutura local e sensores.
+  3. `dot-finops.json` (SHA-256: `2f0732e1c7...`): Analista de telemetria e custos energéticos.
+- **Instalação em 1 Clique:** Endpoint `POST /api/dots/packs/install/{pack_id}` realiza a checagem criptográfica em tempo constante e instancia o Dot com Core Memory e memórias arquivísticas de forma atômica no banco WAL.
+
+---
+
+## 24. Engenharia Centauro & Governança de Hardware Físico
+
+### 24.1 Manifesto de Engenharia Centauro (`AI_MANIFESTO.md`)
+O projeto adota o compromisso formal de coautoria humano-máquina, definindo:
+- **Restrições Reais de Silício:** Limite térmico de 78°C para o SoC Broadcom BCM2711, proteção contra exaustão de ciclos Flash MicroSD com checkpoints periódicos e uso de no máximo 384MB de RAM RSS em nós de 4GB.
+- **Padrão Estético Funcional:** Interface táctil inspirada em teletipos e relatórios industriais, sem emojis ou abstrações desnecessárias.
+
+### 24.2 CI/CD Multi-Plataforma
+O fluxo de automação do repositório compila imagens Docker simultaneamente para as arquiteturas `linux/amd64` e `linux/arm64` via emuladores QEMU e construtores Docker Buildx, validando a integridade das 22 baterias de testes em cada versão lançada.
+
+---
+
+## 25. Arquitetura Visual OpenDots Spatial & Pixel Paper UI (v1.5.5)
+
+### 25.1 Top Deck Canônico de 48px
+- **Padronização Geométrica:** Todas as superfícies do sistema (`/`, `/app`, `/docs`, `/relatorio`) utilizam o container semântico unificado `header.top-deck` com altura rígida de 48px (`--header-height: 48px`) e alinhamento triplo:
+  - `.top-deck-left`: Marca `piDots`, indicador de nó online e gatilho de gaveta.
+  - `.top-deck-center`: Comutador de superfícies com atalhos de teclado sequenciais (`g h`, `g w`, `g d`).
+  - `.top-deck-right`: Ações utilitárias (pesquisa, telemetria, idioma, tema escuro/claro e manual).
+- **Desobstrução Mobile:** Em resoluções móveis (`< 1024px`), botões secundários são automaticamente recolhidos para a gaveta retrátil, eliminando o empilhamento de barras e preservando até 25% a mais de espaço vertical para a leitura.
+
+### 25.2 Vitrine Developer-First na Landing Page (`/`)
+- **Hero Split-Screen OpenDots:** A coluna esquerda apresenta a proposta de valor técnica calibrada para hardware restrito (52 MB RAM RSS, Broadcom BCM2711 ARM64), enquanto a coluna direita renderiza um simulador autêntico de bobina Pixel Paper UI com furos de trator (`.tractor-strip`) e ficha clicável de demonstração da governança HITL via HMAC-SHA256.
+- **Bento Grid de Silício:** Quatro cartões modulares de alta densidade demonstram métricas de silício em tempo real: pegada de memória RAM, coordenação de especialistas com Tool Pruning, persistência relacional Flash-Safe em SQLite WAL e travas de recursão (`HOP <= 3`).
+
+### 25.3 Governança Canônica de Guias e Documentação Técnica
+- As rotas `/docs` e `/relatorio` atendem rigorosamente à diretriz arquitetural de guias didáticos:
+  1. Menu lateral direito retrátil com gaveta e bloqueio de vazamento de rolagem (`ScrollLockManager`).
+  2. Apresentação didática em estilo passo a passo com leitura progressiva orientada a artefatos.
+  3. Mecanismo de busca rápida instantânea client-side com atalho global `Ctrl+K`.
+  4. Diagramação responsiva em largura total (sem estreitamento centralizado artificial), otimizando a legibilidade de tabelas de endpoints e blocos de código com abas de sintaxe (Python, Bash, cURL, JSON).
+
+---
+
+## 26. Desacoplamento por Portas & Arquitetura Cloudflare Tunnel (v1.5.5)
+
+### 26.1 Topologia de Superfícies Desacopladas
+Para permitir a separação funcional de tráfego, isolamento de privilégios e publicação remota segura sem exposição de portas no roteador doméstico, o piDots v1.5.5 introduz a segregação por portas de borda:
+- **Porta 8081 (Landing Page):** Superfície pública institucional, onboarding e simulador ReAct.
+- **Porta 8082 (Console Workspace):** Interface SPA/PWA para operação de agentes autônomos, SSE AG-UI e WebSockets. Recomendada proteção via Cloudflare Zero Trust Access (2FA/IdP).
+- **Porta 8083 (Documentação & Relatórios):** Guia didático passo a passo e estudos técnicos (`/relatorio`).
+- **Porta 8088 (Gateway Unificado):** Ponto de entrada unificado path-based (`/`, `/app`, `/docs`) e redirecionamentos canônicos HTTP 308 (RFC 8594).
+- **Porta 8000 (FastAPI Core):** Motor cognitivo assíncrono interno dedicado, sem exposição pública direta.
+
+### 26.2 Arquitetura de Proxy Nginx Alpine Multi-Porta
+O contêiner `pidots-nginx` (`nginx:1.27-alpine`) foi reestruturado para escutar simultaneamente em todas as portas de borda consumindo menos de 6MB de RAM total:
+```mermaid
+flowchart LR
+    subgraph WAN["Internet / Acesso Remoto"]
+        CF_Landing["pidots.dominio.com"]
+        CF_App["app.dominio.com"]
+        CF_Docs["docs.dominio.com"]
+    end
+
+    subgraph TunnelDaemon["Raspberry Pi 4B (cloudflared)"]
+        CFTunnel["cloudflared daemon\n(QUIC Outbound)"]
+    end
+
+    subgraph NginxProxy["Nginx Alpine Multi-Porta (< 8MB RAM)"]
+        P8081["Porta 8081\n(Landing)"]
+        P8082["Porta 8082\n(App SPA)"]
+        P8083["Porta 8083\n(Docs)"]
+        P8088["Porta 8088\n(Gateway)"]
+    end
+
+    subgraph CoreBackend["FastAPI Core (Porta 8000)"]
+        CoreAPI["FastAPI uvloop\n(ReAct + SQLite WAL)"]
+    end
+
+    CF_Landing --> CFTunnel
+    CF_App --> CFTunnel
+    CF_Docs --> CFTunnel
+
+    CFTunnel -->|http://localhost:8081| P8081
+    CFTunnel -->|http://localhost:8082| P8082
+    CFTunnel -->|http://localhost:8083| P8083
+
+    P8081 -->|/api/| CoreAPI
+    P8082 -->|/api/ (SSE Buffering Off)| CoreAPI
+    P8083 -->|/api/| CoreAPI
+    P8088 --> CoreAPI
+```
+
+### 26.3 Roteamento Cruzado Inteligente (`CrossSurfaceRouter`)
+O script `cross-surface-router.js` atua na camada do navegador identificando se a conexão provém de portas locais (`:8081`, `:8082`, `:8083`), de endereços IP de rede local ou de subdomínios Cloudflare (`app.*`, `docs.*`, `pidots.*`), reescrevendo os elementos de navegação e atalhos de teclado sequenciais (`g h`, `g w`, `g d`) para garantir alternância instantânea entre superfícies sem requisições 404.
+
 
 
 

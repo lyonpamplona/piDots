@@ -402,6 +402,9 @@ async def serve_study_report(request: Request):
 @router.api_route("/apresentacao", methods=["GET", "HEAD"])
 async def redirect_apresentacao():
     """Redireciona a rota legada /apresentacao para a raiz canonica / com cabecalho Sunset."""
+    from ..config import settings
+    if not settings.enable_legacy_redirects:
+        return JSONResponse(status_code=410, content={"detail": "Rota legada desativada no backend (gerenciada via Nginx). Use /."})
     return RedirectResponse(
         url="/",
         status_code=status.HTTP_308_PERMANENT_REDIRECT,
@@ -415,6 +418,9 @@ async def redirect_apresentacao():
 @router.api_route("/guia", methods=["GET", "HEAD"])
 async def redirect_guia():
     """Redireciona a rota legada /guia para a documentacao canonica /docs com cabecalho Sunset."""
+    from ..config import settings
+    if not settings.enable_legacy_redirects:
+        return JSONResponse(status_code=410, content={"detail": "Rota legada desativada no backend (gerenciada via Nginx). Use /docs."})
     return RedirectResponse(
         url="/docs",
         status_code=status.HTTP_308_PERMANENT_REDIRECT,
@@ -428,6 +434,9 @@ async def redirect_guia():
 @router.api_route("/console", methods=["GET", "HEAD"])
 async def redirect_console():
     """Redireciona o alias /console para a aplicacao /app com cabecalho Sunset."""
+    from ..config import settings
+    if not settings.enable_legacy_redirects:
+        return JSONResponse(status_code=410, content={"detail": "Rota legada desativada no backend (gerenciada via Nginx). Use /app."})
     return RedirectResponse(
         url="/app",
         status_code=status.HTTP_308_PERMANENT_REDIRECT,

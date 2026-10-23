@@ -133,7 +133,7 @@ async def test_modular_api_routers():
 
         r_changelog = await client.get("/api/changelog")
         assert r_changelog.status_code == 200
-        assert r_changelog.json()["current_version"] in ("1.5.2", "1.5.3")
+        assert r_changelog.json()["current_version"] in ("1.5.2", "1.5.3", "1.5.4", "1.5.5")
         print("     [OK] Endpoints de telemetria, hardware triggers e configurações ativos.")
 
         # 5. Dots, Spaces, Tasks e Canais

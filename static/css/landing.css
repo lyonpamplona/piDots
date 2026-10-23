@@ -149,44 +149,47 @@ header.landing-header::-webkit-scrollbar {
         }
 
         /* ---------------------------------------------------------------------
-           HERO SECTION (IMPACTO MAXIMO & CONVERSAO)
+           HERO SECTION: SPLIT-SCREEN OPENDOTS SPATIAL & BENTO GRID
            --------------------------------------------------------------------- */
         .hero-section {
             background: var(--paper-surface);
             border: 2px solid var(--border-default);
             box-shadow: var(--shadow-lg);
-            padding: 36px 30px;
+            padding: 30px 24px;
             position: relative;
             background-image: 
                 radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.06) 0%, transparent 40%),
                 radial-gradient(circle at 0% 100%, rgba(51, 255, 102, 0.04) 0%, transparent 40%);
         }
 
+        .hero-split-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 28px;
+            align-items: start;
+            margin-bottom: 24px;
+        }
+
+        .hero-col-left,
+        .hero-col-right {
+            min-width: 0;
+        }
+
         .hero-tagline {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             flex-wrap: wrap;
             margin-bottom: 12px;
         }
 
-        .hero-badge-tag {
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            background: var(--paper-surface-recessed);
-            border: 1px solid var(--border-subtle);
-            padding: 4px 8px;
-            color: var(--thermal-amber);
-            letter-spacing: 0.05em;
-        }
-
         .hero-title {
             font-family: var(--font-display);
-            font-size: 54px;
+            font-size: 50px;
             line-height: 1.05;
             letter-spacing: 0.03em;
             color: var(--ink-main);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .hero-title span {
@@ -194,37 +197,152 @@ header.landing-header::-webkit-scrollbar {
         }
 
         .hero-description {
-            font-size: 14px;
+            font-size: 13.5px;
             color: var(--ink-secondary);
-            max-width: 960px;
-            line-height: 1.65;
-            margin-bottom: 24px;
-        }
-
-        .hero-badges-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 24px;
-        }
-
-        .tech-pill {
-            background: var(--paper-surface-recessed);
-            border: 1px solid var(--border-default);
-            padding: 6px 10px;
-            font-size: 11px;
-            font-family: var(--font-mono);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--ink-main);
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
 
         .hero-cta-group {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 16px;
+        }
+
+        /* Showcase da Fita Pixel Paper UI na Coluna Direita do Hero */
+        .hero-paper-slip-showcase {
+            background: var(--paper-sheet);
+            border: 2px solid var(--border-strong);
+            box-shadow: var(--shadow-md);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .showcase-header {
+            background: var(--paper-surface-recessed);
+            border-bottom: 1px solid var(--border-default);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .showcase-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--phosphor-green);
+        }
+
+        .showcase-ticker-body {
+            display: flex;
+            background: var(--paper-base);
+            min-height: 280px;
+        }
+
+        .showcase-stream {
+            flex: 1;
+            padding: 14px 16px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slip-entry {
+            background: var(--paper-surface);
+            border: 1px solid var(--border-subtle);
+            padding: 10px 12px;
+        }
+
+        .slip-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .slip-seq {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--blueprint-cyan);
+        }
+
+        .slip-agent {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--phosphor-green);
+        }
+
+        .slip-text {
+            font-size: 11px;
+            line-height: 1.45;
+            color: var(--ink-main);
+            margin: 0;
+        }
+
+        /* Bento Grid de Telemetria de Borda (4 Cards) */
+        .hero-bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .bento-card {
+            background: var(--paper-surface-recessed);
+            border: 1px solid var(--border-default);
+            box-shadow: var(--shadow-sm);
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: border-color 0.15s steps(1);
+        }
+
+        .bento-card:hover {
+            border-color: var(--border-accent);
+        }
+
+        .bento-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .bento-badge {
+            font-family: var(--font-pixel);
+            font-size: 7.5px;
+            color: var(--ink-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        .bento-val {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--blueprint-cyan);
+            letter-spacing: 0.05em;
+        }
+
+        .bento-title {
+            font-family: var(--font-pixel);
+            font-size: 9.5px;
+            color: var(--ink-main);
+            letter-spacing: 0.03em;
+        }
+
+        .bento-desc {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            line-height: 1.45;
+            color: var(--ink-muted);
+            margin: 0;
         }
 
         .hero-terminal-card {
@@ -1335,9 +1453,9 @@ header.landing-header::-webkit-scrollbar {
         }
 
         .drawer-header {
-            min-height: 52px;
-            height: calc(52px + max(0px, var(--safe-top)));
-            padding-top: max(0px, var(--safe-top));
+            min-height: var(--header-height, 48px);
+            height: calc(var(--header-height, 48px) + var(--safe-top, 0px));
+            padding-top: var(--safe-top, 0px);
             border-bottom: 2px solid var(--border-default);
             padding-left: 16px;
             padding-right: 16px;
@@ -1345,6 +1463,8 @@ header.landing-header::-webkit-scrollbar {
             align-items: center;
             justify-content: space-between;
             background: var(--paper-surface-elevated);
+            box-sizing: border-box;
+            flex-shrink: 0;
         }
 
         .drawer-title {
@@ -1629,14 +1749,22 @@ header.landing-header::-webkit-scrollbar {
             border: 2px solid var(--border-default);
         }
 
+        /* Botao de Menu Movel: oculto por padrao no desktop */
+        #btnMobileNavToggle {
+            display: none;
+        }
+
         /* Menu de Navegacao Rapida Mobile */
         .mobile-nav-panel {
             display: none;
             position: fixed;
-            top: calc(54px + max(0px, var(--safe-top)));
+            top: calc(var(--header-height, 48px) + var(--safe-top, 0px));
             left: 0;
             width: 100%;
-            background: rgba(7, 9, 12, 0.98);
+            max-height: calc(100dvh - var(--header-height, 48px) - var(--safe-top, 0px));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            background: var(--paper-sheet);
             border-bottom: 2px solid var(--border-accent);
             padding: 12px;
             z-index: 99;
@@ -1647,6 +1775,23 @@ header.landing-header::-webkit-scrollbar {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 6px;
+        }
+
+        .mobile-nav-controls {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-default);
+        }
+
+        .mobile-nav-controls .pixel-btn {
+            flex: 1;
+            justify-content: center;
+            min-height: 40px;
+            font-size: 9px;
+            font-family: var(--font-pixel);
         }
 
         .mobile-nav-item {
@@ -1680,6 +1825,14 @@ header.landing-header::-webkit-scrollbar {
         }
 
         @media (max-width: 900px) {
+            .hero-split-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .hero-bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
             .interactive-arena-grid {
                 grid-template-columns: 1fr;
             }
@@ -1707,6 +1860,9 @@ header.landing-header::-webkit-scrollbar {
         }
 
         @media (max-width: 640px) {
+            .hero-bento-grid {
+                grid-template-columns: 1fr;
+            }
             .landing-container {
                 padding: 14px 10px !important;
             }
@@ -1896,7 +2052,7 @@ header.landing-header::-webkit-scrollbar {
             background: rgba(0, 0, 0, 0.45);
             border: 1px solid var(--border-default, #283340);
             color: var(--ink-muted, #64748b);
-            border-radius: 2px;
+            border-radius: 0;
             letter-spacing: 0.5px;
         }
         .node-telemetry-badge {
@@ -2023,6 +2179,17 @@ header.landing-header::-webkit-scrollbar {
             }
             .mobile-nav-panel.open {
                 grid-template-columns: 1fr !important;
+            }
+            .hitl-box-actions {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 6px !important;
+            }
+            .hitl-box-actions .pixel-btn {
+                width: 100% !important;
+                justify-content: center !important;
+                font-size: 8px !important;
+                min-height: 38px !important;
             }
         }
 

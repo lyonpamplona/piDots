@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>piDots: Estudo Técnico de Viabilidade e Engenharia Reversa de Agentes Autônomos no Raspberry Pi 4B</title>
+    <meta name="description" content="Estudo tecnico aprofundado e engenharia reversa de arquiteturas de agentes autonomos para Raspberry Pi 4B sob o design system Pixel Paper UI.">
+
+    <!-- Favicon e Icones Oficiais PWA (Rasterizados & SVG) -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#07090c" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#e9ecef" media="(prefers-color-scheme: light)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="piDots">
+    <meta name="mobile-web-app-capable" content="yes">
+
     <!-- Tipografia Oficial: Silkscreen, VT323 e JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,33 +35,60 @@
     <!-- Motores JavaScript Desacoplados -->
     <script defer src="/static/js/core/pidots-i18n.js"></script>
     <script defer src="/static/js/core/scroll-lock.js"></script>
+    <script defer src="/static/js/core/cross-surface-router.js"></script>
     <script defer src="/static/js/docs/relatorio.js"></script>
 </head>
 <body>
 
-    <!-- Header Navigation -->
-    <header class="top-bar">
-        <div class="brand-cluster">
-            <div class="brand-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-                    <line x1="6" y1="6" x2="6.01" y2="6"></line>
-                    <line x1="6" y1="18" x2="6.01" y2="18"></line>
-                </svg>
-            </div>
-            <span class="brand-title">piDots // CORE REPORT</span>
-            <span class="brand-tag">ARM64 ARCHITECTURE</span>
-            <span class="brand-tag">RASPBERRY PI 4B (4GB)</span>
+    <!-- Header Navigation (Top Deck Unificado 48px) -->
+    <header class="top-deck top-bar">
+        <div class="top-deck-left">
+            <a href="/" class="brand-unit" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
+                <div class="brand-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                    </svg>
+                </div>
+                <span class="brand-title">piDots // CORE REPORT</span>
+                <span class="brand-tag">ARM64 ARCHITECTURE</span>
+            </a>
         </div>
-        <div class="header-actions">
-            <button class="btn-toggle-menu" id="drawerToggleBtn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+        <div class="top-deck-center">
+            <nav class="surface-switcher" aria-label="Superficies de Produto">
+                <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
+                    <span class="tab-idx">01</span>
+                    <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
+                </a>
+                <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
+                    <span class="tab-idx">02</span>
+                    <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
+                </a>
+                <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
+                    <span class="tab-idx">03</span>
+                    <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="top-deck-right header-actions">
+            <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch (Desktop) -->
+            <div class="header-search-box" id="headerRelatorioSearchBox" style="cursor: pointer;" title="Buscar Topicos do Estudo (Atalho: Ctrl+K ou /)">
+                <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="globalRelatorioSearchInput" class="pixel-search-input" placeholder="BUSCAR TOPICO (CTRL+K OU /)..." readonly style="cursor: pointer;">
+                <kbd class="kbd-badge">CTRL+K</kbd>
+            </div>
+
+            <button class="pixel-btn btn-cyan btn-toggle-menu" id="drawerToggleBtn" title="Abrir Indice de Navegacao do Relatorio">
+                <svg class="ui-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="18" x2="21" y2="18"></line>
                 </svg>
-                <span>MENU LATERAL</span>
+                <span>[MENU LATERAL]</span>
             </button>
         </div>
     </header>

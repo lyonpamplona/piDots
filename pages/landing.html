@@ -41,63 +41,55 @@
     <script defer src="/static/js/core/pidots-i18n.js"></script>
     <script defer src="/static/js/core/scroll-lock.js"></script>
     <script defer src="/static/js/core/pixel-system.js"></script>
+    <script defer src="/static/js/core/cross-surface-router.js"></script>
     <script defer src="/static/js/landing/landing.js"></script>
 </head>
 <body>
 
-    <!-- CABECALHO FIXO / NAVEGACAO STICKY -->
-    <header class="landing-header">
-        <a href="#hero" class="brand-unit" aria-label="piDots Home">
-            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="pidots-logo-svg" aria-label="Logo piDots">
-                <rect width="28" height="28" rx="4" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
-                <circle cx="8.5" cy="14" r="3.5" fill="#33ff66"/>
-                <circle cx="19.5" cy="14" r="3.5" fill="#38bdf8"/>
-                <path d="M12 14h4" stroke="#f1f5f9" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="8.5" cy="14" r="1.5" fill="#ffffff"/>
-                <circle cx="19.5" cy="14" r="1.5" fill="#ffffff"/>
-            </svg>
-            <span class="brand-badge">PIDOTS // 2026</span>
-            <span class="brand-title">PIDOTS // APRESENTACAO</span>
-        </a>
-
-        <!-- Comutador Canônico de Superfícies de Produto -->
-        <nav class="surface-switcher" aria-label="Superficies de Produto">
-            <a href="/" class="surface-tab active" id="tab-overview" title="Atalho: G H">
-                <span class="tab-idx">01</span>
-                <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
-                <span class="tab-chord">g h</span>
+    <!-- CABECALHO FIXO / TOP-DECK UNIFICADO -->
+    <header class="top-deck landing-header">
+        <div class="top-deck-left">
+            <a href="#hero" class="brand-unit" aria-label="piDots Home">
+                <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="pidots-logo-svg" aria-label="Logo piDots">
+                    <rect width="28" height="28" rx="4" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
+                    <circle cx="8.5" cy="14" r="3.5" fill="#33ff66"/>
+                    <circle cx="19.5" cy="14" r="3.5" fill="#38bdf8"/>
+                    <path d="M12 14h4" stroke="#f1f5f9" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="8.5" cy="14" r="1.5" fill="#ffffff"/>
+                    <circle cx="19.5" cy="14" r="1.5" fill="#ffffff"/>
+                </svg>
+                <span class="brand-badge">PIDOTS</span>
+                <span class="brand-title">PIDOTS // APRESENTACAO</span>
             </a>
-            <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
-                <span class="tab-idx">02</span>
-                <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
-                <span class="tab-chord">g w</span>
-            </a>
-            <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
-                <span class="tab-idx">03</span>
-                <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
-                <span class="tab-chord">g d</span>
-            </a>
-        </nav>
+        </div>
 
-        <!-- Links de Navegacao Suave (Scroll Links Atualizados) -->
-        <nav class="header-nav-links" aria-label="Navegacao Principal">
-            <a href="#hero" class="nav-link-btn">[01 // VISAO]</a>
-            <a href="#metricas-choque" class="nav-link-btn">[02 // CHOQUE]</a>
-            <a href="#dor-solucao" class="nav-link-btn">[03 // NUVEM VS EDGE]</a>
-            <a href="#pilares" class="nav-link-btn">[04 // PILARES]</a>
-            <a href="#arena-hitl" class="nav-link-btn">[05 // ARENA VIVA]</a>
-            <a href="#calculadora-roi" class="nav-link-btn">[06 // ROI EDGE]</a>
-            <a href="#matriz" class="nav-link-btn">[07 // MATRIZ DOTS]</a>
-            <a href="#faq-objecoes" class="nav-link-btn">[08 // AUDITORIA FAQ]</a>
-            <a href="#quickstart" class="nav-link-btn">[09 // DEPLOY]</a>
-        </nav>
+        <!-- Comutador Canonico de Superficies de Produto -->
+        <div class="top-deck-center">
+            <nav class="surface-switcher" aria-label="Superficies de Produto">
+                <a href="/" class="surface-tab active" id="tab-overview" title="Atalho: G H">
+                    <span class="tab-idx">01</span>
+                    <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
+                    <span class="tab-chord">g h</span>
+                </a>
+                <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
+                    <span class="tab-idx">02</span>
+                    <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
+                    <span class="tab-chord">g w</span>
+                </a>
+                <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
+                    <span class="tab-idx">03</span>
+                    <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
+                    <span class="tab-chord">g d</span>
+                </a>
+            </nav>
+        </div>
 
-        <div class="header-actions">
-            <div class="node-telemetry-badge" id="headerNodeBadge" title="Nó Edge Raspberry Pi 4B ARM64 Operacional" data-i18n-title="telemetry.node_title">
+        <div class="top-deck-right header-actions">
+            <div class="node-telemetry-badge" id="headerNodeBadge" title="No Edge Raspberry Pi 4B ARM64 Operacional" data-i18n-title="telemetry.node_title">
                 <span class="telemetry-led"></span>
                 <span>NO: ONLINE</span>
             </div>
-            <button class="pixel-btn" onclick="toggleMobileNavMenu()" id="btnMobileNavToggle" title="Abrir menu de seções móvel">
+            <button class="pixel-btn" onclick="toggleMobileNavMenu()" id="btnMobileNavToggle" title="Abrir menu de secoes movel">
                 <span>[SECOES]</span>
             </button>
             <button class="pixel-btn pwa-install-trigger" id="btnLandingPwaInstall" style="display: none; background: #0284c7; border-color: #38bdf8; color: #ffffff;" onclick="PiDotsLandingPWA.install()" title="Instalar piDots como aplicativo PWA">
@@ -107,7 +99,7 @@
                 <span class="lang-text-full">[IDIOMA: PT | EN]</span>
                 <span class="lang-text-short">[PT]</span>
             </button>
-            <button class="pixel-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
+            <button class="pixel-btn theme-toggle-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 <span class="theme-btn-label" data-i18n="nav.theme">[TEMA]</span>
             </button>
@@ -118,7 +110,7 @@
         </div>
     </header>
 
-    <!-- Painel Retrátil de Navegação Móvel -->
+    <!-- Painel Retratil de Navegacao Movel -->
     <nav id="mobileNavPanel" class="mobile-nav-panel" aria-label="Menu Movel">
         <a href="#hero" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">01 // VISAO</a>
         <a href="#metricas-choque" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">02 // CHOQUE</a>
@@ -129,61 +121,139 @@
         <a href="#matriz" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">07 // MATRIZ DOTS</a>
         <a href="#faq-objecoes" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">08 // FAQ</a>
         <a href="#quickstart" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">09 // DEPLOY</a>
+        <div class="mobile-nav-controls">
+            <button type="button" class="pixel-btn" onclick="PiDotsI18n.toggleLanguage()" title="Alternar Idioma">
+                <span>[IDIOMA: PT | EN]</span>
+            </button>
+            <button type="button" class="pixel-btn" onclick="toggleTheme()" title="Alternar Tema">
+                <span>[TEMA CLARO / ESCURO]</span>
+            </button>
+        </div>
     </nav>
 
     <!-- CONTEUDO PRINCIPAL DA LANDING PAGE (LARGURA TOTAL // SEM CENTRALIZACAO ARTIFICIAL) -->
     <div class="landing-container">
 
         <!-- ===================================================================
-             HERO SECTION: SEU PROPRIO AI COWORKER EM 6 WATTS
+             HERO SECTION: SEU PROPRIO AI COWORKER EM 6 WATTS (SPLIT-SCREEN OPENDOTS)
              =================================================================== -->
         <section class="landing-section hero-section" id="hero">
-            <div class="hero-tagline">
-                <span class="hero-badge-tag" style="color: var(--phosphor-green);">AGENTES PERSISTENTES // HARDWARE DE BORDA &amp; SBCs</span>
-                <span class="hero-badge-tag" style="color: var(--blueprint-cyan);">INTERFACE TECNICA MINIMALISTA // TIPOGRAFIA CRISP // 100% SOBERANO</span>
+            <div class="hero-split-grid">
+                <!-- Coluna Esquerda: Proposta de Valor e Acoes Taticas -->
+                <div class="hero-col-left">
+                    <div class="hero-tagline">
+                        <span class="silicon-badge badge-green">SILICIO // 52 MB RAM RSS</span>
+                        <span class="silicon-badge badge-cyan">ARM64 BROADCOM BCM2711</span>
+                        <span class="silicon-badge badge-amber">SOBERANIA LOCAL 24/7</span>
+                    </div>
+
+                    <h1 class="hero-title">
+                        <span data-i18n="hero.title">AGENTES DE IA EM EQUIPE NO SEU PRÓPRIO HARDWARE.</span><br>
+                        <span data-i18n="hero.subtitle">Operação contínua em 6 Watts, consumindo menos de 70 MB de RAM.</span>
+                    </h1>
+
+                    <p class="hero-description" data-i18n="hero.lead">
+                        Seus agentes autônomos trabalhando 24 horas por dia no seu Raspberry Pi, Mini PC ou servidor local. Sem faturas surpresa em dólar, sem navegadores pesados rodando escondidos e sem expor seus arquivos para serviços de terceiros.<br><br>
+                        No piDots, você opera um console com <strong>Activity Rail de 48px</strong> (Spaces &amp; Canais, Estúdio de Agentes &amp; Tool Pruning, Tasks Agendadas &amp; Sensores, Memória Híbrida 64D &amp; MCP Lite), coordena especialistas com menções diretas (@coder, @arquiteto, @auditor), acompanha <strong>Generative UI Cards inline</strong> e <strong>CoAgents Shared State</strong> ao vivo, assume o <strong>Computador de Borda (Dot's Computer)</strong> em Modo Takeover e homologa ações críticas via HITL com edição de argumentos (<code>modified_args</code>) e retomada automática.
+                    </p>
+
+                    <!-- Grupo Focado de CTAs Primarios -->
+                    <div class="hero-cta-group">
+                        <a href="/app" class="pixel-btn-cta-primary" id="heroCtaWorkspace">
+                            <span class="pulse-step-dot"></span>
+                            <span data-i18n="hero.cta_workspace">[ABRIR WORKSPACE /APP]</span>
+                            <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                        <a href="/docs" class="pixel-btn btn-cyan btn-lg" id="heroCtaDocs">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                            <span>[DOCUMENTACAO /DOCS]</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Mini-Simulador Pixel Paper UI com fita perfurada e card HITL interativo -->
+                <div class="hero-col-right">
+                    <div class="hero-paper-slip-showcase paper-slip slip-elevated">
+                        <div class="showcase-header">
+                            <div class="showcase-status">
+                                <span class="pulse-step-dot"></span>
+                                <span>FITA OPERACIONAL // SEQ# 0001 - 0002</span>
+                            </div>
+                            <span class="silicon-badge badge-cyan">OPENDOTS AG-UI</span>
+                        </div>
+
+                        <div class="showcase-ticker-body">
+                            <div class="tractor-strip"></div>
+                            <div class="showcase-stream">
+                                <div class="slip-entry">
+                                    <div class="slip-meta">
+                                        <span class="slip-seq">SEQ# 0001</span>
+                                        <span class="slip-agent">[@dot-supervisor]</span>
+                                    </div>
+                                    <p class="slip-text">Missao iniciada. Carregando ferramentas via Dynamic Tool Pruning (3/23 tools ativas).</p>
+                                </div>
+                                <div class="picote-line">---- PICOTE // DESTACAR ----</div>
+                                <div class="slip-entry">
+                                    <div class="slip-meta">
+                                        <span class="slip-seq">SEQ# 0002</span>
+                                        <span class="slip-agent">[@dot-coder]</span>
+                                    </div>
+                                    <p class="slip-text">Gerando patch de sandbox Bubblewrap. Solicitando homologacao do operador.</p>
+                                    
+                                    <!-- Card HITL Clicavel de Demonstracao -->
+                                    <div class="hitl-box" id="heroDemoHitlBox">
+                                        <div class="hitl-box-header">
+                                            <span class="hitl-box-title">EXECUCAO EM TERMINAL STRICT SANDBOX</span>
+                                            <span class="hitl-box-risk">RISCO MEDIO // HMAC-SHA256</span>
+                                        </div>
+                                        <div class="hitl-box-cmd">bwrap --ro-bind /usr /usr --tmpfs /tmp --dir /run python3 -m pytest</div>
+                                        <div class="hitl-box-actions" id="heroDemoHitlActions">
+                                            <button type="button" class="pixel-btn btn-cyan pixel-btn-touch" id="btnHeroDemoApprove" onclick="handleHeroDemoHitl('approve')">[HOMOLOGAR]</button>
+                                            <button type="button" class="pixel-btn pixel-btn-touch" id="btnHeroDemoReject" onclick="handleHeroDemoHitl('reject')">[VETAR]</button>
+                                            <button type="button" class="pixel-btn pixel-btn-touch" id="btnHeroDemoInspect" onclick="handleHeroDemoHitl('inspect')">[INSPECIONAR ACAO]</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <h1 class="hero-title">
-                <span data-i18n="hero.title">AGENTES DE IA EM EQUIPE NO SEU PRÓPRIO HARDWARE.</span><br>
-                <span data-i18n="hero.subtitle">Operação local contínua em 6 Watts, gastando menos de 70 MB de RAM.</span>
-            </h1>
-
-            <p class="hero-description" data-i18n="hero.lead">
-                Seus agentes autônomos trabalhando 24 horas por dia no seu Raspberry Pi, Mini PC ou servidor local. Sem faturas surpresa em dólar, sem navegadores pesados rodando escondidos e sem expor seus arquivos para serviços de terceiros.<br><br>
-                No piDots, você opera um console com <strong>Activity Rail de 48px</strong> (Spaces &amp; Canais, Estúdio de Agentes &amp; Tool Pruning, Tasks Agendadas &amp; Sensores, Memória Híbrida 64D &amp; MCP Lite), coordena especialistas com menções diretas (@coder, @arquiteto, @auditor), acompanha <strong>Generative UI Cards inline</strong> e <strong>CoAgents Shared State</strong> ao vivo, assume o <strong>Computador de Borda (Dot's Computer)</strong> em Modo Takeover e homologa ações críticas via HITL com edição de argumentos (<code>modified_args</code>) e retomada automática.
-            </p>
-
-            <!-- Pilulas de Prova Tecnica Imediata (4 Pilares Essenciais) -->
-            <div class="hero-badges-row">
-                <div class="tech-pill">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
-                    <span>POTENCIA TERMICA: 6.2 WATTS // ACTIVITY RAIL 48PX</span>
+            <!-- Bento Grid de Telemetria de Borda (4 Cards) -->
+            <div class="hero-bento-grid">
+                <div class="bento-card">
+                    <div class="bento-card-top">
+                        <span class="bento-badge">SILICIO RSS</span>
+                        <span class="bento-val">52 MB</span>
+                    </div>
+                    <div class="bento-title">Folga Real de Memoria</div>
+                    <p class="bento-desc">Consome menos de 2% dos 4GB do Raspberry Pi 4B, deixando silicio livre para o sistema operacional.</p>
                 </div>
-                <div class="tech-pill">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                    <span>PROCESS_RSS_MB &lt; 70MB // MOTOR VETORIAL 64D UNIFICADO</span>
+                <div class="bento-card">
+                    <div class="bento-card-top">
+                        <span class="bento-badge">AG-UI COAGENTS</span>
+                        <span class="bento-val">4 ESPECIALISTAS</span>
+                    </div>
+                    <div class="bento-title">Dynamic Tool Pruning</div>
+                    <p class="bento-desc">Supervisor, Coder, Muse e Auditor coordenados com orcamento de schema enxuto (~420 a ~780 tokens/turno).</p>
                 </div>
-                <div class="tech-pill">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    <span>AG-UI GENERATIVE CARDS // COAGENTS STATE &amp; 34 SLASH CMDS</span>
+                <div class="bento-card">
+                    <div class="bento-card-top">
+                        <span class="bento-badge">FLASH-SAFE</span>
+                        <span class="bento-val">SQLITE WAL 64D</span>
+                    </div>
+                    <div class="bento-title">Memoria Hibrida FTS5</div>
+                    <p class="bento-desc">Persistencia relacional sem fsync agressivo, protegendo a vida util de cartoes MicroSD e eMMC.</p>
                 </div>
-                <div class="tech-pill">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    <span>DOT'S COMPUTER TAKEOVER // HITL COM MODIFIED_ARGS</span>
+                <div class="bento-card">
+                    <div class="bento-card-top">
+                        <span class="bento-badge">GOVERNANCA</span>
+                        <span class="bento-val">HOP &lt;= 3 &amp; HITL</span>
+                    </div>
+                    <div class="bento-title">Assinatura Criptografica</div>
+                    <p class="bento-desc">Retencao Deny-by-Default com HMAC-SHA256, TTL de 30 minutos e aprovacao interativa Telegram/WhatsApp.</p>
                 </div>
-            </div>
-
-            <!-- Grupo Focado de CTAs Primarios -->
-            <div class="hero-cta-group">
-                <a href="/app" class="pixel-btn-cta-primary">
-                    <span class="pulse-step-dot"></span>
-                    <span data-i18n="hero.cta_workspace">[ABRIR WORKSPACE OPERACIONAL]</span>
-                    <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </a>
-                <a href="#quickstart" class="pixel-btn btn-cyan btn-lg">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                    <span>[DEPLOY RAPIDO EM 1 COMANDO]</span>
-                </a>
             </div>
 
             <!-- SIMULADOR REACT LIVE TERMINAL COM PROTOCOLO AG-UI & MULTI-BOT -->
@@ -773,6 +843,56 @@
                         Telemetria: process_rss_mb real no Edge Pulse Chip e WCAG 2.2 AA (44px)
                     </div>
                 </article>
+                <!-- Pilar 15: Catalogo Oficial de Dot Packs v1.1 Assinados com SHA-256 -->
+                <article class="feature-card">
+                    <header class="feature-top">
+                        <span class="feature-num">PILAR 15</span>
+                        <span class="feature-badge" style="color: var(--blueprint-cyan);">DOT PACKS SHA-256</span>
+                    </header>
+                    <h3 class="feature-title">Catalogo de Dot Packs v1.1 Assinados com SHA-256</h3>
+                    <p class="feature-desc">
+                        Distribuicao portavel de perfis especializados em manifestos JSON padronizados. Inclui tres pacotes comunitarios oficiais prontos para instalacao em 1 clique: SecOps Sentinel (@dot-secops), Homelab Orchestrator (@dot-homelab) e FinOps Telemetry Analyst (@dot-finops). Cada pacote possui hash SHA-256 canônico e passa por auditoria forense do @dot-auditor contra tecnicas de Prompt Injection.
+                    </p>
+                    <div class="feature-code-box">
+                        Catalogo Oficial: GET /api/dots/packs/catalog (dot-secops, dot-homelab, dot-finops)<br>
+                        Instalacao 1-Clique: POST /api/dots/packs/install/{pack_id} com verificacao SHA-256<br>
+                        Inspecao Forense: Validacao de Core Memory e Archival facts pelo @dot-auditor
+                    </div>
+                </article>
+
+                <!-- Pilar 16: Infraestrutura Nginx Alpine & Barramento Fisico GPIO/MQTT -->
+                <article class="feature-card">
+                    <header class="feature-top">
+                        <span class="feature-num">PILAR 16</span>
+                        <span class="feature-badge" style="color: var(--phosphor-green);">NGINX &amp; GPIO/MQTT</span>
+                    </header>
+                    <h3 class="feature-title">Desoneracao Estatica com Nginx &amp; Triggers GPIO/MQTT</h3>
+                    <p class="feature-desc">
+                        Arquitetura de alto rendimento para hardware de borda. O conteiner pidots-nginx (Nginx 1.27 Alpine, &lt; 8MB RAM) assume a entrega direta de assets estaticos com Cache-Control immutable e proxy reverso SSE sem buffering, poupando ciclos de CPU do FastAPI. Em paralelo, o barramento de borda monitora pinos fisicos GPIO e topicos locais MQTT, despertando o @dot-supervisor no SQLite WAL apenas sob eventos fisicos reais.
+                    </p>
+                    <div class="feature-code-box">
+                        Nginx Alpine: Entrega direta em C de /static/ e /data/locales/ com SSE proxy<br>
+                        Gatilhos Fisicos: Escuta de pinos GPIO (libgpiod) e telemetria MQTT de sensores<br>
+                        Despertar Proativo: Wakeup automatico de @dot-supervisor em edge-supervisor-wakeup
+                    </div>
+                </article>
+
+                <!-- Pilar 17: Governanca Cognitiva & Engenharia Centauro -->
+                <article class="feature-card">
+                    <header class="feature-top">
+                        <span class="feature-num">PILAR 17</span>
+                        <span class="feature-badge" style="color: var(--thermal-amber);">ENGENHARIA CENTAURO</span>
+                    </header>
+                    <h3 class="feature-title">Governanca Cognitiva Refinada &amp; Manifesto Centauro</h3>
+                    <p class="feature-desc">
+                        Seguranca sem desperdicio de silicio. Trava estrita de auto-reparo fixada em MAX_HEAL_ATTEMPTS = 2 para evitar loops infinitos de tokens, Saida Antecipada por Consenso no Conselho (Early Consensus Exit) quando o auditor aprova a proposta na rodada 2 e expiracao deterministica de acoes retidas na governanca HITL (TTL = 30 min). Documentado formalmente no Manifesto de Engenharia Centauro (AI_MANIFESTO.md) com pipeline de CI Multi-Arch (linux/amd64 e linux/arm64).
+                    </p>
+                    <div class="feature-code-box">
+                        Auto-Cura: MAX_HEAL_ATTEMPTS = 2 com escalonamento ao operador<br>
+                        Conselho: Early Consensus Exit na Rodada 2 poupando rodadas extras<br>
+                        Transparencia: AI_MANIFESTO.md e compilacao automatica multi-arch
+                    </div>
+                </article>
             </div>
         </section>
 
@@ -1201,6 +1321,7 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
 
             <!-- FICHAS CATALOGRAFICAS EMPILHADAS (SUBSTITUICAO RESPONSIVA EM TELAS <= 640PX) -->
             <div class="mobile-matrix-deck">
@@ -1568,7 +1689,6 @@
                     </div>
                 </article>
             </div>
-            </div>
         </section>
 
 
@@ -1783,8 +1903,8 @@
                     </div>
                     
                     <div style="font-size: 11px; color: var(--ink-muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                        <span>Ambiente pronto na porta 8000: http://localhost:8000</span>
-                        <span>Verificacao de saude: curl http://localhost:8000/health</span>
+                        <span>Portas ativas: :8081 (Landing), :8082 (App), :8083 (Docs), :8088 (Gateway)</span>
+                        <span>Verificacao de saude: curl http://localhost:8088/health</span>
                     </div>
                 </div>
 
@@ -1959,6 +2079,37 @@
                 <div class="step-body">
                     Monitoramento de temperatura do SoC, mitigacao de throttling e consolidacao noturna automatica com WAL TRUNCATE e VACUUM INTO.
                 </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-num">PASSO 12 // MICRO-MOTOR I18N &amp; DICIONARIOS</div>
+                <div class="step-heading">SUPORTE BILINGUE PT-BR / EN EM MEMORIA</div>
+                <div class="step-body">
+                    Dicionarios JSON estaticos carregados sob demanda com cache ETag e comutacao instantanea sem recarregar a pagina.
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-num">PASSO 13 // SLASH COMMANDS &amp; PROTOCOLO DE BORDA</div>
+                <div class="step-heading">CATALOGO DE 34 COMANDOS &amp; AUTOCOMPLETE</div>
+                <div class="step-body">
+                    Acione operacoes taticas com barra inicial (/), busca difusa por Levenshtein e execucao assincrona via WebSocket e SSE AG-UI.
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-num">PASSO 14 // DESACOPLAMENTO POR PORTAS &amp; CLOUDFLARE TUNNEL</div>
+                <div class="step-heading">SUPERFICIES ISOLADAS :8081, :8082, :8083, :8088 &amp; ZERO TRUST</div>
+                <div class="step-body">
+                    Segregacao fisica de portas no Nginx Alpine (< 6MB RAM) e roteamento de borda seguro com NAT Traversal via cloudflared sem portas abertas no roteador.
+                </div>
+            </div>
+
+            <div style="margin-top: 14px; padding: 12px; background: var(--paper-surface-elevated); border: 1px solid var(--border-accent); text-align: center;">
+                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); display: block; margin-bottom: 6px;">ESTUDO TECNICO DE ENGENHARIA REVERSA</span>
+                <a href="/relatorio" data-surface="report" class="pixel-btn btn-cyan btn-sm" style="width: 100%; justify-content: center; text-decoration: none;">
+                    [ACESSAR RELATORIO COMPLETO ARM64]
+                </a>
             </div>
         </div>
     </aside>

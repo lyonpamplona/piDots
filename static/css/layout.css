@@ -7,22 +7,50 @@
 /* =====================================================================
    1. CABECALHO TECNICO DE COMANDO (TOP BAR)
    ===================================================================== */
+header.top-deck,
 header.mission-header,
 header.landing-header,
-header.guide-header {
+header.guide-header,
+header.top-bar {
+    height: calc(var(--header-height, 48px) + var(--safe-top, 0px));
+    min-height: calc(var(--header-height, 48px) + var(--safe-top, 0px));
+    max-height: calc(var(--header-height, 48px) + var(--safe-top, 0px));
+    box-sizing: border-box;
     background-color: var(--paper-sheet);
     border-bottom: 2px solid var(--border-default);
     box-shadow: var(--shadow-sm);
-    padding: 8px 16px;
-    padding-top: max(8px, var(--safe-top));
-    padding-left: max(16px, calc(16px + var(--safe-left)));
-    padding-right: max(16px, calc(16px + var(--safe-right)));
+    padding: 0 16px;
+    padding-top: var(--safe-top, 0px);
+    padding-left: max(16px, calc(16px + var(--safe-left, 0px)));
+    padding-right: max(16px, calc(16px + var(--safe-right, 0px)));
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
     z-index: 100;
     gap: 12px;
+}
+
+.top-deck-left,
+.top-deck-center,
+.top-deck-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-deck-left {
+    flex-shrink: 0;
+}
+
+.top-deck-center {
+    flex: 1;
+    justify-content: center;
+}
+
+.top-deck-right {
+    flex-shrink: 0;
+    justify-content: flex-end;
 }
 
 .header-brand, .brand-unit {
@@ -80,7 +108,7 @@ header.guide-header {
     width: 6px;
     height: 6px;
     background: var(--phosphor-green);
-    box-shadow: 0 0 4px var(--phosphor-green);
+    box-shadow: 1px 1px 0px #000000;
     display: inline-block;
 }
 

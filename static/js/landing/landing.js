@@ -649,38 +649,7 @@
             }
         });
 
-        // Navegacao Global por Teclado (Go-to Chords: g h, g w, g d)
-        (function() {
-            let lastKeyTime = 0;
-            let pendingPrefix = false;
-
-            window.addEventListener('keydown', function(e) {
-                const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
-                if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) return;
-                if (e.metaKey || e.ctrlKey || e.altKey) return;
-
-                const key = e.key.toLowerCase();
-                const now = Date.now();
-
-                if (pendingPrefix && (now - lastKeyTime < 1000)) {
-                    pendingPrefix = false;
-                    if (key === 'h' || key === 'v') {
-                        window.location.href = '/';
-                    } else if (key === 'w' || key === 'a') {
-                        window.location.href = '/app';
-                    } else if (key === 'd' || key === 'g') {
-                        window.location.href = '/docs';
-                    }
-                    return;
-                }
-
-                if (key === 'g') {
-                    pendingPrefix = true;
-                    lastKeyTime = now;
-                    setTimeout(() => { pendingPrefix = false; }, 1000);
-                }
-            });
-        })();
+        // Navegacao Global por Teclado e Resolucao de Superficies delegada ao CrossSurfaceRouter (static/js/core/cross-surface-router.js)
 
         // Integracao PWA & Service Worker na Landing Page Oficial
         const PiDotsLandingPWA = (function() {
@@ -740,12 +709,37 @@
             };
         })();
 
+        // Demonstrador Interativo de Aprovacao HITL no Hero Split-Screen
+        function handleHeroDemoHitl(action) {
+            playHapticMechanicalClick();
+            const hitlBox = document.getElementById('heroDemoHitlBox');
+            const actionsContainer = document.getElementById('heroDemoHitlActions');
+            if (!hitlBox || !actionsContainer) return;
+
+            if (action === 'approve') {
+                hitlBox.style.borderColor = 'var(--phosphor-green)';
+                actionsContainer.innerHTML = '<span class="silicon-badge badge-green" style="font-size: 9px; padding: 4px 8px;">[HOMOLOGADO // EXECUCAO LIBERADA VIA HMAC-SHA256]</span>';
+                showToast('Aprovacao HITL concedida para bwrap. Retomando agente autonomo.', 'success');
+            } else if (action === 'reject') {
+                hitlBox.style.borderColor = 'var(--stamp-danger)';
+                actionsContainer.innerHTML = '<span class="silicon-badge badge-red" style="font-size: 9px; padding: 4px 8px;">[VETADO // EXECUCAO RECUSADA POR GOVERNANCA]</span>';
+                showToast('Comando de sandbox vetado por governanca Deny-by-Default.', 'warning');
+            } else if (action === 'inspect') {
+                const arena = document.getElementById('arena-hitl');
+                if (arena) {
+                    arena.scrollIntoView({ behavior: 'smooth' });
+                }
+                showToast('Abrindo analise forense e arena interativa de seguranca.', 'info');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             PiDotsLandingPWA.init();
         });
 
     // Exportacao Global para manipuladores de evento inline
     window.playHapticMechanicalClick = playHapticMechanicalClick;
+    window.handleHeroDemoHitl = handleHeroDemoHitl;
     window.toggleTheme = toggleTheme;
     window.toggleDrawer = toggleDrawer;
     window.filterDrawerSteps = filterDrawerSteps;

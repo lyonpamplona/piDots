@@ -16,6 +16,8 @@ services:
       dockerfile: Dockerfile
     container_name: pidots-core
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - "${PORT:-8000}:8000"
     environment:
@@ -32,9 +34,10 @@ services:
       - SQLITE_DB_PATH=/app/data/pidots.db
       - WORKSPACES_ROOT=/app/workspaces
       - STRICT_SANDBOX=${STRICT_SANDBOX:-false}
+      - ENABLE_LEGACY_REDIRECTS=${ENABLE_LEGACY_REDIRECTS:-true}
       - MAX_ITERATIONS_PER_GOAL=${MAX_ITERATIONS_PER_GOAL:-8}
       - ENABLE_THERMAL_THROTTLE=${ENABLE_THERMAL_THROTTLE:-true}
-      - THERMAL_LIMIT_CELSIUS=${THERMAL_LIMIT_CELSIUS:-72.0}
+      - THERMAL_LIMIT_CELSIUS=${THERMAL_LIMIT_CELSIUS:-78.0}
     volumes:
       # Armazenamento de dados persistentes do SQLite WAL
       - ./data:/app/data
@@ -56,3 +59,29 @@ services:
         reservations:
           cpus: '0.2'
           memory: 64M
+
+  pidots-nginx:
+    image: nginx:1.27-alpine
+    container_name: pidots-nginx
+    restart: unless-stopped
+    depends_on:
+      - pidots-core
+    ports:
+      # Portas Desacopladas de Borda (Prontas para Cloudflare Tunnel & LAN)
+      - "${PORT_GATEWAY:-${NGINX_PORT:-8088}}:8088"
+      - "${PORT_LANDING:-8081}:8081"
+      - "${PORT_APP:-8082}:8082"
+      - "${PORT_DOCS:-8083}:8083"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/usr/share/nginx/html/static:ro
+      - ./data/locales:/usr/share/nginx/html/data/locales:ro
+    logging: *edge-logging
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 32M
+        reservations:
+          cpus: '0.05'
+          memory: 8M

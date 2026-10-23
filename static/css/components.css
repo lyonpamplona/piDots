@@ -116,7 +116,7 @@
 .pixel-btn.btn-success:hover,
 .btn-green:hover {
     background: var(--phosphor-green);
-    color: #000000;
+    color: var(--paper-base);
 }
 
 .pixel-btn.btn-lg {
@@ -199,7 +199,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(7, 9, 12, 0.9);
+    background-color: var(--paper-surface);
 }
 
 .rubber-stamp .stamp-title {
@@ -432,4 +432,199 @@
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+}
+
+/* =====================================================================
+   7. COMPONENTES CANONICOS PIXEL PAPER UI (OPENDOTS SPATIAL)
+   ===================================================================== */
+.paper-slip {
+    background: var(--paper-surface);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+    padding: 12px 16px;
+    position: relative;
+    font-family: var(--font-mono);
+    color: var(--ink-main);
+}
+
+.paper-slip.slip-elevated {
+    background: var(--paper-surface-elevated);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+}
+
+.paper-slip.slip-highlight {
+    border-color: var(--border-accent);
+}
+
+.tractor-holes,
+.tractor-strip {
+    width: 14px;
+    background-image: radial-gradient(var(--border-default) 2px, transparent 2px);
+    background-size: 14px 14px;
+    background-position: center;
+    background-repeat: repeat-y;
+    border-right: 1px dashed var(--border-subtle);
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+
+.picote-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 16px 0;
+    position: relative;
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    color: var(--ink-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.picote-line::before,
+.picote-line::after {
+    content: "";
+    flex: 1;
+    border-top: 1px dashed var(--border-strong);
+}
+
+.thought-notebook {
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-subtle);
+    margin: 8px 0;
+    font-size: 11px;
+}
+
+.thought-notebook summary {
+    padding: 6px 10px;
+    cursor: pointer;
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    color: var(--ink-secondary);
+    background: var(--paper-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.thought-notebook summary:hover {
+    color: var(--blueprint-cyan);
+}
+
+.thought-notebook-body {
+    padding: 10px 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--ink-muted);
+    max-height: 220px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+.hitl-box {
+    background: var(--paper-surface-sheet);
+    border: 2px solid var(--thermal-amber);
+    box-shadow: 3px 3px 0px #000000;
+    padding: 12px 14px;
+    margin: 12px 0;
+    font-family: var(--font-mono);
+    position: relative;
+}
+
+.hitl-box::before {
+    content: "RETENCAO DE SEGURANCA // HITL";
+    position: absolute;
+    top: -9px;
+    left: 12px;
+    background: var(--thermal-amber);
+    color: #000000;
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    font-weight: 700;
+    padding: 1px 6px;
+    letter-spacing: 0.08em;
+}
+
+.hitl-box-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--border-default);
+}
+
+.hitl-box-title {
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    color: var(--thermal-amber);
+    letter-spacing: 0.05em;
+}
+
+.hitl-box-risk {
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    padding: 2px 5px;
+    background: rgba(255, 184, 48, 0.15);
+    border: 1px solid var(--thermal-amber);
+    color: var(--thermal-amber);
+}
+
+.hitl-box-cmd {
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--phosphor-green);
+    margin: 8px 0;
+    overflow-x: auto;
+    word-break: break-all;
+}
+
+.hitl-box-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.silicon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    padding: 2px 8px;
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    letter-spacing: 0.06em;
+    color: var(--ink-secondary);
+    user-select: none;
+}
+
+.silicon-badge.badge-green {
+    border-color: var(--phosphor-green);
+    color: var(--phosphor-green);
+}
+
+.silicon-badge.badge-cyan {
+    border-color: var(--blueprint-cyan);
+    color: var(--blueprint-cyan);
+}
+
+.silicon-badge.badge-amber {
+    border-color: var(--thermal-amber);
+    color: var(--thermal-amber);
+}
+
+.silicon-badge.badge-red {
+    border-color: var(--stamp-danger);
+    color: var(--stamp-danger);
 }

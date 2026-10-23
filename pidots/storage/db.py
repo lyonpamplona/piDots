@@ -433,7 +433,7 @@ async def init_edge_database(db_path: str | None = None) -> None:
     settings.ensure_directories()
 
     logger.info("Inicializando banco SQLite Edge em: %s", path)
-    async with aiosqlite.connect(path) as db:
+    async with aiosqlite.connect(path, timeout=30.0) as db:
         db.row_factory = aiosqlite.Row
         # Pragmas obrigatórios de calibração para MicroSD
         await db.execute("PRAGMA journal_mode = WAL;")
@@ -441,7 +441,7 @@ async def init_edge_database(db_path: str | None = None) -> None:
         await db.execute("PRAGMA cache_size = -16000;")     # Teto de 16MB de RAM
         await db.execute("PRAGMA temp_store = MEMORY;")      # Operações transitórias na RAM
         await db.execute("PRAGMA mmap_size = 67108864;")     # Limite de 64MB para mmap
-        await db.execute("PRAGMA busy_timeout = 5000;")      # Previne concorrência de locks
+        await db.execute("PRAGMA busy_timeout = 30000;")     # Previne concorrência de locks (30s)
 
         # Execução do Schema base
         await db.executescript(SQL_SCHEMA)
@@ -543,10 +543,10 @@ async def get_db(db_path: str | None = None) -> AsyncGenerator[aiosqlite.Connect
     Garante foreign keys ativas, busy_timeout de 5000ms e pragmas de preservação flash.
     """
     path = db_path or settings.sqlite_db_path
-    async with aiosqlite.connect(path) as conn:
+    async with aiosqlite.connect(path, timeout=30.0) as conn:
         conn.row_factory = aiosqlite.Row
         await conn.execute("PRAGMA foreign_keys = ON;")
-        await conn.execute("PRAGMA busy_timeout = 5000;")
+        await conn.execute("PRAGMA busy_timeout = 30000;")
         await conn.execute("PRAGMA synchronous = NORMAL;")
         await conn.execute("PRAGMA cache_size = -16000;")
         await conn.execute("PRAGMA temp_store = MEMORY;")
