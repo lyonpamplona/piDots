@@ -78,65 +78,191 @@ header.guide-header::-webkit-scrollbar {
 }
 
 /* ---------------------------------------------------------------------
-   ESTRUTURA GERAL DA PAGINA (LARGURA TOTAL SEM CENTRALIZACAO)
+   ESTRUTURA GERAL DA PAGINA COM ARQUITETURA 3 COLUNAS (PADRAO OURO)
    --------------------------------------------------------------------- */
-.guide-shell {
+.guide-shell,
+.docs-3col-layout {
     width: 100%;
     display: flex;
+    align-items: flex-start;
     position: relative;
     min-height: calc(100vh - var(--header-height, 48px));
+    background: var(--paper-base, #0c1012);
 }
 
-main.guide-viewport {
-    width: 100%;
-    padding: 24px 32px 80px 32px;
+/* Coluna 1: Sidebar de Navegacao (Fixa em Desktop >= 1024px) */
+aside.retractable-drawer,
+aside.docs-sidebar {
+    width: 270px;
+    min-width: 270px;
+    flex-shrink: 0;
+    position: sticky;
+    top: var(--header-height, 48px);
+    height: calc(100vh - var(--header-height, 48px));
+    background: var(--paper-surface, #11171a);
+    border-right: 1px solid var(--border-default, rgba(255, 255, 255, 0.12));
+    border-left: none;
+    display: flex;
+    flex-direction: column;
+    z-index: 80;
+    transform: none;
+    box-shadow: none;
+}
+
+.mobile-only-btn {
+    display: none;
+}
+
+.mobile-drawer-trigger {
+    display: none;
+}
+
+/* Coluna 2: Prosa Central Continua */
+main.guide-viewport,
+main.docs-main-prose {
+    flex: 1;
+    min-width: 0;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 40px 96px;
     box-sizing: border-box;
-    transition: margin-right 0.2s ease;
+    transition: none;
 }
 
 body.drawer-open main.guide-viewport {
-    margin-right: var(--drawer-width, 360px);
+    margin-right: 0;
+}
+
+/* Coluna 3: Nesta Pagina (TOC Sticky a Direita no Desktop) */
+aside.docs-toc-col {
+    width: 240px;
+    min-width: 240px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--header-height, 48px) + 24px);
+    max-height: calc(100vh - var(--header-height, 48px) - 48px);
+    padding: 12px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    z-index: 70;
+}
+
+.docs-toc-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.docs-toc-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+}
+
+.docs-toc-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-left: 1px solid var(--border-subtle);
+    padding-left: 12px;
+}
+
+.docs-toc-link {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--ink-secondary);
+    text-decoration: none;
+    line-height: 1.45;
+    padding: 3px 0;
+    transition: all 0.15s ease;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.docs-toc-link:hover {
+    color: var(--accent-mint, #7cd9c6);
+    padding-left: 2px;
+}
+
+.docs-toc-link.active {
+    color: var(--accent-mint, #7cd9c6);
+    font-weight: 600;
+    border-left: 2px solid var(--accent-mint, #7cd9c6);
+    margin-left: -13px;
+    padding-left: 11px;
+}
+
+.docs-toc-footer {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.docs-toc-backtop {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.docs-toc-backtop:hover {
+    color: var(--accent-mint);
 }
 
 /* ---------------------------------------------------------------------
-   CARIMBOS OFICIAIS (PIXEL STAMPS - SILKSCREEN 8PX)
+   BADGES & ETIQUETAS OFICIAIS (MODERNOS & PRECISOS)
    --------------------------------------------------------------------- */
 .pixel-stamp {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-family: var(--font-pixel);
-    font-size: 8px;
-    padding: 3px 6px;
-    border: 1px dashed var(--border-default);
-    letter-spacing: 0.08em;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border: 1px solid var(--border-subtle);
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     user-select: none;
-    border-radius: 2px;
+    border-radius: 3px;
+    background: var(--paper-surface);
 }
 
 .stamp-approved {
-    border-color: var(--phosphor-green);
-    color: var(--phosphor-green);
-    background: rgba(124, 217, 198, 0.08);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.08);
 }
 
 .stamp-notice {
-    border-color: var(--blueprint-cyan);
-    color: var(--blueprint-cyan);
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
     background: rgba(56, 189, 248, 0.08);
 }
 
 .stamp-critical {
-    border-color: var(--stamp-danger);
-    color: var(--stamp-danger);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #f87171;
     background: rgba(239, 68, 68, 0.08);
 }
 
 .stamp-amber {
-    border-color: var(--thermal-amber);
-    color: var(--thermal-amber);
-    background: rgba(219, 173, 130, 0.08);
+    border-color: rgba(245, 158, 11, 0.35);
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.08);
 }
 
 /* ---------------------------------------------------------------------
@@ -279,32 +405,38 @@ body.drawer-open main.guide-viewport {
 }
 
 /* ---------------------------------------------------------------------
-   MODULOS PASSO A PASSO (.step-module)
+   SECOES PASSO A PASSO (.step-module - LEITURA CONTINUA PADRAO OURO)
    --------------------------------------------------------------------- */
 .step-module {
-    background: var(--paper-surface);
-    border: 1px solid var(--border-default);
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 28px;
-    scroll-margin-top: calc(var(--header-height, 48px) + 20px);
-    transition: border-color 0.15s ease;
-    border-radius: 4px;
-    overflow: hidden;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin-bottom: 56px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    scroll-margin-top: calc(var(--header-height, 48px) + 24px);
+    border-radius: 0;
+    overflow: visible;
+}
+
+.step-module:last-of-type {
+    border-bottom: none;
+    margin-bottom: 32px;
 }
 
 .step-module:hover {
-    border-color: var(--border-strong);
+    border-color: var(--border-default);
 }
 
 .step-module-header {
-    background: var(--paper-sheet);
-    border-bottom: 1px solid var(--border-default);
-    padding: 14px 20px;
+    background: transparent;
+    border-bottom: none;
+    padding: 0 0 18px 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
 }
 
 .step-header-title-box {
@@ -315,25 +447,28 @@ body.drawer-open main.guide-viewport {
 
 .step-index-badge {
     font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 700;
-    color: #0c1012;
-    background: var(--blueprint-cyan);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-mint, #7cd9c6);
+    background: rgba(124, 217, 198, 0.1);
+    border: 1px solid rgba(124, 217, 198, 0.25);
     padding: 3px 8px;
-    border-radius: 2px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
 }
 
 .step-heading {
     font-family: var(--font-sans);
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 22px;
+    font-weight: 700;
     color: var(--ink-main);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     margin: 0;
+    line-height: 1.3;
 }
 
 .step-content-body {
-    padding: 24px;
+    padding: 0;
 }
 
 .step-paragraph {
@@ -1223,68 +1358,122 @@ footer.guide-paper-footer {
 }
 
 /* ---------------------------------------------------------------------
-   RESPONSIVIDADE MOBILE-FIRST
+   RESPONSIVIDADE MODERNA (TABLETS & SMARTPHONES)
    --------------------------------------------------------------------- */
-@media (max-width: 900px) {
-    header.guide-header {
-        padding: 0 12px;
+@media (max-width: 1200px) {
+    aside.docs-toc-col {
+        display: none !important;
     }
+    main.guide-viewport,
+    main.docs-main-prose {
+        max-width: 900px;
+        padding: 28px 36px 80px;
+    }
+}
+
+@media (max-width: 1024px) {
+    aside.retractable-drawer,
+    aside.docs-sidebar {
+        position: fixed !important;
+        top: var(--header-height, 48px) !important;
+        left: 0 !important;
+        width: 320px !important;
+        max-width: 85vw !important;
+        height: calc(100vh - var(--header-height, 48px)) !important;
+        border-right: 1px solid var(--border-default) !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        z-index: 100 !important;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    aside.retractable-drawer.is-open,
+    aside.docs-sidebar.is-open {
+        transform: translateX(0) !important;
+    }
+
+    .mobile-only-btn {
+        display: inline-flex !important;
+    }
+
+    .mobile-drawer-trigger {
+        display: inline-flex !important;
+    }
+
+    .drawer-backdrop {
+        position: fixed;
+        top: var(--header-height, 48px);
+        left: 0;
+        width: 100vw;
+        height: calc(100vh - var(--header-height, 48px));
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(2px);
+        z-index: 95;
+        display: none;
+    }
+
+    .drawer-backdrop.is-active {
+        display: block !important;
+    }
+
+    main.guide-viewport,
+    main.docs-main-prose {
+        padding: 20px 20px 60px;
+        max-width: 100%;
+    }
+
     .header-search-box {
         display: none;
     }
+
     .btn-search-mobile {
         display: inline-flex !important;
-    }
-    main.guide-viewport {
-        padding: 16px 14px 60px 14px;
-        margin-right: 0 !important;
-    }
-    .guide-catalog-hero {
-        padding: 20px 16px;
-    }
-    .catalog-title {
-        font-size: 20px;
-    }
-    aside.retractable-drawer {
-        width: 100vw !important;
-        max-width: 100vw !important;
-        right: -100vw !important;
-        transform: none !important;
-        transition: right 0.25s ease-out !important;
-    }
-    aside.retractable-drawer.is-open,
-    body.drawer-open aside.retractable-drawer {
-        right: 0 !important;
-        transform: none !important;
-    }
-    .drawer-backdrop.is-active {
-        display: block;
     }
 }
 
 @media (max-width: 640px) {
-    aside.retractable-drawer {
+    header.guide-header {
+        padding: 0 12px;
+    }
+
+    aside.retractable-drawer,
+    aside.docs-sidebar {
         width: 100vw !important;
+        max-width: 100vw !important;
         height: 100dvh !important;
         top: 0 !important;
-        right: -100vw !important;
         padding-top: var(--safe-top, 0px);
         padding-bottom: var(--safe-bottom, 0px);
-        border-left: none !important;
-        z-index: 1000;
+        z-index: 1000 !important;
     }
+
     .drawer-top-bar {
         padding: 12px 14px;
         padding-top: max(12px, var(--safe-top));
     }
+
     .drawer-bottom-bar {
         padding-bottom: max(12px, var(--safe-bottom));
     }
+
     .drawer-backdrop {
         top: 0 !important;
-        height: 100vh !important;
         height: 100dvh !important;
     }
+
+    main.guide-viewport,
+    main.docs-main-prose {
+        padding: 16px 12px 60px;
+    }
+
+    .guide-catalog-hero {
+        padding: 16px 14px;
+    }
+
+    .catalog-title {
+        font-size: 20px;
+    }
+
     .omnisearch-modal {
         top: 0 !important;
         left: 0 !important;

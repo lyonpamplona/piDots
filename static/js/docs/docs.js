@@ -98,7 +98,8 @@
             });
         }
 
-        // Destaque Ativo via Intersection Observer
+        // Destaque Ativo via Intersection Observer (Sidebar + Coluna TOC Nesta Página)
+        const tocLinks = document.querySelectorAll('.docs-toc-link');
         const navObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -110,9 +111,16 @@
                             link.classList.remove('active');
                         }
                     });
+                    tocLinks.forEach(link => {
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('active');
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
                 }
             });
-        }, { threshold: 0.2 });
+        }, { threshold: 0.15, rootMargin: "-48px 0px -50% 0px" });
 
         stepModules.forEach(step => navObserver.observe(step));
 
@@ -138,18 +146,20 @@
             });
         }
 
-        // 5. Copia de Comandos com Feedback Visual Pixel Art
+        // 5. Copia de Comandos com Feedback Visual Limpo
         function copiarTextoPixel(btn) {
             const box = btn.closest('.code-paper-box');
-            const code = box.querySelector('.code-paper-content').innerText;
+            const codeEl = box.querySelector('.code-paper-content');
+            if (!codeEl) return;
+            const code = codeEl.innerText;
             navigator.clipboard.writeText(code).then(() => {
-                const original = btn.innerHTML;
-                btn.innerHTML = '[COPIADO COM SUCESSO!]';
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copiado!</span>';
                 btn.classList.add('btn-green');
                 setTimeout(() => {
-                    btn.innerHTML = original;
+                    btn.innerHTML = originalHtml;
                     btn.classList.remove('btn-green');
-                }, 2200);
+                }, 2000);
             });
         }
 
@@ -193,7 +203,7 @@
 
             if (runBtn) {
                 runBtn.disabled = true;
-                runBtn.innerHTML = '<span>[ENVIANDO REQUISICAO...]</span>';
+                runBtn.innerHTML = '<span>Enviando requisição...</span>';
             }
 
             const t0 = performance.now();
@@ -244,7 +254,7 @@
             } finally {
                 if (runBtn) {
                     runBtn.disabled = false;
-                    runBtn.innerHTML = '<svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>[DISPARAR REQUISICAO REST]</span>';
+                    runBtn.innerHTML = '<svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>Disparar Requisição REST</span>';
                 }
             }
         }

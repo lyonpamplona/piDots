@@ -718,11 +718,11 @@
 
             if (action === 'approve') {
                 hitlBox.style.borderColor = 'var(--phosphor-green)';
-                actionsContainer.innerHTML = '<span class="silicon-badge badge-green" style="font-size: 9px; padding: 4px 8px;">[HOMOLOGADO // EXECUCAO LIBERADA VIA HMAC-SHA256]</span>';
+                actionsContainer.innerHTML = '<span class="silicon-badge badge-green" style="font-size: 10px; padding: 4px 8px; border-radius: 2px;">HOMOLOGADO // EXECUCAO LIBERADA VIA HMAC-SHA256</span>';
                 showToast('Aprovacao HITL concedida para bwrap. Retomando agente autonomo.', 'success');
             } else if (action === 'reject') {
                 hitlBox.style.borderColor = 'var(--stamp-danger)';
-                actionsContainer.innerHTML = '<span class="silicon-badge badge-red" style="font-size: 9px; padding: 4px 8px;">[VETADO // EXECUCAO RECUSADA POR GOVERNANCA]</span>';
+                actionsContainer.innerHTML = '<span class="silicon-badge badge-red" style="font-size: 10px; padding: 4px 8px; border-radius: 2px;">VETADO // EXECUCAO RECUSADA POR GOVERNANCA</span>';
                 showToast('Comando de sandbox vetado por governanca Deny-by-Default.', 'warning');
             } else if (action === 'inspect') {
                 const arena = document.getElementById('arena-hitl');

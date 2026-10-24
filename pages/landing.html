@@ -76,19 +76,21 @@
         </div>
 
         <div class="top-deck-right">
-            <button type="button" class="header-nav-btn" onclick="toggleTheme()" title="Comutar Tema Claro/Escuro" aria-label="Alternar Tema">
-                <span>[TEMA]</span>
+            <button type="button" class="header-nav-btn nav-btn-theme" onclick="toggleTheme()" title="Comutar Tema Claro/Escuro" aria-label="Alternar Tema">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <span class="nav-btn-text">Tema</span>
             </button>
-            <button type="button" class="header-nav-btn" onclick="toggleLanguage()" title="Comutar Idioma PT/EN" aria-label="Alternar Idioma">
+            <button type="button" class="header-nav-btn nav-btn-lang" onclick="toggleLanguage()" title="Comutar Idioma PT/EN" aria-label="Alternar Idioma">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                 <span id="navLangLabel">PT</span>
             </button>
-            <a href="https://github.com/lyonchristopher/piDots" target="_blank" rel="noopener" class="header-nav-btn" title="Repositorio Oficial no GitHub">
+            <a href="https://github.com/lyonchristopher/piDots" target="_blank" rel="noopener" class="header-nav-btn nav-btn-github" title="Repositorio Oficial no GitHub">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                <span>GITHUB</span>
+                <span class="nav-btn-text">GitHub</span>
             </a>
-            <button type="button" class="pixel-btn btn-cyan btn-sm" onclick="toggleDrawer()" title="Abrir Manual Passo a Passo">
+            <button type="button" class="header-nav-btn nav-btn-manual" onclick="toggleDrawer()" title="Abrir Manual Passo a Passo">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                <span>[MANUAL]</span>
+                <span class="nav-btn-text">Manual</span>
             </button>
         </div>
     </header>
@@ -139,28 +141,33 @@
                     <!-- Botoes de Acao Primarios -->
                     <div class="hero-cta-group">
                         <a href="/app" class="pixel-btn-cta-primary" id="heroCtaWorkspace" data-surface="workspace">
-                            <span>INICIAR CONSOLE OPERACIONAL AGORA</span>
+                            <span>Iniciar Console Operacional</span>
                             <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </a>
-                        <a href="/docs" class="pixel-btn btn-cyan btn-lg" id="heroCtaDocs" data-surface="docs">
+                        <a href="/docs" class="pixel-btn-cta-secondary" id="heroCtaDocs" data-surface="docs">
                             <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                            <span>LER MANUAL PASSO A PASSO</span>
+                            <span>Explorar Documentação</span>
                         </a>
                     </div>
 
                     <!-- Badges de Metricas Duras de Silicio -->
                     <div class="hero-silicon-badges">
                         <span class="silicon-chip">RAM: <strong>55 MB RSS</strong></span>
-                        <span class="silicon-chip">Potencia: <strong>6 Watts</strong></span>
-                        <span class="silicon-chip">Persistencia: <strong>SQLite WAL</strong></span>
+                        <span class="silicon-chip">Potência: <strong>6 Watts</strong></span>
+                        <span class="silicon-chip">Persistência: <strong>SQLite WAL</strong></span>
                         <span class="silicon-chip">Sandbox: <strong>Bubblewrap ARM64</strong></span>
                     </div>
                 </div>
 
-                <!-- Coluna Direita: Fita Pixel Paper UI Viva com Card HITL -->
+                <!-- Coluna Direita: Showcase de Execucao em Tempo Real -->
                 <div class="hero-col-right">
                     <div class="hero-paper-slip-showcase">
                         <div class="showcase-header">
+                            <div class="terminal-traffic-lights" aria-hidden="true">
+                                <span class="light-dot red"></span>
+                                <span class="light-dot yellow"></span>
+                                <span class="light-dot green"></span>
+                            </div>
                             <div class="showcase-status">
                                 <span class="pulse-dot"></span>
                                 <span>SISTEMA DE TELETIPO // EXECUCAO AO VIVO</span>
@@ -171,20 +178,20 @@
                         <div class="showcase-ticker-body" id="heroSimViewport">
                             <div class="slip-entry">
                                 <div class="slip-meta">
-                                    <span class="slip-agent">[@dot-supervisor]</span>
+                                    <span class="slip-agent">@dot-supervisor</span>
                                     <span>SEQ# 0001</span>
                                 </div>
-                                <p class="slip-text">Missao iniciada. Carregando especialistas via Dynamic Tool Pruning (3/23 ferramentas ativas no contexto).</p>
+                                <p class="slip-text">Missão iniciada. Carregando especialistas via Dynamic Tool Pruning (3/23 ferramentas ativas no contexto).</p>
                             </div>
 
-                            <div class="picote-line">---- PICOTE // REGISTRO DE BORDA ----</div>
+                            <div class="ticker-divider"></div>
 
                             <div class="slip-entry">
                                 <div class="slip-meta">
-                                    <span class="slip-agent">[@dot-coder]</span>
+                                    <span class="slip-agent">@dot-coder</span>
                                     <span>SEQ# 0002</span>
                                 </div>
-                                <p class="slip-text">Gerando teste de integracao de hardware em sandbox Bubblewrap. Solicitando autorizacao do operador.</p>
+                                <p class="slip-text">Gerando teste de integração de hardware em sandbox Bubblewrap. Solicitando autorização do operador.</p>
 
                                 <!-- Card HITL Clicavel e Interativo -->
                                 <div class="hitl-box" id="heroDemoHitlBox">
@@ -194,8 +201,14 @@
                                     </div>
                                     <div class="hitl-box-cmd">bwrap --ro-bind /usr /usr --tmpfs /tmp python3 -m pytest</div>
                                     <div class="hitl-box-actions" id="heroDemoHitlActions">
-                                        <button type="button" class="pixel-btn btn-green btn-sm" id="btnHeroDemoApprove" onclick="handleHeroDemoHitl('approve')">[HOMOLOGAR]</button>
-                                        <button type="button" class="pixel-btn btn-danger btn-sm" id="btnHeroDemoReject" onclick="handleHeroDemoHitl('reject')">[VETAR]</button>
+                                        <button type="button" class="btn-hitl-action btn-hitl-approve" id="btnHeroDemoApprove" onclick="handleHeroDemoHitl('approve')">
+                                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            <span>Homologar</span>
+                                        </button>
+                                        <button type="button" class="btn-hitl-action btn-hitl-reject" id="btnHeroDemoReject" onclick="handleHeroDemoHitl('reject')">
+                                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            <span>Vetar</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -380,15 +393,16 @@
 
             <div class="quickstart-actions">
                 <a href="/app" class="pixel-btn-cta-primary" data-surface="workspace">
-                    <span>INICIAR CONSOLE OPERACIONAL AGORA</span>
+                    <span>Iniciar Console Operacional</span>
                     <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </a>
-                <button type="button" class="pixel-btn btn-cyan btn-lg" onclick="toggleDrawer()">
+                <button type="button" class="pixel-btn-cta-secondary" onclick="toggleDrawer()">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                    <span>CONSULTAR MANUAL PASSO A PASSO</span>
+                    <span>Consultar Manual Passo a Passo</span>
                 </button>
-                <a href="https://github.com/lyonchristopher/piDots" target="_blank" rel="noopener" class="pixel-btn btn-amber btn-lg">
-                    <span>REPOSITORIO GITHUB</span>
+                <a href="https://github.com/lyonchristopher/piDots" target="_blank" rel="noopener" class="pixel-btn-cta-secondary">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    <span>Repositório GitHub</span>
                 </a>
             </div>
         </section>
@@ -421,9 +435,9 @@
     <aside class="retractable-drawer" id="retractableDrawer">
         <header class="drawer-header">
             <span class="drawer-title">MANUAL TECNICO // 14 PASSOS</span>
-            <button type="button" class="pixel-btn btn-sm" onclick="toggleDrawer()">
+            <button type="button" class="header-nav-btn" onclick="toggleDrawer()" aria-label="Fechar Manual">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                <span>[FECHAR]</span>
+                <span>Fechar</span>
             </button>
         </header>
         
@@ -432,9 +446,9 @@
         </div>
 
         <div class="drawer-content" id="drawerContentList">
-            <div style="margin-bottom: 10px; padding: 10px; background: var(--paper-surface-recessed); border: 1px solid var(--border-default); text-align: center;">
-                <a href="/docs" target="_blank" class="pixel-btn btn-cyan btn-sm" style="width: 100%; justify-content: center; text-decoration: none;">
-                    [ABRIR GUIA COMPLETO EM TELA CHEIA]
+            <div style="margin-bottom: 10px; padding: 10px; background: var(--paper-surface-recessed); border: 1px solid var(--border-default); text-align: center; border-radius: 4px;">
+                <a href="/docs" target="_blank" class="pixel-btn-cta-secondary" style="width: 100%; justify-content: center; text-decoration: none;">
+                    <span>Abrir Guia Completo em Tela Cheia</span>
                 </a>
             </div>
 
@@ -522,9 +536,9 @@
                 <div class="step-body">Segregação física de portas no Nginx Alpine (&lt; 3MB RAM) e túnel seguro NAT Traversal com cloudflared.</div>
             </div>
 
-            <div style="margin-top: 10px; padding: 10px; background: var(--paper-surface-recessed); border: 1px solid var(--border-default); text-align: center;">
-                <a href="/relatorio" data-surface="report" class="pixel-btn btn-cyan btn-sm" style="width: 100%; justify-content: center; text-decoration: none;">
-                    [ACESSAR RELATORIO DE ENGENHARIA REVERSA]
+            <div style="margin-top: 10px; padding: 10px; background: var(--paper-surface-recessed); border: 1px solid var(--border-default); text-align: center; border-radius: 4px;">
+                <a href="/relatorio" data-surface="report" class="pixel-btn-cta-secondary" style="width: 100%; justify-content: center; text-decoration: none;">
+                    <span>Acessar Relatório de Engenharia Reversa</span>
                 </a>
             </div>
         </div>

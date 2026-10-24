@@ -107,34 +107,159 @@
 
             <!-- Botao de Instalacao PWA -->
             <button class="pixel-btn pwa-install-trigger" id="btnDocsPwaInstall" style="display: none; background: #0284c7; border-color: #38bdf8; color: #ffffff;" onclick="PiDotsDocsPWA.install()" title="Instalar piDots como aplicativo PWA">
-                <span data-i18n="nav.pwa_install">[INSTALAR PWA]</span>
+                <span data-i18n="nav.pwa_install">Instalar PWA</span>
             </button>
 
-            <!-- Comutador Bilíngue de Idioma [PT | EN] -->
-            <button class="pixel-btn lang-toggle-btn desktop-only-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
-                <span class="lang-text-full">[IDIOMA: PT | EN]</span>
-                <span class="lang-text-short">[PT]</span>
+            <!-- Comutador Bilíngue de Idioma PT | EN -->
+            <button class="pixel-btn lang-toggle-btn desktop-only-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma PT | EN">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                <span class="lang-text-full">PT | EN</span>
+                <span class="lang-text-short">PT</span>
             </button>
 
             <!-- Alternador de Tema Dark Noir vs Blueprint -->
             <button class="pixel-btn desktop-only-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
-                <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <span class="theme-btn-label" data-i18n="nav.theme">[TEMA]</span>
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <span class="theme-btn-label" data-i18n="nav.theme">Tema</span>
             </button>
 
-            <!-- Botao do Menu Drawer Retratil a Direita -->
-            <button id="toggleDrawerBtn" class="pixel-btn btn-cyan" title="Abrir Indice de Navegacao Passo a Passo">
-                <svg class="ui-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                <span class="drawer-btn-label" data-i18n="nav.guide_index">[INDICE GUIA]</span>
+            <!-- Botao do Menu Drawer Retratil (Mobile/Tablet) -->
+            <button id="toggleDrawerBtn" class="pixel-btn btn-cyan mobile-drawer-trigger" title="Abrir Índice de Navegação">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <span class="drawer-btn-label" data-i18n="nav.guide_index">Índice</span>
             </button>
         </div>
     </header>
 
-    <!-- SHELL PRINCIPAL EM LARGURA TOTAL -->
-    <div class="guide-shell">
+    <!-- SHELL PRINCIPAL COM ARQUITETURA 3 COLUNAS (PADRAO OURO) -->
+    <div class="guide-shell docs-3col-layout">
 
-        <!-- CONTEUDO DO GUIA (VIEWPORT TOTAL) -->
-        <main class="guide-viewport" id="mainContent">
+        <!-- COLUNA 1: SIDEBAR DE NAVEGACAO (FIXA EM DESKTOP >= 1024PX, RETRATIL NO MOBILE) -->
+        <aside class="retractable-drawer docs-sidebar" id="retractableDrawer">
+            <div class="drawer-top-bar">
+                <span class="drawer-top-title">
+                    <svg class="ui-icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    <span>Índice do Manual</span>
+                </span>
+                <button class="pixel-btn mobile-only-btn" onclick="closeDrawer()" aria-label="Fechar Menu">Fechar</button>
+            </div>
+
+            <!-- Campo de Busca no Drawer -->
+            <div class="drawer-search-wrapper">
+                <input type="text" id="drawerSearchInput" class="pixel-search-input" style="width: 100%;" placeholder="Filtrar tópicos do manual...">
+            </div>
+
+            <ul class="drawer-list-scroll" id="drawerListScroll">
+                <li class="drawer-track-header">TRILHA 01 // ARQUITETURA COGNITIVA</li>
+                <li class="drawer-item" data-keywords="arquetipos supervisor coder desenvolvedor arquiteto auditor conceitos edge react persistencia">
+                    <a href="#passo-1" class="drawer-link active" onclick="handleDrawerNav(event, 'passo-1')">
+                        <span class="drawer-step-idx">01</span>
+                        <span>O Que É o piDots &amp; Novos Arquétipos</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="multi-bot mencao delegate handoff fitas carbono raciocinio inter-agente">
+                    <a href="#passo-2" class="drawer-link" onclick="handleDrawerNav(event, 'passo-2')">
+                        <span class="drawer-step-idx">02</span>
+                        <span>Chat Multi-Bot &amp; Fitas de Carbono</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="heartbeat proativo cron croniter heartbeat_ok tarefas tasks agendamento">
+                    <a href="#passo-3" class="drawer-link" onclick="handleDrawerNav(event, 'passo-3')">
+                        <span class="drawer-step-idx">03</span>
+                        <span>Dot Heartbeat &amp; Diretriz HEARTBEAT_OK</span>
+                    </a>
+                </li>
+
+                <li class="drawer-track-header" style="color: var(--brand-purple, #a855f7);">TRILHA 02 // INTEGRAÇÕES &amp; OPERAÇÃO</li>
+                <li class="drawer-item" data-keywords="gateway mensageria telegram whatsapp evolution webhooks salas hop_count devops">
+                    <a href="#passo-4" class="drawer-link" onclick="handleDrawerNav(event, 'passo-4')">
+                        <span class="drawer-step-idx">04</span>
+                        <span>Gateway Unificado &amp; Salas Temáticas</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="ferramentas tools pruning poda dinamica tokens economia sandbox bash hitl">
+                    <a href="#passo-5" class="drawer-link" onclick="handleDrawerNav(event, 'passo-5')">
+                        <span class="drawer-step-idx">05</span>
+                        <span>Arsenal de Ferramentas &amp; Tool Pruning</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="operacional deploy docker env curl endpoints microsd flash wal preservacao computer state">
+                    <a href="#passo-6" class="drawer-link" onclick="handleDrawerNav(event, 'passo-6')">
+                        <span class="drawer-step-idx">06</span>
+                        <span>Passo a Passo Operacional &amp; MicroSD</span>
+                    </a>
+                </li>
+
+                <li class="drawer-track-header" style="color: var(--phosphor-green, #7cd9c6);">TRILHA 03 // PERSISTÊNCIA &amp; GOVERNANÇA</li>
+                <li class="drawer-item" data-keywords="memoria hierarquica core memory archival memgpt letta fts5 bm25 64d embeddings recall">
+                    <a href="#passo-7" class="drawer-link" onclick="handleDrawerNav(event, 'passo-7')">
+                        <span class="drawer-step-idx">07</span>
+                        <span>Memória Hierárquica &amp; Core Memory</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="self-healing auto-correcao traceback goals milestones planejamento metas checkpoints">
+                    <a href="#passo-8" class="drawer-link" onclick="handleDrawerNav(event, 'passo-8')">
+                        <span class="drawer-step-idx">08</span>
+                        <span>Self-Healing &amp; Two-Stage Planning</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="conselho consultivo debate dialetica propositor auditor supervisor fitas internas resolucao">
+                    <a href="#passo-9" class="drawer-link" onclick="handleDrawerNav(event, 'passo-9')">
+                        <span class="drawer-step-idx">09</span>
+                        <span>Conselho Consultivo Multi-Bot</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="shared knowledge space quadro colaborativo dot packs templates manifestos import export">
+                    <a href="#passo-10" class="drawer-link" onclick="handleDrawerNav(event, 'passo-10')">
+                        <span class="drawer-step-idx">10</span>
+                        <span>Shared Space &amp; Dot Packs Portáveis</span>
+                    </a>
+                </li>
+
+                <li class="drawer-track-header" style="color: var(--thermal-amber, #dbad82);">TRILHA 04 // SILÍCIO, I18N &amp; REDES</li>
+                <li class="drawer-item" data-keywords="hardware triggers temperatura broadcom bcm2711 microsd manutencao noturna vacuum wal truncate">
+                    <a href="#passo-11" class="drawer-link" onclick="handleDrawerNav(event, 'passo-11')">
+                        <span class="drawer-step-idx">11</span>
+                        <span>Triggers de Hardware &amp; Manutenção</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="internacionalizacao i18n bilingue portugues ingles json locales static micro-motor textcontent">
+                    <a href="#passo-12" class="drawer-link" onclick="handleDrawerNav(event, 'passo-12')">
+                        <span class="drawer-step-idx">12</span>
+                        <span>Micro-Motor i18n &amp; Dicionários JSON</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="slash commands barra popover autocomplete catalogo 34 comandos teletipo slips levenshtein export pack hitl telemetry coagents computer save-space mcp">
+                    <a href="#passo-13" class="drawer-link" onclick="handleDrawerNav(event, 'passo-13')">
+                        <span class="drawer-step-idx">13</span>
+                        <span>Slash Commands &amp; Protocolo de Borda</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="cloudflare tunnel cloudflared desacoplamento portas 8081 8082 8083 nginx reverse proxy zero trust nat traversal ingress">
+                    <a href="#passo-14" class="drawer-link" onclick="handleDrawerNav(event, 'passo-14')">
+                        <span class="drawer-step-idx">14</span>
+                        <span>Desacoplamento por Portas &amp; Cloudflare Tunnel</span>
+                    </a>
+                </li>
+                <li class="drawer-item" data-keywords="relatorio engenharia reversa estudo arquitetura benchmarks arm64 sbc raspberry">
+                    <a href="/relatorio" data-surface="report" class="drawer-link" style="color: var(--blueprint-cyan);">
+                        <span class="drawer-step-idx">++</span>
+                        <span>Estudo Técnico // Engenharia Reversa ARM64</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="drawer-bottom-bar">
+                <span>piDots Docs // ARM64</span>
+                <span>14 Passos Disponíveis</span>
+            </div>
+        </aside>
+
+        <!-- BACKDROP PARA DISPOSITIVOS MOVEIS -->
+        <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+
+        <!-- COLUNA 2: PROSA TECNICA CENTRAL -->
+        <main class="guide-viewport docs-main-prose" id="mainContent">
 
             <!-- FICHA CATALOGRAFICA HERO / BOAS-VINDAS -->
             <section class="guide-catalog-hero">
@@ -144,12 +269,12 @@
                         <span class="pixel-stamp stamp-notice">EDICAO 2026 // EDGE SOVEREIGN</span>
                         <span class="brand-badge">HARDWARE: BORDA &amp; SBCs (REF: RASPBERRY PI 4B ARM64)</span>
                     </div>
-                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted);">DOC# PIDOTS-MANUAL-V3</span>
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted);">DOC# PIDOTS-MANUAL-V3</span>
                 </div>
 
-                <h1 class="catalog-title" data-i18n="guide.title">PIDOTS // MANUAL OPERACIONAL DE ENGENHARIA</h1>
+                <h1 class="catalog-title" data-i18n="guide.title">piDots // Manual Operacional de Engenharia</h1>
                 <p class="catalog-lead" data-i18n="guide.subtitle">
-                    Este guia foi escrito de engenheiro para engenheiro. Aqui você encontra o passo a passo completo para configurar, operar e tirar o máximo de proveito do piDots no seu hardware — entendendo como a orquestração multi-agente funciona por dentro, como poupar memória e como proteger o armazenamento flash.
+                    Guia de referência arquitetural e operacional para execução de equipes autônomas de IA no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6 Watts. Governança física Human-in-the-Loop, memória SQLite WAL durável e comunicação multi-canal.
                 </p>
 
                 <div class="catalog-grid-telemetry">
@@ -210,7 +335,7 @@
                         <article class="pixel-card">
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">
-                                    <span class="brand-badge" style="color: var(--blueprint-cyan); border-color: var(--blueprint-cyan);">[SPV]</span>
+                                    <span class="brand-badge" style="color: var(--blueprint-cyan); border-color: var(--blueprint-cyan);">SPV</span>
                                     SUPERVISOR GERAL
                                 </span>
                                 <span class="pixel-stamp stamp-notice" style="font-size: 6px; padding: 2px 4px;">ORQUESTRADOR</span>
@@ -225,7 +350,7 @@
                         <article class="pixel-card">
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">
-                                    <span class="brand-badge" style="color: var(--phosphor-green); border-color: var(--phosphor-green);">[CDR]</span>
+                                    <span class="brand-badge" style="color: var(--phosphor-green); border-color: var(--phosphor-green);">CDR</span>
                                     DESENVOLVEDOR / CODER
                                 </span>
                                 <span class="pixel-stamp stamp-approved" style="font-size: 6px; padding: 2px 4px;">DESENVOLVEDOR</span>
@@ -240,7 +365,7 @@
                         <article class="pixel-card">
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">
-                                    <span class="brand-badge" style="color: var(--thermal-amber); border-color: var(--thermal-amber);">[ARQ]</span>
+                                    <span class="brand-badge" style="color: var(--thermal-amber); border-color: var(--thermal-amber);">ARQ</span>
                                     ARQUITETO &amp; PESQUISADOR
                                 </span>
                                 <span class="pixel-stamp stamp-amber" style="font-size: 6px; padding: 2px 4px;">DOCUMENTADOR</span>
@@ -255,7 +380,7 @@
                         <article class="pixel-card">
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">
-                                    <span class="brand-badge" style="color: var(--stamp-danger); border-color: var(--stamp-danger);">[AUD]</span>
+                                    <span class="brand-badge" style="color: var(--stamp-danger); border-color: var(--stamp-danger);">AUD</span>
                                     AUDITOR FORENSE
                                 </span>
                                 <span class="pixel-stamp stamp-critical" style="font-size: 6px; padding: 2px 4px;">SEGURANCA &amp; HITL</span>
@@ -279,7 +404,7 @@
                             <thead>
                                 <tr>
                                     <th>ARQUETIPO</th>
-                                    <th>CARIMBO</th>
+                                    <th>SIGLA</th>
                                     <th>FOCO OPERACIONAL</th>
                                     <th>ISOLAMENTO DE WORKSPACE</th>
                                     <th>TETO DE TOKENS POR TURNO</th>
@@ -288,28 +413,28 @@
                             <tbody>
                                 <tr>
                                     <td><strong>Supervisor</strong></td>
-                                    <td><code>[SPV]</code></td>
+                                    <td><code>SPV</code></td>
                                     <td>Planejamento macro, delegacao de tarefas e consolidacao executiva.</td>
                                     <td><code>workspaces/dot-supervisor/</code></td>
                                     <td>Baixo (Prompt enxuto, apenas 3 ferramentas).</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Desenvolvedor / Coder</strong></td>
-                                    <td><code>[CDR]</code></td>
+                                    <td><code>CDR</code></td>
                                     <td>Scripts Python/Bash, testes automatizados e compilacao em sandbox.</td>
                                     <td><code>workspaces/dot-coder/</code></td>
                                     <td>Medio (Prompt tecnico focado em codigo puro).</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Arquiteto / Pesquisador</strong></td>
-                                    <td><code>[ARQ]</code></td>
+                                    <td><code>ARQ</code></td>
                                     <td>Extracao web Trafilatura, manuais didaticos e artefatos Spaces.</td>
                                     <td><code>workspaces/dot-arquiteto/</code></td>
                                     <td>Medio (Prompt semantico voltado a didatica).</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Auditor</strong></td>
-                                    <td><code>[AUD]</code></td>
+                                    <td><code>AUD</code></td>
                                     <td>Classificacao de risco previa, conformidade HITL e trilhas forenses.</td>
                                     <td><code>workspaces/dot-auditor/</code></td>
                                     <td>Minimo (Leitura estrita sem comandos destrutivos).</td>
@@ -404,7 +529,10 @@
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>PAYLOAD DA FERRAMENTA: delegate_task (CHAMADA PELO SUPERVISOR)</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR PAYLOAD]</button>
+                            <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar código">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copiar</span>
+                            </button>
                         </div>
                         <pre class="code-paper-content">{
   "target_dot_id": "dot-coder",
@@ -503,7 +631,10 @@
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>EXEMPLO CURL // AGENDAMENTO PROATIVO DE MONITORAMENTO TERMICO</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR COMANDO]</button>
+                            <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar comando">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copiar</span>
+                            </button>
                         </div>
                         <pre class="code-paper-content">curl -X POST http://127.0.0.1:8000/api/tasks \
   -H "Content-Type: application/json" \
@@ -627,7 +758,10 @@
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>POST /api/channels/devops/messages // DISPARANDO AGENTES NA SALA</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR COMANDO]</button>
+                            <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar comando">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copiar</span>
+                            </button>
                         </div>
                         <pre class="code-paper-content">curl -X POST http://127.0.0.1:8000/api/channels/devops/messages \
   -H "Content-Type: application/json" \
@@ -842,7 +976,10 @@
 
                         <div class="hitl-input-group">
                             <input type="text" id="hitlTestInput" class="hitl-input-field" value="rm -rf /var/log &amp;&amp; sudo reboot" placeholder="DIGITE UM COMANDO BASH PARA CLASSIFICAR O RISCO...">
-                            <button class="pixel-btn btn-cyan" onclick="analisarComandoHITL()">[ANALISAR COMANDO]</button>
+                            <button class="pixel-btn btn-cyan" onclick="analisarComandoHITL()">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                <span>Analisar Comando</span>
+                            </button>
                         </div>
 
                         <div id="hitlResultReceipt" class="hitl-output-receipt">
@@ -889,7 +1026,10 @@
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>ARQUIVO DE CONFIGURACAO: .env</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR CONFIGURACAO]</button>
+                            <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar configuração">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copiar</span>
+                            </button>
                         </div>
                         <pre class="code-paper-content"># Gateway OpenAI Universal (compativel com qualquer provedor)
 AI_BASE_URL=https://api.openai.com/v1
@@ -914,7 +1054,10 @@ TELEGRAM_CHAT_ID=</pre>
                     <div class="code-paper-box">
                         <div class="code-paper-top">
                             <span>COMANDOS DE DEPLOY E GERENCIAMENTO BASH</span>
-                            <button class="pixel-btn" onclick="copiarTextoPixel(this)">[COPIAR COMANDOS]</button>
+                            <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar comandos">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copiar</span>
+                            </button>
                         </div>
                         <pre class="code-paper-content"># 1. Iniciar os servicos em segundo plano
 docker compose up -d
@@ -945,31 +1088,31 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             <div class="api-telemetry-strip">
                                 <span>STATUS: <strong id="apiTestStatusBadge" class="api-status-badge status-200">200 OK</strong></span>
                                 <span>LATENCIA: <strong id="apiTestLatency" style="color: var(--phosphor-green);">-- ms</strong></span>
-                                <a href="/api/docs" target="_blank" style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); text-decoration: none;" title="Abrir Swagger UI interativo em nova aba">[SWAGGER /api/docs]</a>
+                                <a href="/api/docs" target="_blank" style="font-family: var(--font-mono); font-size: 10px; color: var(--blueprint-cyan); text-decoration: none;" title="Abrir Swagger UI interativo em nova aba">Swagger API (/api/docs)</a>
                             </div>
                         </div>
 
-                        <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); margin-bottom: 6px; letter-spacing: 0.05em;">ROTAS REST DISPONIVEIS PARA DISPARO:</div>
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); margin-bottom: 6px; letter-spacing: 0.05em;">ROTAS REST DISPONIVEIS PARA DISPARO:</div>
                         <div class="api-tester-chips">
-                            <button class="api-chip-btn active" onclick="selecionarEndpointApi('GET', '/health', '')">[GET /health]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/spaces', '')">[GET /api/spaces]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots', '')">[GET /api/dots]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tools', '')">[GET /api/tools]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/mcp/servers', '')">[GET /api/mcp/servers]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/computer/files', '')">[GET /computer/files]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/computer/exec', '{\x22dot_id\x22: \x22dot-coder\x22, \x22command\x22: \x22uname -a && ls -la\x22}')">[POST /computer/exec]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tasks', '')">[GET /api/tasks]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/channels', '')">[GET /api/channels]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/data/locales/pt.json', '')">[GET /data/locales/pt.json]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/changelog', '')">[GET /api/changelog]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/triggers', '')">[GET /api/edge/triggers]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/packs/catalog', '')">[GET /packs/catalog]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/dots/packs/install/dot-secops', '')">[POST /install/dot-secops]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/expire-stale', '')">[POST /hitl/expire-stale]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/triggers/simulate', '{\x22gpio_pin\x22: 17, \x22gpio_value\x22: 1, \x22wake_supervisor\x22: true}')">[POST /triggers/simulate]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/signed-resolve', '{\x22action_id\x22: \x22demo_1\x22, \x22approved\x22: true, \x22token\x22: \x22demo_hmac\x22}')">[POST /hitl/signed-resolve]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/maintenance', '{\x22days_threshold\x22: 7, \x22create_backup\x22: true}')">[POST /maintenance]</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/threads', '{\x22dot_id\x22: \x22dot-supervisor\x22, \x22title\x22: \x22Sessao Auditoria Edge\x22}')">[POST /api/threads]</button>
+                            <button class="api-chip-btn active" onclick="selecionarEndpointApi('GET', '/health', '')">GET /health</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/spaces', '')">GET /api/spaces</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots', '')">GET /api/dots</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tools', '')">GET /api/tools</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/mcp/servers', '')">GET /api/mcp/servers</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/computer/files', '')">GET /computer/files</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/computer/exec', '{\x22dot_id\x22: \x22dot-coder\x22, \x22command\x22: \x22uname -a && ls -la\x22}')">POST /computer/exec</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tasks', '')">GET /api/tasks</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/channels', '')">GET /api/channels</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/data/locales/pt.json', '')">GET /data/locales/pt.json</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/changelog', '')">GET /api/changelog</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/triggers', '')">GET /api/edge/triggers</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/packs/catalog', '')">GET /packs/catalog</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/dots/packs/install/dot-secops', '')">POST /install/dot-secops</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/expire-stale', '')">POST /hitl/expire-stale</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/triggers/simulate', '{\x22gpio_pin\x22: 17, \x22gpio_value\x22: 1, \x22wake_supervisor\x22: true}')">POST /triggers/simulate</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/signed-resolve', '{\x22action_id\x22: \x22demo_1\x22, \x22approved\x22: true, \x22token\x22: \x22demo_hmac\x22}')">POST /hitl/signed-resolve</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/maintenance', '{\x22days_threshold\x22: 7, \x22create_backup\x22: true}')">POST /maintenance</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/threads', '{\x22dot_id\x22: \x22dot-supervisor\x22, \x22title\x22: \x22Sessao Auditoria Edge\x22}')">POST /api/threads</button>
                         </div>
 
                         <div class="api-tester-bar">
@@ -977,7 +1120,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             <input type="text" id="apiTestUrlInput" class="api-url-input" value="/health" placeholder="/api/endpoint...">
                             <button class="pixel-btn btn-green" id="btnRunApiTest" onclick="executarTesteApi()">
                                 <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                                <span>[DISPARAR REQUISICAO REST]</span>
+                                <span>Disparar Requisição REST</span>
                             </button>
                         </div>
 
@@ -2258,131 +2401,37 @@ sudo systemctl status cloudflared</code></pre>
 
         </main>
 
-
-        <!-- BACKDROP PARA DISPOSITIVOS MOVEIS -->
-        <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
-
-        <!-- MENU LATERAL DIREITO RETRATIL (DRAWER TECNICO) -->
-        <aside class="retractable-drawer" id="retractableDrawer">
-            <div class="drawer-top-bar">
-                <span class="drawer-top-title">
-                    <svg class="ui-icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                    INDICE DO GUIA
-                </span>
-                <button class="pixel-btn" onclick="closeDrawer()">[FECHAR X]</button>
-            </div>
-
-            <!-- Campo de Busca no Drawer -->
-            <div class="drawer-search-wrapper">
-                <input type="text" id="drawerSearchInput" class="pixel-search-input" style="width: 100%;" placeholder="FILTRAR PASSOS DO GUIA...">
-            </div>
-
-            <ul class="drawer-list-scroll" id="drawerListScroll">
-                <li class="drawer-track-header">TRILHA 01 // ARQUITETURA COGNITIVA</li>
-                <li class="drawer-item" data-keywords="arquetipos supervisor coder desenvolvedor arquiteto auditor conceitos edge react persistencia">
-                    <a href="#passo-1" class="drawer-link active" onclick="handleDrawerNav(event, 'passo-1')">
-                        <span class="drawer-step-idx">01</span>
-                        <span>O Que É o piDots &amp; Novos Arquétipos</span>
+        <!-- COLUNA 3: NESTA PAGINA (TOC FLUTUANTE DIREITO NO DESKTOP) -->
+        <aside class="docs-toc-col" id="docsToc">
+            <div class="docs-toc-card">
+                <div class="docs-toc-header">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="14" y2="12"></line><line x1="4" y1="18" x2="18" y2="18"></line></svg>
+                    <span>NESTA PAGINA</span>
+                </div>
+                <nav class="docs-toc-nav" id="docsTocNav">
+                    <a href="#passo-1" class="docs-toc-link active">01. Arquitetura de Borda</a>
+                    <a href="#passo-2" class="docs-toc-link">02. Chat Multi-Bot</a>
+                    <a href="#passo-3" class="docs-toc-link">03. Dot Heartbeat 24/7</a>
+                    <a href="#passo-4" class="docs-toc-link">04. Gateway de Mensageria</a>
+                    <a href="#passo-5" class="docs-toc-link">05. Tool Pruning</a>
+                    <a href="#passo-6" class="docs-toc-link">06. Deploy &amp; MicroSD</a>
+                    <a href="#passo-7" class="docs-toc-link">07. Memória Hierárquica</a>
+                    <a href="#passo-8" class="docs-toc-link">08. Self-Healing Harness</a>
+                    <a href="#passo-9" class="docs-toc-link">09. Conselho Consultivo</a>
+                    <a href="#passo-10" class="docs-toc-link">10. Shared Space &amp; Packs</a>
+                    <a href="#passo-11" class="docs-toc-link">11. Triggers de Hardware</a>
+                    <a href="#passo-12" class="docs-toc-link">12. Micro-Motor i18n</a>
+                    <a href="#passo-13" class="docs-toc-link">13. Slash Commands</a>
+                    <a href="#passo-14" class="docs-toc-link">14. Desacoplamento &amp; Tunnel</a>
+                </nav>
+                <div class="docs-toc-footer">
+                    <a href="#top" class="docs-toc-backtop" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                        <span>Voltar ao Topo</span>
                     </a>
-                </li>
-                <li class="drawer-item" data-keywords="multi-bot mencao delegate handoff fitas carbono raciocinio inter-agente">
-                    <a href="#passo-2" class="drawer-link" onclick="handleDrawerNav(event, 'passo-2')">
-                        <span class="drawer-step-idx">02</span>
-                        <span>Chat Multi-Bot &amp; Fitas de Carbono</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="heartbeat proativo cron croniter heartbeat_ok tarefas tasks agendamento">
-                    <a href="#passo-3" class="drawer-link" onclick="handleDrawerNav(event, 'passo-3')">
-                        <span class="drawer-step-idx">03</span>
-                        <span>Dot Heartbeat &amp; Diretriz HEARTBEAT_OK</span>
-                    </a>
-                </li>
-
-                <li class="drawer-track-header" style="color: var(--brand-purple, #a855f7);">TRILHA 02 // INTEGRAÇÕES &amp; OPERAÇÃO</li>
-                <li class="drawer-item" data-keywords="gateway mensageria telegram whatsapp evolution webhooks salas hop_count devops">
-                    <a href="#passo-4" class="drawer-link" onclick="handleDrawerNav(event, 'passo-4')">
-                        <span class="drawer-step-idx">04</span>
-                        <span>Gateway Unificado &amp; Salas Temáticas</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="ferramentas tools pruning poda dinamica tokens economia sandbox bash hitl">
-                    <a href="#passo-5" class="drawer-link" onclick="handleDrawerNav(event, 'passo-5')">
-                        <span class="drawer-step-idx">05</span>
-                        <span>Arsenal de Ferramentas &amp; Tool Pruning</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="operacional deploy docker env curl endpoints microsd flash wal preservacao computer state">
-                    <a href="#passo-6" class="drawer-link" onclick="handleDrawerNav(event, 'passo-6')">
-                        <span class="drawer-step-idx">06</span>
-                        <span>Passo a Passo Operacional &amp; MicroSD</span>
-                    </a>
-                </li>
-
-                <li class="drawer-track-header" style="color: var(--phosphor-green, #7cd9c6);">TRILHA 03 // PERSISTÊNCIA &amp; GOVERNANÇA</li>
-                <li class="drawer-item" data-keywords="memoria hierarquica core memory archival memgpt letta fts5 bm25 64d embeddings recall">
-                    <a href="#passo-7" class="drawer-link" onclick="handleDrawerNav(event, 'passo-7')">
-                        <span class="drawer-step-idx">07</span>
-                        <span>Memoria Hierarquica &amp; Core Memory</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="self-healing auto-correcao traceback goals milestones planejamento metas checkpoints">
-                    <a href="#passo-8" class="drawer-link" onclick="handleDrawerNav(event, 'passo-8')">
-                        <span class="drawer-step-idx">08</span>
-                        <span>Self-Healing &amp; Two-Stage Planning</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="conselho consultivo debate dialetica propositor auditor supervisor fitas internas resolucao">
-                    <a href="#passo-9" class="drawer-link" onclick="handleDrawerNav(event, 'passo-9')">
-                        <span class="drawer-step-idx">09</span>
-                        <span>Conselho Consultivo Multi-Bot</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="shared knowledge space quadro colaborativo dot packs templates manifestos import export">
-                    <a href="#passo-10" class="drawer-link" onclick="handleDrawerNav(event, 'passo-10')">
-                        <span class="drawer-step-idx">10</span>
-                        <span>Shared Space &amp; Dot Packs Portaveis</span>
-                    </a>
-                </li>
-
-                <li class="drawer-track-header" style="color: var(--thermal-amber, #dbad82);">TRILHA 04 // SILÍCIO, I18N &amp; REDES</li>
-                <li class="drawer-item" data-keywords="hardware triggers temperatura broadcom bcm2711 microsd manutencao noturna vacuum wal truncate">
-                    <a href="#passo-11" class="drawer-link" onclick="handleDrawerNav(event, 'passo-11')">
-                        <span class="drawer-step-idx">11</span>
-                        <span>Triggers de Hardware &amp; Manutencao</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="internacionalizacao i18n bilingue portugues ingles json locales static micro-motor textcontent">
-                    <a href="#passo-12" class="drawer-link" onclick="handleDrawerNav(event, 'passo-12')">
-                        <span class="drawer-step-idx">12</span>
-                        <span>Micro-Motor i18n &amp; Dicionarios JSON</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="slash commands barra popover autocomplete catalogo 34 comandos teletipo slips levenshtein export pack hitl telemetry coagents computer save-space mcp">
-                    <a href="#passo-13" class="drawer-link" onclick="handleDrawerNav(event, 'passo-13')">
-                        <span class="drawer-step-idx">13</span>
-                        <span>Slash Commands &amp; Protocolo de Borda</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="cloudflare tunnel cloudflared desacoplamento portas 8081 8082 8083 nginx reverse proxy zero trust nat traversal ingress">
-                    <a href="#passo-14" class="drawer-link" onclick="handleDrawerNav(event, 'passo-14')">
-                        <span class="drawer-step-idx">14</span>
-                        <span>Desacoplamento por Portas &amp; Cloudflare Tunnel</span>
-                    </a>
-                </li>
-                <li class="drawer-item" data-keywords="relatorio engenharia reversa estudo arquitetura benchmarks arm64 sbc raspberry">
-                    <a href="/relatorio" data-surface="report" class="drawer-link" style="color: var(--blueprint-cyan);">
-                        <span class="drawer-step-idx">++</span>
-                        <span>Estudo Tecnico // Engenharia Reversa ARM64</span>
-                    </a>
-                </li>
-            </ul>
-
-            <div class="drawer-bottom-bar">
-                <span>PIDOTS // INTERFACE TECNICA</span>
-                <span>14 PASSOS DISPONIVEIS</span>
+                </div>
             </div>
         </aside>
-
 
     </div>
 
@@ -2395,12 +2444,12 @@ sudo systemctl status cloudflared</code></pre>
             <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input type="text" id="omnisearchInput" class="omnisearch-input" placeholder="DIGITE TERMO DE BUSCA (EX: HITL, SPACES, DOCKER, WAL)..." autocomplete="off">
             <span class="omnisearch-counter" id="omnisearchCounter">14 PASSOS</span>
-            <button class="pixel-btn" onclick="fecharOmnisearch()" style="padding: 3px 6px;">[ESC]</button>
+            <button class="pixel-btn" onclick="fecharOmnisearch()" style="padding: 3px 6px;"><kbd>Esc</kbd></button>
         </div>
         <div class="omnisearch-hint-bar">
-            <span>[SETAS ↑ / ↓] NAVEGAR</span>
-            <span>[ENTER] ABRIR</span>
-            <span>[ESC] FECHAR</span>
+            <span><kbd>↑ / ↓</kbd> Navegar</span>
+            <span><kbd>Enter</kbd> Abrir</span>
+            <span><kbd>Esc</kbd> Fechar</span>
             <span id="omnisearchTotalMatches" style="color: var(--phosphor-green);">14 SECOES INDEXADAS</span>
         </div>
         <div class="omnisearch-results-list" id="omnisearchResults">
@@ -2420,11 +2469,11 @@ sudo systemctl status cloudflared</code></pre>
             <div>DESENVOLVIDO POR LYON CHRISTOPHER (2026) // INTERFACE TECNICA MINIMALISTA // TIPOGRAFIA TECNICA CRISP</div>
         </div>
         <div class="footer-link-cluster">
-            <a href="/" class="pixel-btn btn-cyan">[01 // VISAO GERAL]</a>
-            <a href="/app" class="pixel-btn btn-green">[02 // WORKSPACE]</a>
-            <a href="/docs" class="pixel-btn">[03 // DOCUMENTACAO]</a>
-            <a href="/api/docs" target="_blank" class="pixel-btn btn-amber">[SWAGGER OPENAPI]</a>
-            <a href="/health" target="_blank" class="pixel-btn">[TELEMETRIA JSON]</a>
+            <a href="/" class="pixel-btn btn-cyan" data-surface="overview">Visão Geral (/)</a>
+            <a href="/app" class="pixel-btn btn-green" data-surface="workspace">Workspace (/app)</a>
+            <a href="/docs" class="pixel-btn" data-surface="docs">Documentação (/docs)</a>
+            <a href="/api/docs" target="_blank" class="pixel-btn btn-amber" data-surface="swagger">Swagger OpenAPI</a>
+            <a href="/health" target="_blank" class="pixel-btn">Telemetria JSON</a>
         </div>
     </footer>
 
