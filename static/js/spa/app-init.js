@@ -233,12 +233,16 @@
         let isBlueprint = false;
         function toggleTheme() {
             isBlueprint = !isBlueprint;
+            const btn = document.getElementById('btn-theme-toggle');
+            const span = btn ? btn.querySelector('span') : null;
             if (isBlueprint) {
                 document.documentElement.setAttribute('data-theme', 'blueprint');
-                document.getElementById('btn-theme-toggle').textContent = '[TEMA: BLUEPRINT]';
+                if (span) span.textContent = 'Blueprint';
+                else if (btn) btn.textContent = 'Tema: Blueprint';
             } else {
                 document.documentElement.removeAttribute('data-theme');
-                document.getElementById('btn-theme-toggle').textContent = '[TEMA: DARK NOIR]';
+                if (span) span.textContent = 'Dark Noir';
+                else if (btn) btn.textContent = 'Tema: Dark Noir';
             }
         }
 
@@ -442,12 +446,12 @@
             if (!shell) return;
             const isZen = shell.classList.toggle('mode-focus-zen');
             if (isZen) {
-                if (label) label.textContent = '[MODO CRIACAO]';
+                if (label) label.textContent = 'Modo Criação';
                 if (window.PixelSystem && PixelSystem.toast) {
                     PixelSystem.toast('Modo Foco Zen ativado: barra lateral e canvas recolhidos.', 'info');
                 }
             } else {
-                if (label) label.textContent = '[MODO FOCO]';
+                if (label) label.textContent = 'Modo Foco';
                 if (window.PixelSystem && PixelSystem.toast) {
                     PixelSystem.toast('Modo Criacao restaurado: visao ampla 50/50 com Canvas.', 'info');
                 }

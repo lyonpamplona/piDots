@@ -51,9 +51,10 @@
     <header class="top-deck mission-header">
         <div class="header-brand" style="display: flex; align-items: center; gap: 8px;">
             <button class="pixel-btn" id="btnSidebarToggle" onclick="toggleSidebar()" title="Alternar Barra Lateral (Atalho: Ctrl+B)">
-                [PAINEL]
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                <span>Painel</span>
             </button>
-            <span class="brand-badge" style="font-weight: bold; color: var(--blueprint-cyan);">PIDOTS</span>
+            <span class="brand-badge" style="font-weight: 700; color: var(--blueprint-cyan); letter-spacing: 0.05em;">PIDOTS</span>
             <span class="header-breadcrumb-agent" id="headerBreadcrumbAgent" style="font-size: 11px; color: var(--ink-main); display: flex; align-items: center; gap: 4px;">
                 <span style="color: var(--ink-muted);">//</span>
                 <span id="headerActiveAgentName">Dev Assistant</span>
@@ -63,18 +64,15 @@
         <!-- Seletor Canonico de Superficies -->
         <nav class="surface-switcher" aria-label="Superficies de Produto">
             <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
-                <span class="tab-idx">01</span>
-                <span class="tab-lbl" data-i18n="nav.overview">APRESENTACAO</span>
+                <span class="tab-lbl" data-i18n="nav.overview">Apresentação</span>
                 <span class="tab-chord">g h</span>
             </a>
             <a href="/app" class="surface-tab active" id="tab-workspace" title="Atalho: G W">
-                <span class="tab-idx">02</span>
-                <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
+                <span class="tab-lbl" data-i18n="nav.workspace">Workspace</span>
                 <span class="tab-chord">g w</span>
             </a>
             <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
-                <span class="tab-idx">03</span>
-                <span class="tab-lbl" data-i18n="nav.docs">MANUAL</span>
+                <span class="tab-lbl" data-i18n="nav.docs">Manual</span>
                 <span class="tab-chord">g d</span>
             </a>
         </nav>
@@ -82,30 +80,34 @@
         <!-- Centro: Ação Rápida de Nova Conversa e Comutador de Modos -->
         <div class="header-center-controls" style="display: flex; align-items: center; gap: 8px;">
             <button class="pixel-btn btn-cyan" onclick="startNewConversation()" title="Iniciar Nova Conversa Limpa (Atalho: Ctrl+N)">
-                [+ NOVA CONVERSA]
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Nova Conversa</span>
             </button>
-            <button class="pixel-btn" id="btnToggleMode" onclick="toggleWorkspaceMode()" title="Alternar entre Modo Foco (Zen) e Modo Criação (Split 50/50)">
-                <span id="labelWorkspaceMode">[MODO FOCO]</span>
+            <button class="pixel-btn pixel-btn-secondary" id="btnToggleMode" onclick="toggleWorkspaceMode()" title="Alternar entre Modo Foco (Zen) e Modo Criação (Split 50/50)">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
+                <span id="labelWorkspaceMode">Modo Foco</span>
             </button>
         </div>
 
         <!-- Lado Direito: Micro-Indicador de Nó Edge e Menu de Sistema -->
         <div class="header-actions" style="display: flex; align-items: center; gap: 6px;">
             <button class="pixel-btn" id="edgePulseSummaryBtn" onclick="openSystemDrawer()" title="Clique para abrir telemetria de silício e configurações (F1)" style="font-size: 10px;">
-                <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--phosphor-green); margin-right: 4px;"></span>
-                <span id="val-compact-node">ARM64 // 78°C</span>
+                <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--phosphor-green); margin-right: 4px; border-radius: 50%;"></span>
+                <span id="val-compact-node">ARM64 · 78°C</span>
             </button>
-            <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" title="Alternar Idioma [PT | EN]">
-                [PT | EN]
+            <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" title="Alternar Idioma (PT / EN)">
+                <span id="labelLangMode">PT / EN</span>
             </button>
             <button class="pixel-btn" onclick="toggleTheme()" id="btn-theme-toggle" title="Alternar Tema Visual">
-                [TEMA]
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <span>Tema</span>
             </button>
             <button class="pixel-btn" id="pixelPwaInstallBtn" onclick="PiDotsUX.PWA.install()" title="Instalar Console Operacional piDots como PWA" style="display: none; color: var(--phosphor-green); border-color: var(--phosphor-green);">
-                [INSTALAR APP]
+                <span>Instalar App</span>
             </button>
             <button class="pixel-btn" onclick="openSystemDrawer()" id="btn-system-drawer" title="Painel Técnico de Gestão (F1)">
-                [SISTEMA]
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>Sistema</span>
             </button>
         </div>
     </header>
@@ -122,19 +124,19 @@
                 <nav class="activity-rail" aria-label="Modos do Workspace OpenDots">
                     <button type="button" class="rail-btn active" id="railBtnSpaces" data-ctx="spaces" onclick="switchSidebarContext('spaces')" title="Spaces, Canais e Conversas (Alt+1)">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                        <span class="rail-lbl">SPACES</span>
+                        <span class="rail-lbl">Spaces</span>
                     </button>
                     <button type="button" class="rail-btn" id="railBtnDots" data-ctx="dots" onclick="switchSidebarContext('dots')" title="Squad de Coworkers e Catálogo de Ferramentas (Alt+2)">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
-                        <span class="rail-lbl">DOTS</span>
+                        <span class="rail-lbl">Dots</span>
                     </button>
                     <button type="button" class="rail-btn" id="railBtnTasks" data-ctx="tasks" onclick="switchSidebarContext('tasks')" title="Rotinas Proativas Cron e Hardware Triggers (Alt+3)">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        <span class="rail-lbl">TASKS</span>
+                        <span class="rail-lbl">Tasks</span>
                     </button>
                     <button type="button" class="rail-btn" id="railBtnMemory" data-ctx="memory" onclick="switchSidebarContext('memory')" title="Memória Semântica 64D, Dot Packs e MCP Lite (Alt+4)">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                        <span class="rail-lbl">MEM</span>
+                        <span class="rail-lbl">Memória</span>
                     </button>
 
                     <div class="rail-spacer"></div>
@@ -155,11 +157,11 @@
                             <div class="sidebar-title">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
-                                    AI COWORKERS (DOTS)
+                                    AI Coworkers (Dots)
                                 </span>
                                 <div style="display: flex; align-items: center; gap: 4px;">
-                                    <span style="color: var(--blueprint-cyan);" id="dotsCountBadge">ATIVOS</span>
-                                    <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="openDotCreatorModal()" title="Criar novo AI Coworker (@dot)">[+ DOT]</button>
+                                    <span style="color: var(--blueprint-cyan);" id="dotsCountBadge">Ativos</span>
+                                    <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="openDotCreatorModal()" title="Criar novo AI Coworker (@dot)">+ Dot</button>
                                 </div>
                             </div>
 
@@ -173,18 +175,18 @@
                             <div class="sidebar-title">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
-                                    CANAIS COLABORATIVOS
+                                    Canais Colaborativos
                                 </span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.promptCreateChannel()" title="Criar novo canal temático">[+ CANAL]</button>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.promptCreateChannel()" title="Criar novo canal temático">+ Canal</button>
                             </div>
                             <div id="channelsListContainer">
                                 <div class="space-item active" onclick="PiDotsAPI.selectChannel('ch-main', 'geral')">
                                     <span># geral</span>
-                                    <span class="space-item-rev">MULTI-BOT</span>
+                                    <span class="space-item-rev">Multi-bot</span>
                                 </div>
                                 <div class="space-item" onclick="PiDotsAPI.selectChannel('ch-eng', 'engenharia')">
                                     <span># engenharia</span>
-                                    <span class="space-item-rev">DEV/ARCH</span>
+                                    <span class="space-item-rev">Dev / Arch</span>
                                 </div>
                             </div>
                         </div>
@@ -194,9 +196,9 @@
                             <div class="sidebar-title">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                                    CONVERSAS (THREADS)
+                                    Conversas (Threads)
                                 </span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="startNewConversation()" title="Iniciar Nova Conversa">[+ NOVA]</button>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="startNewConversation()" title="Iniciar Nova Conversa">+ Nova</button>
                             </div>
                             <div id="threadsListContainer">
                                 <div style="font-size: 10px; color: var(--ink-muted); padding: 4px;">Carregando histórico de sessões...</div>
@@ -208,11 +210,11 @@
                             <div class="sidebar-title">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                                    SPACES & ARTEFATOS
+                                    Spaces e Artefatos
                                 </span>
-                                <button class="pixel-btn" style="padding: 2px 6px; font-size: 7px;" onclick="createNewSpaceCustom()" data-tooltip="Criar novo arquivo persistido no SQLite WAL">
+                                <button class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="createNewSpaceCustom()" data-tooltip="Criar novo arquivo persistido no SQLite WAL">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                    [NOVO]
+                                    <span>Novo</span>
                                 </button>
                             </div>
 
@@ -223,17 +225,17 @@
                             <div id="spacesListContainer">
                                 <div class="space-item active" onclick="loadArtifact('architecture_spec.md')">
                                     <span>architecture_spec.md</span>
-                                    <span class="space-item-rev">REV 3.0</span>
+                                    <span class="space-item-rev">Rev 3.0</span>
                                 </div>
 
                                 <div class="space-item" onclick="loadArtifact('sqlite_guide.md')">
                                     <span>sqlite_guide.md</span>
-                                    <span class="space-item-rev">REV 1.2</span>
+                                    <span class="space-item-rev">Rev 1.2</span>
                                 </div>
 
                                 <div class="space-item" onclick="loadArtifact('fibonacci.py')">
                                     <span>fibonacci.py</span>
-                                    <span class="space-item-rev">SANDBOX</span>
+                                    <span class="space-item-rev">Sandbox</span>
                                 </div>
                             </div>
                         </div>
@@ -243,18 +245,18 @@
                             <div class="sidebar-title">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                                    GOVERNANCA HITL
+                                    Governança HITL
                                 </span>
-                                <span style="color: var(--thermal-amber);" id="hitlSidebarCountBadge"><span id="val-hitl">0 PENDENTES</span></span>
+                                <span style="color: var(--thermal-amber);" id="hitlSidebarCountBadge"><span id="val-hitl">0 pendentes</span></span>
                             </div>
 
                             <div id="hitlSidebarAlertContainer">
                                 <div class="sidebar-hitl-alert" onclick="openHitlCanvas()">
                                     <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber); margin-bottom: 2px;">
-                                        ACAO CRITICA RETIDA // WAL
+                                        Ação Crítica Retida · WAL
                                     </div>
                                     <div style="font-size: 10px; color: var(--ink-secondary);" id="hitlSidebarDesc">
-                                        Nenhuma acao retida no momento.
+                                        Nenhuma ação retida no momento.
                                     </div>
                                 </div>
                             </div>
@@ -265,8 +267,8 @@
                     <div class="sidebar-ctx-pane" id="sidebarCtxDots">
                         <div class="sidebar-section">
                             <div class="sidebar-title">
-                                <span>ESTUDIO DE DOTS (@COWORKERS)</span>
-                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7px;" onclick="openDotCreatorModal()">[+ CRIAR DOT]</button>
+                                <span>Estúdio de Dots (@coworkers)</span>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7.5px;" onclick="openDotCreatorModal()">+ Criar Dot</button>
                             </div>
                             <div style="font-size: 10px; color: var(--ink-secondary); margin-bottom: 8px; line-height: 1.4;">
                                 Gerencie especialistas autônomos, prompts de sistema e poda dinâmica de ferramentas (Dynamic Tool Pruning).
@@ -275,8 +277,8 @@
                         </div>
                         <div class="sidebar-section">
                             <div class="sidebar-title">
-                                <span>CATALOGO DE TOOLS ATIVAS</span>
-                                <span style="color: var(--phosphor-green);" id="toolsCatalogCountBadge">23 TOOLS</span>
+                                <span>Catálogo de Tools Ativas</span>
+                                <span style="color: var(--phosphor-green);" id="toolsCatalogCountBadge">23 tools</span>
                             </div>
                             <div id="toolsCatalogSidebarList" style="display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow-y: auto;"></div>
                         </div>
@@ -286,8 +288,8 @@
                     <div class="sidebar-ctx-pane" id="sidebarCtxTasks">
                         <div class="sidebar-section">
                             <div class="sidebar-title">
-                                <span>TASKS PROATIVAS (CRON)</span>
-                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7px;" onclick="PiDotsAPI.promptCreateTask()">[+ AGENDAR]</button>
+                                <span>Tasks Proativas (Cron)</span>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7.5px;" onclick="PiDotsAPI.promptCreateTask()">+ Agendar</button>
                             </div>
                             <div style="font-size: 10px; color: var(--ink-secondary); margin-bottom: 8px; line-height: 1.4;">
                                 Tarefas executadas em background pelo EdgeScheduler com diretriz de silêncio <code>HEARTBEAT_OK</code>.
@@ -298,8 +300,8 @@
                         </div>
                         <div class="sidebar-section">
                             <div class="sidebar-title">
-                                <span>GATILHOS DE BORDA (GPIO / MQTT)</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.loadEdgeTriggersSidebar()">[ATUALIZAR]</button>
+                                <span>Gatilhos de Borda (GPIO / MQTT)</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.loadEdgeTriggersSidebar()">Atualizar</button>
                             </div>
                             <div id="edgeTriggersSidebarBox" style="font-size: 10px; color: var(--ink-secondary); line-height: 1.5;">
                                 Monitorando sensores térmicos, disco MicroSD e barramento GPIO/MQTT...
@@ -311,8 +313,8 @@
                     <div class="sidebar-ctx-pane" id="sidebarCtxMemory">
                         <div class="sidebar-section">
                             <div class="sidebar-title">
-                                <span>CORE MEMORY (PERSONA &amp; HUMAN)</span>
-                                <button type="button" class="pixel-btn btn-cyan" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.saveActiveDotCoreMemory()">[SALVAR]</button>
+                                <span>Memória Central (Persona e Operador)</span>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.saveActiveDotCoreMemory()">Salvar</button>
                             </div>
                             <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--blueprint-cyan); display: block; margin-bottom: 3px;">BLOCO PERSONA DO DOT ATIVO:</label>
                             <textarea class="drawer-search-input" id="sidebarCorePersonaInput" rows="3" style="width: 100%; font-size: 10px; margin-bottom: 6px; resize: vertical;" placeholder="Diretrizes permanentes da persona..."></textarea>
@@ -322,8 +324,8 @@
 
                         <div class="sidebar-section">
                             <div class="sidebar-title">
-                                <span>ARCHIVAL MEMORY (FTS5 + 64D)</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.promptInsertArchivalMemory()">[+ FATO]</button>
+                                <span>Memória de Arquivo (FTS5 + 64D)</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.promptInsertArchivalMemory()">+ Fato</button>
                             </div>
                             <input type="text" class="drawer-search-input" id="sidebarArchivalSearchInput" placeholder="Pesquisar fatos arquivados..." style="width: 100%; padding: 4px 6px; font-size: 10px; margin-bottom: 6px;" oninput="PiDotsAPI.searchActiveDotArchival(this.value)">
                             <div id="sidebarArchivalListContainer" style="display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto;"></div>
@@ -331,16 +333,16 @@
 
                         <div class="sidebar-section">
                             <div class="sidebar-title">
-                                <span>SERVIDORES MCP LITE</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.promptRegisterMcpServer()">[+ MCP]</button>
+                                <span>Servidores MCP Lite</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.promptRegisterMcpServer()">+ MCP</button>
                             </div>
                             <div id="sidebarMcpServersList" style="font-size: 10px; color: var(--ink-muted);">Nenhum servidor MCP externo acoplado.</div>
                         </div>
 
                         <div class="sidebar-section">
                             <div class="sidebar-title">
-                                <span>DOT PACKS V1.1 (SHA-256)</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.loadDotPacksCatalogSidebar()">[CATALOGO]</button>
+                                <span>Dot Packs v1.1 (SHA-256)</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.loadDotPacksCatalogSidebar()">Catálogo</button>
                             </div>
                             <div id="sidebarDotPacksCatalogList" style="display: flex; flex-direction: column; gap: 4px; font-size: 9.5px; color: var(--ink-secondary);">
                                 Carregando pacotes oficiais (@dot-secops, @dot-homelab, @dot-finops)...
@@ -356,7 +358,7 @@
                         </div>
                         <div class="shf-row">
                             <span class="shf-label">SOC / WAL:</span>
-                            <span class="shf-val"><span id="sidebarAsciiTemp" style="color: var(--phosphor-green);">48.2°C</span> // <span id="sidebarAsciiWal" style="color: var(--blueprint-cyan);">WAL OK</span></span>
+                            <span class="shf-val"><span id="sidebarAsciiTemp" style="color: var(--phosphor-green);">48.2°C</span> · <span id="sidebarAsciiWal" style="color: var(--blueprint-cyan);">WAL OK</span></span>
                         </div>
                     </div>
 

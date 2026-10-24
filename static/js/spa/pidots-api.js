@@ -240,13 +240,20 @@
                         card.className = `dot-card ${isActive ? 'active' : ''}`;
                         card.onclick = () => this.selectDot(dot.id, card);
 
+                        const nameStr = dot.name || dot.id;
+                        const monogram = nameStr.split(/[\s-_]+/).map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'DT';
                         const archetypeLabel = (dot.archetype || 'COWORKER').toUpperCase();
                         card.innerHTML = `
-                            <div class="dot-card-header">
-                                <span class="dot-card-name">${safeEscape(dot.name || dot.id)}</span>
-                                <span class="dot-card-status" style="font-size: 8px;">[${safeEscape(archetypeLabel)}]</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="dot-monogram-avatar">${safeEscape(monogram)}</div>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div class="dot-card-header">
+                                        <span class="dot-card-name">${safeEscape(nameStr)}</span>
+                                        <span class="dot-card-status" style="font-size: 8px;">${safeEscape(archetypeLabel)}</span>
+                                    </div>
+                                    <div class="dot-card-role" style="font-size: 10px; color: var(--ink-secondary); margin-top: 2px;">${safeEscape(dot.role || 'Edge Coworker')}</div>
+                                </div>
                             </div>
-                            <div class="dot-card-role" style="font-size: 10px; color: var(--ink-secondary); margin-top: 2px;">${safeEscape(dot.role || 'Edge Coworker')}</div>
                         `;
                         container.appendChild(card);
                     });
@@ -387,7 +394,7 @@
                     item.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">
                             <strong style="color: var(--ink-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${safeEscape(th.title || th.id)}</strong>
-                            <button type="button" class="pixel-btn" style="padding: 0px 4px; font-size: 7px;" title="Excluir Thread" onclick="event.stopPropagation(); PiDotsAPI.deleteThread('${safeEscape(th.id)}')">[X]</button>
+                            <button type="button" class="pixel-btn btn-secondary" style="padding: 1px 4px; font-size: 7.5px;" title="Excluir Thread" onclick="event.stopPropagation(); PiDotsAPI.deleteThread('${safeEscape(th.id)}')">Excluir</button>
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 8.5px; color: var(--ink-muted);">
                             <span>@${safeEscape(th.dot_id || 'dot')}</span>
@@ -1298,15 +1305,15 @@
                     card.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
                             <strong style="font-size: 10px; color: var(--ink-main);">${safeEscape(t.task_name || t.id)}</strong>
-                            <span style="font-family: var(--font-pixel); font-size: 7px; color: ${isActive ? 'var(--phosphor-green)' : 'var(--thermal-amber)'};">[${isActive ? 'ATIVA' : 'PAUSADA'}]</span>
+                            <span style="font-family: var(--font-pixel); font-size: 7px; color: ${isActive ? 'var(--phosphor-green)' : 'var(--thermal-amber)'};">${isActive ? 'Ativa' : 'Pausada'}</span>
                         </div>
                         <div style="font-size: 9px; color: var(--ink-muted); margin-bottom: 6px;">
                             @${safeEscape(t.dot_id)} | Cron: <code>${safeEscape(t.cron_expr || '*/15 * * * *')}</code>
                         </div>
                         <div style="display: flex; gap: 4px;">
-                            <button type="button" class="pixel-btn btn-cyan" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.runTaskNow('${safeEscape(t.id)}')">[DISPARAR]</button>
-                            <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.toggleTaskActive('${safeEscape(t.id)}', ${!isActive})">[${isActive ? 'PAUSAR' : 'ATIVAR'}]</button>
-                            <button type="button" class="pixel-btn btn-danger" style="padding: 1px 5px; font-size: 7px;" onclick="PiDotsAPI.deleteTask('${safeEscape(t.id)}')">[X]</button>
+                            <button type="button" class="pixel-btn btn-cyan" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.runTaskNow('${safeEscape(t.id)}')">Disparar</button>
+                            <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.toggleTaskActive('${safeEscape(t.id)}', ${!isActive})">${isActive ? 'Pausar' : 'Ativar'}</button>
+                            <button type="button" class="pixel-btn btn-danger" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.deleteTask('${safeEscape(t.id)}')">Excluir</button>
                         </div>
                     `;
                     container.appendChild(card);
@@ -1434,10 +1441,10 @@
                 box.innerHTML = packs.map(p => `
                     <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 5px 6px; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
                         <div style="min-width: 0;">
-                            <div style="color: var(--blueprint-cyan); font-weight: 700; font-size: 9.5px;">@${safeEscape(p.dot_id)} <span style="color: var(--phosphor-green); font-size: 8px;">[SHA256:${safeEscape(String(p.sha256_checksum).slice(0, 6))}]</span></div>
+                            <div style="color: var(--blueprint-cyan); font-weight: 700; font-size: 9.5px;">@${safeEscape(p.dot_id)} <span style="color: var(--phosphor-green); font-size: 8px;">SHA256: ${safeEscape(String(p.sha256_checksum).slice(0, 6))}</span></div>
                             <div style="color: var(--ink-muted); font-size: 8.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${safeEscape(p.role)}</div>
                         </div>
-                        <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 5px; font-size: 7px; flex-shrink: 0;" onclick="PiDotsAPI.installOfficialDotPack('${safeEscape(p.pack_id)}')">[INSTALAR]</button>
+                        <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7.5px; flex-shrink: 0;" onclick="PiDotsAPI.installOfficialDotPack('${safeEscape(p.pack_id)}')">Instalar</button>
                     </div>
                 `).join('');
             } catch (_) {}
@@ -1549,7 +1556,7 @@
                 box.innerHTML = servers.map(s => `
                     <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 4px 6px; margin-bottom: 4px;">
                         <strong style="color: var(--blueprint-cyan);">${safeEscape(s.server_name || s.name)}</strong>
-                        <span style="color: var(--phosphor-green); font-size: 8.5px;">[${safeEscape(s.transport || 'stdio')}]</span>
+                        <span style="color: var(--phosphor-green); font-size: 8.5px;">${safeEscape(s.transport || 'stdio')}</span>
                     </div>
                 `).join('');
             } catch (_) {}
