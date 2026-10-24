@@ -19,10 +19,10 @@
     <meta name="apple-mobile-web-app-title" content="piDots">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- Tipografia Oficial: Silkscreen, VT323 e JetBrains Mono -->
+    <!-- Tipografia Moderna Hibrida: IBM Plex Sans, JetBrains Mono e Silkscreen -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- Preload de Recursos Críticos de Estilo e Scripts -->
     <link rel="preload" href="/static/css/tokens.css" as="style">
@@ -171,6 +171,18 @@
                     </div>
                 </div>
             </section>
+
+            <!-- =================================================================
+                 TRILHA 01: FUNDAMENTOS COGNITIVOS E AUTONOMIA INICIAL
+                 Passos 01 a 03
+                 ================================================================= -->
+            <div class="track-divider track-cyan" id="trilha-1">
+                <span class="track-tag">TRILHA 01 // ARQUITETURA COGNITIVA</span>
+                <h2 class="track-title">Fundamentos Cognitivos e Autonomia Inicial</h2>
+                <p class="track-desc">
+                    Entenda a filosofia de soberania de dados do piDots, os quatro arquétipos especializados de coworkers, a dinâmica do chat multi-bot e o agendamento proativo 24/7 com descarte de ruído.
+                </p>
+            </div>
 
             <!-- =================================================================
                  PASSO 01: O QUE E O PIDOTS E OS NOVOS ARQUETIPOS COGNITIVOS
@@ -517,6 +529,18 @@
                     </button>
                 </div>
             </section>
+
+            <!-- =================================================================
+                 TRILHA 02: CANAIS, FERRAMENTAS E DEPLOY EM SILICIO REAL
+                 Passos 04 a 06
+                 ================================================================= -->
+            <div class="track-divider track-purple" id="trilha-2">
+                <span class="track-tag">TRILHA 02 // INTEGRACOES E OPERACAO</span>
+                <h2 class="track-title">Canais de Mensageria, Ferramentas e Deploy Operacional</h2>
+                <p class="track-desc">
+                    Conecte agentes ao Telegram e WhatsApp com travas anti-loop, utilize mais de 15 ferramentas nativas com poda dinâmica de contexto e suba a infraestrutura completa em um único comando Docker Compose.
+                </p>
+            </div>
 
             <!-- =================================================================
                  PASSO 04: GATEWAY DE MENSAGERIA UNIFICADA E SALAS TEMATICAS
@@ -1107,6 +1131,18 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
             </section>
 
             <!-- =================================================================
+                 TRILHA 03: MEMÓRIA DE LONGO PRAZO, AUTO-CURA E COLABORAÇÃO
+                 Passos 07 a 10
+                 ================================================================= -->
+            <div class="track-divider track-green" id="trilha-3">
+                <span class="track-tag">TRILHA 03 // PERSISTENCIA E GOVERNANCA</span>
+                <h2 class="track-title">Memória de Longo Prazo, Auto-Cura e Colaboração Multi-Bot</h2>
+                <p class="track-desc">
+                    Domine a memória hierárquica em 3 camadas inspirada no MemGPT, o ciclo de auto-cura de código (Self-Healing Harness), o debate dialético do Conselho Consultivo e o compartilhamento de espaços duráveis.
+                </p>
+            </div>
+
+            <!-- =================================================================
                  PASSO 07: MEMORIA HIERARQUICA AUTONOMA (PADRAO MEMGPT / LETTA)
                  ================================================================= -->
             <section class="step-module" id="passo-7">
@@ -1512,6 +1548,18 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                     </button>
                 </div>
             </section>
+
+            <!-- =================================================================
+                 TRILHA 04: HARDWARE EDGE, TRIGGERS DE SILÍCIO E INTERFACE DE COMANDOS
+                 Passos 11 a 14
+                 ================================================================= -->
+            <div class="track-divider track-amber" id="trilha-4">
+                <span class="track-tag">TRILHA 04 // SILICIO, I18N E REDES</span>
+                <h2 class="track-title">Proteção Física do Silício, Internacionalização e Redes</h2>
+                <p class="track-desc">
+                    Monitore a temperatura e previna throttling do SoC Broadcom, gerencie idiomas em memória via dicionários JSON estáticos, opere com 34 Slash Commands e exponha serviços com Cloudflare Tunnel Zero Trust.
+                </p>
+            </div>
 
             <!-- =================================================================
                  PASSO 11: TRIGGERS DE HARDWARE EDGE E MANUTENCAO DO MICROSD
@@ -2230,6 +2278,7 @@ sudo systemctl status cloudflared</code></pre>
             </div>
 
             <ul class="drawer-list-scroll" id="drawerListScroll">
+                <li class="drawer-track-header">TRILHA 01 // ARQUITETURA COGNITIVA</li>
                 <li class="drawer-item" data-keywords="arquetipos supervisor coder desenvolvedor arquiteto auditor conceitos edge react persistencia">
                     <a href="#passo-1" class="drawer-link active" onclick="handleDrawerNav(event, 'passo-1')">
                         <span class="drawer-step-idx">01</span>
@@ -2248,6 +2297,8 @@ sudo systemctl status cloudflared</code></pre>
                         <span>Dot Heartbeat &amp; Diretriz HEARTBEAT_OK</span>
                     </a>
                 </li>
+
+                <li class="drawer-track-header" style="color: var(--brand-purple, #a855f7);">TRILHA 02 // INTEGRAÇÕES &amp; OPERAÇÃO</li>
                 <li class="drawer-item" data-keywords="gateway mensageria telegram whatsapp evolution webhooks salas hop_count devops">
                     <a href="#passo-4" class="drawer-link" onclick="handleDrawerNav(event, 'passo-4')">
                         <span class="drawer-step-idx">04</span>
@@ -2266,6 +2317,8 @@ sudo systemctl status cloudflared</code></pre>
                         <span>Passo a Passo Operacional &amp; MicroSD</span>
                     </a>
                 </li>
+
+                <li class="drawer-track-header" style="color: var(--phosphor-green, #7cd9c6);">TRILHA 03 // PERSISTÊNCIA &amp; GOVERNANÇA</li>
                 <li class="drawer-item" data-keywords="memoria hierarquica core memory archival memgpt letta fts5 bm25 64d embeddings recall">
                     <a href="#passo-7" class="drawer-link" onclick="handleDrawerNav(event, 'passo-7')">
                         <span class="drawer-step-idx">07</span>
@@ -2290,6 +2343,8 @@ sudo systemctl status cloudflared</code></pre>
                         <span>Shared Space &amp; Dot Packs Portaveis</span>
                     </a>
                 </li>
+
+                <li class="drawer-track-header" style="color: var(--thermal-amber, #dbad82);">TRILHA 04 // SILÍCIO, I18N &amp; REDES</li>
                 <li class="drawer-item" data-keywords="hardware triggers temperatura broadcom bcm2711 microsd manutencao noturna vacuum wal truncate">
                     <a href="#passo-11" class="drawer-link" onclick="handleDrawerNav(event, 'passo-11')">
                         <span class="drawer-step-idx">11</span>

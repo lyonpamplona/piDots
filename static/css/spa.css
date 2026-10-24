@@ -86,10 +86,11 @@
 
         .rail-btn-label,
         .rail-lbl {
-            font-family: var(--font-pixel);
-            font-size: 6px;
-            letter-spacing: 0.03em;
-            line-height: 1;
+            font-family: var(--font-sans);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            line-height: 1.1;
         }
 
         .rail-btn-hitl {
@@ -154,8 +155,9 @@
         }
 
         .sidebar-hardware-footer .shf-label {
-            font-family: var(--font-pixel);
-            font-size: 7px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 600;
             color: var(--ink-muted);
             letter-spacing: 0.05em;
         }
@@ -192,31 +194,40 @@
         .thread-sidebar-item {
             background: var(--paper-surface-recessed);
             border: 1px solid var(--border-subtle);
-            padding: 6px 8px;
+            border-radius: 2px;
+            padding: 8px 10px;
             margin-bottom: 4px;
-            font-size: 10px;
+            font-family: var(--font-sans);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-secondary);
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
+            transition: all 0.15s ease;
         }
 
         .thread-sidebar-item:hover,
         .thread-sidebar-item.active {
             border-color: var(--border-accent);
             background: var(--paper-surface);
+            color: var(--ink-main);
         }
 
         .thread-sidebar-item.active {
             border-left: 3px solid var(--blueprint-cyan);
+            font-weight: 600;
         }
 
         .task-sidebar-card {
             background: var(--paper-surface);
             border: 1px solid var(--border-default);
-            padding: 8px;
+            border-radius: 3px;
+            padding: 10px;
             margin-bottom: 6px;
-            box-shadow: 1px 1px 0px #000000;
+            font-family: var(--font-sans);
+            box-shadow: var(--shadow-sm);
         }
 
         .sidebar-section {
@@ -225,10 +236,12 @@
         }
 
         .sidebar-title {
-            font-family: var(--font-pixel);
-            font-size: 8px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
             color: var(--ink-muted);
             letter-spacing: 0.08em;
+            text-transform: uppercase;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -266,8 +279,9 @@
         }
 
         .dot-card-name {
-            font-family: var(--font-pixel);
-            font-size: 9px;
+            font-family: var(--font-sans);
+            font-size: 12px;
+            font-weight: 600;
             color: var(--ink-main);
         }
 
@@ -304,8 +318,9 @@
         }
 
         .space-item-rev {
-            font-family: var(--font-pixel);
-            font-size: 7px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 600;
             color: var(--thermal-amber);
         }
 
@@ -375,10 +390,11 @@
         }
 
         .ticker-channel-name {
-            font-family: var(--font-pixel);
-            font-size: 9px;
+            font-family: var(--font-sans);
+            font-size: 13px;
+            font-weight: 600;
             color: var(--blueprint-cyan);
-            letter-spacing: 0.05em;
+            letter-spacing: -0.01em;
         }
 
         .ticker-scroll-area {
@@ -450,8 +466,8 @@
             border-bottom: 1px dashed var(--border-default);
             padding-bottom: 6px;
             margin-bottom: 8px;
-            font-family: var(--font-pixel);
-            font-size: 8px;
+            font-family: var(--font-mono);
+            font-size: 10px;
             color: var(--ink-muted);
         }
 
@@ -464,11 +480,13 @@
 
         /* Carimbos Táteis de Identificação de Ator (Agentes Multi-Bot) */
         .actor-stamp {
-            font-family: var(--font-pixel);
-            font-size: 8px;
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 700;
             padding: 2px 6px;
             border: 1px solid currentColor;
-            letter-spacing: 0.05em;
+            border-radius: 2px;
+            letter-spacing: 0.03em;
             display: inline-flex;
             align-items: center;
             gap: 4px;
@@ -547,11 +565,12 @@
         }
 
         .reasoning-heading, .reasoning-toggle {
-            font-family: var(--font-pixel);
-            font-size: 7px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 600;
             color: var(--thermal-amber);
             margin-bottom: 4px;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.04em;
             cursor: pointer;
             user-select: none;
             display: flex;
@@ -588,13 +607,14 @@
         }
 
         .mention-autocomplete-header {
-            font-family: var(--font-pixel);
-            font-size: 7px;
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 700;
             color: var(--blueprint-cyan);
             padding: 5px 8px;
             border-bottom: 1px dashed var(--border-default);
             background: var(--paper-surface-recessed);
-            letter-spacing: 0.08em;
+            letter-spacing: 0.04em;
             display: flex;
             justify-content: space-between;
         }
@@ -641,13 +661,14 @@
         }
 
         .slash-popover-header {
-            font-family: var(--font-pixel);
-            font-size: 7px;
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 700;
             color: var(--blueprint-cyan);
             padding: 5px 8px;
             border-bottom: 1px dashed var(--border-default);
             background: var(--paper-surface-recessed);
-            letter-spacing: 0.08em;
+            letter-spacing: 0.04em;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -772,8 +793,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: var(--font-pixel);
-            font-size: 8px;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 700;
             color: var(--thermal-amber);
             margin-bottom: 8px;
             border-bottom: 1px dashed var(--thermal-amber);
@@ -907,9 +929,10 @@
         }
 
         .canvas-tab {
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            letter-spacing: 0.05em;
+            font-family: var(--font-sans);
+            font-size: 11.5px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
             padding: 8px 12px;
             background: transparent;
             color: var(--ink-secondary);
@@ -920,6 +943,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: all 0.15s ease;
         }
 
         .canvas-tab:hover {
@@ -1087,10 +1111,11 @@
         }
 
         .plotter-tag {
-            font-family: var(--font-pixel);
-            font-size: 7px;
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 600;
             color: var(--ink-muted);
-            letter-spacing: 0.06em;
+            letter-spacing: 0.05em;
         }
 
         .plotter-val {

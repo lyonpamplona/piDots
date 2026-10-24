@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>piDots // Landing Page Oficial de Apresentacao e Onboarding</title>
+    <title>piDots: Agentes de IA Autonomos no seu Proprio Hardware</title>
+    <meta name="description" content="Execute uma equipe de AI coworkers persistentes no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6 Watts. Sem taxas de nuvem, memoria duravel em SQLite WAL e governanca fisica com aprovacao humana.">
     
-    <!-- Favicon e Icones Oficiais PWA (Rasterizados & SVG) -->
+    <!-- Favicon e Icones Oficiais PWA -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png">
     <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
     <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#07090c" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#e9ecef" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0c1012" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#e4e7e3" media="(prefers-color-scheme: light)">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="piDots">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- Tipografia Pixel Art e Monospace de Engenharia -->
+    <!-- Tipografia Moderna Hibrida: IBM Plex Sans, JetBrains Mono e Silkscreen -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Preload de Recursos Críticos de Estilo e Scripts -->
-    <link rel="preload" href="/static/css/tokens.css" as="style">
-    <link rel="preload" href="/static/css/landing.css" as="style">
-    <link rel="preload" href="/static/js/core/pidots-i18n.js" as="script">
-    <link rel="preload" href="/static/js/landing/landing.js" as="script">
-
-    <!-- Folhas de Estilo Modulares Segmentadas -->
+    <!-- Folhas de Estilo Modulares -->
     <link rel="stylesheet" href="/static/css/tokens.css">
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/layout.css">
@@ -37,7 +32,7 @@
     <link rel="stylesheet" href="/static/css/landing.css">
     <link rel="stylesheet" href="/static/css/mobile.css">
 
-    <!-- Motores JavaScript Desacoplados (Fase 2) -->
+    <!-- Motores JavaScript Desacoplados -->
     <script defer src="/static/js/core/pidots-i18n.js"></script>
     <script defer src="/static/js/core/scroll-lock.js"></script>
     <script defer src="/static/js/core/pixel-system.js"></script>
@@ -46,172 +41,161 @@
 </head>
 <body>
 
-    <!-- CABECALHO FIXO / TOP-DECK UNIFICADO -->
+    <!-- ===================================================================
+         1. CABECALHO FIXO / TOP-DECK UNIFICADO (48px)
+         =================================================================== -->
     <header class="top-deck landing-header">
         <div class="top-deck-left">
             <a href="#hero" class="brand-unit" aria-label="piDots Home">
                 <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="pidots-logo-svg" aria-label="Logo piDots">
-                    <rect width="28" height="28" rx="4" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
-                    <circle cx="8.5" cy="14" r="3.5" fill="#33ff66"/>
+                    <rect width="28" height="28" rx="4" fill="#080b0c" stroke="#202d31" stroke-width="1.5"/>
+                    <circle cx="8.5" cy="14" r="3.5" fill="#7cd9c6"/>
                     <circle cx="19.5" cy="14" r="3.5" fill="#38bdf8"/>
-                    <path d="M12 14h4" stroke="#f1f5f9" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="8.5" cy="14" r="1.5" fill="#ffffff"/>
-                    <circle cx="19.5" cy="14" r="1.5" fill="#ffffff"/>
+                    <line x1="8.5" y1="14" x2="19.5" y2="14" stroke="#7cd9c6" stroke-width="1.5" stroke-dasharray="2 2"/>
                 </svg>
-                <span class="brand-badge">PIDOTS</span>
-                <span class="brand-title">PIDOTS // APRESENTACAO</span>
+                <span class="brand-title">piDots</span>
+                <span class="brand-badge">ARM64</span>
             </a>
         </div>
 
-        <!-- Comutador Canonico de Superficies de Produto -->
         <div class="top-deck-center">
             <nav class="surface-switcher" aria-label="Superficies de Produto">
-                <a href="/" class="surface-tab active" id="tab-overview" title="Atalho: G H">
+                <a href="/" class="surface-tab active" id="tab-overview" data-surface="overview" title="Atalho: G H">
                     <span class="tab-idx">01</span>
                     <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
-                    <span class="tab-chord">g h</span>
                 </a>
-                <a href="/app" class="surface-tab" id="tab-workspace" title="Atalho: G W">
+                <a href="/app" class="surface-tab" id="tab-workspace" data-surface="workspace" title="Atalho: G W">
                     <span class="tab-idx">02</span>
                     <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
-                    <span class="tab-chord">g w</span>
                 </a>
-                <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
+                <a href="/docs" class="surface-tab" id="tab-docs" data-surface="docs" title="Atalho: G D">
                     <span class="tab-idx">03</span>
                     <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
-                    <span class="tab-chord">g d</span>
                 </a>
             </nav>
         </div>
 
-        <div class="top-deck-right header-actions">
-            <div class="node-telemetry-badge" id="headerNodeBadge" title="No Edge Raspberry Pi 4B ARM64 Operacional" data-i18n-title="telemetry.node_title">
-                <span class="telemetry-led"></span>
-                <span>NO: ONLINE</span>
-            </div>
-            <button class="pixel-btn" onclick="toggleMobileNavMenu()" id="btnMobileNavToggle" title="Abrir menu de secoes movel">
-                <span>[SECOES]</span>
+        <div class="top-deck-right">
+            <button type="button" class="header-nav-btn" onclick="toggleTheme()" title="Comutar Tema Claro/Escuro" aria-label="Alternar Tema">
+                <span>[TEMA]</span>
             </button>
-            <button class="pixel-btn pwa-install-trigger" id="btnLandingPwaInstall" style="display: none; background: #0284c7; border-color: #38bdf8; color: #ffffff;" onclick="PiDotsLandingPWA.install()" title="Instalar piDots como aplicativo PWA">
-                <span data-i18n="nav.pwa_install">[INSTALAR PWA]</span>
+            <button type="button" class="header-nav-btn" onclick="toggleLanguage()" title="Comutar Idioma PT/EN" aria-label="Alternar Idioma">
+                <span id="navLangLabel">PT</span>
             </button>
-            <button class="pixel-btn lang-toggle-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" data-i18n="nav.lang_toggle" title="Alternar idioma [PT | EN]">
-                <span class="lang-text-full">[IDIOMA: PT | EN]</span>
-                <span class="lang-text-short">[PT]</span>
-            </button>
-            <button class="pixel-btn theme-toggle-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <span class="theme-btn-label" data-i18n="nav.theme">[TEMA]</span>
-            </button>
-            <button class="pixel-btn btn-cyan" onclick="toggleDrawer()" id="btnHeaderManual" title="Abrir Manual Operacional do Sistema">
+            <a href="https://github.com/lyonchristopher/piDots" target="_blank" rel="noopener" class="header-nav-btn" title="Repositorio Oficial no GitHub">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                <span>GITHUB</span>
+            </a>
+            <button type="button" class="pixel-btn btn-cyan btn-sm" onclick="toggleDrawer()" title="Abrir Manual Passo a Passo">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                <span class="manual-btn-label" data-i18n="nav.manual">[MANUAL TECNICO]</span>
+                <span>[MANUAL]</span>
             </button>
         </div>
     </header>
 
-    <!-- Painel Retratil de Navegacao Movel -->
-    <nav id="mobileNavPanel" class="mobile-nav-panel" aria-label="Menu Movel">
-        <a href="#hero" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">01 // VISAO</a>
-        <a href="#metricas-choque" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">02 // CHOQUE</a>
-        <a href="#dor-solucao" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">03 // NUVEM VS EDGE</a>
-        <a href="#pilares" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">04 // PILARES</a>
-        <a href="#arena-hitl" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">05 // ARENA VIVA</a>
-        <a href="#calculadora-roi" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">06 // ROI EDGE</a>
-        <a href="#matriz" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">07 // MATRIZ DOTS</a>
-        <a href="#faq-objecoes" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">08 // FAQ</a>
-        <a href="#quickstart" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">09 // DEPLOY</a>
-        <div class="mobile-nav-controls">
-            <button type="button" class="pixel-btn" onclick="PiDotsI18n.toggleLanguage()" title="Alternar Idioma">
-                <span>[IDIOMA: PT | EN]</span>
-            </button>
-            <button type="button" class="pixel-btn" onclick="toggleTheme()" title="Alternar Tema">
-                <span>[TEMA CLARO / ESCURO]</span>
-            </button>
-        </div>
-    </nav>
+    <!-- ===================================================================
+         CONTAINER PRINCIPAL DA LANDING PAGE
+         =================================================================== -->
+    <main class="landing-container">
 
-    <!-- CONTEUDO PRINCIPAL DA LANDING PAGE (LARGURA TOTAL // SEM CENTRALIZACAO ARTIFICIAL) -->
-    <div class="landing-container">
+        <!-- ===============================================================
+             2. HERO SECTION DE ALTO IMPACTO
+             =============================================================== -->
+        <section class="hero-section" id="hero">
+            <div class="hero-eyebrow">
+                <span class="eyebrow-dot"></span>
+                <span>ARM64 // RASPBERRY PI 4B // CONSUMO: 6W // 55 MB RAM RSS // OPEN SOURCE MIT</span>
+            </div>
 
-        <!-- ===================================================================
-             HERO SECTION: SEU PROPRIO AI COWORKER EM 6 WATTS (SPLIT-SCREEN OPENDOTS)
-             =================================================================== -->
-        <section class="landing-section hero-section" id="hero">
             <div class="hero-split-grid">
-                <!-- Coluna Esquerda: Proposta de Valor e Acoes Taticas -->
                 <div class="hero-col-left">
-                    <div class="hero-tagline">
-                        <span class="silicon-badge badge-green">SILICIO // 52 MB RAM RSS</span>
-                        <span class="silicon-badge badge-cyan">ARM64 BROADCOM BCM2711</span>
-                        <span class="silicon-badge badge-amber">SOBERANIA LOCAL 24/7</span>
-                    </div>
-
                     <h1 class="hero-title">
-                        <span data-i18n="hero.title">AGENTES DE IA EM EQUIPE NO SEU PRÓPRIO HARDWARE.</span><br>
-                        <span data-i18n="hero.subtitle">Operação contínua em 6 Watts, consumindo menos de 70 MB de RAM.</span>
+                        Agentes de IA autônomos no seu <span class="highlight">próprio hardware</span>.
                     </h1>
 
-                    <p class="hero-description" data-i18n="hero.lead">
-                        Seus agentes autônomos trabalhando 24 horas por dia no seu Raspberry Pi, Mini PC ou servidor local. Sem faturas surpresa em dólar, sem navegadores pesados rodando escondidos e sem expor seus arquivos para serviços de terceiros.<br><br>
-                        No piDots, você opera um console com <strong>Activity Rail de 48px</strong> (Spaces &amp; Canais, Estúdio de Agentes &amp; Tool Pruning, Tasks Agendadas &amp; Sensores, Memória Híbrida 64D &amp; MCP Lite), coordena especialistas com menções diretas (@coder, @arquiteto, @auditor), acompanha <strong>Generative UI Cards inline</strong> e <strong>CoAgents Shared State</strong> ao vivo, assume o <strong>Computador de Borda (Dot's Computer)</strong> em Modo Takeover e homologa ações críticas via HITL com edição de argumentos (<code>modified_args</code>) e retomada automática.
+                    <p class="hero-description">
+                        Execute uma equipe de AI coworkers persistentes no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6 Watts. Memória durável em SQLite WAL, governança física com aprovação humana e zero taxas de nuvem recorrentes.
                     </p>
 
-                    <!-- Grupo Focado de CTAs Primarios -->
+                    <!-- Terminal de Deploy em 1 Comando (Atrito Zero) -->
+                    <div class="hero-deploy-deck">
+                        <div class="deploy-deck-top">
+                            <span>COMANDO UNICO DE INSTALACAO (DOCKER COMPOSE):</span>
+                            <span>TEMPO ESTIMADO: 45S</span>
+                        </div>
+                        <div class="deploy-cmd-box">
+                            <span class="deploy-cmd-text" id="deployCmdSnippet">git clone https://github.com/lyonchristopher/piDots.git &amp;&amp; cd piDots &amp;&amp; docker compose up -d</span>
+                            <button type="button" class="btn-copy-cmd" onclick="copySnippet('git clone https://github.com/lyonchristopher/piDots.git &amp;&amp; cd piDots &amp;&amp; docker compose up -d')">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>COPIAR</span>
+                            </button>
+                        </div>
+                        <div class="deploy-ports-hint">
+                            <span>Portas ativas: :8081 (Landing) // :8082 (Workspace) // :8083 (Docs) // :8088 (Gateway)</span>
+                            <span>Saude: curl http://localhost:8088/health</span>
+                        </div>
+                    </div>
+
+                    <!-- Botoes de Acao Primarios -->
                     <div class="hero-cta-group">
-                        <a href="/app" class="pixel-btn-cta-primary" id="heroCtaWorkspace">
-                            <span class="pulse-step-dot"></span>
-                            <span data-i18n="hero.cta_workspace">[ABRIR WORKSPACE /APP]</span>
+                        <a href="/app" class="pixel-btn-cta-primary" id="heroCtaWorkspace" data-surface="workspace">
+                            <span>INICIAR CONSOLE OPERACIONAL AGORA</span>
                             <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </a>
-                        <a href="/docs" class="pixel-btn btn-cyan btn-lg" id="heroCtaDocs">
-                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                            <span>[DOCUMENTACAO /DOCS]</span>
+                        <a href="/docs" class="pixel-btn btn-cyan btn-lg" id="heroCtaDocs" data-surface="docs">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                            <span>LER MANUAL PASSO A PASSO</span>
                         </a>
                     </div>
+
+                    <!-- Badges de Metricas Duras de Silicio -->
+                    <div class="hero-silicon-badges">
+                        <span class="silicon-chip">RAM: <strong>55 MB RSS</strong></span>
+                        <span class="silicon-chip">Potencia: <strong>6 Watts</strong></span>
+                        <span class="silicon-chip">Persistencia: <strong>SQLite WAL</strong></span>
+                        <span class="silicon-chip">Sandbox: <strong>Bubblewrap ARM64</strong></span>
+                    </div>
                 </div>
 
-                <!-- Coluna Direita: Mini-Simulador Pixel Paper UI com fita perfurada e card HITL interativo -->
+                <!-- Coluna Direita: Fita Pixel Paper UI Viva com Card HITL -->
                 <div class="hero-col-right">
-                    <div class="hero-paper-slip-showcase paper-slip slip-elevated">
+                    <div class="hero-paper-slip-showcase">
                         <div class="showcase-header">
                             <div class="showcase-status">
-                                <span class="pulse-step-dot"></span>
-                                <span>FITA OPERACIONAL // SEQ# 0001 - 0002</span>
+                                <span class="pulse-dot"></span>
+                                <span>SISTEMA DE TELETIPO // EXECUCAO AO VIVO</span>
                             </div>
-                            <span class="silicon-badge badge-cyan">OPENDOTS AG-UI</span>
+                            <span class="brand-badge">HITL SEGURO</span>
                         </div>
 
-                        <div class="showcase-ticker-body">
-                            <div class="tractor-strip"></div>
-                            <div class="showcase-stream">
-                                <div class="slip-entry">
-                                    <div class="slip-meta">
-                                        <span class="slip-seq">SEQ# 0001</span>
-                                        <span class="slip-agent">[@dot-supervisor]</span>
-                                    </div>
-                                    <p class="slip-text">Missao iniciada. Carregando ferramentas via Dynamic Tool Pruning (3/23 tools ativas).</p>
+                        <div class="showcase-ticker-body" id="heroSimViewport">
+                            <div class="slip-entry">
+                                <div class="slip-meta">
+                                    <span class="slip-agent">[@dot-supervisor]</span>
+                                    <span>SEQ# 0001</span>
                                 </div>
-                                <div class="picote-line">---- PICOTE // DESTACAR ----</div>
-                                <div class="slip-entry">
-                                    <div class="slip-meta">
-                                        <span class="slip-seq">SEQ# 0002</span>
-                                        <span class="slip-agent">[@dot-coder]</span>
+                                <p class="slip-text">Missao iniciada. Carregando especialistas via Dynamic Tool Pruning (3/23 ferramentas ativas no contexto).</p>
+                            </div>
+
+                            <div class="picote-line">---- PICOTE // REGISTRO DE BORDA ----</div>
+
+                            <div class="slip-entry">
+                                <div class="slip-meta">
+                                    <span class="slip-agent">[@dot-coder]</span>
+                                    <span>SEQ# 0002</span>
+                                </div>
+                                <p class="slip-text">Gerando teste de integracao de hardware em sandbox Bubblewrap. Solicitando autorizacao do operador.</p>
+
+                                <!-- Card HITL Clicavel e Interativo -->
+                                <div class="hitl-box" id="heroDemoHitlBox">
+                                    <div class="hitl-box-header">
+                                        <span>EXECUCAO STRICT SANDBOX</span>
+                                        <span>HMAC-SHA256 VALIDO</span>
                                     </div>
-                                    <p class="slip-text">Gerando patch de sandbox Bubblewrap. Solicitando homologacao do operador.</p>
-                                    
-                                    <!-- Card HITL Clicavel de Demonstracao -->
-                                    <div class="hitl-box" id="heroDemoHitlBox">
-                                        <div class="hitl-box-header">
-                                            <span class="hitl-box-title">EXECUCAO EM TERMINAL STRICT SANDBOX</span>
-                                            <span class="hitl-box-risk">RISCO MEDIO // HMAC-SHA256</span>
-                                        </div>
-                                        <div class="hitl-box-cmd">bwrap --ro-bind /usr /usr --tmpfs /tmp --dir /run python3 -m pytest</div>
-                                        <div class="hitl-box-actions" id="heroDemoHitlActions">
-                                            <button type="button" class="pixel-btn btn-cyan pixel-btn-touch" id="btnHeroDemoApprove" onclick="handleHeroDemoHitl('approve')">[HOMOLOGAR]</button>
-                                            <button type="button" class="pixel-btn pixel-btn-touch" id="btnHeroDemoReject" onclick="handleHeroDemoHitl('reject')">[VETAR]</button>
-                                            <button type="button" class="pixel-btn pixel-btn-touch" id="btnHeroDemoInspect" onclick="handleHeroDemoHitl('inspect')">[INSPECIONAR ACAO]</button>
-                                        </div>
+                                    <div class="hitl-box-cmd">bwrap --ro-bind /usr /usr --tmpfs /tmp python3 -m pytest</div>
+                                    <div class="hitl-box-actions" id="heroDemoHitlActions">
+                                        <button type="button" class="pixel-btn btn-green btn-sm" id="btnHeroDemoApprove" onclick="handleHeroDemoHitl('approve')">[HOMOLOGAR]</button>
+                                        <button type="button" class="pixel-btn btn-danger btn-sm" id="btnHeroDemoReject" onclick="handleHeroDemoHitl('reject')">[VETAR]</button>
                                     </div>
                                 </div>
                             </div>
@@ -219,1896 +203,328 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Bento Grid de Telemetria de Borda (4 Cards) -->
-            <div class="hero-bento-grid">
-                <div class="bento-card">
-                    <div class="bento-card-top">
-                        <span class="bento-badge">SILICIO RSS</span>
-                        <span class="bento-val">52 MB</span>
-                    </div>
-                    <div class="bento-title">Folga Real de Memoria</div>
-                    <p class="bento-desc">Consome menos de 2% dos 4GB do Raspberry Pi 4B, deixando silicio livre para o sistema operacional.</p>
-                </div>
-                <div class="bento-card">
-                    <div class="bento-card-top">
-                        <span class="bento-badge">AG-UI COAGENTS</span>
-                        <span class="bento-val">4 ESPECIALISTAS</span>
-                    </div>
-                    <div class="bento-title">Dynamic Tool Pruning</div>
-                    <p class="bento-desc">Supervisor, Coder, Muse e Auditor coordenados com orcamento de schema enxuto (~420 a ~780 tokens/turno).</p>
-                </div>
-                <div class="bento-card">
-                    <div class="bento-card-top">
-                        <span class="bento-badge">FLASH-SAFE</span>
-                        <span class="bento-val">SQLITE WAL 64D</span>
-                    </div>
-                    <div class="bento-title">Memoria Hibrida FTS5</div>
-                    <p class="bento-desc">Persistencia relacional sem fsync agressivo, protegendo a vida util de cartoes MicroSD e eMMC.</p>
-                </div>
-                <div class="bento-card">
-                    <div class="bento-card-top">
-                        <span class="bento-badge">GOVERNANCA</span>
-                        <span class="bento-val">HOP &lt;= 3 &amp; HITL</span>
-                    </div>
-                    <div class="bento-title">Assinatura Criptografica</div>
-                    <p class="bento-desc">Retencao Deny-by-Default com HMAC-SHA256, TTL de 30 minutos e aprovacao interativa Telegram/WhatsApp.</p>
-                </div>
-            </div>
-
-            <!-- SIMULADOR REACT LIVE TERMINAL COM PROTOCOLO AG-UI & MULTI-BOT -->
-            <article class="live-react-simulator" id="heroLiveSimulator">
-                <header class="sim-header">
-                    <div class="sim-tabs">
-                        <button type="button" class="sim-tab-btn active" id="tabBtnTerminal" onclick="switchSimulatorTab('terminal')">
-                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                            <span>TERMINAL AG-UI // AGENTES LOCAIS RE-ACT</span>
-                        </button>
-                        <button type="button" class="sim-tab-btn" id="tabBtnTelemetry" onclick="switchSimulatorTab('telemetry')">
-                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 10"></polyline></svg>
-                            <span>TELEMETRIA VIVA // BCM2711 ARM64</span>
-                        </button>
-                    </div>
-                    <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green); display: flex; align-items: center; gap: 8px;">
-                        <span class="status-live-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--phosphor-green);"></span>
-                        <span id="heroSimStatusText">NO ATIVO // 3 AGENTES EM ESPERA // RSS: 64.2MB</span>
-                    </div>
-                </header>
-
-                <!-- Visualizador 1: Terminal ReAct Interativo -->
-                <div class="sim-viewport" id="heroSimViewport">
-                    <div class="sim-line prefix">[BOOT] piDots Edge Core v1.5.3 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
-                    <div class="sim-line">[03:14:00] <span style="color: var(--ink-muted);">HEARTBEAT-DAEMON //</span> Checagem periodica: <span style="color: var(--phosphor-green);">HEARTBEAT_OK [Filtro de silêncio ativo: 0 tokens consumidos]</span></div>
-                    <div class="sim-line" style="color: var(--blueprint-cyan);">[INFO] Selecione um dos comandos rapidos abaixo ou digite seu comando no prompt:</div>
-                </div>
-
-                <!-- Visualizador 2: Painel de Telemetria (Inicialmente Oculto) -->
-                <div class="sim-viewport" id="heroTelemetryViewport" style="display: none;">
-                    <div class="sim-line" style="color: var(--blueprint-cyan); font-weight: bold;">[TELEMETRIA DO SILICIO BROADCOM BCM2711 // ARM64 CORTEX-A72]</div>
-                    <div class="sim-line" style="margin: 8px 0;">
-                        <span>MEMORIA RAM FISICA (RSS): </span>
-                        <span style="color: var(--phosphor-green); font-weight: bold;" id="simTeleRam">64.2 MB / 3840 MB (1.6% USO)</span>
-                    </div>
-                    <div class="sim-line" style="margin: 8px 0;">
-                        <span>TEMPERATURA DO PROCESSADOR (SOC): </span>
-                        <span style="color: var(--phosphor-green); font-weight: bold;" id="simTeleTemp">44.8 C (NOMINAL // LIMIAR 72 C)</span>
-                    </div>
-                    <div class="sim-line" style="margin: 8px 0;">
-                        <span>PERSISTENCIA BANCO RELACIONAL: </span>
-                        <span style="color: var(--thermal-amber);">SQLITE 3.45 WAL // JOURNAL_MODE=WAL // SYNCHRONOUS=NORMAL</span>
-                    </div>
-                    <div class="sim-line" style="margin: 8px 0;">
-                        <span>ESTADO DE ISOLAMENTO SANDBOX: </span>
-                        <span style="color: var(--blueprint-cyan);">BUBBLEWRAP (bwrap) ATIVO // TEMPO MEDIO DE MONTAGEM: 12ms</span>
-                    </div>
-                </div>
-
-                <!-- Barra de Comandos Pré-programados Clicáveis -->
-                <div class="sim-chips-bar">
-                    <span class="sim-chips-label">COMANDOS RAPIDOS:</span>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('slash_telemetry')">[/telemetry // PROCESS_RSS_MB]</button>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('coagents_state')">[/coagents // STATE_SNAPSHOT &amp; DELTA]</button>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('dots_computer')">[/computer // DOT'S COMPUTER &amp; TAKEOVER]</button>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('save_space')">[/save-space // SAVE THREAD AS SPACE]</button>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('mcp_tools')">[/mcp // CLIENTE LITE SUB-5MB]</button>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('audit_flash')">[@dot-coder // AUDITAR FLASH &amp; RAM]</button>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('council_debate')">[@conselho // DELIBERAR ARQUITETURA]</button>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('self_healing')">[@self-healing // REPARAR SCRIPT SHELL]</button>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('proactive_heartbeat')">[@heartbeat // EXECUTAR PULSO 24/7]</button>
-                    <button type="button" class="sim-chip" onclick="executeSimulatedOrder('hitl_danger')">[@hitl // MODIFIED_ARGS &amp; RETOMADA]</button>
-                </div>
-
-                <!-- Linha de Input de Comando Interativo -->
-                <div class="sim-input-row">
-                    <span class="sim-prompt-symbol">[OPERADOR]&gt;</span>
-                    <input type="text" id="heroSimInput" class="sim-input-field" placeholder="Digite uma instrucao para o agente ou clique em um comando acima..." onkeydown="if(event.key === 'Enter') handleCustomSimOrder();">
-                    <button type="button" class="pixel-btn btn-cyan btn-sm" onclick="handleCustomSimOrder()">[DISPARAR AG-UI]</button>
-                    <button type="button" class="pixel-btn btn-sm" onclick="clearSimViewport()">[LIMPAR]</button>
-                </div>
-            </article>
         </section>
 
-        <!-- ===================================================================
-             SECAO 01: GRID DE METRICAS DE CHOQUE (BORDA VS NUVEM CORPORATIVA)
-             =================================================================== -->
-        <section class="landing-section" id="metricas-choque">
-            <div class="section-header-bar">
-                <div class="section-tag">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
-                    <span data-i18n="sections.sec1_badge">SEÇÃO 01 // BENCHMARKS REAIS SOB CARGA</span>
-                </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">BENCHMARKS REAIS ARM64</span>
-            </div>
-
-            <h2 class="section-headline" data-i18n="sections.sec1_title">NÚMEROS REAIS MEDIDOS EM HARDWARE DE BORDA</h2>
-            <p class="section-subtitle">
-                Métricas coletadas sob carga contínua em computador de placa única (Raspberry Pi 4B 4GB ARM64 de referência) comparadas com frameworks tradicionais de agentes.
-            </p>
-
-            <div class="shock-metrics-grid">
-                <!-- Metrica 01: RAM RSS Real sob Multi-Bot -->
-                <article class="shock-card">
-                    <div class="shock-card-header">
-                        <span class="shock-card-index">BENCHMARK // 01</span>
-                        <span class="shock-card-badge">UVLOOP + PYTHON 3.13 MULTI-BOT</span>
-                    </div>
-                    <div class="shock-contrast-display">
-                        <div>
-                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">PIDOTS (EDGE MULTI-BOT)</div>
-                            <div class="shock-val-local">&lt; 70 MB</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">FRAMEWORKS NUVEM</div>
-                            <div class="shock-val-cloud">2.4 GB</div>
-                        </div>
-                    </div>
-                    <div class="shock-card-title">Pegada de Memoria RAM Real (RSS)</div>
-                    <p class="shock-card-desc">
-                        Enquanto orquestradores em nuvem e conteineres Docker exigem pods inflados de 2GB a 4GB apenas para gerenciar filas de agentes, o piDots orquestra multiplos AI Coworkers com uvloop e Python 3.13 consumindo menos de 70MB de RAM fisica real em dispositivos de borda (benchmark: Raspberry Pi 4B).
-                    </p>
-                    <div class="shock-diff-tag">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                        <span>-97.1% DE OVERHEAD DE MEMORIA</span>
-                    </div>
-                </article>
-
-                <!-- Metrica 02: Custo Mensal -->
-                <article class="shock-card">
-                    <div class="shock-card-header">
-                        <span class="shock-card-index">ECONOMIA // 02</span>
-                        <span class="shock-card-badge" style="color: var(--blueprint-cyan);">HARDWARE PROPRIO</span>
-                    </div>
-                    <div class="shock-contrast-display">
-                        <div>
-                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">PIDOTS LOCAL</div>
-                            <div class="shock-val-local cyan">R$ 0<span style="font-size: 18px;">/MES</span></div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">INSTANCIA AWS/GCP</div>
-                            <div class="shock-val-cloud">R$ 480</div>
-                        </div>
-                    </div>
-                    <div class="shock-card-title">Custo Mensal de Servidor / SaaS</div>
-                    <p class="shock-card-desc">
-                        Zero custos imprevistos de infraestrutura. Instalacao definitiva no seu hardware fisico com custo operacional marginal de centavos.
-                    </p>
-                    <div class="shock-diff-tag" style="border-color: var(--blueprint-cyan); color: var(--blueprint-cyan); background: rgba(56,189,248,0.08);">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span>100% SOBERANIA DE INFRAESTRUTURA</span>
-                    </div>
-                </article>
-
-                <!-- Metrica 03: Potencia Eletrica -->
-                <article class="shock-card">
-                    <div class="shock-card-header">
-                        <span class="shock-card-index">POTENCIA // 03</span>
-                        <span class="shock-card-badge" style="color: var(--thermal-amber);">BROADCOM BCM2711</span>
-                    </div>
-                    <div class="shock-contrast-display">
-                        <div>
-                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">SBC EDGE (REF: RPI4 4B)</div>
-                            <div class="shock-val-local" style="color: var(--thermal-amber);">6 W</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">SERVIDOR RACK X86</div>
-                            <div class="shock-val-cloud">300 W</div>
-                        </div>
-                    </div>
-                    <div class="shock-card-title">Potencia Energetica Continua</div>
-                    <p class="shock-card-desc">
-                        Operacao continua 24/7 consumindo apenas 6 Watts (cerca de 4,3 kWh por mes). Uma fracao insignificante da conta de energia em comparacao a qualquer PC de mesa ligado.
-                    </p>
-                    <div class="shock-diff-tag" style="border-color: var(--thermal-amber); color: var(--thermal-amber); background: rgba(255,184,48,0.08);">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
-                        <span>50X MENOR CONSUMO ELETRICO</span>
-                    </div>
-                </article>
-
-                <!-- Metrica 04: Soberania & Privacidade -->
-                <article class="shock-card">
-                    <div class="shock-card-header">
-                        <span class="shock-card-index">SEGURANCA // 04</span>
-                        <span class="shock-card-badge">SQLITE WAL FLASH-SAFE</span>
-                    </div>
-                    <div class="shock-contrast-display">
-                        <div>
-                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">VAZAMENTO EXTERNO</div>
-                            <div class="shock-val-local">0 KB</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary); margin-bottom: 2px;">SAAS CORPORATIVO</div>
-                            <div class="shock-val-cloud">100%</div>
-                        </div>
-                    </div>
-                    <div class="shock-card-title">Preservacao e Governanca de Dados</div>
-                    <p class="shock-card-desc">
-                        Historico, memorias agenticas e bases de conhecimento gravados localmente em SQLite sob modo WAL sem replicacao para nuvens terceiras.
-                    </p>
-                    <div class="shock-diff-tag">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                        <span>BLINDAGEM BUBBLEWRAP FORENSE</span>
-                    </div>
-                </article>
-            </div>
-        </section>
-
-        <!-- ===================================================================
-             SECAO 02: GARGALOS DA NUVEM VS OTIMIZACAO EDGE
-             =================================================================== -->
-        <section class="landing-section" id="dor-solucao">
-            <div class="section-header-bar">
-                <div class="section-tag">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    <span data-i18n="sections.sec2_badge">SEÇÃO 02 // POR QUE A BORDA EXIGE UMA ARQUITETURA DIFERENTE</span>
-                </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--stamp-danger);">4 LIMITAÇÕES DA NUVEM VS 4 SOLUÇÕES DE BORDA</span>
-            </div>
-
-            <h2 class="section-headline" data-i18n="sections.sec2_title">A MAIORIA DOS FRAMEWORKS DE IA CONSIDERA MEMÓRIA INFINITA. O PIDOTS FOI PROJETADO PARA O SILÍCIO REAL.</h2>
-            <p class="section-subtitle">
-                A maioria das bibliotecas de agentes assume servidores com gigabytes infinitos de RAM. O piDots foi construído na bancada com disciplina de sistemas operacionais: sem navegadores pesados ocultos e sem processos concorrentes que sobrecarreguem o processador.
-            </p>
-
-            <div class="pain-solution-container">
-                <!-- Coluna da Dor: Nuvem Corporativa -->
-                <article class="pain-side-card">
-                    <header class="side-header">
-                        <div class="side-title-block">
-                            <h3>O OVERHEAD DA NUVEM CORPORATIVA</h3>
-                            <span>ARQUITETURA FRAGIL, CARA E DEPENDENTE</span>
-                        </div>
-                        <div class="side-stamp-wrapper">
-                            <div class="official-stamp veto">
-                                <span>VETO</span>
-                                <span class="official-stamp-sub">INVIAVEL</span>
-                            </div>
-                        </div>
-                    </header>
-
-                    <ul class="side-list">
-                        <li class="side-list-item">
-                            <span class="side-item-label">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--stamp-danger);"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                FATURAS SURPRESA E CUSTOS IMPREVISIVEIS
-                            </span>
-                            <span class="side-item-desc">
-                                Instancias caras de $140 a $280/mes para rodar agentes ociosos 90% do tempo. Cobrancas escalares em dolar por chamada e trafego.
-                            </span>
-                        </li>
-
-                        <li class="side-list-item">
-                            <span class="side-item-label">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--stamp-danger);"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                AGENTES DESGOVERNADOS QUE APAGAM SEUS ARQUIVOS
-                            </span>
-                            <span class="side-item-desc">
-                                Agentes caixas-pretas executando comandos destrutivos no terminal sem governanca humana real ou com meros modais cosmeticos.
-                            </span>
-                        </li>
-
-                        <li class="side-list-item">
-                            <span class="side-item-label">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--stamp-danger);"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                CARTOES MICROSD QUEIMADOS EM SEMANAS
-                            </span>
-                            <span class="side-item-desc">
-                                Bancos de dados sem calibracao forcando chamadas continuas de fsync a cada token, esgotando os ciclos de escrita da memoria Flash.
-                            </span>
-                        </li>
-
-                        <li class="side-list-item">
-                            <span class="side-item-label">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--stamp-danger);"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                CHROMIUM E NODE DEVORANDO 2GB DE RAM
-                            </span>
-                            <span class="side-item-desc">
-                                Frameworks pesados com navegadores continuos que causam colapso OOM instantaneo em SBCs e vazamento de segredos para a nuvem.
-                            </span>
-                        </li>
-                    </ul>
-                </article>
-
-                <!-- Coluna da Solucao: piDots Edge -->
-                <article class="solution-side-card">
-                    <header class="side-header">
-                        <div class="side-title-block">
-                            <h3>A ARQUITETURA AUTONOMA DO PIDOTS</h3>
-                            <span>COMPUTACAO DE BORDA ROBUSTA E PERSISTENTE</span>
-                        </div>
-                        <div class="side-stamp-wrapper">
-                            <div class="official-stamp approved">
-                                <span>SUCESSO</span>
-                                <span class="official-stamp-sub">HOMOLOGADO</span>
-                            </div>
-                        </div>
-                    </header>
-
-                    <ul class="side-list">
-                        <li class="side-list-item">
-                            <span class="side-item-label">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                CUSTO DE ENERGIA DE R$ 3,50/MES EM 6 WATTS
-                            </span>
-                            <span class="side-item-desc">
-                                Operacao local continua em hardware proprio (SBCs, Mini PCs ou Raspberry Pi via USB-C). Zero intermediarios e payback total do hardware em menos de 30 dias.
-                            </span>
-                        </li>
-
-                        <li class="side-list-item">
-                            <span class="side-item-label">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                GOVERNANCA HITL COM TRAVA MECANICA E CARIMBOS
-                            </span>
-                            <span class="side-item-desc">
-                                Comandos de risco sao retidos imediatamente. O operador humano precisa destravar a chave e homologar com carimbo no SQLite WAL.
-                            </span>
-                        </li>
-
-                        <li class="side-list-item">
-                            <span class="side-item-label">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                PRESERVACAO FLASH COM ESCRITAS AMORTECIDAS
-                            </span>
-                            <span class="side-item-desc">
-                                PRAGMA journal_mode = WAL e synchronous = NORMAL com cache prioritario em RAM, preservando seu MicroSD por anos a fio.
-                            </span>
-                        </li>
-
-                        <li class="side-list-item">
-                            <span class="side-item-label">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                ISOLAMENTO BUBBLEWRAP EM SUB-15MS E &lt; 300MB RAM
-                            </span>
-                            <span class="side-item-desc">
-                                Namespaces nativos do Linux, extracao semantica leve (~18MB) e zero navegadores continuos pesados rodando em background.
-                            </span>
-                        </li>
-                    </ul>
-                </article>
-            </div>
-        </section>
-
-        <!-- ===================================================================
-             SECAO 03: PILARES FUNDAMENTAIS DE ENGENHARIA (FEATURES GRID)
-             =================================================================== -->
-        <section class="landing-section" id="pilares">
-            <div class="section-header-bar">
-                <div class="section-tag">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                    <span>SECAO 03 // PILARES DE AUTONOMIA</span>
-                </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">ENGENHARIA ORIENTADA A VALOR</span>
-            </div>
-
-            <h2 class="section-headline">CADA LINHA DE CODIGO OTIMIZADA PARA O SEU SILICIO</h2>
-            <p class="section-subtitle">
-                Otimizado para arquiteturas ARM64 e x86_64 de baixo consumo (com telemetria termica e benchmark no Broadcom BCM2711 do Raspberry Pi 4B), entregando maxima velocidade operacional com a menor pegada termica do mercado.
-            </p>
-
-            <div class="features-grid">
-                <!-- Pilar 01 -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 01</span>
-                        <span class="feature-badge">SOBERANIA TOTAL</span>
-                    </header>
-                    <h3 class="feature-title">Zero Custo de Nuvem &amp; Operacao em 6 Watts</h3>
-                    <p class="feature-desc">
-                        Elimine a dependencia de assinaturas de SaaS e custos imprevistos de infraestrutura. O piDots roda localmente no seu hardware de borda (consumindo apenas 6.2 Watts em SBCs como o Raspberry Pi via USB-C). Seu ambiente, suas regras, seus dados sob seu teto fisico.
-                    </p>
-                    <div class="feature-code-box">
-                        Processador: ARM Cortex-A72 Quad-Core (Ref: RPi4) / SBCs e Linux x86_64<br>
-                        Consumo: 6.2 Watts medios (Fonte USB-C 5V 3A)<br>
-                        Independencia: Sem faturas mensais de infraestrutura
-                    </div>
-                </article>
-
-                <!-- Pilar 02 -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 02</span>
-                        <span class="feature-badge">FLASH-SAFE</span>
-                    </header>
-                    <h3 class="feature-title">Preservacao Radical do Armazenamento Flash</h3>
-                    <p class="feature-desc">
-                        Desenvolvido para proteger seu cartao MicroSD contra exaustao de ciclos de escrita. Utilizando SQLite com WAL, sincronizacao amortecida e cache prioritario em RAM, o piDots garante estabilidade ininterrupta por anos.
-                    </p>
-                    <div class="feature-code-box">
-                        PRAGMA journal_mode = WAL;<br>
-                        PRAGMA synchronous = NORMAL;<br>
-                        PRAGMA temp_store = MEMORY; (Cache RAM de 64MB)
-                    </div>
-                </article>
-
-                <!-- Pilar 03 -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 03</span>
-                        <span class="feature-badge">ISOLAMENTO BWRAP</span>
-                    </header>
-                    <h3 class="feature-title">Sandboxing Ultraleve em Namespaces Linux</h3>
-                    <p class="feature-desc">
-                        Em vez de sobrecarregar o hardware com conteineres Docker lentos para cada acao, o piDots isola comandos do shell usando Bubblewrap (bwrap) nativo com sistema de arquivos somente leitura e limites rigidos de CPU e RAM.
-                    </p>
-                    <div class="feature-code-box">
-                        Tempo de Subida: Abaixo de 15 milissegundos<br>
-                        Consumo por Sandbox: Menos de 3MB de RAM<br>
-                        Isolamento: Namespaces PID, IPC e Filesystem Read-Only
-                    </div>
-                </article>
-
-                <!-- Pilar 04 -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 04</span>
-                        <span class="feature-badge">AG-UI &amp; COAGENTS</span>
-                    </header>
-                    <h3 class="feature-title">Protocolo AG-UI, Generative UI Inline &amp; CoAgents State</h3>
-                    <p class="feature-desc">
-                        Transparencia absoluta do agente com Generative UI Cards renderizados inline na bobina de teletipo e sincronizacao em tempo real do CoAgents Shared State (eventos STATE_SNAPSHOT e STATE_DELTA via SSE), exibindo fase cognitiva, plano de execucao e ferramenta ativa ao vivo.
-                    </p>
-                    <div class="feature-code-box">
-                        Eventos SSE: STATE_SNAPSHOT, STATE_DELTA e Generative UI Cards<br>
-                        Endpoint REST: GET /api/threads/{id}/state (Sincronizado ao vivo)<br>
-                        Interface: Buffer circular de 150 nos DOM estritos
-                    </div>
-                </article>
-
-                <!-- Pilar 05 -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 05</span>
-                        <span class="feature-badge">HITL + MODIFIED_ARGS</span>
-                    </header>
-                    <h3 class="feature-title">Governanca HITL com Edicao de Argumentos e Retomada</h3>
-                    <p class="feature-desc">
-                        Comandos criticos pausam o turno imediatamente e renderizam um card HITL interativo. O operador humano pode inspecionar, editar os argumentos JSON (modified_args) antes de homologar e disparar a retomada automatica da execucao do agente sem perder o contexto da thread.
-                    </p>
-                    <div class="feature-code-box">
-                        Intervencao: Edicao inline de payload via modified_args<br>
-                        Fluxo: Retomada automatica do loop ReAct pos-homologacao<br>
-                        Auditoria: Carimbos forenses e log imutavel no SQLite WAL
-                    </div>
-                </article>
-
-                <!-- Pilar 06 -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 06</span>
-                        <span class="feature-badge">SPACES &amp; SAVE-THREAD</span>
-                    </header>
-                    <h3 class="feature-title">Spaces Versionados, Save Thread as Space &amp; Motor 64D</h3>
-                    <p class="feature-desc">
-                        Co-criacao colaborativa de artefatos e conversao instantanea de qualquer conversa em documento estruturado via Save Thread as Space. O piDots calcula revisoes com diffs unificados em sub-4ms e indexa tudo no motor vetorial 64D unificado em memoria.
-                    </p>
-                    <div class="feature-code-box">
-                        Conversao: POST /api/threads/{id}/save-as-space (/save-space)<br>
-                        Diff Engine: Calculo unificado de revisoes em sub-4ms<br>
-                        Busca Semantica: Motor de Embedding 64D deterministico unificado
-                    </div>
-                </article>
-
-                <!-- Pilar 07: Orquestracao Multi-Bot no Edge -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 07</span>
-                        <span class="feature-badge" style="color: var(--blueprint-cyan);">MULTI-BOT EDGE</span>
-                    </header>
-                    <h3 class="feature-title">Orquestracao Multi-Bot no Edge &amp; Handoff Autonomo</h3>
-                    <p class="feature-desc">
-                        Substitua agentes solitarios por equipes coordenadas de coworkers especializados no mesmo dispositivo de borda. Mencione bots no chat via @dot (@dot-coder, @dot-devops, @dot-sec) ou crie salas tematicas (#devops, #pesquisa) onde multiplos bots cooperam com delegacao automatica via delegate_task. A Poda Dinamica de Ferramentas (Dynamic Tool Pruning) e travas anti-recursao (hop &lt;= 3) garantem foco absoluto e consumo infimo de RAM.
-                    </p>
-                    <div class="feature-code-box">
-                        Roteamento: ThreadRouter assincrono &amp; Invocacao @dot<br>
-                        Salas Tematicas: Colaboracao multi-agente (#devops, #pesquisa)<br>
-                        Isolamento: Dynamic Tool Pruning &amp; Trava anti-recursao (hop &lt;= 3)
-                    </div>
-                </article>
-
-                <!-- Pilar 08: Autonomia Proativa Heartbeat -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 08</span>
-                        <span class="feature-badge" style="color: var(--phosphor-green);">DOT HEARTBEAT</span>
-                    </header>
-                    <h3 class="feature-title">Autonomia Proativa com Protocolo Dot Heartbeat</h3>
-                    <p class="feature-desc">
-                        Seus agentes nao ficam dormindo esperando comandos. O motor EdgeScheduler in-process executa tarefas agendadas via croniter e dispara ciclos silenciosos de Heartbeat para checar integridade do sistema, logs e arquivos. Gracas ao filtro inteligente HEARTBEAT_OK, checagens rotineiras sem incidentes nao geram poluicao no SQLite WAL e consomem exatamente ZERO tokens desnecessarios de resposta. Apenas anomalias reais acionam alertas.
-                    </p>
-                    <div class="feature-code-box">
-                        Escalonador: EdgeScheduler in-process leve via croniter<br>
-                        Filtro Silencioso: Resposta 'HEARTBEAT_OK' descarta ruido<br>
-                        Economia: Zero poluicao de banco e consumo zero de tokens inuteis
-                    </div>
-                </article>
-
-                <!-- Pilar 09: Mensageria Unificada Telegram & WhatsApp -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 09</span>
-                        <span class="feature-badge" style="color: var(--thermal-amber);">MESSAGING GATEWAY</span>
-                    </header>
-                    <h3 class="feature-title">Mensageria Unificada Telegram &amp; WhatsApp</h3>
-                    <p class="feature-desc">
-                        Comande sua estacao de trabalho edge de qualquer lugar do planeta diretamente pelo Telegram ou WhatsApp. O MessagingGateway normaliza mensagens em UnifiedIncomingMessage com roteamento bidirecional. Dispare comandos remotos para seu no de borda (ou Raspberry Pi), aprove acoes retidas pela governanca HITL pelo celular e receba alertas imediatos dos agentes, tudo sem instalar servidores pesados e com criptografia de ponta a ponta.
-                    </p>
-                    <div class="feature-code-box">
-                        Integracoes: Webhooks nativos Telegram Bot API &amp; WhatsApp<br>
-                        Normalizacao: UnifiedIncomingMessage agnostica de canal<br>
-                        Comando Remoto: Interacao no chat e homologacao HITL movel
-                    </div>
-                </article>
-
-                <!-- Pilar 10: Memoria Hierarquica Autonoma (Padrao MemGPT / Letta) -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 10</span>
-                        <span class="feature-badge" style="color: var(--blueprint-cyan);">MEMGPT HIERARCHY</span>
-                    </header>
-                    <h3 class="feature-title">Memoria Hierarquica Autonoma em 3 Camadas</h3>
-                    <p class="feature-desc">
-                        O piDots supera a amnesia dos agentes tradicionais. A Core Memory residente no prompt mantem persona e contexto ativos em blocos com limite seguro de caracteres. A Archival Memory duradoura indexa bases de conhecimento usando busca hibrida ultraleve (SQLite FTS5 BM25 + Projecao Vetorial 64d por hashing trigramas), e a Recall Memory recupera o historico recente de dialogos. O proprio Dot decide quando aprender e atualizar fatos via Function Calling nativo.
-                    </p>
-                    <div class="feature-code-box">
-                        Arquitetura: Core Memory (in-context) + Archival + Recall<br>
-                        Busca Hibrida: FTS5 BM25 + Projecao Vetorial 64d Unificada (Zero GPU)<br>
-                        Auto-Edicao: core_memory_append, replace e archival_insert
-                    </div>
-                </article>
-
-                <!-- Pilar 11: Conselho Consultivo Multi-Bot & Self-Healing Harness -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 11</span>
-                        <span class="feature-badge" style="color: var(--phosphor-green);">CONSELHO &amp; HEALING</span>
-                    </header>
-                    <h3 class="feature-title">Conselho Consultivo Multi-Bot &amp; Self-Healing Harness</h3>
-                    <p class="feature-desc">
-                        Decisoes criticas de arquitetura sao submetidas ao debate formal do Conselho Consultivo entre Propositor (@coder), Critico Adversarial (@auditor) e Supervisor (@supervisor), com debate em fitas internas e resolucao executiva publica (trava de seguranca de 3 rodadas e &lt; 53MB de RAM). Paralelamente, o Self-Healing Harness disseca tracebacks de comandos shell em caso de erro e aciona o loop interno de auto-correcao antes de responder ao usuario, acompanhado de planejamento em dois estagios (Goals &amp; Milestones).
-                    </p>
-                    <div class="feature-code-box">
-                        Debate Tripartite: Propositor + Auditor + Supervisor (max 3 rounds)<br>
-                        Self-Healing: Analise cirurgica de traceback e reparo autonomo<br>
-                        Planejamento: Metas e Marcos percentuais com evidencias tecnicas
-                    </div>
-                </article>
-
-                <!-- Pilar 12: Triggers de Hardware Edge & Manutencao Noturna MicroSD -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 12</span>
-                        <span class="feature-badge" style="color: var(--thermal-amber);">HARDWARE &amp; MICROSD</span>
-                    </header>
-                    <h3 class="feature-title">Triggers de Hardware Edge &amp; Manutencao Noturna do MicroSD</h3>
-                    <p class="feature-desc">
-                        Projetado para operacao 24/7 sem degradacao fisica. Triggers de hardware monitoram continuamente a temperatura do SoC Broadcom BCM2711, espaco livre flash e RAM, disparando throttle automatico e alertas proativos via HITL antes de superaquecer. A rotina noturna autonoma executa checkpoint WAL síncrono com truncamento (PRAGMA wal_checkpoint TRUNCATE), compactacao atomica com VACUUM INTO e consolidacao de mensagens antigas em memorias episodicas, eliminando inchaco no MicroSD.
-                    </p>
-                    <div class="feature-code-box">
-                        Monitoramento: Temperatura SoC (/sys), Disco Flash e RAM livre<br>
-                        Preservacao: PRAGMA wal_checkpoint(TRUNCATE) &amp; VACUUM INTO<br>
-                        Consolidacao: Poda automatica de mensagens &gt; 7 dias em memorias episodicas
-                    </div>
-                </article>
-
-                <!-- Pilar 13: Protocolo Unificado de 34 Slash Commands & Recibos Tatis -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 13</span>
-                        <span class="feature-badge" style="color: var(--blueprint-cyan);">34 SLASH COMMANDS (/)</span>
-                    </header>
-                    <h3 class="feature-title">Catalogo de 34 Slash Commands &amp; Recibos Tatis</h3>
-                    <p class="feature-desc">
-                        Controle operacional cirurgico de alta velocidade. O piDots integra um catalogo expandido de 34 Slash Commands organizados em 6 categorias funcionais (incluindo /save-space, /computer, /mcp e /coagents), disparados com a tecla '/' no teletipo. Acoes locais executam no cliente em menos de 16ms com zero consumo de tokens, busca fuzzy Levenshtein e recibos tatis na bobina de papel.
-                    </p>
-                    <div class="feature-code-box">
-                        Catalogo: 34 comandos (incluindo /save-space, /computer, /mcp, /coagents)<br>
-                        Motor: Vanilla JS &lt; 10KB com busca fuzzy, Levenshtein e zero bibliotecas pesadas<br>
-                        Latencia: Sub-16ms com zero chamadas externas de LLM e zero consumo de tokens
-                    </div>
-                </article>
-
-                <!-- Pilar 14: Activity Rail (48px) & Computador de Borda (Dot's Computer) -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 14</span>
-                        <span class="feature-badge" style="color: var(--phosphor-green);">ACTIVITY RAIL &amp; COMPUTER</span>
-                    </header>
-                    <h3 class="feature-title">Activity Rail (48px) &amp; Computador de Borda (Dot's Computer)</h3>
-                    <p class="feature-desc">
-                        Navegacao de alta densidade com Activity Rail lateral de 48px que comuta 4 paineis contextuais: Spaces &amp; Canais, Estudio de Agentes &amp; Tool Pruning, Tasks Agendadas &amp; Sensores, e Memoria Hibrida 64D &amp; MCP Lite. No painel direito, o Computador de Borda (Dot's Computer) integra explorador de workspace, terminal Bubblewrap ao vivo e Modo Takeover para intervencao direta do operador.
-                    </p>
-                    <div class="feature-code-box">
-                        Activity Rail: 48px com 4 paineis contextuais de comutacao instantanea<br>
-                        Dot's Computer: Explorador de arquivos, Terminal bwrap e Modo Takeover<br>
-                        Telemetria: process_rss_mb real no Edge Pulse Chip e WCAG 2.2 AA (44px)
-                    </div>
-                </article>
-                <!-- Pilar 15: Catalogo Oficial de Dot Packs v1.1 Assinados com SHA-256 -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 15</span>
-                        <span class="feature-badge" style="color: var(--blueprint-cyan);">DOT PACKS SHA-256</span>
-                    </header>
-                    <h3 class="feature-title">Catalogo de Dot Packs v1.1 Assinados com SHA-256</h3>
-                    <p class="feature-desc">
-                        Distribuicao portavel de perfis especializados em manifestos JSON padronizados. Inclui tres pacotes comunitarios oficiais prontos para instalacao em 1 clique: SecOps Sentinel (@dot-secops), Homelab Orchestrator (@dot-homelab) e FinOps Telemetry Analyst (@dot-finops). Cada pacote possui hash SHA-256 canônico e passa por auditoria forense do @dot-auditor contra tecnicas de Prompt Injection.
-                    </p>
-                    <div class="feature-code-box">
-                        Catalogo Oficial: GET /api/dots/packs/catalog (dot-secops, dot-homelab, dot-finops)<br>
-                        Instalacao 1-Clique: POST /api/dots/packs/install/{pack_id} com verificacao SHA-256<br>
-                        Inspecao Forense: Validacao de Core Memory e Archival facts pelo @dot-auditor
-                    </div>
-                </article>
-
-                <!-- Pilar 16: Infraestrutura Nginx Alpine & Barramento Fisico GPIO/MQTT -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 16</span>
-                        <span class="feature-badge" style="color: var(--phosphor-green);">NGINX &amp; GPIO/MQTT</span>
-                    </header>
-                    <h3 class="feature-title">Desoneracao Estatica com Nginx &amp; Triggers GPIO/MQTT</h3>
-                    <p class="feature-desc">
-                        Arquitetura de alto rendimento para hardware de borda. O conteiner pidots-nginx (Nginx 1.27 Alpine, &lt; 8MB RAM) assume a entrega direta de assets estaticos com Cache-Control immutable e proxy reverso SSE sem buffering, poupando ciclos de CPU do FastAPI. Em paralelo, o barramento de borda monitora pinos fisicos GPIO e topicos locais MQTT, despertando o @dot-supervisor no SQLite WAL apenas sob eventos fisicos reais.
-                    </p>
-                    <div class="feature-code-box">
-                        Nginx Alpine: Entrega direta em C de /static/ e /data/locales/ com SSE proxy<br>
-                        Gatilhos Fisicos: Escuta de pinos GPIO (libgpiod) e telemetria MQTT de sensores<br>
-                        Despertar Proativo: Wakeup automatico de @dot-supervisor em edge-supervisor-wakeup
-                    </div>
-                </article>
-
-                <!-- Pilar 17: Governanca Cognitiva & Engenharia Centauro -->
-                <article class="feature-card">
-                    <header class="feature-top">
-                        <span class="feature-num">PILAR 17</span>
-                        <span class="feature-badge" style="color: var(--thermal-amber);">ENGENHARIA CENTAURO</span>
-                    </header>
-                    <h3 class="feature-title">Governanca Cognitiva Refinada &amp; Manifesto Centauro</h3>
-                    <p class="feature-desc">
-                        Seguranca sem desperdicio de silicio. Trava estrita de auto-reparo fixada em MAX_HEAL_ATTEMPTS = 2 para evitar loops infinitos de tokens, Saida Antecipada por Consenso no Conselho (Early Consensus Exit) quando o auditor aprova a proposta na rodada 2 e expiracao deterministica de acoes retidas na governanca HITL (TTL = 30 min). Documentado formalmente no Manifesto de Engenharia Centauro (AI_MANIFESTO.md) com pipeline de CI Multi-Arch (linux/amd64 e linux/arm64).
-                    </p>
-                    <div class="feature-code-box">
-                        Auto-Cura: MAX_HEAL_ATTEMPTS = 2 com escalonamento ao operador<br>
-                        Conselho: Early Consensus Exit na Rodada 2 poupando rodadas extras<br>
-                        Transparencia: AI_MANIFESTO.md e compilacao automatica multi-arch
-                    </div>
-                </article>
-            </div>
-        </section>
-
-
-        <!-- ===================================================================
-             SECAO 05: ARENA INTERATIVA DE DEMONSTRACAO (SHOWCASE VIVO)
-             =================================================================== -->
-        <section class="landing-section" id="arena-hitl">
-            <div class="section-header-bar">
-                <div class="section-tag">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    <span>SECAO 05 // SHOWCASE INTERATIVO AO VIVO</span>
-                </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">4 NIVEIS DE AUTONOMIA TESTAVEIS</span>
-            </div>
-
-            <h2 class="section-headline">EXPERIMENTE OS COMPONENTES DA INTERFACE TECNICA</h2>
-            <p class="section-subtitle">
-                Interaja diretamente com os quatro subsistemas operacionais do piDots: governanca HITL, conselho tripartite, auto-cura de codigo e telemetria de silicio com triggers proativos.
-            </p>
-
-            <div class="interactive-arena-grid">
-                <!-- Painel 1: Simulador HITL -->
-                <article class="arena-panel">
-                    <div class="feature-top">
-                        <span class="feature-num">PAINEL 01 // GOVERNANCA</span>
-                        <span class="feature-badge" style="color: var(--thermal-amber);">SIMULADOR HITL</span>
-                    </div>
-
-                    <h3 class="feature-title">Dossie Forense com Carimbos de Borracha</h3>
-                    <p class="feature-desc">
-                        Destrave a trava mecanica de seguranca analogica e homologue ou vete a solicitacao de comando retida no SQLite WAL:
-                    </p>
-
-                    <!-- Trava Mecanica -->
-                    <div class="safety-lock-row" onclick="toggleMechanicalSafetyLock()">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div class="mechanical-switch" id="demoSafetySwitch">
-                                <div class="mechanical-switch-thumb"></div>
-                            </div>
-                            <span style="font-family: var(--font-pixel); font-size: 8px;" id="demoSafetyLabel">TRAVA ENGATADA</span>
-                        </div>
-                        <span style="font-size: 10px; color: var(--ink-secondary);">RM -RF /SCRATCH_CACHE</span>
-                    </div>
-
-                    <!-- Arena de Carimbos Analogicos -->
-                    <div class="rubber-stamps-arena">
-                        <div class="rubber-stamp stamp-rejected" id="demoStampReject">
-                            <span>VETADO</span>
-                            <span class="stamp-sub">ACAO CANCELADA</span>
-                            <span style="font-size: 8px;">OP: LYON</span>
-                        </div>
-                        <div class="rubber-stamp stamp-approved" id="demoStampApprove">
-                            <span>HOMOLOGADO</span>
-                            <span class="stamp-sub">COMANDO OK</span>
-                            <span style="font-size: 8px;">WAL-AUTH</span>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: auto;">
-                        <button class="pixel-btn btn-danger" onclick="triggerDemoVeto()">
-                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                            <span>[VETAR]</span>
-                        </button>
-                        <button class="pixel-btn btn-green" id="btnDemoApprove" disabled onclick="triggerDemoApprove()">
-                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            <span>[HOMOLOGAR]</span>
-                        </button>
-                    </div>
-                </article>
-
-                <!-- Painel 2: Conselho Consultivo Tripartite ao Vivo -->
-                <article class="arena-panel" id="conselho-live">
-                    <div class="feature-top">
-                        <span class="feature-num">PAINEL 02 // DIALETICA</span>
-                        <span class="feature-badge" style="color: var(--blueprint-cyan);">CONSELHO TRIPARTITE</span>
-                    </div>
-
-                    <h3 class="feature-title">Deliberacao Multi-Bot em 3 Rodadas</h3>
-                    <p class="feature-desc">
-                        Simule a dialetica entre Propositor (@dot-coder), Auditor (@dot-auditor) e Supervisor (@dot-supervisor) resolvendo um conflito de arquitetura:
-                    </p>
-
-                    <div class="arena-council-feed" id="councilDemoFeed">
-                        <div style="color: var(--ink-muted); font-size: 9px;">[SISTEMA] Aguardando convocacao da sessao do conselho consultivo...</div>
-                    </div>
-
-                    <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: auto;">
-                        <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary);" id="councilRoundStatus">STATUS: OCIOSO</span>
-                        <button class="pixel-btn btn-cyan" onclick="runCouncilDemoSimulation()">
-                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            <span>[CONVOCAR DELIBERACAO]</span>
-                        </button>
-                    </div>
-                </article>
-
-                <!-- Painel 3: Self-Healing Harness & Auto-Cura -->
-                <article class="arena-panel" id="healing-live">
-                    <div class="feature-top">
-                        <span class="feature-num">PAINEL 03 // RESILIENCIA</span>
-                        <span class="feature-badge" style="color: var(--phosphor-green);">SELF-HEALING HARNESS</span>
-                    </div>
-
-                    <h3 class="feature-title">Auto-Cura e Reparo de Traceback</h3>
-                    <p class="feature-desc">
-                        O agente intercepta falhas de execucao de scripts, extrai o traceback sintatico e aplica a correcao cirurgica sem quebrar a esteira:
-                    </p>
-
-                    <div class="arena-healing-feed" id="healingDemoFeed">
-                        <div style="color: var(--ink-muted); font-size: 9px;">[SISTEMA] Pressione o botao para simular uma falha de codigo e observar a auto-cura...</div>
-                    </div>
-
-                    <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: auto;">
-                        <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary);" id="healingStatus">HARNESS: ARMED</span>
-                        <button class="pixel-btn btn-amber" onclick="runHealingDemoSimulation()">
-                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-                            <span>[DISPARAR SCRIPT COM FALHA]</span>
-                        </button>
-                    </div>
-                </article>
-
-                <!-- Painel 4: Osciloscopios SVG & Triggers Termicos -->
-                <article class="arena-panel" id="telemetria">
-                    <div class="feature-top">
-                        <span class="feature-num">PAINEL 04 // SILICIO</span>
-                        <span class="feature-badge">OSCILOSCOPIOS SVG</span>
-                    </div>
-
-                    <h3 class="feature-title">Telemetria de Silicio &amp; Triggers Proativos</h3>
-                    <p class="feature-desc">
-                        Graficos vetoriais em SVG (shape-rendering: crispEdges) com simulacao de carga em tempo real e protecao termica Broadcom:
-                    </p>
-
-                    <div class="telemetry-plotter-box">
-                        <div style="display: flex; justify-content: space-between; font-size: 8px; color: var(--thermal-amber); margin-bottom: 4px; font-family: var(--font-pixel);">
-                            <span>RAM RSS (TETO 300MB)</span>
-                            <span id="arenaRamDisplay">118.4 MB (39.4%)</span>
-                        </div>
-                        <svg class="plotter-svg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges">
-                            <defs>
-                                <pattern id="dither-amber-land" width="4" height="4" patternUnits="userSpaceOnUse">
-                                    <rect width="2" height="2" fill="#ffb830" fill-opacity="0.2" />
-                                    <rect x="2" y="2" width="2" height="2" fill="#ffb830" fill-opacity="0.2" />
-                                </pattern>
-                            </defs>
-                            <rect width="320" height="80" fill="#040608" />
-                            <line x1="0" y1="15" x2="320" y2="15" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,4" />
-                            <text x="4" y="12" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="7">TETO 300MB</text>
-                            <polygon id="arenaRamPolygon" points="0,80 0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44 310,80" fill="url(#dither-amber-land)" />
-                            <polyline id="arenaRamPolyline" points="0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44" fill="none" stroke="#ffb830" stroke-width="2" />
-                        </svg>
-                    </div>
-
-                    <div class="telemetry-plotter-box">
-                        <div style="display: flex; justify-content: space-between; font-size: 8px; color: var(--phosphor-green); margin-bottom: 4px; font-family: var(--font-pixel);">
-                            <span>TEMPERATURA SOC BROADCOM</span>
-                            <span id="arenaTempDisplay">48.2 C (NOMINAL)</span>
-                        </div>
-                        <svg class="plotter-svg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges">
-                            <defs>
-                                <pattern id="dither-green-land" width="4" height="4" patternUnits="userSpaceOnUse">
-                                    <rect width="2" height="2" fill="#33ff66" fill-opacity="0.2" />
-                                    <rect x="2" y="2" width="2" height="2" fill="#33ff66" fill-opacity="0.2" />
-                                </pattern>
-                            </defs>
-                            <rect width="320" height="80" fill="#040608" />
-                            <line x1="0" y1="16" x2="320" y2="16" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,4" />
-                            <text x="4" y="13" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="7">THROTTLE 80C</text>
-                            <polygon id="arenaTempPolygon" points="0,80 0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47 310,80" fill="url(#dither-green-land)" />
-                            <polyline id="arenaTempPolyline" points="0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47" fill="none" stroke="#33ff66" stroke-width="2" />
-                        </svg>
-                    </div>
-
-                    <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: auto;">
-                        <button class="pixel-btn btn-cyan btn-sm" onclick="injectTelemetryPulse()">
-                            <span>[INJETAR PULSO DE CARGA]</span>
-                        </button>
-                        <button class="pixel-btn btn-amber btn-sm" onclick="simulateThermalTriggerAlert()">
-                            <span>[TESTAR ALERTA TERMICO]</span>
-                        </button>
-                    </div>
-                </article>
-            </div>
-        </section>
-
-        <!-- ===================================================================
-             SECAO 05: CALCULADORA INTERATIVA DE ECONOMIA & ROI EDGE
-             =================================================================== -->
-        <section class="landing-section" id="calculadora-roi">
-            <div class="section-header-bar">
-                <div class="section-tag">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>
-                    <span>SECAO 05 // INSTRUMENTACAO FINANCEIRA & ROI</span>
-                </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">SIMULACAO INTERATIVA TATIL</span>
-            </div>
-
-            <h2 class="section-headline">CALCULADORA DE ECONOMIA EDGE & PAYBACK</h2>
-            <p class="section-subtitle">
-                Ajuste os parametros abaixo para calcular em tempo real a economia financeira, watts poupados e tempo de amortizacao do hardware de borda (ex: Raspberry Pi 4B).
-            </p>
-
-            <div class="roi-calculator-board">
-                <!-- Painel Esquerdo: Controles Interativos -->
-                <div class="roi-controls-pane">
-                    <!-- Controle 1: Quantidade de Agentes -->
-                    <div class="calc-control-group">
-                        <div class="calc-control-label-row">
-                            <span class="calc-control-label">1. AGENTES AUTONOMOS ATIVOS</span>
-                            <span class="calc-control-value-badge" id="displayAgentsCount">2 AGENTES</span>
-                        </div>
-                        <input type="range" class="pixel-range-slider" id="sliderAgents" min="1" max="8" value="2" step="1" oninput="recalculateRoi()">
-                        <div style="display: flex; justify-content: space-between; font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted);">
-                            <span>1 AGENTE</span>
-                            <span>4 AGENTES</span>
-                            <span>8 AGENTES (CLUSTER)</span>
-                        </div>
-                    </div>
-
-                    <!-- Controle 2: Custo Mensal por Agente na Nuvem -->
-                    <div class="calc-control-group">
-                        <div class="calc-control-label-row">
-                            <span class="calc-control-label">2. CUSTO DE NUVEM ESTIMADO POR AGENTE</span>
-                            <span class="calc-control-value-badge" id="displayCloudCost">R$ 380 / MES</span>
-                        </div>
-                        <input type="range" class="pixel-range-slider" id="sliderCloudCost" min="100" max="1200" value="380" step="20" oninput="recalculateRoi()">
-                        <div style="display: flex; justify-content: space-between; font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted);">
-                            <span>R$ 100 (BASICO)</span>
-                            <span>R$ 600 (MEDIO)</span>
-                            <span>R$ 1.200 (ENTERPRISE)</span>
-                        </div>
-                    </div>
-
-                    <!-- Controle 3: Regime de Operacao Diario -->
-                    <div class="calc-control-group">
-                        <div class="calc-control-label-row">
-                            <span class="calc-control-label">3. REGIME OPERACIONAL DIARIO</span>
-                            <span class="calc-control-value-badge" id="displayHoursMode">24/7 CONTINUO</span>
-                        </div>
-                        <div class="calc-mode-btn-group">
-                            <button class="calc-mode-btn" onclick="setDutyCycle(8, this)">[8H / DIA]</button>
-                            <button class="calc-mode-btn" onclick="setDutyCycle(16, this)">[16H / DIA]</button>
-                            <button class="calc-mode-btn active" onclick="setDutyCycle(24, this)">[24/7 CONTINUO]</button>
-                        </div>
-                    </div>
-
-                    <!-- Botao de Acao Imediata -->
-                    <div style="margin-top: auto; padding-top: 10px;">
-                        <button class="pixel-btn-cta-cyan" onclick="generateRoiSummaryToast()" style="width: 100%; justify-content: center;">
-                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <span>[EMITIR DOSSIE DE ECONOMIA FORENSE]</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Painel Direito: Resultados & Retorno de Investimento -->
-                <div class="roi-results-pane">
-                    <div class="results-header-tag">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                        <span>PROJECAO ANUAL FORENSE // RELATORIO ESTIMADO</span>
-                    </div>
-
-                    <!-- Card Destaque: Economia Anual -->
-                    <div class="roi-hero-box">
-                        <div class="roi-hero-label">ECONOMIA ESTIMADA ANUAL TOTAL (BRL)</div>
-                        <div class="roi-hero-amount" id="resAnnualSavingsBRL">R$ 11.309</div>
-                        <div class="roi-hero-sub" id="resAnnualSavingsUSD">Aproximadamente US$ 2.056 / ano (cambio 5.50)</div>
-                    </div>
-
-                    <!-- Grid de Sub-metricas -->
-                    <div class="roi-submetrics-grid">
-                        <div class="roi-submetric-card">
-                            <span class="roi-submetric-num" id="resPaybackDays">21 DIAS</span>
-                            <span class="roi-submetric-label">AMORTIZACAO DO DISPOSITIVO DE BORDA (PAYBACK)</span>
-                        </div>
-
-                        <div class="roi-submetric-card">
-                            <span class="roi-submetric-num" id="resEnergySaved">2.575 KWH</span>
-                            <span class="roi-submetric-label">ENERGIA ELETRICA POUPADA POR ANO (300W VS 6W)</span>
-                        </div>
-
-                        <div class="roi-submetric-card">
-                            <span class="roi-submetric-num" id="resCo2Avoided">206 KG</span>
-                            <span class="roi-submetric-label">EMISSOES DE CO2 EVITADAS NA REDE ELETRICA</span>
-                        </div>
-
-                        <div class="roi-submetric-card">
-                            <span class="roi-submetric-num" style="color: var(--phosphor-green);">100%</span>
-                            <span class="roi-submetric-label">PRESERVACAO E SOBERANIA DE CONTEXTO LOCAL</span>
-                        </div>
-                    </div>
-
-                    <div style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); line-height: 1.4; border-top: 1px dashed var(--border-subtle); padding-top: 8px;">
-                        * Simulacao baseada em custo medio de R$ 0,85/kWh residencial/comercial, hardware Raspberry Pi 4B kit completo (~R$ 650) e instancias AWS EC2 t4g/Cloud equivalente com persistencia.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===================================================================
-             SECAO 06: MATRIZ COMPARATIVA DE ARQUITETURAS DE AGENTES
-             =================================================================== -->
-        <section class="landing-section" id="matriz">
-            <div class="section-header-bar">
-                <div class="section-tag">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                    <span>SECAO 06 // MATRIZ COMPARATIVA DE ARQUITETURAS</span>
-                </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">BENCHMARK DE ARQUITETURAS</span>
-            </div>
-
-            <h2 class="section-headline">COMO O PIDOTS SE COMPARA A OUTRAS ARQUITETURAS</h2>
-            <p class="section-subtitle">
-                Analise comparativa direta entre as abordagens de agentes com foco em consumo de hardware e autonomia real.
-            </p>
-
-            <div class="matrix-table-responsive">
-            <table class="matrix-table">
-                <thead>
-                    <tr>
-                        <th>DIMENSAO DE ANALISE</th>
-                        <th>FRAMEWORK SAAS (CLOUD)</th>
-                        <th>FRAMEWORK GPU (VRAM DEDICADA)</th>
-                        <th>ORQUESTRADOR NUVEM (API PROPRIETARIA)</th>
-                        <th class="matrix-highlight">PIDOTS (BORDA FISICA ARM64)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>AMBIENTE ALVO &amp; HARDWARE</strong></td>
-                        <td>Nuvem Corporativa / Servidor x86</td>
-                        <td>Workstation Criativa / GPU Dedicada</td>
-                        <td>Terminal xAI em Datacenter Fechado</td>
-                        <td class="matrix-highlight">Hardware de Borda (SBCs ARM64 / x86_64 / Ref: RPi4 6.2W)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>PEGADA DE RAM (RSS REAL)</strong></td>
-                        <td>1.8 GB - 3.2 GB (Node/Chrome)</td>
-                        <td>1.4 GB - 2.8 GB (React/WebGL)</td>
-                        <td>1.5 GB - 3.0 GB (V8 Wasm)</td>
-                        <td class="matrix-highlight">&lt; 70 MB RSS Real (uvloop + Python 3.13)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>ORQUESTRACAO MULTI-BOT</strong></td>
-                        <td>Pods Docker pesados por agente</td>
-                        <td>Agente criativo unico isolado</td>
-                        <td>Pipeline sequencial fechado</td>
-                        <td class="matrix-highlight">Salas Tematicas + Handoff @dot + Tool Pruning</td>
-                    </tr>
-                    <tr>
-                        <td><strong>AUTONOMIA &amp; BACKGROUND</strong></td>
-                        <td>Cron externo via Celery/Redis</td>
-                        <td>Inexistente (requer sessao ativa)</td>
-                        <td>Agendamentos restritos em nuvem</td>
-                        <td class="matrix-highlight">Dot Heartbeat 24/7 (Filtro HEARTBEAT_OK: 0 tokens)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>MENSAGERIA &amp; CONTROLE REMOTO</strong></td>
-                        <td>Requer servidor central SaaS</td>
-                        <td>Apenas UI desktop local</td>
-                        <td>Apenas app web proprietario</td>
-                        <td class="matrix-highlight">Gateway Nativo Telegram &amp; WhatsApp Embutido</td>
-                    </tr>
-                    <tr>
-                        <td><strong>SANDBOX &amp; COMPUTADOR DO AGENTE</strong></td>
-                        <td>Docker Containers em Nuvem</td>
-                        <td>Ambientes efemeros WebGL</td>
-                        <td>Firecracker MicroVMs xAI</td>
-                        <td class="matrix-highlight">Dot's Computer + Bubblewrap (sub-15ms, Takeover &amp; Explorer)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>STORAGE &amp; PRESERVACAO FLASH</strong></td>
-                        <td>PostgreSQL / Supabase (alto I/O)</td>
-                        <td>PostgreSQL / Cloud S3 Buckets</td>
-                        <td>KV Distribuido / RocksDB</td>
-                        <td class="matrix-highlight">SQLite WAL Flash-Safe (Zero desgaste MicroSD)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>GOVERNANCA HITL &amp; RETOMADA</strong></td>
-                        <td>Modais genericos no feed</td>
-                        <td>Menus de permissao de midia</td>
-                        <td>Logs inline no terminal</td>
-                        <td class="matrix-highlight">Generative UI Cards + Edicao modified_args + Retomada Auto</td>
-                    </tr>
-                    <tr>
-                        <td><strong>CONSOLE &amp; PROTOCOLO AG-UI</strong></td>
-                        <td>Tailwind / Shadcn Padrao</td>
-                        <td>WebGL Fluido GPU</td>
-                        <td>Dark High-Contrast xAI</td>
-                        <td class="matrix-highlight">Activity Rail 48px + CoAgents Shared State + 34 Slash Cmds</td>
-                    </tr>
-                    <tr>
-                        <td><strong>MEMORIA HIERARQUICA (MEMGPT)</strong></td>
-                        <td>Apenas janela de contexto pura</td>
-                        <td>Memoria efemera de sessao</td>
-                        <td>Embeddings vetoriais fechados</td>
-                        <td class="matrix-highlight">Core Memory + Archival FTS5 BM25 + Motor 64D Unificado</td>
-                    </tr>
-                    <tr>
-                        <td><strong>CONSELHO CONSULTIVO &amp; DIALETICA</strong></td>
-                        <td>Agente isolado monolitico</td>
-                        <td>Iteracoes sem auditoria adversarial</td>
-                        <td>Raciocinio em arvore proprietario</td>
-                        <td class="matrix-highlight">Debate Tripartite (Propositor, Auditor, Supervisor)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>SELF-HEALING &amp; AUTO-CORRECAO</strong></td>
-                        <td>Erro exposto direto ao usuario</td>
-                        <td>Retry estatico de requisicao</td>
-                        <td>Interrupcao com traceback</td>
-                        <td class="matrix-highlight">Self-Healing Harness + Goals &amp; Milestones</td>
-                    </tr>
-                    <tr>
-                        <td><strong>SAUDE DO SILICIO &amp; MICROSD</strong></td>
-                        <td>Desconsidera hardware local</td>
-                        <td>Exaustao de GPU sem monitoramento</td>
-                        <td>Invisivel em infraestrutura de nuvem</td>
-                        <td class="matrix-highlight">Thermal Throttling Broadcom + WAL TRUNCATE + VACUUM</td>
-                    </tr>
-                    <tr>
-                        <td><strong>SOBERANIA &amp; CUSTO MENSAL</strong></td>
-                        <td>Faturas recorrentes de nuvem ($$/mes)</td>
-                        <td>Hardware de alto custo e energia</td>
-                        <td>Assinatura xAI exclusiva ($$$)</td>
-                        <td class="matrix-highlight">R$ 0 / mes (100% Soberano, Local e em 6 Watts)</td>
-                    </tr>
-                </tbody>
-            </table>
-            </div>
-
-            <!-- FICHAS CATALOGRAFICAS EMPILHADAS (SUBSTITUICAO RESPONSIVA EM TELAS <= 640PX) -->
-            <div class="mobile-matrix-deck">
-                <!-- Ficha 01 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 01]</span>
-                        <h4 class="card-dimension-title">AMBIENTE ALVO &amp; HARDWARE</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS (CLOUD):</span>
-                            <span class="entry-value">Nuvem Corporativa / Servidor x86</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU (VRAM DEDICADA):</span>
-                            <span class="entry-value">Workstation Criativa / GPU Dedicada</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM (API PROPRIETARIA):</span>
-                            <span class="entry-value">Terminal xAI em Datacenter Fechado</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Hardware de Borda (SBCs / Mini PCs / Ref: RPi4 4GB 6.2W)</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 02 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 02]</span>
-                        <h4 class="card-dimension-title">PEGADA DE RAM (RSS REAL)</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">1.8 GB - 3.2 GB (Node / Chrome headless)</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">1.4 GB - 2.8 GB (React / WebGL)</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">1.5 GB - 3.0 GB (V8 Wasm Runtime)</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">&lt; 70 MB RSS Real (uvloop + Python 3.13 otimizado)</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 03 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 03]</span>
-                        <h4 class="card-dimension-title">ORQUESTRACAO MULTI-BOT</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Pods Docker pesados por agente isolado</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Agente criativo unico isolado na sessao</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Pipeline sequencial proprietario fechado</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Salas Tematicas + Handoff @dot + Dynamic Tool Pruning</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 04 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 04]</span>
-                        <h4 class="card-dimension-title">AUTONOMIA &amp; BACKGROUND</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Cron externo via Celery / Redis pesado</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Inexistente (requer sessao web ativa)</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Agendamentos restritos em datacenter</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Dot Heartbeat 24/7 (Filtro HEARTBEAT_OK: 0 tokens consumidos)</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 05 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 05]</span>
-                        <h4 class="card-dimension-title">MENSAGERIA &amp; CONTROLE REMOTO</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Requer servidor central SaaS terceiro</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Apenas interface desktop local</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Apenas aplicativo web proprietario fechado</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Gateway Nativo Telegram &amp; WhatsApp Embutido (Zero dependencias pesadas)</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 06 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 06]</span>
-                        <h4 class="card-dimension-title">SANDBOX DE EXECUCAO</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Containers Docker em nuvem multi-tenant</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Ambientes efemeros isolados WebGL</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Firecracker MicroVMs em cluster fechado</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Linux Bubblewrap Namespaces (sub-15ms, &lt; 3MB overhead)</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 07 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 07]</span>
-                        <h4 class="card-dimension-title">STORAGE &amp; PRESERVACAO FLASH</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">PostgreSQL / Supabase (alto indice de I/O em disco)</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">PostgreSQL / Cloud S3 Buckets</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">KV Distribuido / RocksDB corporativo</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">SQLite 3.45 WAL Flash-Safe (Zero desgaste do cartao MicroSD)</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 08 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 08]</span>
-                        <h4 class="card-dimension-title">GOVERNANCA HITL</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Modais genericos soltos no feed de conversa</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Menus simples de permissao de midia</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Logs inline em terminal de auditoria</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Review Cards + Travas Mecanicas + Carimbos Forenses</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 09 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 09]</span>
-                        <h4 class="card-dimension-title">DESIGN SYSTEM &amp; INTERFACE</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Tailwind CSS / Shadcn generico padrao</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">WebGL fluido com alto consumo de GPU</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Interface escura de alto contraste xAI</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Interface Tecnica Minimalista (Estetica 1-Bit Tatica, Mobile-First)</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 10 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 10]</span>
-                        <h4 class="card-dimension-title">MEMORIA HIERARQUICA (MEMGPT)</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Apenas janela de contexto estatica pura</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Memoria efemera atrelada a sessao aberta</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Embeddings vetoriais fechados de alto custo</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Core Memory + Archival FTS5 BM25 + Projecao 64d em memoria</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 11 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 11]</span>
-                        <h4 class="card-dimension-title">CONSELHO CONSULTIVO &amp; DIALETICA</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Agente isolado monolitico sem contraditorio</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Iteracoes criativas sem auditoria adversarial</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Raciocinio em arvore proprietario fechado</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Debate Tripartite (Propositor Coder, Auditor Critico, Supervisor)</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 12 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 12]</span>
-                        <h4 class="card-dimension-title">SELF-HEALING &amp; AUTO-CORRECAO</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Erro exposto diretamente para o usuario resolver</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Retry simples de requisicao sem analise de causa</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Interrupcao abrupta com traceback no console</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Self-Healing Harness + Ciclo de Auto-Reparo + Goals &amp; Milestones</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 13 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 13]</span>
-                        <h4 class="card-dimension-title">SAUDE DO SILICIO &amp; MICROSD</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Desconsidera condicoes termicas e I/O de hardware</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Exaustao de GPU sem monitoramento termico</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Invisivel em infraestrutura de nuvem remota</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">Thermal Throttling Broadcom + WAL TRUNCATE + Manutencao Noturna</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Ficha 14 -->
-                <article class="catalog-index-card">
-                    <header class="card-tab-header">
-                        <span class="card-tab-tag">[REGISTRO // 14]</span>
-                        <h4 class="card-dimension-title">SOBERANIA &amp; CUSTO MENSAL</h4>
-                    </header>
-                    <div class="card-body-entries">
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK SAAS:</span>
-                            <span class="entry-value">Faturas recorrentes de nuvem ($$/mes continuos)</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">FRAMEWORK GPU:</span>
-                            <span class="entry-value">Hardware de altissimo custo de aquisicao e energia</span>
-                        </div>
-                        <div class="card-entry-row competitor">
-                            <span class="entry-entity">ORQUESTRADOR NUVEM:</span>
-                            <span class="entry-value">Assinatura xAI exclusiva ($$$/mes)</span>
-                        </div>
-                        <div class="card-entry-row pidots-spotlight">
-                            <span class="entry-entity-highlight">PIDOTS [BORDA FISICA ARM64]:</span>
-                            <span class="entry-value-highlight">R$ 0 / mes (100% Soberano, Local e operando em 6 Watts)</span>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </section>
-
-
-        <!-- ===================================================================
-             SECAO 08: AUDITORIA DE OBJECOES & FAQ RETRATIL DE ENGENHARIA
-             =================================================================== -->
-        <section class="landing-section" id="faq-objecoes">
-            <div class="section-header-bar">
-                <div class="section-tag">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                    <span>SECAO 08 // FATOS DE ENGENHARIA</span>
-                </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);" data-i18n="sections.sec8_badge">SEÇÃO 08 // 8 FATOS DE ENGENHARIA E RESPOSTAS DIRETAS</span>
-
-            </div>
-
-            <h2 class="section-headline" data-i18n="sections.sec8_title">RESPOSTAS DIRETAS PARA DÚVIDAS DE ENGENHARIA</h2>
-            <p class="section-subtitle">
-                Sem rodeios ou promessas de marketing. Aqui estão os fatos de arquitetura, limites físicos e testes práticos que explicam exatamente como o piDots opera.
-            </p>
-
-            <div class="objections-accordion-deck">
-                <!-- Obj 01 -->
-                <article class="objection-card expanded" id="objCard1">
-                    <button class="objection-trigger" onclick="toggleObjection('objCard1')">
-                        <div class="objection-title-cluster">
-                            <span class="objection-serial">OBJ-01</span>
-                            <span>UM DISPOSITIVO DE BORDA COMO O RASPBERRY PI 4B SUPORTA MESMO UMA ESTACAO MULTI-BOT 24/7 SEM TRAVAR?</span>
-                        </div>
-                        <span class="objection-indicator">[-]</span>
-                    </button>
-                    <div class="objection-drawer-body">
-                        <strong>Sim, com ampla folga de memoria e telemetria estavel.</strong> O piDots foi escrito como um monolito modular em Python 3.13 com uvloop e arquitetura assincrona orientada a eventos. Em repouso, o processo consome apenas <strong>48MB a 65MB de RAM</strong>. Mesmo sob orquestracao multi-bot simultanea com execucao de ferramentas e analise vetorial, o consumo real medido permanece <strong>abaixo de 70MB a 95MB de RSS</strong>, respeitando com ampla margem o teto operacional. Isso deixa mais de 3.5GB livres para o Linux e para o page cache do sistema. A temperatura do SoC Broadcom se mantem estavel em torno de <strong>46 C a 52 C</strong> com dissipacao passiva convencional.
-                        <div class="objection-pill-row">
-                            <span class="objection-tech-pill">UVLOOP ASYNCIO</span>
-                            <span class="objection-tech-pill">RSS &lt; 70MB REAL</span>
-                            <span class="objection-tech-pill">SOC 46.2 C</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Obj 02 -->
-                <article class="objection-card" id="objCard2">
-                    <button class="objection-trigger" onclick="toggleObjection('objCard2')">
-                        <div class="objection-title-cluster">
-                            <span class="objection-serial">OBJ-02</span>
-                            <span>COMO O PIDOTS EXECUTA COMANDOS COM SEGURANCA SEM O RISCO DE QUEBRAR MEU SISTEMA?</span>
-                        </div>
-                        <span class="objection-indicator">[+]</span>
-                    </button>
-                    <div class="objection-drawer-body">
-                        <strong>Atraves de sandbox em Linux Namespaces via Bubblewrap (bwrap).</strong> Ao contrario de solucoes inseguras que executam comandos diretamente no shell do host, o piDots monta um ambiente efemero restrito: os diretorios do sistema (/usr, /lib, /bin) sao montados como <strong>somente leitura (read-only)</strong>; a memoria transitoria usa tmpfs; e apenas a pasta de trabalho especifica do Dot (/workspace) possui permissao de escrita. Alem disso, as namespaces de PID e IPC sao isoladas, impedindo que qualquer processo enxergue ou encerre servicos do host.
-                        <div class="objection-pill-row">
-                            <span class="objection-tech-pill">SUB-15MS SANDBOX</span>
-                            <span class="objection-tech-pill">READ-ONLY ROOTFS</span>
-                            <span class="objection-tech-pill">NAMESPACES PID/IPC</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Obj 03 -->
-                <article class="objection-card" id="objCard3">
-                    <button class="objection-trigger" onclick="toggleObjection('objCard3')">
-                        <div class="objection-title-cluster">
-                            <span class="objection-serial">OBJ-03</span>
-                            <span>MEU CARTAO MICROSD NAO VAI QUEIMAR EM POUCOS MESES POR EXCESSO DE GRAVACOES?</span>
-                        </div>
-                        <span class="objection-indicator">[+]</span>
-                    </button>
-                    <div class="objection-drawer-body">
-                        <strong>Nao. O piDots possui protecao ativa contra desgaste de memoria Flash.</strong> Ele proibe chamadas continuas de fsync a cada token emitido. O banco de dados SQLite e inicializado obrigatoriamente com <code>PRAGMA journal_mode = WAL</code> e <code>PRAGMA synchronous = NORMAL</code>, amortizando escritas de disco. Adicionalmente, <code>temp_store = MEMORY</code> e cache de 64MB em RAM garantem que transicoes de raciocinio intermediarias ocorram estritamente em memoria volatil, sincronizando em disco apenas em lotes consolidados. A vida util do cartao MicroSD e preservada por anos.
-                        <div class="objection-pill-row">
-                            <span class="objection-tech-pill">SQLITE WAL NORMAL</span>
-                            <span class="objection-tech-pill">CACHE 64MB RAM</span>
-                            <span class="objection-tech-pill">ZERO FSYNC POR TOKEN</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Obj 04 -->
-                <article class="objection-card" id="objCard4">
-                    <button class="objection-trigger" onclick="toggleObjection('objCard4')">
-                        <div class="objection-title-cluster">
-                            <span class="objection-serial">OBJ-04</span>
-                            <span>FICO PRESO A ALGUM PROVEDOR ESPECIFICO OU POSSO USAR QUALQUER MODELO COMPATIVEL COM OPENAI?</span>
-                        </div>
-                        <span class="objection-indicator">[+]</span>
-                    </button>
-                    <div class="objection-drawer-body">
-                        <strong>Liberdade total. O piDots implementa arquitetura BYOM (Bring Your Own Model).</strong> O cliente cognitivo conecta-se de forma transparente a qualquer endpoint compativel com o padrao OpenAI SDK (base_url, api_key, model). Voce pode apontar para modelos remotos como OpenAI (GPT-4o), Groq, OpenRouter, DeepSeek, Llama 3.1 ou apontar para um servidor local de pesos abertos rodando Ollama ou llama-server. O sistema inclui circuit breaker automatico com retentativas exponenciais para absorver falhas temporarias sem travar a conversa.
-                        <div class="objection-pill-row">
-                            <span class="objection-tech-pill">PADRAO OPENAI SDK</span>
-                            <span class="objection-tech-pill">BYOM TOTAL</span>
-                            <span class="objection-tech-pill">CIRCUIT BREAKER</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Obj 05 -->
-                <article class="objection-card" id="objCard5">
-                    <button class="objection-trigger" onclick="toggleObjection('objCard5')">
-                        <div class="objection-title-cluster">
-                            <span class="objection-serial">OBJ-05</span>
-                            <span>QUAL E A REAL DIFERENCA PRATICA ENTRE O PIDOTS E FRAMEWORKS CONVENCIONAIS DE AGENTES EM NUVEM?</span>
-                        </div>
-                        <span class="objection-indicator">[+]</span>
-                    </button>
-                    <div class="objection-drawer-body">
-                        <strong>Eficiencia de silicio, operacao autonoma de borda e soberania fisica permanente.</strong> Enquanto frameworks convencionais baseados em nuvem dependem de pilhas densas em Node.js, Electron ou orquestradores pesados consumindo gigabytes de RAM e exigindo servidores caros e navegadores continuos, o piDots foi concebido do zero para rodar em hardware restrito de bancada (como o Raspberry Pi 4B). Substituimos conteineres pesados por isolamento em Bubblewrap, scraping inflado por extracao semantica limpa, integramos uma equipe multi-agente nativa com gateway Telegram e WhatsApp assinado com HMAC-SHA256, alem de um console tecnico minimalista de altissima densidade com operacao fluida e zero dependencia de nuvem.
-                        <div class="objection-pill-row">
-                            <span class="objection-tech-pill">97% MAIS LEVE EM RAM</span>
-                            <span class="objection-tech-pill">MULTI-AGENT EDGE</span>
-                            <span class="objection-tech-pill">CONSOLE MINIMALISTA</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Obj 06: Nova Pergunta Multi-Bot -->
-                <article class="objection-card" id="objCard6">
-                    <button class="objection-trigger" onclick="toggleObjection('objCard6')">
-                        <div class="objection-title-cluster">
-                            <span class="objection-serial">OBJ-06</span>
-                            <span>COMO O PIDOTS CONSEGUE ORQUESTRAR MULTIPLOS BOTS EM UM SBC DE BAIXO CONSUMO SEM ESGOTAR CPU OU MEMORIA?</span>
-                        </div>
-                        <span class="objection-indicator">[+]</span>
-                    </button>
-                    <div class="objection-drawer-body">
-                        <strong>Atraves de orquestracao assincrona cooperativa e poda dinamica de ferramentas (Dynamic Tool Pruning).</strong> Ao contrario de arquiteturas convencionais que sobem conteineres isolados ou processos inteiros para cada bot (consumindo centenas de megabytes por instancia), o piDots mantem toda a equipe multi-bot dentro de um unico loop assincrono uvloop de alta vazao. O ThreadRouter gerencia salas tematicas (#devops, #pesquisa) e delegacoes via delegate_task compartilhando conexoes em SQLite WAL. Quando um agente especialista e acionado por mencao @dot, o sistema injeta estritamente o subconjunto de ferramentas e contexto necessario para aquela tarefa especifica (Dynamic Tool Pruning). Isso impede a explosao do espaco de memoria, resultando em <strong>menos de 70MB de RAM total</strong> mesmo com multiplos agentes atuando em cadeia.
-                        <div class="objection-pill-row">
-                            <span class="objection-tech-pill">COOPERATIVE MULTI-BOT</span>
-                            <span class="objection-tech-pill">DYNAMIC TOOL PRUNING</span>
-                            <span class="objection-tech-pill">RAM &lt; 70MB EM EQUIPE</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Obj 07: Nova Pergunta Heartbeat e Background Tasks -->
-                <article class="objection-card" id="objCard7">
-                    <button class="objection-trigger" onclick="toggleObjection('objCard7')">
-                        <div class="objection-title-cluster">
-                            <span class="objection-serial">OBJ-07</span>
-                            <span>COMO FUNCIONAM AS TAREFAS EM SEGUNDO PLANO E O HEARTBEAT 24/7 SEM TORRAR MINHA COTA DE TOKENS?</span>
-                        </div>
-                        <span class="objection-indicator">[+]</span>
-                    </button>
-                    <div class="objection-drawer-body">
-                        <strong>Atraves do filtro inteligente de silencio HEARTBEAT_OK e escalonamento in-process ultraleve.</strong> O piDots integra o EdgeScheduler, um daemon interno leve baseado em croniter que roda em background com consumo desprezivel de CPU, dispensando Redis ou Celery. Durante as rondas periodicas de inspecao do Heartbeat (checagem de integridade de logs, saude do MicroSD e telemetria), o modelo e instruido a responder exclusivamente <code>HEARTBEAT_OK</code> caso tudo esteja em ordem. O sistema intercepta essa resposta e a descarta em memoria: nada e persistido no banco e <strong>zero tokens adicionais de saida sao desperdicados</strong>. O operador so e notificado caso ocorra um incidente real ou uma tarefa agendada demande analise executiva.
-                        <div class="objection-pill-row">
-                            <span class="objection-tech-pill">FILTRO HEARTBEAT_OK</span>
-                            <span class="objection-tech-pill">ZERO TOKENS INUTEIS</span>
-                            <span class="objection-tech-pill">CRONITER IN-PROCESS</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Obj 08: Manutencao Noturna e Saude do Silicio -->
-                <article class="objection-card" id="objCard8">
-                    <button class="objection-trigger" onclick="toggleObjection('objCard8')">
-                        <div class="objection-title-cluster">
-                            <span class="objection-serial">OBJ-08</span>
-                            <span>COMO O PIDOTS EVITA O INCHACO DO BANCO E PROTEGE O SILICIO E ARMAZENAMENTO FLASH A LONGO PRAZO?</span>
-                        </div>
-                        <span class="objection-indicator">[+]</span>
-                    </button>
-                    <div class="objection-drawer-body">
-                        <strong>Com triggers termicos ativos e rotina noturna autonoma de compactacao.</strong> O piDots le continuamente o sensor termico do SoC Broadcom BCM2711 (/sys/class/thermal/thermal_zone0/temp). Se a temperatura ultrapassar 72 C, ativa throttle proativo sem travar o sistema. Para preservar o MicroSD, a rotina noturna autonoma executa checkpoint com truncamento de WAL (PRAGMA wal_checkpoint TRUNCATE), consolida turnos com mais de 7 dias na tabela de memorias episodicas (podando mensagens brutas antigas) e gera backups atomicos seguros com VACUUM INTO, garantindo velocidade de sub-milissegundo para sempre.
-                        <div class="objection-pill-row">
-                            <span class="objection-tech-pill">WAL TRUNCATE</span>
-                            <span class="objection-tech-pill">CONSOLIDACAO EPISODICA</span>
-                            <span class="objection-tech-pill">THERMAL GUARD 72 C</span>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </section>
-
-
-        <!-- ===================================================================
-             SECAO 09: FECHAMENTO DE ALTO IMPACTO // DEPLOY EM 1 COMANDO
-             =================================================================== -->
-        <section class="landing-section" id="quickstart">
-            <div class="section-header-bar">
-                <div class="section-tag">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                    <span>SECAO 09 // DEPLOY INSTANTANEO</span>
-                </div>
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">DISPONIVEL AGORA // OPEN SOURCE MIT</span>
-            </div>
-
-            <div class="quickstart-banner">
-                <span class="brand-badge quickstart-badge">SILICIO LIBERADO // PRONTO PARA USO</span>
-                
-                <h2 class="quickstart-title" data-i18n="sections.cta_final_title">
-                    SUBINDO SUA ESTAÇÃO EM MENOS DE DOIS MINUTOS
-                </h2>
-                
-                <p class="quickstart-lead" data-i18n="sections.cta_final_lead">
-                    Basta clonar o repositório e disparar o Docker Compose. Sem passos ocultos, sem configurações mirabolantes e com código 100% auditável.
+        <!-- ===============================================================
+             3. O CICLO DE VIDA DO DOT (SHOW, DON'T TELL - 4 ETAPAS)
+             =============================================================== -->
+        <section class="lifecycle-section" id="ciclo-de-vida">
+            <div class="section-head">
+                <span class="section-tag">ARQUITETURA COGNITIVA EM 4 ETAPAS</span>
+                <h2 class="section-title">O que acontece enquanto você trabalha</h2>
+                <p class="section-lead">
+                    O piDots organiza a autonomia dos seus agentes em um pipeline contínuo de 4 fases, protegendo seu hardware e garantindo previsibilidade total.
                 </p>
+            </div>
 
-                <!-- Terminal Deck em 1 Comando Unificado -->
-                <div class="cli-terminal-deck" style="max-width: 820px; margin: 0 auto 24px; text-align: left;">
-                    <div class="cli-code-row">
-                        <span style="color: var(--ink-main); font-weight: 700;">COMANDO UNICO DE INICIALIZACAO EDGE:</span>
-                        <button class="pixel-btn btn-green" onclick="copySnippet('git clone https://github.com/lyonpamplona/piDots.git && cd piDots && docker compose up -d')">
-                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            <span>[COPIAR COMANDO DEPLOY]</span>
-                        </button>
-                    </div>
-                    <div class="code-spec-box" style="margin-top: 0; font-size: 12px; color: var(--phosphor-green); background: #020305;">
-                        git clone https://github.com/lyonpamplona/piDots.git && cd piDots && docker compose up -d
-                    </div>
-                    
-                    <div style="font-size: 11px; color: var(--ink-muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                        <span>Portas ativas: :8081 (Landing), :8082 (App), :8083 (Docs), :8088 (Gateway)</span>
-                        <span>Verificacao de saude: curl http://localhost:8088/health</span>
-                    </div>
+            <div class="lifecycle-grid">
+                <div class="lifecycle-card">
+                    <span class="lifecycle-step-idx">ETAPA 01</span>
+                    <h3 class="lifecycle-card-title">Ingestão Multi-Canal</h3>
+                    <p class="lifecycle-card-desc">
+                        Receba demandas pelo terminal bash, console SPA, WebSockets, ou via canais de mensageria móvel (Telegram e WhatsApp via Evolution API) com travas anti-loop.
+                    </p>
                 </div>
 
-                <!-- Grupo de Fechamento -->
-                <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
-                    <a href="/app" class="pixel-btn-cta-primary">
-                        <span class="pulse-step-dot"></span>
-                        <span>[INICIAR CONSOLE OPERACIONAL AGORA]</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </a>
-                    <button class="pixel-btn btn-cyan btn-lg" onclick="toggleDrawer()">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                        <span>[LER MANUAL TECNICO PASSO A PASSO]</span>
-                    </button>
-                    <a href="https://github.com/lyonpamplona/piDots" target="_blank" rel="noopener" class="pixel-btn btn-amber btn-lg">
-                        <span>[EXPLORAR REPOSITORIO GITHUB]</span>
-                    </a>
+                <div class="lifecycle-card">
+                    <span class="lifecycle-step-idx">ETAPA 02</span>
+                    <h3 class="lifecycle-card-title">Deliberação Racional</h3>
+                    <p class="lifecycle-card-desc">
+                        O agente pensa token a token pelo protocolo AG-UI, aciona o debate dialético do Conselho Consultivo e reduz esquemas em 65% via Dynamic Tool Pruning.
+                    </p>
                 </div>
 
-                <div style="margin-top: 20px; font-size: 11px; color: var(--ink-muted);">
-                    LICENCA MIT OPEN SOURCE // CODIGO 100% AUDITAVEL // ESTETICA RETRO MINIMALISTA // SOBERANIA FISICA PERMANENTE
+                <div class="lifecycle-card">
+                    <span class="lifecycle-step-idx">ETAPA 03</span>
+                    <h3 class="lifecycle-card-title">Execução Segura</h3>
+                    <p class="lifecycle-card-desc">
+                        Ações são isoladas em namespaces Linux Bubblewrap (bwrap). Operações de risco exigem assinatura do operador humano (HITL) com edição de argumentos.
+                    </p>
+                </div>
+
+                <div class="lifecycle-card">
+                    <span class="lifecycle-step-idx">ETAPA 04</span>
+                    <h3 class="lifecycle-card-title">Memória Durável</h3>
+                    <p class="lifecycle-card-desc">
+                        Fatos e lições são persistidos no SQLite WAL com busca híbrida FTS5 e projeção vetorial 64D. Rotinas noturnas amortecem a mídia flash do MicroSD.
+                    </p>
                 </div>
             </div>
         </section>
 
-    </div>
-
-    <!-- RODAPE DA LANDING PAGE -->
-    <footer class="landing-footer">
-        <div class="footer-top">
-            <div class="brand-unit">
-                <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="pidots-logo-svg" aria-label="Logo piDots">
-                    <rect width="28" height="28" rx="4" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
-                    <circle cx="8.5" cy="14" r="3.5" fill="#33ff66"/>
-                    <circle cx="19.5" cy="14" r="3.5" fill="#38bdf8"/>
-                    <path d="M12 14h4" stroke="#f1f5f9" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <span class="brand-badge">PIDOTS EDGE CORE</span>
-                <span class="brand-title">PIDOTS // 2026</span>
+        <!-- ===============================================================
+             4. BENTO GRID DE SILICIO (4 PILARES DE ALTO CONTRASTE)
+             =============================================================== -->
+        <section class="bento-section" id="pilares">
+            <div class="section-head">
+                <span class="section-tag">ENGENHARIA PARA RECURSOS REAIS</span>
+                <h2 class="section-title">Construído para o silício físico, não para a nuvem infinita</h2>
+                <p class="section-lead">
+                    Enquanto frameworks corporativos dependem de múltiplos contêineres pesados e navegadores headless ocultos, o piDots foi calibrado para operar com folga em nós de 4GB.
+                </p>
             </div>
 
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <a href="/" class="pixel-btn btn-cyan" data-i18n="nav.overview">[01 // VISAO GERAL]</a>
-                <a href="/app" class="pixel-btn btn-green" data-i18n="nav.workspace">[02 // WORKSPACE]</a>
-                <a href="/docs" class="pixel-btn" data-i18n="nav.docs">[03 // DOCUMENTACAO]</a>
-                <a href="/api/changelog" class="pixel-btn" target="_blank" title="Consultar Changelog v1.5.3">[PATCH NOTES // V1.5.3]</a>
-                <button class="pixel-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                    <span>[VOLTAR AO TOPO]</span>
+            <div class="bento-grid-4">
+                <div class="bento-box">
+                    <div class="bento-box-top">
+                        <span class="bento-pill">CONSUMO DE MEMORIA</span>
+                        <span class="bento-stat">55 MB RAM RSS</span>
+                    </div>
+                    <h3 class="bento-box-title">Folga Real de Memória no Raspberry Pi</h3>
+                    <p class="bento-box-body">
+                        Consome menos de 2% dos 4GB do Raspberry Pi 4B, eliminando qualquer risco de OOM Killer do Linux e deixando o processador livre para suas tarefas.
+                    </p>
+                </div>
+
+                <div class="bento-box">
+                    <div class="bento-box-top">
+                        <span class="bento-pill">VIDA UTIL DO FLASH</span>
+                        <span class="bento-stat">SQLITE WAL &amp; TMPFS</span>
+                    </div>
+                    <h3 class="bento-box-title">Preservação Radical do Cartão MicroSD</h3>
+                    <p class="bento-box-body">
+                        Gravações em modo append-only sequencial sem reescrita de blocos, diretório temporário montado em RAM volátil (tmpfs 64MB) e rotina de compactação às 03:00.
+                    </p>
+                </div>
+
+                <div class="bento-box">
+                    <div class="bento-box-top">
+                        <span class="bento-pill">SEGURANCA DE BORDA</span>
+                        <span class="bento-stat">HMAC-SHA256 &amp; BWRAP</span>
+                    </div>
+                    <h3 class="bento-box-title">Governança Human-in-the-Loop Sem Bloqueios</h3>
+                    <p class="bento-box-body">
+                        Comandos destrutivos são retidos aguardando assinatura. O operador pode editar os parâmetros (modified_args) no cartão ou via Telegram e retomar o loop ReAct na hora.
+                    </p>
+                </div>
+
+                <div class="bento-box">
+                    <div class="bento-box-top">
+                        <span class="bento-pill">TOPOLOGIA DE REDE</span>
+                        <span class="bento-stat">PORTAS :8081-:8088</span>
+                    </div>
+                    <h3 class="bento-box-title">Desacoplamento e Acesso Remoto Zero Trust</h3>
+                    <p class="bento-box-body">
+                        Landing Page na porta 8081, Workspace na 8082, Docs na 8083 e Gateway na 8088. Integração oficial com Cloudflare Tunnel (cloudflared) sem abrir portas no roteador.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             5. COMPARATIVO TRANSPARENTE ("O QUE MUDA COM O PIDOTS")
+             =============================================================== -->
+        <section class="comparison-section" id="comparativo">
+            <div class="section-head">
+                <span class="section-tag">COMPARATIVO DE ENGENHARIA</span>
+                <h2 class="section-title">O que muda ao migrar para hardware local</h2>
+                <p class="section-lead">
+                    Veja como o piDots se diferencia de soluções em nuvem tradicionais que tratam agentes de IA como caixas-pretas de alto custo.
+                </p>
+            </div>
+
+            <div class="comparison-table-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th class="col-dimension">DIMENSAO</th>
+                            <th class="col-cloud">FRAMEWORKS EM NUVEM TRADICIONAIS</th>
+                            <th class="col-pidots">PIDOTS EM HARDWARE DE BORDA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-dimension">Infraestrutura</td>
+                            <td class="col-cloud">VPS e instâncias em nuvem com faturas contínuas em dólar</td>
+                            <td class="col-pidots">Seu próprio Raspberry Pi 4B consumindo apenas 6 Watts</td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Consumo de RAM</td>
+                            <td class="col-cloud">1.800 MB a 3.500 MB (dependência de Node.js SSR e Chromium)</td>
+                            <td class="col-pidots">Menos de 70 MB de RAM RSS medidos em runtime real</td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Persistência e Memória</td>
+                            <td class="col-cloud">Bancos vetoriais pesados em nuvem ou perda total no reboot</td>
+                            <td class="col-pidots">SQLite WAL nativo local com Core Memory e Archival FTS5</td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Execução de Comandos</td>
+                            <td class="col-cloud">Execuções cegas no host ou contêineres Docker efêmeros lentos</td>
+                            <td class="col-pidots">Sandbox Bubblewrap ultraleve e aprovação humana (HITL)</td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Acesso Remoto</td>
+                            <td class="col-cloud">Portas abertas no roteador ou serviços pagos de proxy reverso</td>
+                            <td class="col-pidots">Cloudflare Tunnel (cloudflared) nativo com Zero Trust 2FA</td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Licenciamento</td>
+                            <td class="col-cloud">SaaS fechado, planos enterprise e limites artificiais de uso</td>
+                            <td class="col-pidots">100% Open Source MIT com código transparente e auditável</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             6. QUICKSTART / FECHAMENTO DA LANDING PAGE
+             =============================================================== -->
+        <section class="quickstart-section" id="quickstart">
+            <span class="section-tag">COMECE AGORA MESMO</span>
+            <h2 class="section-title">Coloque sua equipe de IA para trabalhar em 45 segundos</h2>
+            <p class="section-lead">
+                Sem complexidade desnecessária. Um único comando via Docker Compose coloca todo o ecossistema no ar com telemetria e segurança prontas para uso.
+            </p>
+
+            <div class="quickstart-actions">
+                <a href="/app" class="pixel-btn-cta-primary" data-surface="workspace">
+                    <span>INICIAR CONSOLE OPERACIONAL AGORA</span>
+                    <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+                <button type="button" class="pixel-btn btn-cyan btn-lg" onclick="toggleDrawer()">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    <span>CONSULTAR MANUAL PASSO A PASSO</span>
                 </button>
+                <a href="https://github.com/lyonchristopher/piDots" target="_blank" rel="noopener" class="pixel-btn btn-amber btn-lg">
+                    <span>REPOSITORIO GITHUB</span>
+                </a>
             </div>
-        </div>
+        </section>
 
-        <div class="footer-bottom">
-            <div>
-                PROJETADO E DESENVOLVIDO POR <strong>LYON PAMPLONA</strong> (2026) // LICENCA MIT OPEN SOURCE
+    </main>
+
+    <!-- ===================================================================
+         RODAPE SOBRIO & TECNICO
+         =================================================================== -->
+    <footer class="landing-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <span>PIDOTS // HARDWARE DE BORDA ARM64</span>
+                <span>CRIADO POR LYON CHRISTOPHER // ASSISTENTE LOGGER</span>
             </div>
-            <div>
-                INTERFACE TECNICA MINIMALISTA // ALTA DENSIDADE TATIL // 100% PORTUGUES DO BRASIL
+            <div class="footer-links">
+                <a href="/app" class="footer-link" data-surface="workspace">Workspace (/app)</a>
+                <a href="/docs" class="footer-link" data-surface="docs">Documentação (/docs)</a>
+                <a href="/relatorio" class="footer-link" data-surface="report">Relatório Técnico</a>
+                <a href="/api/docs" class="footer-link" data-surface="swagger">Swagger API</a>
+                <a href="https://github.com/lyonchristopher/piDots" target="_blank" rel="noopener" class="footer-link">GitHub</a>
             </div>
         </div>
     </footer>
 
     <!-- ===================================================================
-         MENU LATERAL DIREITO RETRATIL (DOCS & GUIA TECNICO PASSO A PASSO)
+         MENU LATERAL DIREITO RETRATIL (MANUAL TECNICO PASSO A PASSO)
          =================================================================== -->
     <div class="drawer-backdrop" id="drawerBackdrop" onclick="toggleDrawer()"></div>
     <aside class="retractable-drawer" id="retractableDrawer">
         <header class="drawer-header">
-            <span class="drawer-title">MANUAL TECNICO // GUIA PASSO A PASSO</span>
-            <button class="pixel-btn" onclick="toggleDrawer()">
+            <span class="drawer-title">MANUAL TECNICO // 14 PASSOS</span>
+            <button type="button" class="pixel-btn btn-sm" onclick="toggleDrawer()">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 <span>[FECHAR]</span>
             </button>
         </header>
         
         <div class="drawer-search-box">
-            <input type="text" class="drawer-search-input" id="drawerSearchInput" placeholder="Pesquisar manual de engenharia..." oninput="filterDrawerSteps(this.value)">
+            <input type="text" class="drawer-search-input" id="drawerSearchInput" placeholder="Filtrar tópicos do manual..." oninput="filterDrawerSteps(this.value)">
         </div>
 
         <div class="drawer-content" id="drawerContentList">
-            <div style="margin-bottom: 14px; padding: 10px; background: var(--paper-surface-elevated); border: 1px solid var(--border-accent); text-align: center;">
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); display: block; margin-bottom: 6px;">DOCUMENTACAO COMPLETA</span>
+            <div style="margin-bottom: 10px; padding: 10px; background: var(--paper-surface-recessed); border: 1px solid var(--border-default); text-align: center;">
                 <a href="/docs" target="_blank" class="pixel-btn btn-cyan btn-sm" style="width: 100%; justify-content: center; text-decoration: none;">
-                    [ACESSAR GUIA DIDATICO EM TELA CHEIA]
+                    [ABRIR GUIA COMPLETO EM TELA CHEIA]
                 </a>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 01 // CONCEITO &amp; ARQUETIPOS</div>
-                <div class="step-heading">AUTONOMIA OPERACIONAL EM HARDWARE DE BORDA</div>
-                <div class="step-body">
-                    O piDots foi concebido para entregar persistencia, memoria duravel e governanca local sem depender de instancias em nuvem caras ou orquestradores pesados.
-                </div>
+                <div class="step-num">PASSO 01 // ARQUETIPOS COGNITIVOS</div>
+                <div class="step-heading">Autonomia Operacional em Hardware de Borda</div>
+                <div class="step-body">Conceito do piDots, equipe de coworkers essenciais (Supervisor, Coder, Arquiteto e Auditor) e governança em nós de 4GB.</div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 02 // CHAT MULTI-BOT &amp; MENCOES</div>
-                <div class="step-heading">ORQUESTRACAO DINAMICA COM @DOT</div>
-                <div class="step-body">
-                    Invoque especialistas pontuais no mesmo terminal com mencoes dinamicas. Handoff de lideranca sincronizado entre dots no SQLite WAL.
-                </div>
+                <div class="step-num">PASSO 02 // CHAT MULTI-BOT</div>
+                <div class="step-heading">Orquestração Dinâmica com @dot</div>
+                <div class="step-body">Invoque especialistas no mesmo terminal com menções diretas. Handoff de liderança sincronizado entre dots no SQLite WAL.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 03 // DOT HEARTBEAT 24/7</div>
-                <div class="step-heading">AUTONOMIA PROATIVA E SILENCIO INTELIGENTE</div>
-                <div class="step-body">
-                    Tarefas agendadas via croniter despertam o Dot periodicamente. O filtro HEARTBEAT_OK descarta respostas triviais, consumindo zero tokens desnecessarios.
-                </div>
+                <div class="step-heading">Autonomia Proativa e Silêncio Inteligente</div>
+                <div class="step-body">Tarefas agendadas via croniter despertam o Dot periodicamente com descarte de respostas triviais via HEARTBEAT_OK.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 04 // GATEWAY DE MENSAGERIA</div>
-                <div class="step-heading">TELEGRAM, WHATSAPP &amp; SALAS TEMATICAS</div>
-                <div class="step-body">
-                    Controle seus agentes e receba relatorios pelo Telegram ou WhatsApp via Evolution API, com travas anti-loop (hop_count menor ou igual a 3).
-                </div>
+                <div class="step-heading">Telegram, WhatsApp &amp; Salas Temáticas</div>
+                <div class="step-body">Receba alertas e controle seus agentes pelo Telegram ou WhatsApp via Evolution API com travas anti-loop.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 05 // PODA DINAMICA DE FERRAMENTAS</div>
-                <div class="step-heading">DYNAMIC TOOL PRUNING E ECONOMIA DE RAM</div>
-                <div class="step-body">
-                    Dots carregam apenas as ferramentas autorizadas em seu catalogo, reduzindo em ate 65% o payload de esquemas e protegendo o contexto.
-                </div>
+                <div class="step-heading">Dynamic Tool Pruning &amp; Economia de RAM</div>
+                <div class="step-body">Dots carregam apenas as ferramentas autorizadas em seu catálogo, reduzindo o payload de esquemas em até 65%.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 06 // PRESERVACAO FLASH &amp; DEPLOY</div>
-                <div class="step-heading">CALIBRACAO SQLITE WAL E CONSUMO 6W</div>
-                <div class="step-body">
-                    Com journal_mode=WAL e temp_store=MEMORY, escritas sincronas sao amortecidas, garantindo vida util prolongada ao cartao MicroSD.
-                </div>
+                <div class="step-heading">Calibração SQLite WAL e Consumo 6W</div>
+                <div class="step-body">Com journal_mode=WAL e temp_store=MEMORY, escritas são amortecidas garantindo vida útil estendida ao MicroSD.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 07 // MEMORIA HIERARQUICA</div>
-                <div class="step-heading">CORE MEMORY, RECALL &amp; ARCHIVAL FTS5</div>
-                <div class="step-body">
-                    Estrutura inspirada no MemGPT com auto-edicao autonoma, busca semantica hibrida FTS5 BM25 e projecao vetorial local de 64 dimensoes.
-                </div>
+                <div class="step-heading">Core Memory, Recall &amp; Archival FTS5</div>
+                <div class="step-body">Memória persistente inspirada no MemGPT com auto-edição autônoma, busca FTS5 BM25 e projeção vetorial 64D.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 08 // SELF-HEALING HARNESS</div>
-                <div class="step-heading">AUTO-CURA DE CODIGO &amp; TWO-STAGE PLANNING</div>
-                <div class="step-body">
-                    Captura automatica de tracebacks, diagnostico sintatico cirurgico e reparo de codigo em loop fechado antes da entrega ao operador.
-                </div>
+                <div class="step-heading">Auto-Cura de Código &amp; Two-Stage Planning</div>
+                <div class="step-body">Captura automática de tracebacks, diagnóstico sintático e reparo em loop fechado antes da entrega ao operador.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 09 // CONSELHO CONSULTIVO</div>
-                <div class="step-heading">DELIBERACAO TRIPARTITE EM 3 RODADAS</div>
-                <div class="step-body">
-                    Dialetica colaborativa entre Propositor, Auditor e Supervisor gerando fitas internas e resolucao executiva publica consolidada.
-                </div>
+                <div class="step-heading">Deliberação Tripartite em 3 Rodadas</div>
+                <div class="step-body">Dialética colaborativa entre Propositor, Auditor e Supervisor gerando resolução executiva consolidada.</div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 10 // SHARED SPACE &amp; DOT PACKS V1.1</div>
-                <div class="step-heading">QUADRO COMPARTILHADO &amp; MANIFESTOS ASSINADOS SHA-256</div>
-                <div class="step-body">
-                    Espaco duravel de conhecimento compartilhado entre agentes e exportacao/importacao atomica de agentes com assinatura criptografica SHA-256 e auditoria anti-injection.
-                </div>
+                <div class="step-num">PASSO 10 // SHARED SPACE &amp; DOT PACKS</div>
+                <div class="step-heading">Quadro Compartilhado e Manifestos Assinados</div>
+                <div class="step-body">Espaço durável de documentos entre agentes e importação/exportação atômica de agentes com assinatura SHA-256.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 11 // TRIGGERS DE SILICIO &amp; VACUUM</div>
-                <div class="step-heading">PROTECAO TERMICA BROADCOM &amp; ROTINA 03H</div>
-                <div class="step-body">
-                    Monitoramento de temperatura do SoC, mitigacao de throttling e consolidacao noturna automatica com WAL TRUNCATE e VACUUM INTO.
-                </div>
+                <div class="step-heading">Proteção Térmica Broadcom e Rotina Noturna</div>
+                <div class="step-body">Monitoramento térmico do SoC, mitigação de throttling e consolidação noturna automática com WAL TRUNCATE.</div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 12 // MICRO-MOTOR I18N &amp; DICIONARIOS</div>
-                <div class="step-heading">SUPORTE BILINGUE PT-BR / EN EM MEMORIA</div>
-                <div class="step-body">
-                    Dicionarios JSON estaticos carregados sob demanda com cache ETag e comutacao instantanea sem recarregar a pagina.
-                </div>
+                <div class="step-num">PASSO 12 // MICRO-MOTOR I18N</div>
+                <div class="step-heading">Suporte Bilíngue PT-BR / EN em Memória</div>
+                <div class="step-body">Dicionários JSON estáticos carregados sob demanda com cache de borda e comutação instantânea sem recarregar a página.</div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 13 // SLASH COMMANDS &amp; PROTOCOLO DE BORDA</div>
-                <div class="step-heading">CATALOGO DE 34 COMANDOS &amp; AUTOCOMPLETE</div>
-                <div class="step-body">
-                    Acione operacoes taticas com barra inicial (/), busca difusa por Levenshtein e execucao assincrona via WebSocket e SSE AG-UI.
-                </div>
+                <div class="step-num">PASSO 13 // SLASH COMMANDS</div>
+                <div class="step-heading">Catálogo de 34 Comandos &amp; Autocomplete</div>
+                <div class="step-body">Acione operações com barra (/), busca difusa por Levenshtein e execução assíncrona com recibos táteis.</div>
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 14 // DESACOPLAMENTO POR PORTAS &amp; CLOUDFLARE TUNNEL</div>
-                <div class="step-heading">SUPERFICIES ISOLADAS :8081, :8082, :8083, :8088 &amp; ZERO TRUST</div>
-                <div class="step-body">
-                    Segregacao fisica de portas no Nginx Alpine (< 6MB RAM) e roteamento de borda seguro com NAT Traversal via cloudflared sem portas abertas no roteador.
-                </div>
+                <div class="step-num">PASSO 14 // DESACOPLAMENTO &amp; CLOUDFLARE</div>
+                <div class="step-heading">Superfícies Isoladas :8081-:8088 e Zero Trust</div>
+                <div class="step-body">Segregação física de portas no Nginx Alpine (&lt; 3MB RAM) e túnel seguro NAT Traversal com cloudflared.</div>
             </div>
 
-            <div style="margin-top: 14px; padding: 12px; background: var(--paper-surface-elevated); border: 1px solid var(--border-accent); text-align: center;">
-                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); display: block; margin-bottom: 6px;">ESTUDO TECNICO DE ENGENHARIA REVERSA</span>
+            <div style="margin-top: 10px; padding: 10px; background: var(--paper-surface-recessed); border: 1px solid var(--border-default); text-align: center;">
                 <a href="/relatorio" data-surface="report" class="pixel-btn btn-cyan btn-sm" style="width: 100%; justify-content: center; text-decoration: none;">
-                    [ACESSAR RELATORIO COMPLETO ARM64]
+                    [ACESSAR RELATORIO DE ENGENHARIA REVERSA]
                 </a>
             </div>
         </div>
@@ -2116,10 +532,6 @@
 
     <!-- CONTAINER DE NOTIFICACOES (TOASTS) -->
     <div id="pixelToastContainer" aria-live="polite"></div>
-
-    <!-- ===================================================================
-         JAVASCRIPT OPERACIONAL DA LANDING PAGE
-         =================================================================== -->
 
 </body>
 </html>

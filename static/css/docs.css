@@ -1,19 +1,21 @@
 /* =====================================================================
-   PIXEL PAPER UI - GUIA DIDATICO E DOCUMENTACAO TECNICA (/docs)
-   Estilos exclusivos: Guide Shell, Catalog Hero, Step Modules (01-13),
-   Code Paper Box, Mini API Tester e Motor Omnisearch Ctrl+K
+   PIDOTS DOCS - GUIA OPERACIONAL DIDATICO & BASE DE CONHECIMENTO
+   Estilos Oficiais: 4 Trilhas Tematicas, 14 Passos, Code Tabs,
+   Mini API Tester, Omnisearch Ctrl+K e Drawer Retratil com Busca.
+   Tipografia Hibrida: IBM Plex Sans + JetBrains Mono + Silkscreen
+   ZERO EMOJIS // Alta Performance ARM64 // Mobile-First
    ===================================================================== */
 
-/* =====================================================================
-   CABECALHO FIXO DESKTOP DA DOCUMENTACAO (STICKY HEADER)
-   ===================================================================== */
+/* ---------------------------------------------------------------------
+   CABECALHO FIXO TECNICO (STICKY HEADER 48px)
+   --------------------------------------------------------------------- */
 header.guide-header {
     position: sticky;
     top: 0;
     z-index: 90;
     background: var(--paper-surface);
-    border-bottom: 2px solid var(--border-default);
-    height: calc(var(--header-height, 52px) + max(0px, var(--safe-top)));
+    border-bottom: 1px solid var(--border-default);
+    height: calc(var(--header-height, 48px) + max(0px, var(--safe-top)));
     padding-top: max(0px, var(--safe-top));
     padding-bottom: 0;
     padding-left: max(16px, calc(12px + var(--safe-left)));
@@ -55,14 +57,14 @@ header.guide-header::-webkit-scrollbar {
     padding: 6px 10px 6px 30px;
     width: clamp(160px, 16vw, 240px);
     outline: none;
-    box-shadow: inset 1px 1px 0px #000000;
-    transition: all 0.05s steps(1);
+    border-radius: 2px;
+    transition: all 0.15s ease;
 }
 
 .pixel-search-input:focus {
     border-color: var(--blueprint-cyan);
     background: var(--paper-sheet);
-    box-shadow: inset 2px 2px 0px #000000, 0 0 0 1px var(--blueprint-cyan);
+    box-shadow: 0 0 0 1px var(--blueprint-cyan);
     width: clamp(200px, 22vw, 300px);
 }
 
@@ -75,1392 +77,1222 @@ header.guide-header::-webkit-scrollbar {
     height: 14px;
 }
 
-        .guide-shell {
-            width: 100%;
-            display: flex;
-            position: relative;
-            min-height: calc(100vh - var(--header-height));
-        }
-
-        main.guide-viewport {
-            width: 100%;
-            padding: 24px 32px 80px 32px;
-            box-sizing: border-box;
-            transition: margin-right 0.2s steps(1);
-        }
-
-        body.drawer-open main.guide-viewport {
-            margin-right: var(--drawer-width);
-        }
-
-        /* ---------------------------------------------------------------------
-           CARIMBOS OFICIAIS (PIXEL STAMPS)
-           --------------------------------------------------------------------- */
-        .pixel-stamp {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            padding: 4px 8px;
-            border: 2px dashed var(--border-default);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            user-select: none;
-        }
-
-        .stamp-approved {
-            border-color: var(--phosphor-green);
-            color: var(--phosphor-green);
-            background: rgba(51, 255, 102, 0.04);
-            transform: rotate(-1deg);
-        }
-
-        .stamp-notice {
-            border-color: var(--blueprint-cyan);
-            color: var(--blueprint-cyan);
-            background: rgba(56, 189, 248, 0.04);
-            transform: rotate(1deg);
-        }
-
-        .stamp-critical {
-            border-color: var(--stamp-danger);
-            color: var(--stamp-danger);
-            background: rgba(239, 68, 68, 0.04);
-            transform: rotate(-2deg);
-        }
-
-        .stamp-amber {
-            border-color: var(--thermal-amber);
-            color: var(--thermal-amber);
-            background: rgba(255, 184, 48, 0.04);
-        }
-
-        /* ---------------------------------------------------------------------
-           BANNER HERO / FICHA CATALOGRAFICA DE ABERTURA
-           --------------------------------------------------------------------- */
-        .guide-catalog-hero {
-            background: var(--paper-surface);
-            border: 2px solid var(--border-default);
-            box-shadow: var(--shadow-md);
-            padding: 28px 32px;
-            margin-bottom: 32px;
-            position: relative;
-            clip-path: polygon(
-                0 var(--px), var(--px) var(--px), var(--px) 0,
-                calc(100% - var(--px)) 0, calc(100% - var(--px)) var(--px), 100% var(--px),
-                100% calc(100% - var(--px)), calc(100% - var(--px)) calc(100% - var(--px)), calc(100% - var(--px)) 100%,
-                var(--px) 100%, var(--px) calc(100% - var(--px)), 0 calc(100% - var(--px))
-            );
-        }
-
-        .catalog-meta-strip {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px dashed var(--ink-carbon);
-            margin-bottom: 16px;
-        }
-
-        .catalog-tag-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .catalog-title {
-            font-family: var(--font-pixel);
-            font-size: 20px;
-            line-height: 1.3;
-            letter-spacing: 0.04em;
-            color: var(--ink-main);
-            margin-bottom: 10px;
-        }
-
-        .catalog-lead {
-            font-size: 13px;
-            color: var(--ink-secondary);
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .catalog-grid-telemetry {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            background: var(--paper-surface-recessed);
-            border: 1px solid var(--border-default);
-            padding: 14px;
-        }
-
-        .catalog-telemetry-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .catalog-telemetry-label {
-            font-family: var(--font-pixel);
-            font-size: 7px;
-            color: var(--ink-muted);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .catalog-telemetry-val {
-            font-family: var(--font-display);
-            font-size: 20px;
-            color: var(--phosphor-green);
-            line-height: 1;
-        }
-
-        /* ---------------------------------------------------------------------
-           MODULOS PASSO A PASSO (FORMULARIOS TECNICOS / FICHAS CATALOGRAFICAS)
-           --------------------------------------------------------------------- */
-        .step-module {
-            background: var(--paper-surface);
-            border: 2px solid var(--border-default);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 32px;
-            scroll-margin-top: calc(var(--header-height) + 16px);
-            transition: border-color 0.1s steps(1);
-        }
-
-        .step-module:hover {
-            border-color: var(--border-strong);
-        }
-
-        .step-module-header {
-            background: var(--paper-sheet);
-            border-bottom: 1px solid var(--border-default);
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .step-header-title-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .step-index-badge {
-            font-family: var(--font-pixel);
-            font-size: 9px;
-            color: #07090c;
-            background: var(--blueprint-cyan);
-            padding: 4px 8px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .step-heading {
-            font-family: var(--font-pixel);
-            font-size: 13px;
-            color: var(--ink-main);
-            letter-spacing: 0.05em;
-        }
-
-        .step-content-body {
-            padding: 24px;
-        }
-
-        .step-paragraph {
-            font-size: 13px;
-            color: var(--ink-secondary);
-            margin-bottom: 16px;
-            line-height: 1.6;
-        }
-
-        /* Linhas de Picote Mecanico de Papel Termico */
-        .slip-perforation {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 20px 0;
-            user-select: none;
-        }
-
-        .perforation-line {
-            flex: 1;
-            height: 1px;
-            border-top: 1px dashed var(--ink-carbon);
-        }
-
-        .perforation-label {
-            font-family: var(--font-pixel);
-            font-size: 7px;
-            color: var(--ink-muted);
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-        }
-
-        /* Grades de Cartoes Tecnicos 1-bit */
-        .pixel-card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 14px;
-            margin: 18px 0;
-        }
-
-        .pixel-card {
-            background: var(--paper-sheet);
-            border: 1px solid var(--border-default);
-            padding: 16px;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-        }
-
-        .pixel-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed var(--ink-carbon);
-        }
-
-        .pixel-card-title {
-            font-family: var(--font-pixel);
-            font-size: 9px;
-            color: var(--ink-main);
-            letter-spacing: 0.05em;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .pixel-card-body {
-            font-size: 12px;
-            color: var(--ink-muted);
-            line-height: 1.5;
-        }
-
-        /* ---------------------------------------------------------------------
-           CAIXAS DIDATICAS DE ALERTA TECNICO (DICAS, AVISOS, NOTAS)
-           --------------------------------------------------------------------- */
-        .pixel-callout {
-            margin: 20px 0;
-            padding: 16px 20px;
-            border: 1px solid var(--border-default);
-            background: var(--paper-sheet);
-            position: relative;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .pixel-callout.tip {
-            border-left: 4px solid var(--phosphor-green);
-        }
-        .pixel-callout.warning {
-            border-left: 4px solid var(--thermal-amber);
-        }
-        .pixel-callout.danger {
-            border-left: 4px solid var(--stamp-danger);
-        }
-        .pixel-callout.info {
-            border-left: 4px solid var(--blueprint-cyan);
-        }
-
-        .pixel-callout-header {
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .pixel-callout.tip .pixel-callout-header { color: var(--phosphor-green); }
-        .pixel-callout.warning .pixel-callout-header { color: var(--thermal-amber); }
-        .pixel-callout.danger .pixel-callout-header { color: var(--stamp-danger); }
-        .pixel-callout.info .pixel-callout-header { color: var(--blueprint-cyan); }
-
-        .pixel-callout-text {
-            font-size: 12px;
-            color: var(--ink-secondary);
-            line-height: 1.6;
-        }
-
-        /* ---------------------------------------------------------------------
-           TABELAS DE DADOS TECNICOS (CHAPA RETRO)
-           --------------------------------------------------------------------- */
-        .table-paper-container {
-            margin: 20px 0;
-            overflow-x: auto;
-            border: 1px solid var(--border-default);
-            background: var(--paper-sheet);
-            box-shadow: var(--shadow-sm);
-        }
-
-        table.pixel-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            text-align: left;
-        }
-
-        table.pixel-table th {
-            background: var(--paper-surface-recessed);
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            letter-spacing: 0.1em;
-            color: var(--ink-muted);
-            text-transform: uppercase;
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border-default);
-        }
-
-        table.pixel-table td {
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border-subtle);
-            color: var(--ink-secondary);
-        }
-
-        table.pixel-table tr:hover td {
-            background: var(--paper-surface-elevated);
-            color: var(--ink-main);
-        }
-
-        /* ---------------------------------------------------------------------
-           BLOCOS DE CODIGO E PROMPTS DE TELETIPO
-           --------------------------------------------------------------------- */
-        .code-paper-box {
-            margin: 20px 0;
-            border: 1px solid var(--border-default);
-            background: var(--paper-surface-recessed);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .code-paper-top {
-            background: var(--paper-surface);
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--border-default);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-family: var(--font-pixel);
-            font-size: 7px;
-            color: var(--ink-muted);
-            letter-spacing: 0.1em;
-        }
-
-        pre.code-paper-content {
-            padding: 16px;
-            font-family: var(--font-mono);
-            font-size: 12px;
-            line-height: 1.5;
-            color: var(--ink-main);
-            overflow-x: auto;
-            white-space: pre;
-            word-break: normal;
-        }
-
-        code.inline-pixel {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            background: var(--paper-surface-recessed);
-            border: 1px solid var(--border-subtle);
-            color: var(--blueprint-cyan);
-            padding: 1px 5px;
-        }
-
-        /* ---------------------------------------------------------------------
-           ARENA INTERATIVA DE HITL (SIMULADOR DE RISCO)
-           --------------------------------------------------------------------- */
-        .hitl-arena-box {
-            background: var(--paper-sheet);
-            border: 2px solid var(--border-default);
-            box-shadow: var(--shadow-md);
-            padding: 20px;
-            margin: 24px 0;
-        }
-
-        .hitl-arena-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed var(--ink-carbon);
-        }
-
-        .hitl-arena-title {
-            font-family: var(--font-pixel);
-            font-size: 9px;
-            color: var(--ink-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .hitl-input-group {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .hitl-input-field {
-            flex: 1;
-            background: var(--paper-surface-recessed);
-            border: 1px solid var(--border-default);
-            color: var(--ink-main);
-            font-family: var(--font-mono);
-            font-size: 12px;
-            padding: 8px 12px;
-            outline: none;
-            box-shadow: inset 1px 1px 0px #000000;
-        }
-
-        .hitl-input-field:focus {
-            border-color: var(--blueprint-cyan);
-        }
-
-        .hitl-output-receipt {
-            background: var(--paper-surface-recessed);
-            border: 1px solid var(--border-default);
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            font-family: var(--font-mono);
-            font-size: 12px;
-        }
-
-        /* ---------------------------------------------------------------------
-           RODAPE DOS PASSOS (NAVEGACAO LINEAR)
-           --------------------------------------------------------------------- */
-        .step-module-footer {
-            background: var(--paper-sheet);
-            border-top: 1px solid var(--border-default);
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .step-counter-tag {
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            color: var(--ink-muted);
-        }
-
-        /* ---------------------------------------------------------------------
-           MENU LATERAL DIREITO RETRATIL (DRAWER TECNICO)
-           --------------------------------------------------------------------- */
-        aside.retractable-drawer {
-            position: fixed;
-            top: var(--header-height);
-            right: 0;
-            width: var(--drawer-width);
-            height: calc(100vh - var(--header-height));
-            background: var(--paper-sheet);
-            border-left: 2px solid var(--border-default);
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.2s steps(1);
-            z-index: 95;
-            box-shadow: -4px 0 0px #000000;
-        }
-
-        aside.retractable-drawer.is-open {
-            transform: translateX(0);
-        }
-
-        .drawer-top-bar {
-            padding: 12px 16px;
-            background: var(--paper-surface);
-            border-bottom: 1px solid var(--border-default);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .drawer-top-title {
-            font-family: var(--font-pixel);
-            font-size: 9px;
-            color: var(--blueprint-cyan);
-            letter-spacing: 0.08em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .drawer-search-wrapper {
-            padding: 10px 14px;
-            background: var(--paper-surface-recessed);
-            border-bottom: 1px solid var(--border-default);
-        }
-
-        .drawer-list-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px;
-            list-style: none;
-        }
-
-        .drawer-item {
-            margin-bottom: 6px;
-        }
-
-        .drawer-link {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            padding: 8px 10px;
-            border: 1px solid transparent;
-            color: var(--ink-secondary);
-            font-family: var(--font-mono);
-            font-size: 11px;
-            line-height: 1.4;
-            text-decoration: none;
-            transition: all 0.05s steps(1);
-        }
-
-        .drawer-link:hover {
-            background: var(--paper-surface-elevated);
-            border-color: var(--border-default);
-            color: var(--ink-main);
-            transform: translate(-1px, -1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .drawer-link.active {
-            background: var(--paper-surface);
-            border-color: var(--blueprint-cyan);
-            color: var(--blueprint-cyan);
-            font-weight: 700;
-        }
-
-        .drawer-step-idx {
-            font-family: var(--font-pixel);
-            font-size: 7px;
-            background: var(--paper-surface-recessed);
-            border: 1px solid var(--border-subtle);
-            padding: 2px 4px;
-            color: var(--ink-muted);
-            flex-shrink: 0;
-        }
-        .drawer-link.active .drawer-step-idx {
-            background: var(--blueprint-cyan);
-            color: #07090c;
-            border-color: var(--blueprint-cyan);
-        }
-
-        .drawer-bottom-bar {
-            padding: 10px 16px;
-            background: var(--paper-surface);
-            border-top: 1px solid var(--border-default);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-family: var(--font-pixel);
-            font-size: 7px;
-            color: var(--ink-muted);
-        }
-
-        .drawer-backdrop {
-            display: none;
-            position: fixed;
-            top: var(--header-height);
-            left: 0;
-            width: 100vw;
-            height: calc(100vh - var(--header-height));
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 92;
-        }
-
-        /* ---------------------------------------------------------------------
-           RODAPE GERAL (PIXEL PAPER UI)
-           --------------------------------------------------------------------- */
-        footer.guide-paper-footer {
-            width: 100%;
-            border-top: 2px solid var(--border-default);
-            background: var(--paper-surface);
-            padding: 24px 32px;
-            padding-bottom: max(24px, calc(16px + var(--safe-bottom)));
-            padding-left: max(32px, calc(16px + var(--safe-left)));
-            padding-right: max(32px, calc(16px + var(--safe-right)));
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .footer-legal-unit {
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            color: var(--ink-muted);
-            line-height: 1.6;
-        }
-
-        .footer-link-cluster {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Botao Flutuante Voltar ao Topo */
-        .btn-pixel-top {
-            position: fixed;
-            bottom: max(20px, calc(16px + var(--safe-bottom)));
-            right: max(20px, calc(16px + var(--safe-right)));
-            background: var(--paper-surface);
-            border: 1px solid var(--border-default);
-            box-shadow: var(--shadow-sm);
-            color: var(--blueprint-cyan);
-            width: 36px;
-            height: 36px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 85;
-            transition: all 0.05s steps(1);
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .btn-pixel-top::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 48px;
-            min-height: 48px;
-            pointer-events: auto;
-        }
-        .btn-pixel-top:hover {
-            border-color: var(--blueprint-cyan);
-            background: var(--paper-surface-elevated);
-            transform: translate(-1px, -1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        /* Prevenir zoom involuntario no iOS Safari em dispositivos moveis */
-        @media (max-width: 768px) {
-            input, select, textarea {
-                font-size: 16px !important;
-            }
-        }
-
-        /* Responsividade Mobile */
-        @media (max-width: 900px) {
-            header.guide-header {
-                padding: 0 12px;
-            }
-            .header-search-box {
-                display: none;
-            }
-            .btn-search-mobile {
-                display: inline-flex !important;
-            }
-            main.guide-viewport {
-                padding: 16px 14px 60px 14px;
-                margin-right: 0 !important;
-            }
-            .guide-catalog-hero {
-                padding: 20px 16px;
-            }
-            .catalog-title {
-                font-size: clamp(16px, 3.8vw + 4px, 24px) !important;
-            }
-            .catalog-lead {
-                font-size: clamp(11px, 2vw + 3px, 13px) !important;
-            }
-            .step-title {
-                font-size: clamp(12px, 2.6vw + 3px, 16px) !important;
-            }
-            .step-content-body {
-                padding: 16px;
-            }
-            aside.retractable-drawer {
-                width: 100vw !important;
-                max-width: 100vw !important;
-                right: -100vw !important;
-                transform: none !important;
-                transition: right 0.25s ease-out !important;
-            }
-            aside.retractable-drawer.is-open,
-            aside.retractable-drawer.open,
-            body.drawer-open aside.retractable-drawer {
-                right: 0 !important;
-                transform: none !important;
-            }
-            .drawer-backdrop.is-active {
-                display: block;
-            }
-        }
-
-        @media (max-width: 1280px) {
-            .surface-tab .tab-chord,
-            .surface-tab .tab-lbl {
-                display: none !important;
-            }
-            .node-telemetry-badge {
-                display: none !important;
-            }
-            .header-search-box {
-                max-width: 200px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            /* Gaveta Retratil em Tela Cheia no Smartphone */
-            aside.retractable-drawer {
-                width: 100vw !important;
-                height: 100dvh !important;
-                top: 0 !important;
-                right: -100vw !important;
-                padding-top: var(--safe-top, 0px);
-                padding-bottom: var(--safe-bottom, 0px);
-                border-left: none !important;
-                z-index: 1000;
-                transform: none !important;
-            }
-            aside.retractable-drawer.is-open,
-            aside.retractable-drawer.open,
-            body.drawer-open aside.retractable-drawer {
-                right: 0 !important;
-                transform: none !important;
-            }
-            .drawer-top-bar {
-                padding: 12px 14px;
-                padding-top: max(12px, var(--safe-top));
-            }
-            .drawer-bottom-bar {
-                padding-bottom: max(12px, var(--safe-bottom));
-            }
-            .drawer-backdrop {
-                top: 0 !important;
-                height: 100vh !important;
-                height: 100dvh !important;
-            }
-
-            /* Omnisearch Modal Mobile Otimizado (Imune a compressao de teclado) */
-            .omnisearch-modal {
-                top: 0 !important;
-                left: 0 !important;
-                transform: none !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                height: 100dvh !important;
-                max-height: 100dvh !important;
-                clip-path: none !important;
-                border: none !important;
-                padding-top: var(--safe-top);
-                padding-bottom: var(--safe-bottom);
-                border-bottom: 2px solid var(--border-accent);
-            }
-            .omnisearch-header {
-                padding: 12px 14px;
-                padding-top: max(12px, var(--safe-top));
-                gap: 8px;
-            }
-            .omnisearch-input {
-                font-size: 16px !important; /* Previne zoom automatico no iOS Safari */
-            }
-            .omnisearch-results-list {
-                max-height: calc(100dvh - 120px - var(--safe-top) - var(--safe-bottom)) !important;
-                padding: 8px 12px;
-            }
-            .omnisearch-hint-bar {
-                display: none !important;
-            }
-
-            /* Mini API Tester no Passo 06 em 2 Colunas */
-            .api-tester-container {
-                padding: 12px !important;
-                margin: 14px 0 !important;
-            }
-            .api-tester-chips {
-                display: grid !important;
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 4px !important;
-            }
-            .api-chip-btn {
-                width: 100% !important;
-                min-height: 32px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                text-align: center !important;
-                font-size: 9px !important;
-                padding: 4px 6px !important;
-                touch-action: manipulation;
-                -webkit-tap-highlight-color: transparent;
-            }
-            .api-tester-bar {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 6px !important;
-            }
-            .api-url-input {
-                width: 100% !important;
-                min-width: 100% !important;
-            }
-            .api-tester-bar .pixel-btn {
-                width: 100% !important;
-                justify-content: center !important;
-            }
-        }
-
-        /* ---------------------------------------------------------------------
-           BARRA MECANICA DE PROGRESSO DE LEITURA (PIXEL PAPER UI)
-           --------------------------------------------------------------------- */
-        .reading-progress-track {
-            position: fixed;
-            top: calc(var(--header-height, 48px) + var(--safe-top, 0px));
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 101;
-            pointer-events: none;
-        }
-        .reading-progress-thumb {
-            height: 100%;
-            width: 0%;
-            background: var(--phosphor-green);
-            box-shadow: 1px 0px 0px #000000;
-            transition: width 0.05s linear;
-        }
-
-        .kbd-badge {
-            display: inline-flex;
-            align-items: center;
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            color: var(--ink-muted);
-            background: var(--paper-surface);
-            border: 1px solid var(--border-default);
-            padding: 2px 5px;
-            position: absolute;
-            right: 8px;
-            pointer-events: none;
-            letter-spacing: 0.05em;
-        }
-
-        /* ---------------------------------------------------------------------
-           OMNISEARCH MODAL CLIENT-SIDE (CTRL+K / /)
-           --------------------------------------------------------------------- */
-        .omnisearch-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(4, 6, 8, 0.78);
-            backdrop-filter: blur(2px);
-            z-index: 998;
-        }
-        .omnisearch-backdrop.is-active {
-            display: block;
-        }
-
-        .omnisearch-modal {
-            display: none;
-            position: fixed;
-            top: 15vh;
-            left: 50%;
-            transform: translateX(-50%);
-            width: min(720px, calc(100vw - 32px));
-            max-height: 70vh;
-            background: var(--paper-sheet);
-            border: 2px solid var(--border-accent);
-            box-shadow: var(--shadow-lg);
-            z-index: 999;
-            flex-direction: column;
-            clip-path: polygon(
-                0 var(--px), var(--px) var(--px), var(--px) 0,
-                calc(100% - var(--px)) 0, calc(100% - var(--px)) var(--px), 100% var(--px),
-                100% calc(100% - var(--px)), calc(100% - var(--px)) calc(100% - var(--px)), calc(100% - var(--px)) 100%,
-                var(--px) 100%, var(--px) calc(100% - var(--px)), 0 calc(100% - var(--px))
-            );
-        }
-        .omnisearch-modal.is-active {
-            display: flex;
-        }
-
-        .omnisearch-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 18px;
-            border-bottom: 1px solid var(--border-default);
-            background: var(--paper-surface);
-        }
-
-        .omnisearch-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--ink-main);
-            font-family: var(--font-mono);
-            font-size: 13px;
-        }
-
-        .omnisearch-counter {
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            color: var(--phosphor-green);
-            background: var(--paper-surface-recessed);
-            border: 1px solid var(--border-subtle);
-            padding: 3px 6px;
-        }
-
-        .omnisearch-hint-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 6px 18px;
-            background: var(--paper-surface-recessed);
-            border-bottom: 1px solid var(--border-subtle);
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            color: var(--ink-muted);
-        }
-
-        .omnisearch-results-list {
-            padding: 8px;
-            overflow-y: auto;
-            max-height: calc(70vh - 110px);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .omnisearch-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding: 10px 14px;
-            background: var(--paper-surface);
-            border: 1px solid var(--border-subtle);
-            text-decoration: none;
-            color: var(--ink-main);
-            cursor: pointer;
-            transition: all 0.05s steps(1);
-        }
-
-        .omnisearch-item:hover,
-        .omnisearch-item.is-selected {
-            border-color: var(--blueprint-cyan);
-            background: var(--paper-surface-elevated);
-            transform: translate(-1px, -1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .omnisearch-item-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        .omnisearch-item-title {
-            font-family: var(--font-pixel);
-            font-size: 9px;
-            color: var(--blueprint-cyan);
-            letter-spacing: 0.04em;
-        }
-
-        .omnisearch-item-step {
-            font-family: var(--font-pixel);
-            font-size: 7px;
-            color: var(--ink-muted);
-        }
-
-        .omnisearch-item-desc {
-            font-size: 11px;
-            color: var(--ink-secondary);
-            line-height: 1.4;
-        }
-
-        .omnisearch-item-desc mark {
-            background: rgba(56, 189, 248, 0.25);
-            color: var(--phosphor-green);
-            padding: 0 2px;
-            border-bottom: 1px solid var(--phosphor-green);
-        }
-
-        /* ---------------------------------------------------------------------
-           MINI API TESTER INTERATIVO (PASSO 06)
-           --------------------------------------------------------------------- */
-        .api-tester-container {
-            background: var(--paper-surface-recessed);
-            border: 2px solid var(--border-default);
-            padding: 16px;
-            margin: 20px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .api-tester-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed var(--ink-carbon);
-        }
-
-        .api-tester-title {
-            font-family: var(--font-pixel);
-            font-size: 9px;
-            letter-spacing: 0.06em;
-            color: var(--blueprint-cyan);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .api-tester-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .api-chip-btn {
-            font-family: var(--font-mono);
-            font-size: 10px;
-            background: var(--paper-surface);
-            border: 1px solid var(--border-default);
-            color: var(--ink-secondary);
-            padding: 4px 8px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.05s steps(1);
-        }
-
-        .api-chip-btn:hover,
-        .api-chip-btn.active {
-            border-color: var(--blueprint-cyan);
-            color: var(--ink-main);
-            background: var(--paper-surface-elevated);
-        }
-
-        .api-tester-bar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .api-method-badge {
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            padding: 6px 10px;
-            background: var(--paper-surface);
-            border: 1px solid var(--border-default);
-            color: var(--phosphor-green);
-        }
-
-        .api-url-input {
-            flex: 1;
-            min-width: 220px;
-            background: var(--paper-sheet);
-            border: 1px solid var(--border-default);
-            color: var(--ink-main);
-            font-family: var(--font-mono);
-            font-size: 12px;
-            padding: 6px 10px;
-            outline: none;
-        }
-
-        .api-url-input:focus {
-            border-color: var(--blueprint-cyan);
-        }
-
-        .api-telemetry-strip {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            color: var(--ink-muted);
-        }
-
-        .api-status-badge {
-            padding: 2px 6px;
-            background: var(--paper-surface);
-            border: 1px solid var(--border-default);
-        }
-
-        .api-status-badge.status-200 {
-            color: var(--phosphor-green);
-            border-color: var(--phosphor-green);
-        }
-
-        .api-status-badge.status-err {
-            color: var(--stamp-danger);
-            border-color: var(--stamp-danger);
-        }
-
-        /* ---------------------------------------------------------------------
-           DIAGRAMAS CRISPEDGES VETORIAIS
-           --------------------------------------------------------------------- */
-        .crisp-diagram-box {
-            background: var(--paper-surface-recessed);
-            border: 1px solid var(--border-default);
-            padding: 16px;
-            margin: 18px 0;
-            overflow-x: auto;
-        }
-
-        .crisp-diagram-header {
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            color: var(--ink-muted);
-            letter-spacing: 0.08em;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Surface Switcher Global & Telemetria Edge (Pixel Paper UI) */
-        .surface-switcher {
-            display: inline-flex;
-            align-items: center;
-            background: var(--paper-surface-recessed, #0b0e12);
-            border: 1px solid var(--border-default, #283340);
-            padding: 2px;
-            gap: 2px;
-        }
-        .surface-tab {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 9px;
-            font-family: var(--font-mono, 'JetBrains Mono', monospace);
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--ink-muted, #64748b);
-            text-decoration: none;
-            border: 1px solid transparent;
-            transition: all 0.15s ease;
-            white-space: nowrap;
-        }
-        .surface-tab:hover {
-            color: var(--ink-primary, #f1f5f9);
-            background: rgba(255, 255, 255, 0.04);
-        }
-        .surface-tab.active {
-            color: var(--phosphor-green, #33ff66);
-            background: rgba(51, 255, 102, 0.08);
-            border-color: rgba(51, 255, 102, 0.4);
-            font-weight: 700;
-        }
-        .surface-tab .tab-idx {
-            font-family: var(--font-pixel, 'Silkscreen', monospace);
-            font-size: 8px;
-            opacity: 0.7;
-        }
-        .surface-tab.active .tab-idx {
-            opacity: 1;
-            color: var(--phosphor-green, #33ff66);
-        }
-        .surface-tab .tab-chord {
-            font-size: 8px;
-            padding: 1px 4px;
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid var(--border-default, #283340);
-            color: var(--ink-muted, #64748b);
-            border-radius: 0;
-            letter-spacing: 0.5px;
-        }
-        .node-telemetry-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 8px;
-            background: rgba(51, 255, 102, 0.05);
-            border: 1px solid rgba(51, 255, 102, 0.25);
-            font-family: var(--font-mono, 'JetBrains Mono', monospace);
-            font-size: 10px;
-            color: var(--phosphor-green, #33ff66);
-            white-space: nowrap;
-        }
-        .node-telemetry-badge .telemetry-led {
-            width: 6px;
-            height: 6px;
-            border-radius: 0;
-            background: var(--phosphor-green, #33ff66);
-            box-shadow: 1px 1px 0px #000000;
-            display: inline-block;
-        }
-        @media (max-width: 992px) {
-            .surface-tab .tab-chord {
-                display: none;
-            }
-        }
-        @media (max-width: 768px) {
-            .node-telemetry-badge {
-                display: none !important;
-            }
-        }
-        @media (max-width: 640px) {
-            header.guide-header {
-                flex-wrap: nowrap !important;
-                padding-left: 8px !important;
-                padding-right: 8px !important;
-                gap: 4px !important;
-            }
-            .brand-unit {
-                gap: 6px !important;
-                flex-shrink: 0 !important;
-            }
-            .brand-unit .brand-title {
-                display: none !important;
-            }
-            .surface-switcher {
-                padding: 1px 2px !important;
-                gap: 2px !important;
-                display: inline-flex !important;
-                width: auto !important;
-                flex-shrink: 0 !important;
-            }
-            .surface-tab {
-                padding: 4px 6px !important;
-                font-size: 8px !important;
-                flex: initial !important;
-            }
-            .surface-tab .tab-chord {
-                display: none !important;
-            }
-            .surface-tab .tab-lbl {
-                display: none !important;
-            }
-            .surface-tab#tab-overview .tab-idx::after { content: " VIS"; }
-            .surface-tab#tab-workspace .tab-idx::after { content: " APP"; }
-            .surface-tab#tab-docs .tab-idx::after { content: " DOC"; }
-            .node-telemetry-badge {
-                display: none !important;
-            }
-            .header-actions {
-                gap: 4px !important;
-                flex-shrink: 0 !important;
-            }
-            .header-actions .pixel-btn {
-                padding: 4px 6px !important;
-                font-size: 8px !important;
-                min-height: 32px !important;
-            }
-            .lang-text-full {
-                display: none !important;
-            }
-            .lang-text-short {
-                display: inline !important;
-            }
-            .theme-btn-label {
-                display: none !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .drawer-btn-label {
-                display: none !important;
-            }
-            .brand-unit .brand-badge {
-                display: none !important;
-            }
-        }
-
-        /* =====================================================================
-           BLOCOS DE TERMINAL E CODIGO EM LINHA (PIXEL PAPER UI)
-           ===================================================================== */
-        .terminal-block {
-            background: var(--paper-surface-recessed);
-            border: 2px solid var(--border-default);
-            box-shadow: var(--shadow-sm);
-            margin: 16px 0;
-            max-width: 100%;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .terminal-top {
-            background: var(--paper-surface);
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 6px 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-pixel);
-            font-size: 8px;
-            color: var(--ink-secondary);
-            user-select: none;
-        }
-
-        .terminal-circle {
-            width: 6px;
-            height: 6px;
-            background: var(--border-strong);
-            display: inline-block;
-        }
-
-        .terminal-circle:nth-child(1) { background: var(--stamp-danger); }
-        .terminal-circle:nth-child(2) { background: var(--thermal-amber); }
-        .terminal-circle:nth-child(3) { background: var(--phosphor-green); }
-
-        .terminal-title {
-            margin-left: 6px;
-            letter-spacing: 0.05em;
-            color: var(--blueprint-cyan);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .terminal-pre {
-            margin: 0;
-            padding: 12px 14px;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            line-height: 1.5;
-            color: var(--ink-main);
-            background: var(--paper-base);
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            white-space: pre;
-            max-width: 100%;
-            word-break: normal;
-            word-wrap: normal;
-        }
-
-        .terminal-pre code {
-            font-family: inherit;
-            font-size: inherit;
-            color: inherit;
-            background: transparent;
-            padding: 0;
-            border: none;
-        }
-
-        @media (max-width: 768px) {
-            .terminal-pre {
-                padding: 10px 10px;
-                font-size: 10px;
-            }
-        }
+/* ---------------------------------------------------------------------
+   ESTRUTURA GERAL DA PAGINA (LARGURA TOTAL SEM CENTRALIZACAO)
+   --------------------------------------------------------------------- */
+.guide-shell {
+    width: 100%;
+    display: flex;
+    position: relative;
+    min-height: calc(100vh - var(--header-height, 48px));
+}
+
+main.guide-viewport {
+    width: 100%;
+    padding: 24px 32px 80px 32px;
+    box-sizing: border-box;
+    transition: margin-right 0.2s ease;
+}
+
+body.drawer-open main.guide-viewport {
+    margin-right: var(--drawer-width, 360px);
+}
+
+/* ---------------------------------------------------------------------
+   CARIMBOS OFICIAIS (PIXEL STAMPS - SILKSCREEN 8PX)
+   --------------------------------------------------------------------- */
+.pixel-stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    padding: 3px 6px;
+    border: 1px dashed var(--border-default);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    user-select: none;
+    border-radius: 2px;
+}
+
+.stamp-approved {
+    border-color: var(--phosphor-green);
+    color: var(--phosphor-green);
+    background: rgba(124, 217, 198, 0.08);
+}
+
+.stamp-notice {
+    border-color: var(--blueprint-cyan);
+    color: var(--blueprint-cyan);
+    background: rgba(56, 189, 248, 0.08);
+}
+
+.stamp-critical {
+    border-color: var(--stamp-danger);
+    color: var(--stamp-danger);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.stamp-amber {
+    border-color: var(--thermal-amber);
+    color: var(--thermal-amber);
+    background: rgba(219, 173, 130, 0.08);
+}
+
+/* ---------------------------------------------------------------------
+   BANNER HERO / FICHA CATALOGRAFICA DE ABERTURA (/docs)
+   --------------------------------------------------------------------- */
+.guide-catalog-hero {
+    background: var(--paper-surface);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    position: relative;
+    border-radius: 4px;
+}
+
+.catalog-meta-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 16px;
+}
+
+.catalog-tag-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.catalog-title {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--ink-main);
+    margin-bottom: 10px;
+}
+
+.catalog-lead {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--ink-secondary);
+    line-height: 1.65;
+    margin-bottom: 20px;
+}
+
+.catalog-grid-telemetry {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    padding: 14px 18px;
+    border-radius: 3px;
+}
+
+.catalog-telemetry-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.catalog-telemetry-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.catalog-telemetry-val {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--phosphor-green);
+    line-height: 1.2;
+}
+
+/* ---------------------------------------------------------------------
+   DIVISORES DE TRILHAS TEMATICAS (4 TRILHAS MODULARES)
+   --------------------------------------------------------------------- */
+.track-divider {
+    margin: 48px 0 24px 0;
+    padding: 20px 24px;
+    background: var(--paper-sheet);
+    border: 1px solid var(--border-default);
+    border-left: 4px solid var(--blueprint-cyan);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.track-divider.track-purple {
+    border-left-color: var(--brand-purple, #a855f7);
+}
+
+.track-divider.track-green {
+    border-left-color: var(--phosphor-green, #7cd9c6);
+}
+
+.track-divider.track-amber {
+    border-left-color: var(--thermal-amber, #dbad82);
+}
+
+.track-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--blueprint-cyan);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.track-divider.track-purple .track-tag { color: var(--brand-purple, #a855f7); }
+.track-divider.track-green .track-tag { color: var(--phosphor-green, #7cd9c6); }
+.track-divider.track-amber .track-tag { color: var(--thermal-amber, #dbad82); }
+
+.track-title {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink-main);
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+
+.track-desc {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ---------------------------------------------------------------------
+   MODULOS PASSO A PASSO (.step-module)
+   --------------------------------------------------------------------- */
+.step-module {
+    background: var(--paper-surface);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 28px;
+    scroll-margin-top: calc(var(--header-height, 48px) + 20px);
+    transition: border-color 0.15s ease;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.step-module:hover {
+    border-color: var(--border-strong);
+}
+
+.step-module-header {
+    background: var(--paper-sheet);
+    border-bottom: 1px solid var(--border-default);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.step-header-title-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.step-index-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: #0c1012;
+    background: var(--blueprint-cyan);
+    padding: 3px 8px;
+    border-radius: 2px;
+}
+
+.step-heading {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink-main);
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+
+.step-content-body {
+    padding: 24px;
+}
+
+.step-paragraph {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--ink-secondary);
+    margin-bottom: 16px;
+    line-height: 1.65;
+}
+
+/* Linhas de Picote Mecanico de Papel Termico */
+.slip-perforation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    user-select: none;
+}
+
+.perforation-line {
+    flex: 1;
+    height: 1px;
+    border-top: 1px dashed var(--border-subtle);
+}
+
+.perforation-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ink-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* Grades de Cartoes Tecnicos */
+.pixel-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin: 18px 0;
+}
+
+.pixel-card {
+    background: var(--paper-sheet);
+    border: 1px solid var(--border-default);
+    padding: 16px;
+    border-radius: 3px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+}
+
+.pixel-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.pixel-card-title {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pixel-card-body {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--ink-secondary);
+    line-height: 1.55;
+}
+
+/* ---------------------------------------------------------------------
+   CAIXAS DIDATICAS DE ALERTA TECNICO (CALLOUTS)
+   --------------------------------------------------------------------- */
+.pixel-callout {
+    margin: 20px 0;
+    padding: 16px 20px;
+    border: 1px solid var(--border-default);
+    background: var(--paper-sheet);
+    border-radius: 3px;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+}
+
+.pixel-callout.tip {
+    border-left: 4px solid var(--phosphor-green);
+}
+.pixel-callout.warning {
+    border-left: 4px solid var(--thermal-amber);
+}
+.pixel-callout.danger {
+    border-left: 4px solid var(--stamp-danger);
+}
+.pixel-callout.info {
+    border-left: 4px solid var(--blueprint-cyan);
+}
+
+.pixel-callout-header {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.pixel-callout.tip .pixel-callout-header { color: var(--phosphor-green); }
+.pixel-callout.warning .pixel-callout-header { color: var(--thermal-amber); }
+.pixel-callout.danger .pixel-callout-header { color: var(--stamp-danger); }
+.pixel-callout.info .pixel-callout-header { color: var(--blueprint-cyan); }
+
+.pixel-callout-text {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--ink-secondary);
+    line-height: 1.6;
+}
+
+/* ---------------------------------------------------------------------
+   TABELAS DE DADOS TECNICOS (CHAPA SOBRIA)
+   --------------------------------------------------------------------- */
+.table-paper-container {
+    margin: 20px 0;
+    overflow-x: auto;
+    border: 1px solid var(--border-default);
+    background: var(--paper-sheet);
+    border-radius: 3px;
+    box-shadow: var(--shadow-sm);
+}
+
+table.pixel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+table.pixel-table th {
+    background: var(--paper-surface-recessed);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-default);
+}
+
+table.pixel-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--ink-secondary);
+    font-family: var(--font-sans);
+}
+
+table.pixel-table tr:hover td {
+    background: var(--paper-surface-elevated);
+    color: var(--ink-main);
+}
+
+/* ---------------------------------------------------------------------
+   BLOCOS DE CODIGO E CODE TABS SINCRONIZADAS
+   --------------------------------------------------------------------- */
+.code-paper-box {
+    margin: 20px 0;
+    border: 1px solid var(--border-default);
+    background: var(--paper-surface-recessed);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.code-paper-top {
+    background: var(--paper-surface);
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border-default);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+}
+
+pre.code-paper-content {
+    margin: 0;
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.55;
+    color: #cbd5e1;
+    overflow-x: auto;
+    white-space: pre;
+    word-break: normal;
+}
+
+code.inline-pixel {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-subtle);
+    color: var(--blueprint-cyan);
+    padding: 1px 5px;
+    border-radius: 2px;
+}
+
+/* Terminal de Linha de Comando */
+.terminal-block {
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    border-radius: 3px;
+    box-shadow: var(--shadow-sm);
+    margin: 16px 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.terminal-top {
+    background: var(--paper-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-secondary);
+    user-select: none;
+}
+
+.terminal-circle {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.terminal-circle:nth-child(1) { background: #ef4444; }
+.terminal-circle:nth-child(2) { background: #eab308; }
+.terminal-circle:nth-child(3) { background: #22c55e; }
+
+.terminal-title {
+    margin-left: 6px;
+    letter-spacing: 0.04em;
+    color: var(--blueprint-cyan);
+    font-weight: 500;
+}
+
+.terminal-pre {
+    margin: 0;
+    padding: 14px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: #e2e8f0;
+    background: #080b0d;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: pre;
+}
+
+/* ---------------------------------------------------------------------
+   ARENA INTERATIVA DE HITL (SIMULADOR DE RISCO)
+   --------------------------------------------------------------------- */
+.hitl-arena-box {
+    background: var(--paper-sheet);
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+    box-shadow: var(--shadow-sm);
+    padding: 20px;
+    margin: 24px 0;
+}
+
+.hitl-arena-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.hitl-arena-title {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hitl-input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.hitl-input-field {
+    flex: 1;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    color: var(--ink-main);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 8px 12px;
+    outline: none;
+    border-radius: 2px;
+}
+
+.hitl-input-field:focus {
+    border-color: var(--blueprint-cyan);
+}
+
+.hitl-output-receipt {
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    border-radius: 3px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+
+/* ---------------------------------------------------------------------
+   RODAPE DOS PASSOS (NAVEGACAO LINEAR)
+   --------------------------------------------------------------------- */
+.step-module-footer {
+    background: var(--paper-sheet);
+    border-top: 1px solid var(--border-default);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.step-counter-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+}
+
+/* ---------------------------------------------------------------------
+   MENU LATERAL DIREITO RETRATIL (DRAWER TECNICO)
+   --------------------------------------------------------------------- */
+aside.retractable-drawer {
+    position: fixed;
+    top: var(--header-height, 48px);
+    right: 0;
+    width: var(--drawer-width, 360px);
+    height: calc(100vh - var(--header-height, 48px));
+    background: var(--paper-sheet);
+    border-left: 1px solid var(--border-default);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.2s ease;
+    z-index: 95;
+    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.4);
+}
+
+aside.retractable-drawer.is-open {
+    transform: translateX(0);
+}
+
+.drawer-top-bar {
+    padding: 12px 16px;
+    background: var(--paper-surface);
+    border-bottom: 1px solid var(--border-default);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.drawer-top-title {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blueprint-cyan);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drawer-search-wrapper {
+    padding: 10px 14px;
+    background: var(--paper-surface-recessed);
+    border-bottom: 1px solid var(--border-default);
+}
+
+.drawer-list-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    list-style: none;
+    margin: 0;
+}
+
+
+.drawer-track-header {
+    padding: 12px 10px 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--blueprint-cyan);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-top: 8px;
+    list-style: none;
+}
+.drawer-track-header:first-child {
+    margin-top: 0;
+}
+
+.drawer-item {
+    margin-bottom: 4px;
+}
+
+.drawer-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    color: var(--ink-secondary);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: all 0.15s ease;
+}
+
+.drawer-link:hover {
+    background: var(--paper-surface-elevated);
+    border-color: var(--border-default);
+    color: var(--ink-main);
+}
+
+.drawer-link.active {
+    background: var(--paper-surface);
+    border-color: var(--blueprint-cyan);
+    color: var(--blueprint-cyan);
+    font-weight: 600;
+}
+
+.drawer-step-idx {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-subtle);
+    padding: 2px 5px;
+    color: var(--ink-muted);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.drawer-link.active .drawer-step-idx {
+    background: var(--blueprint-cyan);
+    color: #0c1012;
+    border-color: var(--blueprint-cyan);
+    font-weight: 700;
+}
+
+.drawer-bottom-bar {
+    padding: 10px 16px;
+    background: var(--paper-surface);
+    border-top: 1px solid var(--border-default);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ink-muted);
+}
+
+.drawer-backdrop {
+    display: none;
+    position: fixed;
+    top: var(--header-height, 48px);
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - var(--header-height, 48px));
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 92;
+}
+
+/* ---------------------------------------------------------------------
+   BARRA MECANICA DE PROGRESSO DE LEITURA
+   --------------------------------------------------------------------- */
+.reading-progress-track {
+    position: fixed;
+    top: calc(var(--header-height, 48px) + var(--safe-top, 0px));
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 101;
+    pointer-events: none;
+}
+
+.reading-progress-thumb {
+    height: 100%;
+    width: 0%;
+    background: var(--phosphor-green);
+    transition: width 0.05s linear;
+}
+
+.kbd-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ink-muted);
+    background: var(--paper-surface);
+    border: 1px solid var(--border-default);
+    padding: 2px 5px;
+    position: absolute;
+    right: 8px;
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   OMNISEARCH MODAL CLIENT-SIDE (CTRL+K / /)
+   --------------------------------------------------------------------- */
+.omnisearch-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(4, 6, 8, 0.78);
+    backdrop-filter: blur(2px);
+    z-index: 998;
+}
+
+.omnisearch-backdrop.is-active {
+    display: block;
+}
+
+.omnisearch-modal {
+    display: none;
+    position: fixed;
+    top: 15vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(720px, calc(100vw - 32px));
+    max-height: 70vh;
+    background: var(--paper-sheet);
+    border: 1px solid var(--border-accent);
+    box-shadow: var(--shadow-lg);
+    border-radius: 4px;
+    z-index: 999;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.omnisearch-modal.is-active {
+    display: flex;
+}
+
+.omnisearch-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-default);
+    background: var(--paper-surface);
+}
+
+.omnisearch-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--ink-main);
+    font-family: var(--font-sans);
+    font-size: 14px;
+}
+
+.omnisearch-counter {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--phosphor-green);
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-subtle);
+    padding: 3px 6px;
+    border-radius: 2px;
+}
+
+.omnisearch-hint-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 6px 18px;
+    background: var(--paper-surface-recessed);
+    border-bottom: 1px solid var(--border-subtle);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+}
+
+.omnisearch-results-list {
+    padding: 8px;
+    overflow-y: auto;
+    max-height: calc(70vh - 110px);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.omnisearch-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 14px;
+    background: var(--paper-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 3px;
+    text-decoration: none;
+    color: var(--ink-main);
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.omnisearch-item:hover,
+.omnisearch-item.is-selected {
+    border-color: var(--blueprint-cyan);
+    background: var(--paper-surface-elevated);
+}
+
+.omnisearch-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.omnisearch-item-title {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blueprint-cyan);
+}
+
+.omnisearch-item-step {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ink-muted);
+}
+
+.omnisearch-item-desc {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--ink-secondary);
+    line-height: 1.4;
+}
+
+.omnisearch-item-desc mark {
+    background: rgba(56, 189, 248, 0.25);
+    color: var(--phosphor-green);
+    padding: 0 2px;
+    border-bottom: 1px solid var(--phosphor-green);
+}
+
+/* ---------------------------------------------------------------------
+   MINI API TESTER INTERATIVO (PASSO 06)
+   --------------------------------------------------------------------- */
+.api-tester-container {
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+    padding: 16px;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.api-tester-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.api-tester-title {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blueprint-cyan);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.api-tester-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.api-chip-btn {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    background: var(--paper-surface);
+    border: 1px solid var(--border-default);
+    color: var(--ink-secondary);
+    padding: 4px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.api-chip-btn:hover,
+.api-chip-btn.active {
+    border-color: var(--blueprint-cyan);
+    color: var(--ink-main);
+    background: var(--paper-surface-elevated);
+}
+
+.api-tester-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.api-method-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 6px 10px;
+    background: var(--paper-surface);
+    border: 1px solid var(--border-default);
+    color: var(--phosphor-green);
+    border-radius: 2px;
+}
+
+.api-url-input {
+    flex: 1;
+    min-width: 220px;
+    background: var(--paper-sheet);
+    border: 1px solid var(--border-default);
+    color: var(--ink-main);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 2px;
+    outline: none;
+}
+
+.api-url-input:focus {
+    border-color: var(--blueprint-cyan);
+}
+
+.api-telemetry-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+}
+
+.api-status-badge {
+    padding: 2px 6px;
+    background: var(--paper-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 2px;
+}
+
+.api-status-badge.status-200 {
+    color: var(--phosphor-green);
+    border-color: var(--phosphor-green);
+}
+
+.api-status-badge.status-err {
+    color: var(--stamp-danger);
+    border-color: var(--stamp-danger);
+}
+
+/* ---------------------------------------------------------------------
+   DIAGRAMAS VETORIAIS CRISP
+   --------------------------------------------------------------------- */
+.crisp-diagram-box {
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+    padding: 16px;
+    margin: 18px 0;
+    overflow-x: auto;
+}
+
+.crisp-diagram-header {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ---------------------------------------------------------------------
+   RODAPE GERAL DA DOCUMENTACAO
+   --------------------------------------------------------------------- */
+footer.guide-paper-footer {
+    width: 100%;
+    border-top: 1px solid var(--border-default);
+    background: var(--paper-surface);
+    padding: 24px 32px;
+    padding-bottom: max(24px, calc(16px + var(--safe-bottom)));
+    padding-left: max(32px, calc(16px + var(--safe-left)));
+    padding-right: max(32px, calc(16px + var(--safe-right)));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.footer-legal-unit {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+}
+
+.footer-link-cluster {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Botao Flutuante Voltar ao Topo */
+.btn-pixel-top {
+    position: fixed;
+    bottom: max(20px, calc(16px + var(--safe-bottom)));
+    right: max(20px, calc(16px + var(--safe-right)));
+    background: var(--paper-surface);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+    color: var(--blueprint-cyan);
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 85;
+    transition: all 0.15s ease;
+}
+
+.btn-pixel-top:hover {
+    border-color: var(--blueprint-cyan);
+    background: var(--paper-surface-elevated);
+}
+
+/* ---------------------------------------------------------------------
+   RESPONSIVIDADE MOBILE-FIRST
+   --------------------------------------------------------------------- */
+@media (max-width: 900px) {
+    header.guide-header {
+        padding: 0 12px;
+    }
+    .header-search-box {
+        display: none;
+    }
+    .btn-search-mobile {
+        display: inline-flex !important;
+    }
+    main.guide-viewport {
+        padding: 16px 14px 60px 14px;
+        margin-right: 0 !important;
+    }
+    .guide-catalog-hero {
+        padding: 20px 16px;
+    }
+    .catalog-title {
+        font-size: 20px;
+    }
+    aside.retractable-drawer {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        right: -100vw !important;
+        transform: none !important;
+        transition: right 0.25s ease-out !important;
+    }
+    aside.retractable-drawer.is-open,
+    body.drawer-open aside.retractable-drawer {
+        right: 0 !important;
+        transform: none !important;
+    }
+    .drawer-backdrop.is-active {
+        display: block;
+    }
+}
+
+@media (max-width: 640px) {
+    aside.retractable-drawer {
+        width: 100vw !important;
+        height: 100dvh !important;
+        top: 0 !important;
+        right: -100vw !important;
+        padding-top: var(--safe-top, 0px);
+        padding-bottom: var(--safe-bottom, 0px);
+        border-left: none !important;
+        z-index: 1000;
+    }
+    .drawer-top-bar {
+        padding: 12px 14px;
+        padding-top: max(12px, var(--safe-top));
+    }
+    .drawer-bottom-bar {
+        padding-bottom: max(12px, var(--safe-bottom));
+    }
+    .drawer-backdrop {
+        top: 0 !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+    }
+    .omnisearch-modal {
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        border-radius: 0 !important;
+        border: none !important;
+    }
+}

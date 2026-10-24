@@ -4,14 +4,13 @@
    Diretriz: Zero Emojis // Tipografia Crisp // Scrollbars Teletipo
    ===================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&family=VT323&display=swap');
 
 /* Resets Universais */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    image-rendering: pixelated;
 }
 
 html {
@@ -29,18 +28,52 @@ body {
         linear-gradient(to bottom, var(--grid-color-major) 1px, transparent 1px);
     background-size: 8px 8px, 8px 8px, 40px 40px, 40px 40px;
     color: var(--ink-main);
-    font-family: var(--font-mono);
-    font-size: 13px;
-    line-height: 1.5;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
     min-height: 100vh;
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
     overflow-y: auto;
-    text-rendering: geometricPrecision;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tipografia Estrutural de Precisao (Padrao Human-Engineered) */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--ink-main);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    text-transform: none;
+}
+
+h1 {
+    font-size: clamp(28px, 4vw, 42px);
+    letter-spacing: -0.03em;
+}
+
+h2 {
+    font-size: clamp(20px, 3vw, 28px);
+}
+
+h3 {
+    font-size: clamp(16px, 2.2vw, 20px);
+}
+
+p {
+    font-family: var(--font-sans);
+    color: var(--ink-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+p:last-child {
+    margin-bottom: 0;
 }
 
 /* Restrição de tela única e janela estática exclusiva para o Console Workspace (SPA) */
