@@ -512,6 +512,15 @@ async def update_ai_settings(payload: AISettingsUpdatePayload, request: Request)
             circuit_breaker_threshold=settings.ai_circuit_breaker_consecutive_failures,
             circuit_breaker_cooldown=settings.ai_circuit_breaker_cooldown_seconds
         )
+
+    if payload.model:
+        async with get_db() as db:
+            await db.execute(
+                "UPDATE dots SET model = ? WHERE is_core = 1",
+                (settings.ai_model,)
+            )
+            await db.commit()
+
     return {"status": "success", "message": "Parâmetros de IA atualizados a quente."}
 
 

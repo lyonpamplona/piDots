@@ -132,13 +132,101 @@ class DotAgent:
                     }
                 }
 
+                # Modelo a utilizar: se o Dot estiver com modelo mock ou nulo, usa o default_model do provedor
+                model_to_use = dot_info.get("model")
+                if not model_to_use or model_to_use in ("mock-model", "test-model"):
+                    model_to_use = self.provider.default_model
+
                 try:
-                    # Chamada com Circuit Breaker ao provedor OpenAI-compatível
+                    # Chamada com Circuit Breaker ao provedor OpenAI-compativel
                     response = await self.provider.chat_completion(
                         messages=messages,
                         tools=tool_defs if tool_defs else None,
-                        model=dot_info["model"]
+                        model=model_to_use
                     )
+                except ProviderEndpointError as endp_err:
+                    # Auto-Healing: se o modelo do Dot falhou com 404 e era diferente do default_model,
+                    # retenta automaticamente com o default_model do provedor e persiste a correcao
+                    if model_to_use != self.provider.default_model:
+                        logger.warning(
+                            "Modelo '%s' falhou no endpoint. Aplicando Auto-Healing para o modelo padrao '%s'...",
+                            model_to_use, self.provider.default_model
+                        )
+                        try:
+                            response = await self.provider.chat_completion(
+                                messages=messages,
+                                tools=tool_defs if tool_defs else None,
+                                model=self.provider.default_model
+                            )
+                            # Atualiza o modelo do Dot no SQLite WAL para persistir a auto-cura
+                            async with get_db() as db:
+                                await db.execute(
+                                    "UPDATE dots SET model = ? WHERE id = ?",
+                                    (self.provider.default_model, self.dot_id)
+                                )
+                                await db.commit()
+                            dot_info["model"] = self.provider.default_model
+                        except Exception:
+                            # Se mesmo com default_model falhar, segue para tratamento normal
+                            err_msg = str(endp_err)
+                            logger.error("Falha de endpoint/modelo com provedor de IA: %s", err_msg)
+
+                            diag_msg_id = str(uuid.uuid4())
+                            async with get_db() as db:
+                                await db.execute(
+                                    """
+                                    INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                                    VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
+                                    """,
+                                    (diag_msg_id, thread_id, f"[FALHA DE ENDPOINT]: {err_msg}", self.dot_id, err_msg)
+                                )
+                                await db.commit()
+
+                            yield {
+                                "event": "thought:delta",
+                                "data": {"run_id": run_id, "error": err_msg}
+                            }
+                            yield {
+                                "event": "run:finished",
+                                "data": {
+                                    "run_id": run_id,
+                                    "status": "failed",
+                                    "final_response": "",
+                                    "error": err_msg,
+                                    "error_type": "endpoint_error"
+                                }
+                            }
+                            return
+                    else:
+                        err_msg = str(endp_err)
+                        logger.error("Falha de endpoint/modelo com provedor de IA: %s", err_msg)
+
+                        diag_msg_id = str(uuid.uuid4())
+                        async with get_db() as db:
+                            await db.execute(
+                                """
+                                INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
+                                VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
+                                """,
+                                (diag_msg_id, thread_id, f"[FALHA DE ENDPOINT]: {err_msg}", self.dot_id, err_msg)
+                            )
+                            await db.commit()
+
+                        yield {
+                            "event": "thought:delta",
+                            "data": {"run_id": run_id, "error": err_msg}
+                        }
+                        yield {
+                            "event": "run:finished",
+                            "data": {
+                                "run_id": run_id,
+                                "status": "failed",
+                                "final_response": "",
+                                "error": err_msg,
+                                "error_type": "endpoint_error"
+                            }
+                        }
+                        return
                 except ProviderAuthError as auth_err:
                     err_msg = str(auth_err)
                     logger.error("Falha de autenticação com provedor de IA: %s", err_msg)
@@ -167,37 +255,6 @@ class DotAgent:
                             "final_response": "",
                             "error": err_msg,
                             "error_type": "auth_error"
-                        }
-                    }
-                    return
-                except ProviderEndpointError as endp_err:
-                    err_msg = str(endp_err)
-                    logger.error("Falha de endpoint/modelo com provedor de IA: %s", err_msg)
-
-                    # Persiste mensagem interna de diagnóstico no SQLite WAL
-                    diag_msg_id = str(uuid.uuid4())
-                    async with get_db() as db:
-                        await db.execute(
-                            """
-                            INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, thought_log)
-                            VALUES (?, ?, 'assistant', ?, ?, 'dot', 'internal', ?)
-                            """,
-                            (diag_msg_id, thread_id, f"[FALHA DE ENDPOINT]: {err_msg}", self.dot_id, err_msg)
-                        )
-                        await db.commit()
-
-                    yield {
-                        "event": "thought:delta",
-                        "data": {"run_id": run_id, "error": err_msg}
-                    }
-                    yield {
-                        "event": "run:finished",
-                        "data": {
-                            "run_id": run_id,
-                            "status": "failed",
-                            "final_response": "",
-                            "error": err_msg,
-                            "error_type": "endpoint_error"
                         }
                     }
                     return

@@ -528,6 +528,17 @@ async def init_edge_database(db_path: str | None = None) -> None:
             """,
             core_squad
         )
+
+        # Sincronizacao idempotente dos Core Dots com o modelo ativo configurado no .env
+        await db.execute(
+            """
+            UPDATE dots 
+            SET model = ? 
+            WHERE is_core = 1 AND (model != ? OR model IS NULL OR model = 'mock-model');
+            """,
+            (default_model, default_model)
+        )
+
         await db.execute("""
             INSERT OR IGNORE INTO threads (id, dot_id, title, status)
             VALUES ('default-thread', 'dot-dev-core', 'Sessão Padrão', 'idle');
