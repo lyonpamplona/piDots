@@ -138,6 +138,10 @@
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
                         <span class="rail-lbl">Memória</span>
                     </button>
+                    <button type="button" class="rail-btn" id="railBtnConfigs" data-ctx="configs" onclick="switchSidebarContext('configs')" title="Configurações de IA, Provedor e Telemetria (Alt+5)">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <span class="rail-lbl">Configs</span>
+                    </button>
 
                     <div class="rail-spacer"></div>
 
@@ -350,8 +354,103 @@
                         </div>
                     </div>
 
+                    <!-- MODO 5: CONFIGURAÇÕES DE IA, PROVEDOR & TELEMETRIA DE SILÍCIO -->
+                    <div class="sidebar-ctx-pane" id="sidebarCtxConfigs">
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                    PROVEDOR DE IA (HOT-RELOAD)
+                                </span>
+                            </div>
+                            <div style="font-size: 10px; color: var(--ink-secondary); margin-bottom: 8px; line-height: 1.4;">
+                                Atualize o modelo ou chaves de inferência em tempo real sem reiniciar o processo do nó de borda.
+                            </div>
+
+                            <div style="margin-bottom: 6px;">
+                                <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">ENDPOINT BASE URL:</label>
+                                <input type="text" class="drawer-search-input" id="cfgBaseUrl" value="https://api.openai.com/v1" style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                            </div>
+
+                            <div style="margin-bottom: 6px;">
+                                <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">MODELO ALVO:</label>
+                                <input type="text" class="drawer-search-input" id="cfgModel" value="gpt-4o-mini" style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                            </div>
+
+                            <div style="margin-bottom: 6px;">
+                                <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">API KEY (BEARER TOKEN):</label>
+                                <input type="password" class="drawer-search-input" id="cfgApiKey" placeholder="sk-..." style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+                                <div>
+                                    <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">MAX RETRIES:</label>
+                                    <input type="number" class="drawer-search-input" id="cfgRetries" value="3" min="1" max="6" style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                                </div>
+                                <div>
+                                    <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">TIMEOUT (SEG):</label>
+                                    <input type="number" class="drawer-search-input" id="cfgTimeout" value="60" min="10" max="180" style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 7.5px; flex: 1;" onclick="testProviderConnectionCustom()">Testar Conexão</button>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7.5px; flex: 1;" onclick="saveAISettingsCustom()">Salvar Hot-Reload</button>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                    TELEMETRIA DE SILÍCIO
+                                </span>
+                                <span style="color: var(--phosphor-green); font-size: 8px;">ARM64</span>
+                            </div>
+
+                            <!-- Plotter RAM RSS -->
+                            <div style="margin-bottom: 8px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 2px;">
+                                    <span style="color: var(--ink-muted);">RAM RSS (Teto 300MB):</span>
+                                    <strong style="color: var(--thermal-amber);" id="val-ram">52.4 MB</strong>
+                                </div>
+                                <div style="border: 1px solid var(--border-subtle); background: #040608; height: 42px;">
+                                    <svg class="plotter-svg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges" style="width: 100%; height: 100%;">
+                                        <line x1="0" y1="12" x2="320" y2="12" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,3" />
+                                        <polyline points="0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 320,44" fill="none" stroke="#ffb830" stroke-width="2" />
+                                    </svg>
+                                </div>
+                                <div style="font-size: 8px; color: var(--ink-muted); margin-top: 2px;" id="val-ram-system">HOST RAM: -- MB</div>
+                            </div>
+
+                            <!-- Plotter SoC Temp -->
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 2px;">
+                                    <span style="color: var(--ink-muted);">Temperatura SoC:</span>
+                                    <strong style="color: var(--phosphor-green);" id="val-temp">48.2 °C</strong>
+                                </div>
+                                <div style="border: 1px solid var(--border-subtle); background: #040608; height: 42px;">
+                                    <svg class="plotter-svg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges" style="width: 100%; height: 100%;">
+                                        <line x1="0" y1="14" x2="320" y2="14" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,3" />
+                                        <polyline points="0,55 50,55 50,52 110,52 110,56 170,56 170,50 230,50 230,48 290,48 320,47" fill="none" stroke="#33ff66" stroke-width="2" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">
+                                <span>MANUTENÇÃO DO BANCO WAL</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="SlashCommandsEngine.executeCommand('/maintenance')">Truncar WAL</button>
+                            </div>
+                            <div style="font-size: 9.5px; color: var(--ink-secondary); line-height: 1.4;">
+                                SQLite 3.45 com WAL autocheckpoint=1000 e zero desgaste de memória flash no MicroSD.
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- RODAPÉ FIXO DE TELEMETRIA FÍSICA EM ASCII (PADRAO OPENDOTS EDGE) -->
-                    <div class="sidebar-hardware-footer" id="sidebarHardwareFooter" onclick="switchCanvasTab('canvas-telemetry', document.querySelector('[onclick*=canvas-telemetry]')); if (window.innerWidth <= 768 && typeof setMobileView === 'function') setMobileView('canvas');" title="Clique para abrir o Osciloscópio de Telemetria ARM64">
+                    <div class="sidebar-hardware-footer" id="sidebarHardwareFooter" onclick="switchSidebarContext('configs'); if (window.innerWidth <= 768 && typeof setMobileView === 'function') setMobileView('dots');" title="Clique para abrir Configurações e Telemetria ARM64">
                         <div class="shf-row">
                             <span class="shf-label">RAM RSS:</span>
                             <span class="shf-ascii" id="sidebarAsciiRamBar">[|||.......] 52MB</span>
@@ -501,58 +600,45 @@
             <!-- Faixa Superior do Computador de Borda do Dot (Padrão OpenDots Dot's Computer) -->
             <div class="computer-console-banner" id="computerConsoleBanner">
                 <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-                    <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--blueprint-cyan);"></span>
-                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); letter-spacing: 0.06em;">COMPUTADOR DO DOT //</span>
+                    <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--blueprint-cyan); border-radius: 50%;"></span>
+                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); letter-spacing: 0.05em;">Computador do Dot ·</span>
                     <span id="computerActiveWorkspaceBadge" style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">/workspace/dot-dev-core</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
-                    <button type="button" class="pixel-btn" id="computerTakeoverBtn" style="padding: 2px 6px; font-size: 7px;" onclick="toggleComputerTakeoverMode()" title="Assumir ou devolver controle interativo do Sandbox Bubblewrap">
-                        [MODO: OBSERVACAO]
+                    <button type="button" class="pixel-btn" id="computerTakeoverBtn" style="padding: 2px 6px; font-size: 7.5px;" onclick="toggleComputerTakeoverMode()" title="Assumir ou devolver controle interativo do Sandbox Bubblewrap">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                        <span>Modo Observação</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Abas do Canvas Superior (Purificado: Foco em Criação, Sandbox e CoAgents) -->
+            <!-- Abas do Canvas Superior (Purificado: 4 Abas Operacionais de Trabalho Puro) -->
             <div class="canvas-tab-bar">
-                <button class="canvas-tab active" onclick="switchCanvasTab('canvas-artifact', this)">
+                <button class="canvas-tab active" id="canvasTabArtifact" onclick="switchCanvasTab('canvas-artifact', this)">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    <span>[ARTEFATO]</span>
-                </button>
-                <button class="canvas-tab" onclick="toggleDiffHighlight()" title="Comparar Diferenças e Histórico WAL">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-                    <span>[DIFFS]</span>
+                    <span>Artefato</span>
                 </button>
                 <button class="canvas-tab" id="canvasTabCoagents" onclick="switchCanvasTab('canvas-coagent-state', this); if (window.PiDotsAPI && PiDotsAPI.loadActiveThreadState) PiDotsAPI.loadActiveThreadState();" data-tooltip="Inspetor de Shared State CoAgents (Plano, Quadro Negro e Handoffs)">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                    <span id="canvasTabCoagentsLabel">[COAGENTS]</span>
-                </button>
-                <button class="canvas-tab" id="canvasTabHitl" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria Forense e Carimbos HITL">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    <span>[HITL]</span>
-                </button>
-                <button class="canvas-tab" onclick="switchCanvasTab('canvas-telemetry', this)" data-tooltip="Telemetria de Silício ARM64">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                    <span>[TELEMETRIA]</span>
+                    <span id="canvasTabCoagentsLabel">CoAgents</span>
                 </button>
                 <button class="canvas-tab" id="canvasTabTerminal" onclick="switchCanvasTab('canvas-terminal', this)" data-tooltip="Terminal Bubblewrap e Arquivos do Workspace">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                    <span>[TERMINAL]</span>
+                    <span>Terminal</span>
                 </button>
-                <button class="canvas-tab" onclick="switchCanvasTab('canvas-settings', this)" data-tooltip="Configurações de Inferência e Provedor">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                    <span>[CONFIGS]</span>
-                </button>
-                <button class="canvas-tab" onclick="switchCanvasTab('canvas-matrix', this)" data-tooltip="Matriz Comparativa de Dots">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                    <span>[MATRIZ]</span>
+                <button class="canvas-tab" id="canvasTabHitl" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria Forense e Carimbos HITL">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>HITL</span>
                 </button>
 
                 <div class="canvas-controls">
-                    <button class="pixel-btn" style="padding: 2px 6px; font-size: 8px;" onclick="toggleCanvasExpand()" id="btnCanvasExpand" title="Expandir/Reduzir Canvas">
-                        [MAX]
+                    <button class="pixel-btn" style="padding: 2px 6px; font-size: 7.5px;" onclick="toggleCanvasExpand()" id="btnCanvasExpand" title="Expandir ou Reduzir Painel Canvas">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                        <span>Maximizar</span>
                     </button>
-                    <button class="pixel-btn" id="btn-canvas-toggle" style="padding: 2px 6px; font-size: 8px;" onclick="toggleCanvasSplit()" title="Fechar Canvas">
-                        [X]
+                    <button class="pixel-btn" id="btn-canvas-toggle" style="padding: 2px 6px; font-size: 7.5px;" onclick="toggleCanvasSplit()" title="Fechar Painel Canvas">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <span>Fechar</span>
                     </button>
                 </div>
             </div>
@@ -565,27 +651,27 @@
                     <div class="artifact-card-wrapper">
                         <header class="artifact-header">
                             <div class="artifact-title-box" style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);">SPACES //</span>
+                                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);">Spaces ·</span>
                                 <select id="spaceDocSelector" class="drawer-search-input" style="padding: 2px 6px; font-size: 11px; background: var(--paper-surface); color: var(--ink-main); border: 1px solid var(--border-default);" onchange="PiDotsAPI.selectSpaceFromDropdown(this.value)">
                                     <option value="architecture_spec.md">architecture_spec.md</option>
                                     <option value="sqlite_guide.md">sqlite_guide.md</option>
                                     <option value="fibonacci.py">fibonacci.py</option>
                                 </select>
                                 <span style="display: none;" id="currentArtifactTitle">architecture_spec.md</span>
-                                <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--phosphor-green); background: var(--paper-surface-recessed); padding: 1px 4px; border: 1px solid var(--border-subtle);" class="space-item-rev">REV 3.0</span>
+                                <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--phosphor-green); background: var(--paper-surface-recessed); padding: 1px 4px; border: 1px solid var(--border-subtle);" class="space-item-rev">Rev 3.0</span>
                             </div>
                             <div style="display: flex; gap: 6px;">
-                                <button class="pixel-btn" onclick="toggleDiffHighlight()">[DIFFS]</button>
-                                <button class="pixel-btn btn-cyan" onclick="saveArtifactRevision()">[SALVAR WAL]</button>
+                                <button class="pixel-btn" onclick="toggleDiffHighlight()">Diffs</button>
+                                <button class="pixel-btn btn-cyan" onclick="saveArtifactRevision()">Salvar no WAL</button>
                             </div>
                         </header>
                         
                         <!-- Visualizador de Diffs Integrado -->
                         <div id="diffViewContainer" style="display: none; background: #020305; border: 1px solid var(--border-default); padding: 12px; font-family: var(--font-mono); font-size: 11px; overflow-y: auto; flex: 1; line-height: 1.5;">
                             <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); margin-bottom: 8px; border-bottom: 1px dashed var(--border-subtle); padding-bottom: 4px;">
-                                COMPARADOR DE REVISOES // SQLITE WAL DIFF
+                                Comparador de Revisões · SQLite WAL Diff
                             </div>
-                            <div id="diffContentArea" style="white-space: pre-wrap;">Nenhuma diferenca registrada.</div>
+                            <div id="diffContentArea" style="white-space: pre-wrap;">Nenhuma diferença registrada.</div>
                         </div>
 
                         <textarea class="artifact-editor-textarea" id="artifactContent"># piDots Architecture Specification v3.0
@@ -613,14 +699,14 @@
                 <div class="canvas-panel-view" id="canvas-coagent-state">
                     <div style="background: var(--paper-surface); border: 2px solid var(--border-default); padding: 12px; display: flex; flex-direction: column; height: 100%; overflow-y: auto; gap: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-default); padding-bottom: 6px;">
-                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">COAGENTS SHARED STATE // SINCRONIZACAO AG-UI</span>
-                            <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 7px;" onclick="PiDotsAPI.loadActiveThreadState()">[SINCRONIZAR]</button>
+                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">COAGENTS SHARED STATE · SINCRONIZAÇÃO AG-UI</span>
+                            <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 7.5px;" onclick="PiDotsAPI.loadActiveThreadState()">Sincronizar</button>
                         </div>
 
                         <!-- Bloco 1: Plano de 2 Estágios Ativo -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
                             <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--blueprint-cyan); margin-bottom: 6px;">
-                                [1] PLANO DE EXECUCAO ATIVO (TWO-STAGE PLANNER)
+                                1. PLANO DE EXECUÇÃO ATIVO (TWO-STAGE PLANNER)
                             </div>
                             <div id="coagentActivePlanBox" style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
                                 Nenhum plano de múltiplos estágios registrado na sessão atual.
@@ -630,7 +716,7 @@
                         <!-- Bloco 2: Quadro Negro Compartilhado (Shared Space) -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
                             <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--thermal-amber); margin-bottom: 6px;">
-                                [2] QUADRO NEGRO COMPARTILHADO (SHARED NOTES)
+                                2. QUADRO NEGRO COMPARTILHADO (SHARED NOTES)
                             </div>
                             <div id="coagentSharedNotesBox" style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
                                 Nenhuma nota compartilhada entre os Dots nesta thread.
@@ -640,7 +726,7 @@
                         <!-- Bloco 3: Handoffs, Delegações e Rodadas do Conselho -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
                             <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--phosphor-green); margin-bottom: 6px;">
-                                [3] HANDOFFS, DELEGACOES &amp; CONSELHO MULTI-BOT
+                                3. HANDOFFS, DELEGAÇÕES &amp; CONSELHO MULTI-BOT
                             </div>
                             <div id="coagentHandoffsBox" style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
                                 Nenhuma transferência de titularidade ou delegação registrada.
@@ -650,7 +736,7 @@
                         <!-- Bloco 4: Auditoria Recente de Ferramentas (tool_runs) -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
                             <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); margin-bottom: 6px;">
-                                [4] AUDITORIA DE FERRAMENTAS (TOOL RUNS)
+                                4. AUDITORIA DE FERRAMENTAS (TOOL RUNS)
                             </div>
                             <div id="coagentToolRunsBox" style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-secondary); line-height: 1.4;">
                                 Carregando histórico de execuções...
@@ -660,8 +746,8 @@
                         <!-- Bloco 5: Inspetor Rápido MemGPT (Core & Archival Memory 64D) -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                <span style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--blueprint-cyan);">[5] INSPETOR MEMGPT // CORE &amp; ARCHIVAL 64D</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7px;" onclick="switchSidebarContext('memory'); if (window.innerWidth <= 768 && typeof setMobileView === 'function') setMobileView('dots');">[EDITAR MEMORIA]</button>
+                                <span style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--blueprint-cyan);">5. INSPETOR MEMGPT · CORE &amp; ARCHIVAL 64D</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="switchSidebarContext('memory'); if (window.innerWidth <= 768 && typeof setMobileView === 'function') setMobileView('dots');">Editar Memória</button>
                             </div>
                             <div id="coagentMemgptBox" style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-secondary); line-height: 1.45;">
                                 Sincronizando blocos Core Memory (Persona / Human) e fatos Archival...
@@ -670,89 +756,22 @@
                     </div>
                 </div>
 
-                <!-- ABA CANVAS 2: TELEMETRIA PLOTTER (OSCILOSCÓPIO VETORIAL SVG) -->
-                <div class="canvas-panel-view" id="canvas-telemetry">
-                    <!-- Plotter 1: RAM RSS -->
-                    <article class="plotter-card">
-                        <div class="plotter-top">
-                            <span class="plotter-tag">TELEMETRIA // RAM RSS PROCESSO (TETO 300MB)</span>
-                            <span class="plotter-val" id="val-ram">52.4 MB</span>
-                        </div>
-                        <div class="plotter-frame">
-                            <svg class="plotter-svg" viewBox="0 0 320 110" preserveAspectRatio="none" shape-rendering="crispEdges">
-                                <defs>
-                                    <pattern id="dither-amber" width="4" height="4" patternUnits="userSpaceOnUse">
-                                        <rect width="2" height="2" fill="#ffb830" fill-opacity="0.2" />
-                                        <rect x="2" y="2" width="2" height="2" fill="#ffb830" fill-opacity="0.2" />
-                                    </pattern>
-                                    <pattern id="grid-osc" width="20" height="20" patternUnits="userSpaceOnUse">
-                                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1c2633" stroke-width="1" />
-                                    </pattern>
-                                </defs>
-                                <rect width="320" height="110" fill="#040608" />
-                                <rect width="320" height="110" fill="url(#grid-osc)" />
-                                <line x1="0" y1="18" x2="320" y2="18" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,4" />
-                                <text x="4" y="14" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="8">TETO 300 MB</text>
-                                
-                                <polygon points="0,110 0,85 40,85 40,80 90,80 90,90 140,90 140,75 190,75 190,78 240,78 240,70 290,70 290,65 310,65 310,110" fill="url(#dither-amber)" />
-                                <polyline points="0,85 40,85 40,80 90,80 90,90 140,90 140,75 190,75 190,78 240,78 240,70 290,70 290,65 310,65" fill="none" stroke="#ffb830" stroke-width="2" />
-                                <rect x="308" y="63" width="5" height="5" fill="#ffffff" stroke="#ffb830" stroke-width="1" />
-                            </svg>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 8px; color: var(--ink-muted); margin-top: 4px;">
-                            <span>FREQ: 1.0 HZ</span>
-                            <span id="val-ram-system">HOST RAM: -- MB</span>
-                            <span style="color: var(--phosphor-green); font-weight: 700;">ESTADO NOMINAL</span>
-                        </div>
-                    </article>
-
-                    <!-- Plotter 2: SoC Temp -->
-                    <article class="plotter-card">
-                        <div class="plotter-top">
-                            <span class="plotter-tag">TELEMETRIA // TEMPERATURA BROADCOM</span>
-                            <span class="plotter-val" id="val-temp" style="color: var(--phosphor-green);">48.2 °C</span>
-                        </div>
-                        <div class="plotter-frame">
-                            <svg class="plotter-svg" viewBox="0 0 320 110" preserveAspectRatio="none" shape-rendering="crispEdges">
-                                <defs>
-                                    <pattern id="dither-green" width="4" height="4" patternUnits="userSpaceOnUse">
-                                        <rect width="2" height="2" fill="#33ff66" fill-opacity="0.2" />
-                                        <rect x="2" y="2" width="2" height="2" fill="#33ff66" fill-opacity="0.2" />
-                                    </pattern>
-                                </defs>
-                                <rect width="320" height="110" fill="#040608" />
-                                <rect width="320" height="110" fill="url(#grid-osc)" />
-                                <line x1="0" y1="20" x2="320" y2="20" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,4" />
-                                <text x="4" y="16" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="8">THROTTLE 80 °C</text>
-                                
-                                <polygon points="0,110 0,78 50,78 50,75 110,75 110,80 170,80 170,74 230,74 230,72 290,72 290,70 310,70 310,110" fill="url(#dither-green)" />
-                                <polyline points="0,78 50,78 50,75 110,75 110,80 170,80 170,74 230,74 230,72 290,72 290,70 310,70" fill="none" stroke="#33ff66" stroke-width="2" />
-                                <rect x="308" y="68" width="5" height="5" fill="#ffffff" stroke="#33ff66" stroke-width="1" />
-                            </svg>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 8px; color: var(--ink-muted); margin-top: 4px;">
-                            <span>FAN: ATIVO (PWM)</span>
-                            <span style="color: var(--phosphor-green); font-weight: 700;">DISSIPACAO OK</span>
-                        </div>
-                    </article>
-                </div>
-
                 <!-- ABA CANVAS 3: SANDBOX TERMINAL LOGS & DOT'S COMPUTER TAKEOVER -->
                 <div class="canvas-panel-view" id="canvas-terminal">
                     <div style="background: var(--paper-surface); border: 2px solid var(--border-default); padding: 10px; display: flex; flex-direction: column; height: 100%; gap: 8px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-default); padding-bottom: 6px;">
-                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">BUBBLEWRAP // SANDBOX &amp; ARQUIVOS /WORKSPACE</span>
+                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">BUBBLEWRAP · SANDBOX &amp; ARQUIVOS /WORKSPACE</span>
                             <div style="display: flex; gap: 6px;">
-                                <button class="pixel-btn" onclick="PiDotsAPI.loadComputerFiles()">[ARQUIVOS]</button>
-                                <button class="pixel-btn" onclick="simulateBwrapCommand()">[TESTAR BWRAP]</button>
-                                <button class="pixel-btn" onclick="clearTerminalLogs()">[LIMPAR]</button>
+                                <button class="pixel-btn" onclick="PiDotsAPI.loadComputerFiles()">Arquivos</button>
+                                <button class="pixel-btn" onclick="simulateBwrapCommand()">Testar Bwrap</button>
+                                <button class="pixel-btn" onclick="clearTerminalLogs()">Limpar</button>
                             </div>
                         </div>
 
                         <!-- Explorador Compacto de Arquivos em /workspace -->
                         <div id="computerWorkspaceFilesBox" style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 6px 8px; font-size: 10px; max-height: 95px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
                             <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--thermal-amber);">/WORKSPACE:</span>
-                            <span style="color: var(--ink-muted);">Clique em [ARQUIVOS] para listar o diretório isolado do Dot.</span>
+                            <span style="color: var(--ink-muted);">Clique em Arquivos para listar o diretório isolado do Dot.</span>
                         </div>
 
                         <div id="terminalViewport" style="background: #020305; border: 1px solid var(--border-subtle); padding: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--phosphor-green); flex: 1; overflow-y: auto; line-height: 1.6;">
@@ -766,7 +785,7 @@
                         <div id="computerTakeoverBar" style="display: flex; gap: 6px; align-items: center; border-top: 1px dashed var(--border-default); padding-top: 6px;">
                             <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);">$</span>
                             <input type="text" class="drawer-search-input" id="computerExecInput" placeholder="Comando direto no Sandbox (ex: ls -la, python3 script.py)..." style="flex: 1; padding: 6px 8px; font-size: 11px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); PiDotsAPI.executeInDotComputer();}">
-                            <button type="button" class="pixel-btn btn-cyan" onclick="PiDotsAPI.executeInDotComputer()">[EXECUTAR]</button>
+                            <button type="button" class="pixel-btn btn-cyan" onclick="PiDotsAPI.executeInDotComputer()">Executar</button>
                         </div>
                     </div>
                 </div>
@@ -775,11 +794,11 @@
                 <div class="canvas-panel-view" id="canvas-hitl">
                     <div style="background: var(--paper-surface); border: 2px solid var(--thermal-amber); padding: 12px; display: flex; flex-direction: column; height: 100%; box-shadow: var(--shadow-sm);">
                         <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber); margin-bottom: 8px; border-bottom: 1px solid var(--thermal-amber); padding-bottom: 4px;">
-                            DOSSIE DE GOVERNANCA FORENSE // HITL-2026-X88
+                            DOSSIÊ DE GOVERNANÇA FORENSE · HITL
                         </div>
                         <div id="hitlDossierDetailsBox" style="font-size: 11px; line-height: 1.5; margin-bottom: 10px; color: var(--ink-secondary);">
                             <strong>AGENTE:</strong> DOT-DEV-CORE<br>
-                            <strong>RISCO:</strong> CRITICO (EXCLUSAO RECURSIVA)<br>
+                            <strong>RISCO:</strong> CRÍTICO (EXCLUSÃO RECURSIVA)<br>
                             <strong>ALVO:</strong> /workspace/scratch_build_cache/*
                         </div>
 
@@ -788,7 +807,7 @@
                             <div class="rubber-stamp stamp-rejected" id="stampRejectVisual">
                                 <div class="stamp-inner">
                                     <span class="stamp-title">VETADO</span>
-                                    <span class="stamp-sub">ACAO CANCELADA</span>
+                                    <span class="stamp-sub">AÇÃO CANCELADA</span>
                                     <span style="font-size: 8px;">OP: LYON</span>
                                 </div>
                             </div>
@@ -807,144 +826,16 @@
                                 <div class="pixel-switch" id="safetySwitchMechanical">
                                     <div class="pixel-switch-thumb"></div>
                                 </div>
-                                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-secondary);">DESTRAVAR SEGURANCA</span>
+                                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-secondary);">DESTRAVAR SEGURANÇA</span>
                             </div>
                             <div class="hitl-canvas-actions" style="display: flex; gap: 8px;">
-                                <button class="pixel-btn btn-danger" onclick="resolveHitlFull('REJEITADO')">[VETAR]</button>
-                                <button class="pixel-btn btn-success" id="btnApproveCanvas" disabled onclick="resolveHitlFull('HOMOLOGADO')">[HOMOLOGAR]</button>
+                                <button class="pixel-btn btn-danger" onclick="resolveHitlFull('REJEITADO')">Vetar</button>
+                                <button class="pixel-btn btn-success" id="btnApproveCanvas" disabled onclick="resolveHitlFull('HOMOLOGADO')">Homologar</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ABA CANVAS 6: CONFIGURAÇÃO DE IA E PROVEDORES (HOT-RELOAD) -->
-                <div class="canvas-panel-view" id="canvas-settings">
-                    <div style="background: var(--paper-surface); border: 2px solid var(--border-default); padding: 12px; display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
-                        <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); margin-bottom: 8px; border-bottom: 1px solid var(--border-default); padding-bottom: 4px;">
-                            PROVEDOR UNIVERSAL OPENAI // HOT-RELOAD EDGE
-                        </div>
-                        <div style="font-size: 11px; color: var(--ink-secondary); margin-bottom: 12px; line-height: 1.5;">
-                            Atualize a quente o modelo ou chaves de inferencia sem reiniciar o processo do piDots.
-                        </div>
-
-                        <div style="margin-bottom: 10px;">
-                            <label style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); display: block; margin-bottom: 4px;">ENDPOINT BASE URL</label>
-                            <input type="text" class="drawer-search-input" id="cfgBaseUrl" value="https://api.openai.com/v1" style="width: 100%;">
-                        </div>
-
-                        <div style="margin-bottom: 10px;">
-                            <label style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); display: block; margin-bottom: 4px;">MODELO ALVO</label>
-                            <input type="text" class="drawer-search-input" id="cfgModel" value="gpt-4o-mini" style="width: 100%;">
-                        </div>
-
-                        <div style="margin-bottom: 10px;">
-                            <label style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); display: block; margin-bottom: 4px;">API KEY (BEARER TOKEN)</label>
-                            <input type="password" class="drawer-search-input" id="cfgApiKey" placeholder="sk-..." style="width: 100%;">
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-                            <div>
-                                <label style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); display: block; margin-bottom: 4px;">MAX RETRIES</label>
-                                <input type="number" class="drawer-search-input" id="cfgRetries" value="3" min="1" max="6" style="width: 100%;">
-                            </div>
-                            <div>
-                                <label style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); display: block; margin-bottom: 4px;">TIMEOUT (SEG)</label>
-                                <input type="number" class="drawer-search-input" id="cfgTimeout" value="60" min="10" max="180" style="width: 100%;">
-                            </div>
-                        </div>
-
-                        <div style="display: flex; gap: 8px; margin-top: auto; border-top: 1px dashed var(--border-default); padding-top: 10px;">
-                            <button class="pixel-btn" onclick="testProviderConnectionCustom()">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                                [TESTAR CONEXAO]
-                            </button>
-                            <button class="pixel-btn btn-cyan" onclick="saveAISettingsCustom()">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline></svg>
-                                [SALVAR HOT-RELOAD]
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ABA CANVAS 5: MATRIZ COMPARATIVA DE ARQUITETURA DOTS -->
-                <div class="canvas-panel-view" id="canvas-matrix">
-                    <div class="matrix-container">
-                        <div class="matrix-title">
-                            <span>MATRIZ COMPARATIVA // ECOSSISTEMA DE AGENTES</span>
-                            <span style="color: var(--phosphor-green);">REVISAO 2026.10</span>
-                        </div>
-                        <div style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
-                            Comparativo estrutural entre diferentes arquiteturas de agentes com foco em hardware, consumo de memoria e soberania local.
-                        </div>
-
-                        <table class="matrix-table">
-                            <thead>
-                                <tr>
-                                    <th>DIMENSAO</th>
-                                    <th>FRAMEWORKS SAAS NUVEM</th>
-                                    <th>AGENTES CANVAS PESADOS</th>
-                                    <th>ASSISTENTES TERMINAL FECHADOS</th>
-                                    <th style="color: var(--blueprint-cyan);">PIDOTS (EDGE SOBERANO)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="matrix-highlight-row">
-                                    <td><strong>ALVO E FOCO</strong></td>
-                                    <td>Corporativo / SaaS em Nuvem</td>
-                                    <td>Criativo / Spatial Canvas</td>
-                                    <td>Power-User / Terminal Fechado</td>
-                                    <td style="color: var(--phosphor-green);"><strong>Edge SBC / RPi4B 4GB ARM64</strong></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>MEMORIA RAM</strong></td>
-                                    <td>1.8GB - 3.2GB (Node/Chrome)</td>
-                                    <td>1.2GB - 2.5GB (React/WebGL)</td>
-                                    <td>1.5GB - 3.0GB (Wasm/V8)</td>
-                                    <td style="color: var(--thermal-amber);"><strong>&lt; 300MB RSS (uvloop)</strong></td>
-                                </tr>
-                                <tr class="matrix-highlight-row">
-                                    <td><strong>PERSISTENCIA</strong></td>
-                                    <td>PostgreSQL / Supabase / Prisma</td>
-                                    <td>PostgreSQL / S3 Cloud</td>
-                                    <td>KV Distribuido / RocksDB</td>
-                                    <td style="color: var(--blueprint-cyan);"><strong>SQLite WAL (Zero desgaste Flash)</strong></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>SANDBOX EXEC</strong></td>
-                                    <td>Docker / VMs na Nuvem</td>
-                                    <td>Containers efêmeros em Nuvem</td>
-                                    <td>MicroVMs Proprietárias</td>
-                                    <td style="color: var(--phosphor-green);"><strong>Bubblewrap Namespaces local</strong></td>
-                                </tr>
-                                <tr class="matrix-highlight-row">
-                                    <td><strong>GOVERNANCA HITL</strong></td>
-                                    <td>Telas de aprovacao assincronas</td>
-                                    <td>Modais basicos de permissao</td>
-                                    <td>Logs inline no chat</td>
-                                    <td style="color: var(--thermal-amber);"><strong>Review Cards + Carimbos + Trava</strong></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>DESIGN SYSTEM</strong></td>
-                                    <td>Tailwind / Shadcn Padrao</td>
-                                    <td>WebGL / Canvas Fluido GPU</td>
-                                    <td>Dark High-Contrast</td>
-                                    <td style="color: var(--blueprint-cyan);"><strong>Interface Técnica Minimalista</strong></td>
-                                </tr>
-                                <tr class="matrix-highlight-row">
-                                    <td><strong>INFERENCIA</strong></td>
-                                    <td>Multiplas APIs Proprietarias</td>
-                                    <td>Meta Llama 3 Fine-tuned</td>
-                                    <td>APIs Proprietárias Fechadas</td>
-                                    <td style="color: var(--phosphor-green);"><strong>Universal SDK (OpenAI Compatible)</strong></td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div style="background: var(--paper-surface-recessed); border: 1px dashed var(--border-default); padding: 8px; font-size: 10px; color: var(--ink-muted); line-height: 1.5;">
-                            <strong>SINTESE EXECUTIVA:</strong> O piDots absorve a co-criacao documental, a transparencia de raciocinio e o refinamento tecnico de agentes colaborativos, eliminando custos de nuvem e operando localmente em hardware de borda (SBCs / Mini PCs, benchmark: Raspberry Pi 4B) sob &lt; 300MB de RAM.
-                        </div>
-                    </div>
-                </div>
             </div>
         </aside>
 
@@ -954,8 +845,11 @@
     <div class="drawer-backdrop" id="drawerBackdrop" onclick="toggleDrawer()"></div>
     <aside class="retractable-drawer" id="retractableDrawer">
         <header class="drawer-header">
-            <span class="drawer-title">MANUAL OPERACIONAL // GUIA TECNICO</span>
-            <button class="pixel-btn" onclick="toggleDrawer()">[FECHAR]</button>
+            <span class="drawer-title">MANUAL OPERACIONAL · GUIA TÉCNICO</span>
+            <button class="pixel-btn" onclick="toggleDrawer()">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <span>Fechar</span>
+            </button>
         </header>
         
         <div class="drawer-search-box">
@@ -965,23 +859,36 @@
         <div class="drawer-content" id="drawerContentList">
             <!-- CONTROLES RÁPIDOS MOBILE (ESPELHADOS DO CABEÇALHO PARA TELAS <= 768PX) -->
             <div class="mobile-quick-controls-bar" id="mobileQuickControlsBar" style="padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-default); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 6px;">
-                <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--thermal-amber); letter-spacing: 0.05em;">[ATALHOS DE SESSAO &amp; INTERFACE]</div>
+                <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--thermal-amber); letter-spacing: 0.05em;">ATALHOS DE SESSÃO &amp; INTERFACE</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                    <button type="button" class="pixel-btn btn-cyan" onclick="toggleDrawer(); startNewConversation();" style="justify-content: center; font-size: 8px;">[+ NOVA CONVERSA]</button>
-                    <button type="button" class="pixel-btn" onclick="toggleWorkspaceMode();" style="justify-content: center; font-size: 8px;">[MODO FOCO / SPLIT]</button>
-                    <button type="button" class="pixel-btn" onclick="PiDotsI18n.toggleLanguage();" style="justify-content: center; font-size: 8px;">[IDIOMA PT | EN]</button>
-                    <button type="button" class="pixel-btn" onclick="toggleTheme();" style="justify-content: center; font-size: 8px;">[ALTERNAR TEMA]</button>
+                    <button type="button" class="pixel-btn btn-cyan" onclick="toggleDrawer(); startNewConversation();" style="justify-content: center; font-size: 8px;">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>Nova Conversa</span>
+                    </button>
+                    <button type="button" class="pixel-btn" onclick="toggleWorkspaceMode();" style="justify-content: center; font-size: 8px;">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                        <span>Foco / Split</span>
+                    </button>
+                    <button type="button" class="pixel-btn" onclick="PiDotsI18n.toggleLanguage();" style="justify-content: center; font-size: 8px;">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        <span>Idioma PT | EN</span>
+                    </button>
+                    <button type="button" class="pixel-btn" onclick="toggleTheme();" style="justify-content: center; font-size: 8px;">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        <span>Tema</span>
+                    </button>
                 </div>
             </div>
 
             <!-- RECURSO DIDÁTICO INTERATIVO SPOTLIGHT -->
             <div style="padding: 12px; margin-bottom: 14px; border: 1px solid var(--blueprint-cyan); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 8px;">
-                <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); letter-spacing: 0.05em; text-transform: uppercase;">[RECURSO DIDÁTICO INTERATIVO]</div>
+                <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); letter-spacing: 0.05em; text-transform: uppercase;">RECURSO DIDÁTICO INTERATIVO</div>
                 <div style="font-size: 11px; color: var(--ink-secondary); line-height: 1.4;">
                     Deseja rever as 5 ferramentas fundamentais do console guiadas diretamente na interface real?
                 </div>
                 <button type="button" class="pixel-btn btn-cyan" onclick="toggleDrawer(); if (window.PiDotsTourEngine) PiDotsTourEngine.start();" style="width: 100%; justify-content: center;">
-                    [REVER GUIA OPERACIONAL SPOTLIGHT]
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <span>Rever Guia Operacional Spotlight</span>
                 </button>
             </div>
 
@@ -989,7 +896,7 @@
                 <div class="step-num">PASSO 01 // ARQUITETURA TRIPTYCH</div>
                 <div class="step-heading">LAYOUT TRÍPTICO DE ALTA DENSIDADE OPERACIONAL</div>
                 <div class="step-body">
-                    A tela organiza-se em 3 paineis: Sidebar esquerda (Dots e Spaces), Centro (bobina de teletipo conversacional) e Direita (Canvas de artefatos, telemetria e governanca).
+                    A tela organiza-se em 3 painéis: Sidebar esquerda (Dots e Spaces), Centro (bobina de teletipo conversacional) e Direita (Canvas de artefatos, telemetria e governança).
                 </div>
             </div>
 
@@ -997,7 +904,7 @@
                 <div class="step-num">PASSO 02 // COMANDOS DE TERMINAL &amp; CLI</div>
                 <div class="step-heading">INICIALIZACAO E STATUS LOCAL</div>
                 <div class="step-body">
-                    Execute <code>pidots status</code> para inspecionar memoria e banco SQLite WAL. Para servir a aplicacao: <code>pidots serve --host 0.0.0.0 --port 8000</code>.
+                    Execute <code>pidots status</code> para inspecionar memória e banco SQLite WAL. Para servir a aplicação: <code>pidots serve --host 0.0.0.0 --port 8000</code>.
                 </div>
             </div>
 
@@ -1005,26 +912,28 @@
                 <div class="step-num">PASSO 03 // PRESERVACAO FLASH &amp; SQLITE WAL</div>
                 <div class="step-heading">PRAGMAS CALIBRADOS PARA EDGE</div>
                 <div class="step-body">
-                    O modo WAL com <code>synchronous=NORMAL</code> e <code>wal_autocheckpoint=1000</code> previne desgastes prematuros no cartao MicroSD ou SSD USB, garantindo escrita confiavel sem pausas no event loop.
+                    O modo WAL com <code>synchronous=NORMAL</code> e <code>wal_autocheckpoint=1000</code> previne desgastes prematuros no cartão MicroSD ou SSD USB, garantindo escrita confiável sem pausas no event loop.
                 </div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 04 // GOVERNANCA HUMAN-IN-THE-LOOP</div>
-                <div class="step-heading">APROVACAO FORENSE DE COMANDOS</div>
+                <div class="step-heading">APROVAÇÃO FORENSE DE COMANDOS</div>
                 <div class="step-body">
-                    Comandos de destruicao de arquivos (como <code>rm -rf</code>) ou elevacao de privilégios sao bloqueados automaticamente. A aprovacao requer destravar a trava de seguranca e carimbar a aprovacao da acao.
+                    Comandos de destruição de arquivos (como <code>rm -rf</code>) ou elevação de privilégios são bloqueados automaticamente. A aprovação requer destravar a trava de segurança e carimbar a aprovação da ação.
                 </div>
             </div>
 
             <div style="padding: 12px; margin-top: 14px; border: 1px solid var(--border-default); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 8px;">
-                <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); letter-spacing: 0.05em; text-transform: uppercase;">INTERFACES REST DO NO EDGE:</div>
+                <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); letter-spacing: 0.05em; text-transform: uppercase;">INTERFACES REST DO NÓ EDGE:</div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <a href="/api/docs" target="_blank" class="pixel-btn btn-cyan" style="flex: 1; justify-content: center; text-decoration: none;" title="Abrir Documentacao OpenAPI Interativa">
-                        [SWAGGER REST /api/docs]
+                    <a href="/api/docs" target="_blank" class="pixel-btn btn-cyan" style="flex: 1; justify-content: center; text-decoration: none;" title="Abrir Documentação OpenAPI Interativa">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        <span>Swagger REST (/api/docs)</span>
                     </a>
                     <a href="/api/openapi.json" target="_blank" class="pixel-btn" style="flex: 1; justify-content: center; text-decoration: none;" title="Abrir Contrato OpenAPI em JSON Puro">
-                        [CONTRATO JSON]
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        <span>Contrato OpenAPI JSON</span>
                     </a>
                 </div>
             </div>
@@ -1039,20 +948,20 @@
          ======================================================================= -->
     <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Navegacao Principal Mobile">
         <button class="mobile-nav-btn" id="mobileNavDots" data-view="dots" onclick="setMobileView('dots')">
-            <span class="mobile-nav-icon">[O]</span>
+            <span class="mobile-nav-icon"><svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><circle cx="6" cy="12" r="2"></circle><circle cx="18" cy="12" r="2"></circle></svg></span>
             <span class="mobile-nav-label">DOTS</span>
         </button>
         <button class="mobile-nav-btn active" id="mobileNavChat" data-view="chat" onclick="setMobileView('chat')">
-            <span class="mobile-nav-icon">[&gt;]</span>
+            <span class="mobile-nav-icon"><svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></span>
             <span class="mobile-nav-label">CHAT</span>
         </button>
         <button class="mobile-nav-btn" id="mobileNavCanvas" data-view="canvas" onclick="setMobileView('canvas')">
-            <span class="mobile-nav-icon">[*]</span>
+            <span class="mobile-nav-icon"><svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg></span>
             <span class="mobile-nav-label">CANVAS</span>
             <span class="mobile-nav-badge" id="mobileCanvasBadge" style="display: none;">NOVO</span>
         </button>
         <button class="mobile-nav-btn" id="mobileNavDocs" data-view="docs" onclick="toggleDrawer()">
-            <span class="mobile-nav-icon">[?]</span>
+            <span class="mobile-nav-icon"><svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
             <span class="mobile-nav-label">GUIA</span>
         </button>
     </nav>
@@ -1064,10 +973,12 @@
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
             <button class="pixel-btn" onclick="PiDotsUX.Onboarding.open()" title="Rever Tour Operacional de Primeiro Acesso" data-i18n="nav.onboarding" style="padding: 2px 6px; font-size: 8px;">
-                [TOUR OPERACIONAL]
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                <span>Tour Operacional</span>
             </button>
             <button class="pixel-btn" id="btnFooterPatchNotes" onclick="PiDotsUX.PatchNotes.open()" title="Exibir Notas de Atualização e Changelog" style="padding: 2px 6px; font-size: 8px;">
-                [PATCH NOTES // V1.2.0]
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                <span>Notas da Versão (v1.2.0)</span>
             </button>
         </div>
         <div>
@@ -1089,7 +1000,7 @@
     <div id="pixelDialogBackdrop">
         <div class="pixel-dialog-box" id="pixelDialogBox">
             <header class="dialog-header">
-                <span id="pixelDialogTitle">[PROTOCOLO // DIALOGO OPERACIONAL]</span>
+                <span id="pixelDialogTitle">Protocolo · Diálogo Operacional</span>
                 <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted);">ESC PARA CANCELAR</span>
             </header>
             <div class="dialog-body">
@@ -1099,45 +1010,45 @@
                 </div>
             </div>
             <footer class="dialog-footer">
-                <button class="pixel-btn" id="pixelDialogCancelBtn" onclick="PixelSystem.closeDialog(false)">[CANCELAR]</button>
-                <button class="pixel-btn btn-cyan" id="pixelDialogConfirmBtn" onclick="PixelSystem.confirmDialog()">[CONFIRMAR]</button>
+                <button class="pixel-btn" id="pixelDialogCancelBtn" onclick="PixelSystem.closeDialog(false)">Cancelar</button>
+                <button class="pixel-btn btn-cyan" id="pixelDialogConfirmBtn" onclick="PixelSystem.confirmDialog()">Confirmar</button>
             </footer>
         </div>
     </div>
 
     <!-- 3. Menu de Contexto Customizado (Botão Direito do Mouse) -->
     <div id="pixelContextMenu">
-        <div class="context-menu-header">ACOES DO CONSOLE // PIDOTS</div>
+        <div class="context-menu-header">AÇÕES DO CONSOLE · PIDOTS</div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('inspect')">
-            <span>[1] INSPECIONAR ARTEFATO</span>
+            <span>Inspecionar Artefato</span>
             <span class="context-menu-shortcut">ALT+I</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('save')">
-            <span>[2] GRAVAR REVISAO SQLITE</span>
+            <span>Gravar Revisão SQLite</span>
             <span class="context-menu-shortcut">CTRL+S</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('hitl')">
-            <span>[3] ABRIR DOSSIE HITL</span>
+            <span>Abrir Dossiê HITL</span>
             <span class="context-menu-shortcut">ALT+H</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('split')">
-            <span>[4] ALTERNAR SPLIT / MAX</span>
+            <span>Alternar Split / Max</span>
             <span class="context-menu-shortcut">F11</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('clear')">
-            <span>[5] LIMPAR BOBINA CHAT</span>
+            <span>Limpar Bobina Chat</span>
             <span class="context-menu-shortcut">CTRL+L</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('docs')">
-            <span>[6] MANUAL OPERACIONAL</span>
+            <span>Manual Operacional</span>
             <span class="context-menu-shortcut">F1</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('tour')">
-            <span>[7] GUIA OPERACIONAL TOUR</span>
+            <span>Guia Operacional Tour</span>
             <span class="context-menu-shortcut">/TOUR</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('changelog')">
-            <span>[8] NOTAS DE ATUALIZACAO</span>
+            <span>Notas de Atualização</span>
             <span class="context-menu-shortcut">PATCH</span>
         </div>
     </div>
@@ -1166,8 +1077,8 @@
         
         <header class="pixel-tour-header">
             <div class="pixel-tour-tag">
-                <span class="pixel-tour-step-counter" id="pixelTourStepIndicator">[ETAPA 01/05]</span>
-                <span id="pixelTourStepBadge">// SQUAD DE COWORKERS</span>
+                <span class="pixel-tour-step-counter" id="pixelTourStepIndicator">Etapa 01/05</span>
+                <span id="pixelTourStepBadge">· Squad de Coworkers</span>
             </div>
             <button
                 type="button"
@@ -1175,7 +1086,7 @@
                 id="pixelTourBtnClose"
                 title="Fechar tour operacional (Atalho: Esc)"
                 aria-label="Fechar tour operacional"
-            >[ESC]</button>
+            >Esc</button>
         </header>
 
         <div class="pixel-tour-body">
@@ -1183,15 +1094,15 @@
             
             <div class="pixel-tour-steps-group" id="pixelTourDescGroup">
                 <div class="pixel-tour-chunk chunk-what">
-                    <span class="pixel-tour-chunk-label">[O QUE É]</span>
+                    <span class="pixel-tour-chunk-label">O que é</span>
                     <p class="pixel-tour-chunk-text" id="pixelTourWhatText">-</p>
                 </div>
                 <div class="pixel-tour-chunk chunk-how">
-                    <span class="pixel-tour-chunk-label">[COMO USAR AGORA]</span>
+                    <span class="pixel-tour-chunk-label">Como usar agora</span>
                     <p class="pixel-tour-chunk-text" id="pixelTourHowText">-</p>
                 </div>
                 <div class="pixel-tour-chunk chunk-tip">
-                    <span class="pixel-tour-chunk-label">[DICA DE ATALHO]</span>
+                    <span class="pixel-tour-chunk-label">Dica de atalho</span>
                     <p class="pixel-tour-chunk-text" id="pixelTourTipText">-</p>
                 </div>
             </div>
@@ -1203,7 +1114,7 @@
                     type="button"
                     class="pixel-tour-btn pixel-tour-btn-ghost"
                     id="pixelTourBtnSkip"
-                >[PULAR TOUR]</button>
+                >Pular Tour</button>
             </div>
             <div class="pixel-tour-footer-right">
                 <button
@@ -1211,18 +1122,18 @@
                     class="pixel-tour-btn"
                     id="pixelTourBtnPrev"
                     disabled
-                >[ANTERIOR]</button>
+                >Anterior</button>
                 <button
                     type="button"
                     class="pixel-tour-btn pixel-tour-btn-primary"
                     id="pixelTourBtnNext"
-                >[PRÓXIMO PASSO]</button>
+                >Próximo Passo</button>
                 <button
                     type="button"
                     class="pixel-tour-btn pixel-tour-btn-finish"
                     id="pixelTourBtnFinish"
                     style="display: none;"
-                >[CONCLUIR TOUR]</button>
+                >Concluir Tour</button>
             </div>
         </footer>
     </aside>
@@ -1259,7 +1170,9 @@
                             <span class="stamp-hash" id="patchNotesStampHash">SHA256: c5a5e67</span>
                         </div>
                     </div>
-                    <button type="button" class="pixel-btn" onclick="PiDotsUX.PatchNotes.acknowledge()" title="Fechar Notas de Atualizacao" style="min-width: 44px; min-height: 44px; padding: 4px; font-size: 11px;">[X]</button>
+                    <button type="button" class="pixel-btn" onclick="PiDotsUX.PatchNotes.acknowledge()" title="Fechar Notas de Atualizacao" style="min-width: 44px; min-height: 44px; padding: 4px; font-size: 11px;">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
                 </div>
             </header>
 
@@ -1269,94 +1182,94 @@
                 <!-- SECAO 1: PILULA VERDE [INCLUIDO / NOVO] -->
                 <section class="patchnotes-category-section">
                     <div class="category-header">
-                        <span class="pixel-pill pill-green" data-i18n="patch.tag_new">[INCLUIDO / NOVO]</span>
-                        <span class="category-summary">RECURSOS INEDITOS DE INTERFACE E BORDA</span>
+                        <span class="pixel-pill pill-green" data-i18n="patch.tag_new">Incluído / Novo</span>
+                        <span class="category-summary">RECURSOS INÉDITOS DE INTERFACE E BORDA</span>
                     </div>
                     <ul class="patchnotes-list" id="patchListIncluded">
-                        <li><strong>Micro-Motor i18n Vanilla JS de Borda:</strong> Alternancia instantanea de idioma [PT | EN] com memoria local, comutacao in-memory inferior a 5ms e zero dependencias externas.</li>
-                        <li><strong>Dicionarios Canonicos Bilingues Desacoplados:</strong> Especificacao estruturada pt.json e en.json servida com cabecalhos Cache-Control estritos de borda.</li>
-                        <li><strong>Comutador Global de Idioma:</strong> Botao de controle tátil integrado no cabecalho de todas as superficies (/app, / e /docs) com estado persistente.</li>
-                        <li><strong>Endpoint de Idioma com Protecao de Borda:</strong> Rota /data/locales/{lang}.json com allowlist contra path traversal e validacao formal de entrada.</li>
+                        <li><strong>Micro-Motor i18n Vanilla JS de Borda:</strong> Alternância instantânea de idioma (PT | EN) com memória local, comutação in-memory inferior a 5ms e zero dependências externas.</li>
+                        <li><strong>Dicionários Canônicos Bilíngues Desacoplados:</strong> Especificação estruturada pt.json e en.json servida com cabeçalhos Cache-Control estritos de borda.</li>
+                        <li><strong>Comutador Global de Idioma:</strong> Botão de controle tátil integrado no cabeçalho de todas as superfícies (/app, / e /docs) com estado persistente.</li>
+                        <li><strong>Endpoint de Idioma com Proteção de Borda:</strong> Rota /data/locales/{lang}.json com allowlist contra path traversal e validação formal de entrada.</li>
                     </ul>
                 </section>
 
                 <!-- SECAO 2: PILULA CIANO [AJUSTADO / MELHORADO] -->
                 <section class="patchnotes-category-section">
                     <div class="category-header">
-                        <span class="pixel-pill pill-cyan" data-i18n="patch.tag_opt">[AJUSTADO / MELHORADO]</span>
-                        <span class="category-summary">REFATORACOES, DESEMPENHO E ERGONOMIA</span>
+                        <span class="pixel-pill pill-cyan" data-i18n="patch.tag_opt">Ajustado / Melhorado</span>
+                        <span class="category-summary">REFATORAÇÕES, DESEMPENHO E ERGONOMIA</span>
                     </div>
                     <ul class="patchnotes-list" id="patchListAdjusted">
-                        <li><strong>Humanizacao Radical de Voz e Tom de Engenharia:</strong> Eliminacao completa de chavões corporativos inflados e adocao de cadencia Gary Provost com tom de artesao de software.</li>
-                        <li><strong>Correcao Ortografica e Gramatical Culta:</strong> Correcao de 'arquotipos' para 'arquetipos', restauracao de diacriticos e revisao sintatica rigorosa no Guia e Manuais.</li>
-                        <li><strong>Unificacao de Topologia GitHub:</strong> Links de repositorios padronizados no espaco de documentacao tecnica.</li>
-                        <li><strong>Ajuste da Politica de Cache do Motor JS:</strong> Cabecalho Cache-Control calibrado com stale-while-revalidate prevenindo retencao de versoes obsoletas.</li>
+                        <li><strong>Humanização Radical de Voz e Tom de Engenharia:</strong> Eliminação completa de chavões corporativos inflados e adoção de cadência Gary Provost com tom de artesão de software.</li>
+                        <li><strong>Correção Ortográfica e Gramatical Culta:</strong> Correção de 'arquotipos' para 'arquétipos', restauração de diacríticos e revisão sintática rigorosa no Guia e Manuais.</li>
+                        <li><strong>Unificação de Topologia GitHub:</strong> Links de repositórios padronizados no espaço de documentação técnica.</li>
+                        <li><strong>Ajuste da Política de Cache do Motor JS:</strong> Cabeçalho Cache-Control calibrado com stale-while-revalidate prevenindo retenção de versões obsoletas.</li>
                     </ul>
                 </section>
 
                 <!-- SECAO 3: PILULA VERMELHA [REMOVIDO / DEPRECIADO] -->
                 <section class="patchnotes-category-section">
                     <div class="category-header">
-                        <span class="pixel-pill pill-red" data-i18n="patch.tag_dep">[REMOVIDO / DEPRECIADO]</span>
-                        <span class="category-summary">ELIMINACAO DE CARGAS PESADAS E APIS OBSOLETAS</span>
+                        <span class="pixel-pill pill-red" data-i18n="patch.tag_dep">Removido / Depreciado</span>
+                        <span class="category-summary">ELIMINAÇÃO DE CARGAS PESADAS E APIS OBSOLETAS</span>
                     </div>
                     <ul class="patchnotes-list" id="patchListRemoved">
-                        <li><strong>Erradicacao de Jargoes Corporativos Vazios:</strong> Eliminadas metaforas infladas e promessas genericas de IA sem respaldo na arquitetura de silicio.</li>
-                        <li><strong>Descarte de Expressoes Enganosas:</strong> Remocao de termos que sugeriam travas fisicas digitais ou falhas cognitivas inexistentes.</li>
-                        <li><strong>Remocao de Dependencias Pesadas de Traducao:</strong> Eliminada qualquer necessidade de bibliotecas de internacionalizacao client-side pesadas.</li>
+                        <li><strong>Erradicação de Jargões Corporativos Vazios:</strong> Eliminadas metáforas infladas e promessas genéricas de IA sem respaldo na arquitetura de silício.</li>
+                        <li><strong>Descarte de Expressões Enganosas:</strong> Remoção de termos que sugeriam travas físicas digitais ou falhas cognitivas inexistentes.</li>
+                        <li><strong>Remoção de Dependências Pesadas de Tradução:</strong> Eliminada qualquer necessidade de bibliotecas de internacionalização client-side pesadas.</li>
                     </ul>
                 </section>
 
                 <!-- SECAO 4: PILULA AMBAR [SEGURANCA & BORDA] -->
                 <section class="patchnotes-category-section">
                     <div class="category-header">
-                        <span class="pixel-pill pill-amber" data-i18n="patch.tag_sec">[SEGURANCA & BORDA]</span>
-                        <span class="category-summary">SEGURANCA DE COMANDOS E ISOLAMENTO DE EXECUCAO</span>
+                        <span class="pixel-pill pill-amber" data-i18n="patch.tag_sec">Segurança &amp; Borda</span>
+                        <span class="category-summary">SEGURANÇA DE COMANDOS E ISOLAMENTO DE EXECUÇÃO</span>
                     </div>
                     <ul class="patchnotes-list" id="patchListSecurity">
-                        <li><strong>Imunidade Total a XSS no DOM:</strong> Mutacao textual estrita via textContent e setAttribute no micro-motor de internacionalizacao.</li>
-                        <li><strong>Atualizacao do Service Worker para Cache v5:</strong> Sincronizacao de CORE_STATIC_ASSETS para incluir dicionarios de locale e motor JS com operacao offline completa.</li>
-                        <li><strong>Validacao Estrutural de Paridade:</strong> Garantia de 100% de paridade de chaves entre dicionarios pt.json e en.json.</li>
+                        <li><strong>Imunidade Total a XSS no DOM:</strong> Mutação textual estrita via textContent e setAttribute no micro-motor de internacionalização.</li>
+                        <li><strong>Atualização do Service Worker para Cache v5:</strong> Sincronização de CORE_STATIC_ASSETS para incluir dicionários de locale e motor JS com operação offline completa.</li>
+                        <li><strong>Validação Estrutural de Paridade:</strong> Garantia de 100% de paridade de chaves entre dicionários pt.json e en.json.</li>
                     </ul>
                 </section>
 
                 <!-- HISTORICO RETRATIL DE VERSOES ANTERIORES -->
                 <details class="patchnotes-history-accordion" id="patchNotesHistoryAccordion">
                     <summary class="history-summary">
-                        <span>[+] HISTORICO // VERSOES ANTERIORES DO SISTEMA (V1.1.0, V1.0.1, V1.0.0)</span>
+                        <span>Histórico · Versões anteriores do sistema (v1.1.0, v1.0.1, v1.0.0)</span>
                     </summary>
                     <div class="history-content" id="patchNotesHistoryContent">
                         <div class="history-version-block">
                             <div class="history-ver-head">
-                                <span class="ver-badge">VERSAO 1.1.0 // 2026-10-12</span>
-                                <span class="ver-type">[MINOR RELEASE]</span>
+                                <span class="ver-badge">VERSÃO 1.1.0 // 2026-10-12</span>
+                                <span class="ver-type">Minor Release</span>
                             </div>
                             <ul class="history-ver-list">
-                                <li>Onboarding Tatil em Ficha Catalografica com stepper de 5 etapas.</li>
-                                <li>Suporte PWA nativo 100% instalavel com WebAPK e Service Worker resiliente.</li>
-                                <li>Changelog central e modal de Patch Notes com persistencia em localStorage.</li>
-                                <li>Monitor de telemetria SVG crispEdges sem bibliotecas graficas externas.</li>
+                                <li>Onboarding Tátil em Ficha Catalográfica com stepper de 5 etapas.</li>
+                                <li>Suporte PWA nativo 100% instalável com WebAPK e Service Worker resiliente.</li>
+                                <li>Changelog central e modal de Patch Notes com persistência em localStorage.</li>
+                                <li>Monitor de telemetria SVG crispEdges sem bibliotecas gráficas externas.</li>
                             </ul>
                         </div>
                         <div class="history-version-block">
                             <div class="history-ver-head">
-                                <span class="ver-badge">VERSAO 1.0.1 // 2026-10-11</span>
-                                <span class="ver-type">[HOTFIXES]</span>
+                                <span class="ver-badge">VERSÃO 1.0.1 // 2026-10-11</span>
+                                <span class="ver-type">Hotfixes</span>
                             </div>
                             <ul class="history-ver-list">
-                                <li>Correcao de travamento esporadico no bloqueio de escrita do SQLite WAL em operacoes concorrentes.</li>
-                                <li>Ajuste fino de insets de seguranca para navegadores moveis (Dynamic Island e barras de gestos).</li>
+                                <li>Correção de travamento esporádico no bloqueio de escrita do SQLite WAL em operações concorrentes.</li>
+                                <li>Ajuste fino de insets de segurança para navegadores móveis (Dynamic Island e barras de gestos).</li>
                             </ul>
                         </div>
                         <div class="history-version-block">
                             <div class="history-ver-head">
-                                <span class="ver-badge">VERSAO 1.0.0 // 2026-10-10</span>
-                                <span class="ver-type">[RELEASE INAUGURAL]</span>
+                                <span class="ver-badge">VERSÃO 1.0.0 // 2026-10-10</span>
+                                <span class="ver-type">Release Inaugural</span>
                             </div>
                             <ul class="history-ver-list">
-                                <li>Lancamento do console triptych oficial para agentes autonomos piDots.</li>
-                                <li>Implementacao do roteador de mensageria com suporte a mencao @dot e dossie HITL.</li>
-                                <li>Engine de renderizacao de interface tecnica minimalista e integracao com modelos LLM locais e em nuvem.</li>
+                                <li>Lançamento do console tríptico oficial para agentes autônomos piDots.</li>
+                                <li>Implementação do roteador de mensageria com suporte a menção @dot e dossiê HITL.</li>
+                                <li>Engine de renderização de interface técnica minimalista e integração com modelos LLM locais e em nuvem.</li>
                             </ul>
                         </div>
                     </div>
@@ -1367,10 +1280,10 @@
             <!-- Rodape com Botao de Reconhecimento -->
             <footer class="patchnotes-footer-block">
                 <div class="patchnotes-footer-status">
-                    <span>ESTADO: GRAVACAO AUTOMATICA NO LOCALSTORAGE</span>
+                    <span>ESTADO: GRAVAÇÃO AUTOMÁTICA NO LOCALSTORAGE</span>
                 </div>
                 <button class="pixel-btn btn-cyan" id="btnPatchNotesAcknowledge" onclick="PiDotsUX.PatchNotes.acknowledge()" data-i18n="patch.btn_ack">
-                    [ENTENDIDO / FECHAR]
+                    Entendido / Fechar
                 </button>
             </footer>
 
@@ -1384,8 +1297,10 @@
         <div class="pwa-banner-tractor-feed"></div>
         <div class="pwa-banner-body">
             <div class="pwa-banner-header">
-                <span class="pwa-banner-tag">[PWA // EXECUCAO NATIVA EM BORDA]</span>
-                <button class="pwa-banner-close-btn" onclick="PiDotsUX.PWA.dismissBanner()" aria-label="Dispensar banner de instalacao">[X]</button>
+                <span class="pwa-banner-tag">PWA · EXECUÇÃO NATIVA EM BORDA</span>
+                <button class="pwa-banner-close-btn" onclick="PiDotsUX.PWA.dismissBanner()" aria-label="Dispensar banner de instalacao">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
             </div>
             <div class="pwa-banner-content">
                 <div class="pwa-banner-icon">
@@ -1396,15 +1311,15 @@
                     </svg>
                 </div>
                 <div class="pwa-banner-text">
-                    <h4 class="pwa-banner-title">CONSOLE OPERACIONAL DISPONIVEL PARA INSTALACAO NATIVA</h4>
+                    <h4 class="pwa-banner-title">CONSOLE OPERACIONAL DISPONÍVEL PARA INSTALAÇÃO NATIVA</h4>
                     <p class="pwa-banner-desc">
                         Execute o piDots em tela cheia isolada com cache offline SQLite WAL de borda e zero atrito de navegador.
                     </p>
                 </div>
             </div>
             <div class="pwa-banner-actions">
-                <button class="pixel-btn" onclick="PiDotsUX.PWA.dismissBanner()">[LEMBRAR MAIS TARDE]</button>
-                <button class="pixel-btn btn-cyan" onclick="PiDotsUX.PWA.install()">[INSTALAR APLICATIVO AGORA]</button>
+                <button class="pixel-btn" onclick="PiDotsUX.PWA.dismissBanner()">Lembrar mais tarde</button>
+                <button class="pixel-btn btn-cyan" onclick="PiDotsUX.PWA.install()">Instalar Aplicativo Agora</button>
             </div>
         </div>
         <div class="pwa-banner-tractor-feed"></div>
@@ -1416,8 +1331,8 @@
     <div id="pixelDotCreatorModal" class="pixel-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="dotCreatorModalTitle" style="display: none;">
         <div class="pixel-dialog-box" style="max-width: 560px; width: 95vw; max-height: 88dvh; display: flex; flex-direction: column;">
             <header class="dialog-header">
-                <span id="dotCreatorModalTitle">[ESTUDIO OPENDOTS // CRIAR OU EDITAR AI COWORKER]</span>
-                <button type="button" class="pixel-btn" style="padding: 1px 6px; font-size: 8px;" onclick="closeDotCreatorModal()">[ESC]</button>
+                <span id="dotCreatorModalTitle">Estúdio OpenDots · Criar ou Editar AI Coworker</span>
+                <button type="button" class="pixel-btn" style="padding: 1px 6px; font-size: 8px;" onclick="closeDotCreatorModal()">Esc</button>
             </header>
             <div class="dialog-body" style="overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -1457,8 +1372,8 @@
                 </div>
             </div>
             <footer class="dialog-footer">
-                <button type="button" class="pixel-btn" onclick="closeDotCreatorModal()">[CANCELAR]</button>
-                <button type="button" class="pixel-btn btn-cyan" onclick="PiDotsAPI.submitDotCreatorForm()">[SALVAR COWORKER]</button>
+                <button type="button" class="pixel-btn" onclick="closeDotCreatorModal()">Cancelar</button>
+                <button type="button" class="pixel-btn btn-cyan" onclick="PiDotsAPI.submitDotCreatorForm()">Salvar Coworker</button>
             </footer>
         </div>
     </div>

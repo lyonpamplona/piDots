@@ -715,10 +715,10 @@
                         return `<div style="margin-bottom: 4px;"><strong style="color: ${color};">[${idx + 1}. ${safeEscape(status)}]</strong> ${safeEscape(stepText)}</div>`;
                     }).join('');
                     const pct = Math.round((completedCount / stepsList.length) * 100);
-                    if (coagentTabLabel) coagentTabLabel.textContent = `[COAGENTS // ${pct}%]`;
+                    if (coagentTabLabel) coagentTabLabel.textContent = `CoAgents (${pct}%)`;
                 } else {
                     planBox.textContent = 'Nenhum plano multi-estagio ativo nesta thread.';
-                    if (coagentTabLabel) coagentTabLabel.textContent = '[COAGENTS]';
+                    if (coagentTabLabel) coagentTabLabel.textContent = 'CoAgents';
                 }
             }
 

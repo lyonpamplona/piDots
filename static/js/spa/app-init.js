@@ -265,7 +265,8 @@
                 spaces: 'sidebarCtxSpaces',
                 dots: 'sidebarCtxDots',
                 tasks: 'sidebarCtxTasks',
-                memory: 'sidebarCtxMemory'
+                memory: 'sidebarCtxMemory',
+                configs: 'sidebarCtxConfigs'
             };
 
             document.querySelectorAll('.sidebar-ctx-pane').forEach(pane => {
@@ -288,6 +289,8 @@
                     if (typeof PiDotsAPI.loadEdgeTriggersSidebar === 'function') PiDotsAPI.loadEdgeTriggersSidebar();
                 } else if (currentSidebarCtx === 'memory' && typeof PiDotsAPI.loadMemorySidebar === 'function') {
                     PiDotsAPI.loadMemorySidebar();
+                } else if (currentSidebarCtx === 'configs') {
+                    if (typeof PiDotsAPI.fetchSystemMetrics === 'function') PiDotsAPI.fetchSystemMetrics();
                 }
             }
         }
@@ -327,7 +330,7 @@
 
             if (isComputerTakeoverActive) {
                 if (btn) {
-                    btn.textContent = '[MODO: TAKEOVER ATIVO]';
+                    btn.textContent = 'Modo Controle Ativo';
                     btn.classList.add('btn-amber');
                 }
                 switchCanvasTab('canvas-terminal', tabTerminal);
@@ -341,11 +344,11 @@
                 }
             } else {
                 if (btn) {
-                    btn.textContent = '[MODO: OBSERVACAO]';
+                    btn.textContent = 'Modo Observação';
                     btn.classList.remove('btn-amber');
                 }
                 if (window.PixelSystem && PixelSystem.toast) {
-                    PixelSystem.toast('Modo Observacao restaurado: execucao devolvida ao Dot autonomo.', 'info');
+                    PixelSystem.toast('Modo Observação restaurado: execução devolvida ao Dot autônomo.', 'info');
                 }
             }
         }
@@ -357,12 +360,12 @@
             if (!canvas) return;
             canvas.classList.toggle('collapsed');
             if (canvas.classList.contains('collapsed')) {
-                if (btn) btn.innerHTML = '<span data-i18n="nav.split_canvas">[CANVAS: OCULTO]</span>';
+                if (btn) btn.innerHTML = '<span data-i18n="nav.split_canvas">Canvas: Oculto</span>';
             } else {
-                if (btn) btn.innerHTML = '<span data-i18n="nav.split_canvas">[CANVAS]</span>';
+                if (btn) btn.innerHTML = '<span data-i18n="nav.split_canvas">Canvas</span>';
                 canvas.classList.remove('expanded');
                 const btnExp = document.getElementById('btnCanvasExpand');
-                if (btnExp) btnExp.textContent = '[MAX]';
+                if (btnExp) btnExp.textContent = 'Expandir';
             }
         }
 
@@ -376,12 +379,12 @@
             if (canvas.classList.contains('expanded')) {
                 canvas.classList.remove('expanded');
                 if (sidebar) sidebar.classList.remove('collapsed');
-                if (btn) btn.textContent = '[MAX]';
+                if (btn) btn.textContent = 'Expandir';
             } else {
                 canvas.classList.remove('collapsed');
                 canvas.classList.add('expanded');
                 if (sidebar) sidebar.classList.add('collapsed');
-                if (btn) btn.textContent = '[DIVIDIR]';
+                if (btn) btn.textContent = 'Dividir';
             }
         }
 
@@ -727,10 +730,10 @@
                 return;
             }
 
-            // Alt+1..4: Comutar Modos do Activity Rail da Sidebar OpenDots
-            if (e.altKey && ['1', '2', '3', '4'].includes(e.key)) {
+            // Alt+1..5: Comutar Modos do Activity Rail da Sidebar OpenDots
+            if (e.altKey && ['1', '2', '3', '4', '5'].includes(e.key)) {
                 e.preventDefault();
-                const ctxList = ['spaces', 'dots', 'tasks', 'memory'];
+                const ctxList = ['spaces', 'dots', 'tasks', 'memory', 'configs'];
                 const targetCtx = ctxList[parseInt(e.key, 10) - 1];
                 if (targetCtx) switchSidebarContext(targetCtx);
                 return;
