@@ -373,20 +373,31 @@
             <div class="ticker-header-bar">
                 <div class="ticker-header-left" style="display: flex; flex-direction: column; gap: 4px; min-width: 0;">
                     <div class="ticker-channel-name" id="activeDotChannel">
-                        CANAL DE MISSAO // DOT-DEV (SESSAO #001)
+                        Canal de Trabalho · @dot-dev
                     </div>
                     <div class="thread-participants-bar" id="threadParticipantPills" style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
-                        <span class="actor-stamp stamp-supervisor" style="font-size: 7px; padding: 1px 4px;">@dot-supervisor</span>
-                        <span class="actor-stamp stamp-coder" style="font-size: 7px; padding: 1px 4px;">@dot-coder</span>
-                        <span class="actor-stamp stamp-auditor" style="font-size: 7px; padding: 1px 4px;">@dot-auditor</span>
+                        <span class="actor-stamp stamp-supervisor" style="font-size: 7.5px; padding: 1px 5px;">@dot-supervisor</span>
+                        <span class="actor-stamp stamp-coder" style="font-size: 7.5px; padding: 1px 5px;">@dot-coder</span>
+                        <span class="actor-stamp stamp-auditor" style="font-size: 7.5px; padding: 1px 5px;">@dot-auditor</span>
                     </div>
                 </div>
                 <div class="ticker-header-actions" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                    <span id="aguiStreamStatusBadge" style="color: var(--phosphor-green); font-size: 9px; font-family: var(--font-pixel);">AG-UI PRONTO</span>
-                    <button type="button" class="pixel-btn" onclick="PiDotsAPI.promptHandoffThread()" title="Transferir Liderança da Thread para outro Dot (Handoff)">[HANDOFF]</button>
-                    <button type="button" class="pixel-btn" onclick="PiDotsAPI.promptCouncilDebate()" title="Convocar Debate Multi-Bot do Conselho na Thread">[CONSELHO]</button>
-                    <button type="button" class="pixel-btn btn-cyan" id="btnSaveThreadAsSpace" onclick="PiDotsAPI.saveThreadAsSpace()" title="Salvar Conversa como Página Markdown em Spaces (Padrão OpenDots)">[SALVAR EM SPACE]</button>
-                    <button type="button" class="pixel-btn" onclick="clearTickerStream()">[LIMPAR FITA]</button>
+                    <span id="aguiStreamStatusBadge" style="color: var(--phosphor-green); font-size: 9px; font-family: var(--font-pixel);">AG-UI Pronto</span>
+                    <button type="button" class="pixel-btn" onclick="PiDotsAPI.promptHandoffThread()" title="Transferir Liderança da Thread para outro Dot (Handoff)">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                        <span>Handoff</span>
+                    </button>
+                    <button type="button" class="pixel-btn" onclick="PiDotsAPI.promptCouncilDebate()" title="Convocar Debate Multi-Bot do Conselho na Thread">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                        <span>Conselho</span>
+                    </button>
+                    <button type="button" class="pixel-btn btn-cyan" id="btnSaveThreadAsSpace" onclick="PiDotsAPI.saveThreadAsSpace()" title="Salvar Conversa como Página Markdown em Spaces (Padrão OpenDots)">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                        <span>Salvar em Space</span>
+                    </button>
+                    <button type="button" class="pixel-btn pixel-btn-secondary" onclick="clearTickerStream()" title="Limpar Bobina de Mensagens">
+                        <span>Limpar</span>
+                    </button>
                 </div>
             </div>
 
@@ -395,77 +406,50 @@
                 <div class="tractor-feed feed-left" aria-hidden="true"></div>
 
                 <div class="ticker-scroll-area" id="tickerScroll">
-                    
-                    <!-- Fita 01: Mensagem de Boas-Vindas do Sistema -->
-                    <article class="ticker-slip">
-                        <header class="slip-header">
-                            <span class="slip-tag">SISTEMA // BOOT</span>
-                            <span>2026-10-10T00:40:02Z</span>
-                            <span>SEQ# 0001</span>
-                        </header>
-                        <section class="slip-output">
-                            <p class="slip-text" data-i18n="console.welcome_system">[SISTEMA] piDots pronto. Conexão local estabelecida com SQLite WAL. Motor de inferência ativo (Memória RSS: 52 MB).</p>
-                        </section>
-                        <footer class="slip-perforation">
-                            <span class="perforation-line"></span>
-                        </footer>
-                    </article>
-
-                    <!-- Fita 02: Resposta do Dot com Bloco de Raciocínio -->
-                    <article class="ticker-slip">
-                        <header class="slip-header">
-                            <span class="slip-tag">DOT-SUPERVISOR // RESPOSTA</span>
-                            <span>2026-10-10T00:41:15Z</span>
-                            <span>SEQ# 0002</span>
-                        </header>
-                        
-                        <section class="slip-reasoning">
-                            <div class="reasoning-heading">[CADERNO DE RACIOCINIO - STREAM INTERNO]</div>
-                            <div style="font-family: var(--font-mono); font-size: 11px;">
-                                > Verificando espaco de trabalho local (/workspace)...<br>
-                                > Ficha catalográfica architecture_spec.md ativa no Canvas Direito.<br>
-                                > Telemetria: RSS atual em 52MB (limite operacional de 150MB perfeitamente seguro).
-                            </div>
-                        </section>
-
-                        <section class="slip-output">
-                            <p class="slip-text" data-i18n="console.welcome_agent">Olá, Lyon. O ambiente está pronto para trabalhar. O espaço de trabalho local (/workspace) está mapeado e a telemetria do hardware está estável. O que vamos construir ou revisar hoje? Você pode digitar uma tarefa diretamente, chamar outro especialista usando @coder ou pressionar F1 para abrir o manual rápido.</p>
-                            
-                            <!-- Review Card HITL Embutido Diretamente no Chat (Governança Nativa) -->
-                            <div class="inline-hitl-card">
-                                <div class="inline-hitl-header">
-                                    <span>ACAO CRITICA RETIDA // REQUER HOMOLOGACAO</span>
-                                    <span>RISCO: CRITICAL</span>
-                                </div>
-                                <div style="font-size: 11px; margin-bottom: 4px;">Comando solicitado pelo agente para liberacao de disco:</div>
-                                <div class="inline-hitl-code">rm -rf /workspace/scratch_build_cache/*</div>
-                                <div class="inline-hitl-actions">
-                                    <button class="pixel-btn btn-danger" onclick="resolveHitlQuick('REJEITADO')">[VETAR]</button>
-                                    <button class="pixel-btn btn-success" onclick="resolveHitlQuick('HOMOLOGADO')">[HOMOLOGAR]</button>
-                                    <button class="pixel-btn btn-cyan" onclick="openHitlCanvas()">[INSPECIONAR ACAO]</button>
-                                </div>
-                            </div>
-
-                            <span class="pixel-cursor" id="activeCursor">█</span>
-                        </section>
-
-                        <footer class="slip-perforation">
-                            <span class="perforation-line"></span>
-                        </footer>
-                    </article>
-
+                    <!-- Empty State Dinâmico com Starter Suggestions (Padrão OpenDots) -->
+                    <div class="empty-chat-persona" id="emptyChatPersona">
+                        <div class="dot-monogram-avatar" id="emptyChatAvatar" style="width: 48px; height: 48px; font-size: 16px; margin: 0 auto 12px auto;">DA</div>
+                        <div style="font-family: var(--font-pixel); font-size: 14px; font-weight: 700; color: var(--blueprint-cyan); margin-bottom: 4px;" id="emptyChatName">Dev Assistant</div>
+                        <div style="font-size: 11px; color: var(--ink-secondary); max-width: 440px; margin: 0 auto 16px auto; line-height: 1.5;" id="emptyChatRole">Especialista de borda em código, refatoração e auditoria no Raspberry Pi ARM64. O que vamos construir ou revisar agora?</div>
+                        <div class="starter-suggestions" id="starterSuggestions">
+                            <button type="button" class="starter-pill" onclick="applyStarterSuggestion('Verificar saúde térmica do SOC e memória RSS do processo')">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                                <span>Verificar saúde do hardware e RSS</span>
+                            </button>
+                            <button type="button" class="starter-pill" onclick="applyStarterSuggestion('Inspecionar integridade das tabelas do banco SQLite WAL')">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                                <span>Auditar integridade do SQLite WAL</span>
+                            </button>
+                            <button type="button" class="starter-pill" onclick="applyStarterSuggestion('Revisar especificação arquitetural architecture_spec.md')">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                                <span>Revisar arquitetura em Spaces</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="tractor-feed feed-right" aria-hidden="true"></div>
             </div>
 
-            <!-- Barra Inferior de Entrada de Instrução com Suporte a Autocomplete @bot -->
+            <!-- Barra Inferior de Entrada de Instrução com Contexto e Autocomplete -->
             <div class="ticker-input-bar" style="position: relative;">
+                <!-- Barra de Contexto Ativo (OpenDots Source Input Bar) -->
+                <div class="source-input-bar" id="sourceInputBar">
+                    <span class="source-tag source-tag-agent" id="composerActiveAgentTag" title="Agente Destinatário da Mensagem">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
+                        <span id="composerAgentName">@dot-dev</span>
+                    </span>
+                    <span class="source-tag" id="composerActiveChannelTag" title="Canal de Conversação">
+                        <span id="composerChannelName"># geral</span>
+                    </span>
+                    <span style="margin-left: auto; font-size: 8.5px; color: var(--ink-muted);" id="composerShortcutsHint">Enter envia · Shift+Enter quebra linha</span>
+                </div>
+
                 <!-- Dropdown de Autocomplete de Menção (@bot) -->
                 <div class="mention-autocomplete-dropdown" id="mentionDropdown" role="listbox">
                     <div class="mention-autocomplete-header">
-                        <span>SELECIONE UM DOT // AUTONOMIA DIRETA</span>
-                        <span style="color: var(--ink-muted);">TAB/ENTER PARA INSERIR</span>
+                        <span>Selecione um Dot · Autonomia Direta</span>
+                        <span style="color: var(--ink-muted);">Tab / Enter para inserir</span>
                     </div>
                     <div id="mentionItemsList"></div>
                 </div>
@@ -473,33 +457,40 @@
                 <!-- Dropdown de Autocomplete de Slash Commands (/comando) -->
                 <div class="slash-autocomplete-popover" id="slashPopover" role="listbox" aria-label="Comandos de Barra" style="display: none;">
                     <div class="slash-popover-header">
-                        <span class="slash-header-title">SLASH COMMANDS // PROTOCOLO BORDA</span>
-                        <span class="slash-header-hint">SETAS NAVEGAM | TAB/ENTER INSERE | ESC FECHA</span>
+                        <span class="slash-header-title">Comandos de Barra · Protocolo de Borda</span>
+                        <span class="slash-header-hint">Setas navegam · Tab/Enter insere · Esc fecha</span>
                     </div>
                     <div class="slash-category-tabs" id="slashCategoryTabs">
-                        <button type="button" class="slash-cat-btn active" data-cat="all" onclick="SlashCommandsEngine.setCategory('all')">[TODOS]</button>
-                        <button type="button" class="slash-cat-btn" data-cat="sistema" onclick="SlashCommandsEngine.setCategory('sistema')">[SISTEMA]</button>
-                        <button type="button" class="slash-cat-btn" data-cat="agentes" onclick="SlashCommandsEngine.setCategory('agentes')">[AGENTES]</button>
-                        <button type="button" class="slash-cat-btn" data-cat="memoria" onclick="SlashCommandsEngine.setCategory('memoria')">[MEMORIA]</button>
-                        <button type="button" class="slash-cat-btn" data-cat="tarefas" onclick="SlashCommandsEngine.setCategory('tarefas')">[TAREFAS]</button>
-                        <button type="button" class="slash-cat-btn" data-cat="governanca" onclick="SlashCommandsEngine.setCategory('governanca')">[GOVERNANCA]</button>
-                        <button type="button" class="slash-cat-btn" data-cat="dados" onclick="SlashCommandsEngine.setCategory('dados')">[DADOS]</button>
+                        <button type="button" class="slash-cat-btn active" data-cat="all" onclick="SlashCommandsEngine.setCategory('all')">Todos</button>
+                        <button type="button" class="slash-cat-btn" data-cat="sistema" onclick="SlashCommandsEngine.setCategory('sistema')">Sistema</button>
+                        <button type="button" class="slash-cat-btn" data-cat="agentes" onclick="SlashCommandsEngine.setCategory('agentes')">Agentes</button>
+                        <button type="button" class="slash-cat-btn" data-cat="memoria" onclick="SlashCommandsEngine.setCategory('memoria')">Memória</button>
+                        <button type="button" class="slash-cat-btn" data-cat="tarefas" onclick="SlashCommandsEngine.setCategory('tarefas')">Tarefas</button>
+                        <button type="button" class="slash-cat-btn" data-cat="governanca" onclick="SlashCommandsEngine.setCategory('governanca')">Governança</button>
+                        <button type="button" class="slash-cat-btn" data-cat="dados" onclick="SlashCommandsEngine.setCategory('dados')">Dados</button>
                     </div>
                     <div class="slash-items-viewport" id="slashItemsList"></div>
                     <div class="slash-popover-footer">
-                        <span id="slashMatchCount">0 COMANDOS DISPONIVEIS</span>
-                        <span class="slash-mode-tag">[EXECUCAO HIBRIDA: LOCAL/REST]</span>
+                        <span id="slashMatchCount">0 comandos disponíveis</span>
+                        <span class="slash-mode-tag">Execução Local / REST</span>
                     </div>
                 </div>
 
-                <button type="button" class="pixel-btn slash-trigger-btn" id="slashTriggerBtn" onclick="toggleSlashPopover(event)" title="Comandos de Barra (/)" aria-label="Abrir Comandos de Barra">
-                    <span>[/]</span>
-                </button>
-                <textarea class="ticker-textarea" id="instructionInput" placeholder="Digite uma instrucao ou mencione @dot (Enter para transmitir)..." data-i18n-placeholder="console.input_placeholder" onkeydown="handleInputKey(event)" oninput="handleMentionInput(event)"></textarea>
-                <button class="pixel-btn btn-cyan" id="sendBtn" onclick="transmitInstruction()" title="Transmitir Comando">
-                    <span class="send-btn-full" data-i18n="console.send_btn">[TRANSMITIR COMANDO]</span>
-                    <span class="send-btn-short">[&gt;]</span>
-                </button>
+                <div class="ticker-input-row" style="display: flex; align-items: flex-end; gap: 6px; width: 100%;">
+                    <button type="button" class="pixel-btn slash-trigger-btn" id="slashTriggerBtn" onclick="toggleSlashPopover(event)" title="Comandos de Barra (/)" aria-label="Abrir Comandos de Barra">
+                        <span style="font-weight: 700; font-family: var(--font-pixel);">/</span>
+                    </button>
+                    <textarea class="ticker-textarea" id="instructionInput" placeholder="Digite uma instrução ou mencione @dot (Enter envia)..." data-i18n-placeholder="console.input_placeholder" onkeydown="handleInputKey(event)" oninput="handleMentionInput(event)" rows="1"></textarea>
+                    <button type="button" class="pixel-btn btn-danger btn-stop" id="btnStopStream" onclick="PiDotsAPI.stopStream()" title="Interromper Resposta do Agente" style="display: none;">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"></rect></svg>
+                        <span>Parar</span>
+                    </button>
+                    <button class="pixel-btn btn-cyan" id="sendBtn" onclick="transmitInstruction()" title="Transmitir Comando (Enter)">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        <span class="send-btn-full" data-i18n="console.send_btn">Enviar</span>
+                        <span class="send-btn-short">&gt;</span>
+                    </button>
+                </div>
             </div>
         </main>
 

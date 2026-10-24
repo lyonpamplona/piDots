@@ -39,6 +39,7 @@
         tasksCache: [],
         pendingHitlCache: [],
         editingDotId: null,
+        activeStreamReader: null,
         telemetryHistory: { ram: [62, 65, 68, 67, 70, 69, 68], temp: [45, 46, 47, 48, 48.2, 48.5, 48.2] },
         isDiffActive: false,
 
@@ -266,10 +267,12 @@
                 const activeAgentName = currentDot.name || currentDot.id;
                 const chEl = document.getElementById('activeDotChannel');
                 if (chEl && !this.activeThreadId) {
-                    chEl.textContent = `CANAL DE TRABALHO // ${activeAgentName.toUpperCase()}`;
+                    chEl.textContent = `Canal de Trabalho · @${this.activeDotId}`;
                 }
                 const headerAgentEl = document.getElementById('headerActiveAgentName');
                 if (headerAgentEl) headerAgentEl.textContent = activeAgentName;
+                const compAgent = document.getElementById('composerAgentName');
+                if (compAgent) compAgent.textContent = `@${this.activeDotId}`;
                 const compBadge = document.getElementById('computerActiveWorkspaceBadge');
                 if (compBadge) compBadge.textContent = `/workspace/${this.activeDotId}`;
             } catch (e) {
@@ -283,12 +286,29 @@
             if (cardEl) cardEl.classList.add('active');
 
             const dot = this.dotsCache.find(d => d.id === dotId);
+            const dotName = dot ? (dot.name || dot.id) : dotId;
             const chEl = document.getElementById('activeDotChannel');
-            if (chEl) chEl.textContent = `CANAL DE MISSAO // ${(dot ? (dot.name || dot.id) : dotId).toUpperCase()} (SESSAO ATIVA)`;
+            if (chEl) chEl.textContent = `Canal de Trabalho · @${dotId}`;
             const breadcrumb = document.getElementById('headerActiveAgentName');
-            if (breadcrumb) breadcrumb.textContent = dot ? (dot.name || dot.id) : dotId;
+            if (breadcrumb) breadcrumb.textContent = dotName;
             const compBadge = document.getElementById('computerActiveWorkspaceBadge');
             if (compBadge) compBadge.textContent = `/workspace/${dotId}`;
+
+            // Atualiza tag do composer
+            const compAgent = document.getElementById('composerAgentName');
+            if (compAgent) compAgent.textContent = `@${dotId}`;
+
+            // Atualiza Empty State se visível
+            const emptyPersona = document.getElementById('emptyChatPersona');
+            if (emptyPersona) {
+                const avatarEl = document.getElementById('emptyChatAvatar');
+                const nameEl = document.getElementById('emptyChatName');
+                const roleEl = document.getElementById('emptyChatRole');
+                const monogram = dotName.split(/[\s-_]+/).map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'DA';
+                if (avatarEl) avatarEl.textContent = monogram;
+                if (nameEl) nameEl.textContent = dotName;
+                if (roleEl) roleEl.textContent = dot?.role || 'Especialista autônomo de borda no Raspberry Pi ARM64.';
+            }
 
             this.activeThreadId = null;
             this.loadSpaces();
@@ -300,7 +320,7 @@
                 inputEl.focus();
             }
 
-            PixelSystem.toast(`Coworker '${dot ? dot.name : dotId}' selecionado como ativo.`, 'info');
+            PixelSystem.toast(`Coworker '${dotName}' selecionado como ativo.`, 'info');
         },
 
         // 3B. Canais Colaborativos e Threads Persistentes (Padrão OpenDots)
@@ -339,7 +359,9 @@
             if (el) el.classList.add('active');
 
             const chEl = document.getElementById('activeDotChannel');
-            if (chEl) chEl.textContent = `CANAL #${this.activeChannelName.toUpperCase()} // COLABORACAO MULTI-BOT`;
+            if (chEl) chEl.textContent = `Canal #${this.activeChannelName} · Colaboração Multi-Bot`;
+            const compChan = document.getElementById('composerChannelName');
+            if (compChan) compChan.textContent = `# ${this.activeChannelName}`;
             this.loadThreads();
             PixelSystem.toast(`Canal #${this.activeChannelName} selecionado.`, 'info');
         },
@@ -425,7 +447,7 @@
                     if (stateData.thread.dot_id) this.activeDotId = stateData.thread.dot_id;
                     const chEl = document.getElementById('activeDotChannel');
                     if (chEl) {
-                        chEl.textContent = `THREAD ATIVA // ${String(stateData.thread.title || threadId).toUpperCase()}`;
+                        chEl.textContent = `Conversa Ativa · ${String(stateData.thread.title || threadId)}`;
                     }
                 }
 
@@ -441,7 +463,7 @@
                         slip.className = 'ticker-slip';
                         const isUser = m.role === 'user';
                         const senderId = m.actor_id || m.sender_id || this.activeDotId || 'AGENTE';
-                        const stampLabel = isUser ? '[USR] OPERADOR' : `[DOT] ${String(senderId).toUpperCase()}`;
+                        const stampLabel = isUser ? 'Operador · Instrução' : `@${senderId}`;
                         const stampClass = isUser ? 'stamp-user' : 'stamp-coder';
                         const thoughtText = m.thought_log || m.thought_process || '';
                         slip.innerHTML = `
@@ -453,8 +475,9 @@
                             ${thoughtText ? `
                             <section class="slip-reasoning">
                                 <div class="reasoning-toggle" onclick="toggleReasoning(this)">
-                                    <span>[CADERNO DE RACIOCINIO HISTORICO]</span>
-                                    <span class="reasoning-state-badge">[-] COLAPSAR</span>
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                                    <span>Caderno de Raciocínio</span>
+                                    <span class="reasoning-state-badge">Colapsar</span>
                                 </div>
                                 <div class="reasoning-content" style="font-family: var(--font-mono); font-size: 11px; white-space: pre-wrap;">${safeEscape(thoughtText)}</div>
                             </section>` : ''}
@@ -1682,39 +1705,48 @@
             if (evType === 'tool_call:start' || evType === 'tool:called' || (evData.tool && !evData.result)) {
                 const toolName = evData.tool || evData.name || evData.tool_name || 'tool';
                 const toolArgs = evData.arguments || evData.args || {};
-                card.className = 'gen-ui-card';
+                card.className = 'inline-tool-card';
                 card.innerHTML = `
-                    <div class="gen-ui-header">
-                        <span>[GENERATIVE UI // TOOL CALL EM EXECUCAO]</span>
+                    <div class="inline-tool-header">
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            Executando Ferramenta · ${safeEscape(toolName)}
+                        </span>
                         <span>@${safeEscape(evData.dot_id || this.activeDotId)}</span>
                     </div>
-                    <div class="gen-ui-body">Ferramenta: <strong style="color: var(--phosphor-green);">${safeEscape(toolName)}</strong>\nArgumentos: <code>${safeEscape(JSON.stringify(toolArgs))}</code></div>
+                    <div style="font-size: 10px; color: var(--ink-secondary); margin-top: 4px;">Argumentos: <code>${safeEscape(JSON.stringify(toolArgs))}</code></div>
                 `;
             } else if (evType === 'tool_call:result' || evType === 'tool:result' || evData.result !== undefined) {
                 const toolName = evData.tool || evData.name || evData.tool_name || 'tool';
                 const resStr = typeof evData.result === 'object' ? JSON.stringify(evData.result) : String(evData.result || '');
                 const isErr = resStr.includes('Erro') || resStr.includes('BLOQUEADO');
-                card.className = `gen-ui-card ${isErr ? 'status-warn' : 'status-ok'}`;
+                card.className = `inline-tool-card ${isErr ? 'status-warn' : 'status-ok'}`;
                 card.innerHTML = `
-                    <div class="gen-ui-header">
-                        <span>[RECIBO DE FERRAMENTA // ${safeEscape(toolName.toUpperCase())}]</span>
-                        <span style="color: ${isErr ? 'var(--thermal-amber)' : 'var(--phosphor-green)'};">${isErr ? '[RETIDO/AVISO]' : `[CONCLUIDO ${evData.duration_ms ? evData.duration_ms + 'ms' : ''}]`}</span>
+                    <div class="inline-tool-header">
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Recibo de Ferramenta · ${safeEscape(toolName)}
+                        </span>
+                        <span style="color: ${isErr ? 'var(--thermal-amber)' : 'var(--phosphor-green)'}; font-size: 8px;">${isErr ? 'Retido / Aviso' : `Concluído ${evData.duration_ms ? evData.duration_ms + 'ms' : ''}`}</span>
                     </div>
-                    <div class="gen-ui-body">${safeEscape(resStr.slice(0, 400))}</div>
+                    <div style="font-size: 10px; color: var(--ink-secondary); margin-top: 4px; white-space: pre-wrap;">${safeEscape(resStr.slice(0, 400))}</div>
                 `;
             } else if (evType === 'artifact:updated') {
                 const filename = evData.filename || 'artefato.md';
                 const spaceId = evData.space_id || filename;
-                card.className = 'gen-ui-card status-ok';
+                card.className = 'inline-tool-card status-ok';
                 card.innerHTML = `
-                    <div class="gen-ui-header">
-                        <span>[ARTEFATO SINCRONIZADO EM SPACES // REV ${safeEscape(evData.version || 1)}]</span>
-                        <span style="color: var(--phosphor-green);">[WAL ACID]</span>
+                    <div class="inline-tool-header">
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            Artefato em Spaces · Rev ${safeEscape(evData.version || 1)}
+                        </span>
+                        <span style="color: var(--phosphor-green); font-size: 8px;">WAL ACID</span>
                     </div>
-                    <div class="gen-ui-body">O coworker atualizou o documento <strong>${safeEscape(filename)}</strong> no Live Canvas.</div>
-                    <div class="gen-ui-actions">
-                        <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 8px;" onclick="PiDotsAPI.loadArtifact('${safeEscape(spaceId)}')">[ABRIR NO CANVAS]</button>
-                        <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 8px;" onclick="PiDotsAPI.toggleDiffView()">[INSPECIONAR DIFF]</button>
+                    <div style="font-size: 10px; color: var(--ink-secondary); margin-top: 4px;">Documento <strong>${safeEscape(filename)}</strong> atualizado no Live Canvas.</div>
+                    <div style="display: flex; gap: 6px; margin-top: 6px;">
+                        <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7.5px;" onclick="PiDotsAPI.loadArtifact('${safeEscape(spaceId)}')">Abrir no Canvas</button>
+                        <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 7.5px;" onclick="PiDotsAPI.toggleDiffView()">Inspecionar Diffs</button>
                     </div>
                 `;
             } else {
@@ -1724,16 +1756,43 @@
             containerEl.appendChild(card);
         },
 
+        // Interrupção do Stream Ativo (Padrão OpenDots Stop Button)
+        stopStream() {
+            if (this.activeStreamReader) {
+                try {
+                    this.activeStreamReader.cancel();
+                } catch (e) {
+                    console.warn('Erro ao cancelar stream:', e);
+                }
+                this.activeStreamReader = null;
+            }
+            const stopBtn = document.getElementById('btnStopStream');
+            if (stopBtn) stopBtn.style.display = 'none';
+            const statusBadge = document.getElementById('aguiStreamStatusBadge');
+            if (statusBadge) {
+                statusBadge.textContent = 'AG-UI Interrompido';
+                statusBadge.style.color = 'var(--thermal-amber)';
+            }
+            if (window.PixelSystem && PixelSystem.toast) {
+                PixelSystem.toast('Transmissão interrompida pelo operador.', 'info');
+            }
+        },
+
         // 6. Streaming SSE Conversacional ReAct (AG-UI v1.0 + Multi-Bot + Generative UI)
         async transmitStream(promptText) {
             const scrollArea = document.getElementById('tickerScroll');
             if (!scrollArea) return;
 
+            const emptyPersona = document.getElementById('emptyChatPersona');
+            if (emptyPersona) emptyPersona.remove();
+
             const statusBadge = document.getElementById('aguiStreamStatusBadge');
             if (statusBadge) {
-                statusBadge.textContent = 'AG-UI STREAMING...';
+                statusBadge.textContent = 'AG-UI Transmitindo...';
                 statusBadge.style.color = 'var(--thermal-amber)';
             }
+            const stopBtn = document.getElementById('btnStopStream');
+            if (stopBtn) stopBtn.style.display = 'inline-flex';
 
             if (!this.activeThreadId) {
                 try {
@@ -1770,21 +1829,24 @@
                 else if (activeDot.archetype === 'auditor') stampClass = 'stamp-auditor';
                 else if (activeDot.archetype === 'architect') stampClass = 'stamp-architect';
             }
-            const stampText = activeDot?.avatar_stamp || '[DOT]';
-            const dotName = (activeDot?.name || this.activeDotId).toUpperCase();
+            const dotName = (activeDot?.name || this.activeDotId);
 
             agentSlip.innerHTML = `
                 <header class="slip-header">
-                    <span class="actor-stamp ${stampClass}">${safeEscape(stampText)} ${safeEscape(dotName)}</span>
+                    <span class="actor-stamp ${stampClass}" style="display: inline-flex; align-items: center; gap: 4px;">
+                        <span class="dot-pulse-dot" style="width: 5px; height: 5px; background: currentColor; border-radius: 50%;"></span>
+                        @${safeEscape(this.activeDotId)}
+                    </span>
                     <span>${new Date().toISOString()}</span>
                     <span>SEQ# 000${window.getNextSeqCounter()}</span>
                 </header>
                 <section class="slip-reasoning">
                     <div class="reasoning-toggle" onclick="toggleReasoning(this)">
-                        <span>[CADERNO DE RACIOCINIO - AG-UI STREAM]</span>
-                        <span class="reasoning-state-badge">[-] COLAPSAR</span>
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        <span>Caderno de Raciocínio (AG-UI Stream)</span>
+                        <span class="reasoning-state-badge">Colapsar</span>
                     </div>
-                    <div class="reasoning-content" id="${thoughtId}" style="font-family: var(--font-mono); font-size: 11px; white-space: pre-wrap;">Iniciando ciclo de raciocinio assincrono no no de borda local...</div>
+                    <div class="reasoning-content" id="${thoughtId}" style="font-family: var(--font-mono); font-size: 11px; white-space: pre-wrap;">Iniciando ciclo de raciocínio no nó ARM64...</div>
                 </section>
                 <section class="slip-output">
                     <div id="${genUiId}"></div>
@@ -1815,6 +1877,7 @@
                 }
 
                 const reader = response.body.getReader();
+                this.activeStreamReader = reader;
                 const decoder = new TextDecoder();
                 let currentSseEvent = '';
 
@@ -1914,8 +1977,11 @@
                 scrollArea.scrollTop = scrollArea.scrollHeight;
                 this.enforceDomCeiling();
             } finally {
+                this.activeStreamReader = null;
+                const stopBtn = document.getElementById('btnStopStream');
+                if (stopBtn) stopBtn.style.display = 'none';
                 if (statusBadge) {
-                    statusBadge.textContent = 'AG-UI PRONTO';
+                    statusBadge.textContent = 'AG-UI Pronto';
                     statusBadge.style.color = 'var(--phosphor-green)';
                 }
             }

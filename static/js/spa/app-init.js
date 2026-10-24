@@ -458,25 +458,50 @@
             }
         }
 
-        // Ação Rápida: Iniciar Nova Conversa Limpa
+        // Ação Rápida: Aplicar Sugestão Inicial no Composer
+        function applyStarterSuggestion(text) {
+            const input = document.getElementById('instructionInput');
+            if (!input) return;
+            input.value = text;
+            input.focus();
+            if (typeof transmitInstruction === 'function') {
+                transmitInstruction();
+            }
+        }
+        window.applyStarterSuggestion = applyStarterSuggestion;
+
+        // Ação Rápida: Iniciar Nova Conversa Limpa (Padrão OpenDots Empty State)
         function startNewConversation() {
             if (window.PiDotsAPI) {
                 PiDotsAPI.activeThreadId = null;
             }
             const scrollArea = document.getElementById('tickerScroll');
             const agentName = document.getElementById('headerActiveAgentName')?.textContent || 'Dev Assistant';
+            const activeDot = (window.PiDotsAPI && PiDotsAPI.dotsCache) ? PiDotsAPI.dotsCache.find(d => d.id === PiDotsAPI.activeDotId) : null;
+            const monogram = agentName.split(/[\s-_]+/).map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'DA';
+            const roleText = activeDot?.role || 'Especialista de borda em código, refatoração e auditoria no Raspberry Pi ARM64. O que vamos construir ou revisar agora?';
+
             if (scrollArea) {
                 scrollArea.innerHTML = `
-                    <article class="ticker-slip">
-                        <header class="slip-header">
-                            <span class="slip-tag">SISTEMA // NOVA SESSAO</span>
-                            <span>${new Date().toISOString()}</span>
-                            <span>SEQ# 0001</span>
-                        </header>
-                        <section class="slip-output">
-                            <p class="slip-text">Nova conversa iniciada com <strong>${escapeHtml(agentName)}</strong>. Sessao anterior arquivada no SQLite WAL. O que vamos construir ou revisar agora?</p>
-                        </section>
-                    </article>
+                    <div class="empty-chat-persona" id="emptyChatPersona">
+                        <div class="dot-monogram-avatar" id="emptyChatAvatar" style="width: 48px; height: 48px; font-size: 16px; margin: 0 auto 12px auto;">${escapeHtml(monogram)}</div>
+                        <div style="font-family: var(--font-pixel); font-size: 14px; font-weight: 700; color: var(--blueprint-cyan); margin-bottom: 4px;" id="emptyChatName">${escapeHtml(agentName)}</div>
+                        <div style="font-size: 11px; color: var(--ink-secondary); max-width: 440px; margin: 0 auto 16px auto; line-height: 1.5;" id="emptyChatRole">${escapeHtml(roleText)}</div>
+                        <div class="starter-suggestions" id="starterSuggestions">
+                            <button type="button" class="starter-pill" onclick="applyStarterSuggestion('Verificar saúde térmica do SOC e memória RSS do processo')">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                                <span>Verificar saúde do hardware e RSS</span>
+                            </button>
+                            <button type="button" class="starter-pill" onclick="applyStarterSuggestion('Inspecionar integridade das tabelas do banco SQLite WAL')">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                                <span>Auditar integridade do SQLite WAL</span>
+                            </button>
+                            <button type="button" class="starter-pill" onclick="applyStarterSuggestion('Revisar especificação arquitetural architecture_spec.md')">
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                                <span>Revisar arquitetura em Spaces</span>
+                            </button>
+                        </div>
+                    </div>
                 `;
             }
             const input = document.getElementById('instructionInput');
@@ -580,7 +605,7 @@
             if (!contentEl) return;
             const isCollapsed = contentEl.classList.toggle('collapsed');
             if (badgeEl) {
-                badgeEl.textContent = isCollapsed ? '[+] EXPANDIR' : '[-] COLAPSAR';
+                badgeEl.textContent = isCollapsed ? 'Expandir' : 'Colapsar';
             }
         }
 
@@ -604,13 +629,17 @@
             }
 
             const scrollArea = document.getElementById('tickerScroll');
+            const emptyPersona = document.getElementById('emptyChatPersona');
+            if (emptyPersona) {
+                emptyPersona.remove();
+            }
 
-            // 1. Mensagem do Operador com Carimbo Tátil [USR]
+            // 1. Mensagem do Operador com Carimbo Tátil Limpo
             const userSlip = document.createElement('article');
             userSlip.className = 'ticker-slip';
             userSlip.innerHTML = `
                 <header class="slip-header">
-                    <span class="actor-stamp stamp-user">[USR] OPERADOR // INSTRUCAO</span>
+                    <span class="actor-stamp stamp-user">Operador · Instrução</span>
                     <span>${new Date().toISOString()}</span>
                     <span>SEQ# 000${window.getNextSeqCounter ? window.getNextSeqCounter() : ++seqCounter}</span>
                 </header>
@@ -631,7 +660,7 @@
         }
 
         function clearTickerStream() {
-            document.getElementById('tickerScroll').innerHTML = '<div style="color: var(--ink-muted); font-size: 11px; padding: 12px;">[BOBINA DE TELETIPO REINICIADA // AGUARDANDO NOVAS INSTRUCOES]</div>';
+            startNewConversation();
         }
 
         // Terminal Sandbox Simulação
