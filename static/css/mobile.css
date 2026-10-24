@@ -511,3 +511,55 @@ nav.mobile-bottom-nav {
     }
 }
 
+/* =====================================================================
+   8. AJUSTES ESPECIFICOS DA LANDING PAGE MOBILE (ZERO OVERFLOW)
+   ===================================================================== */
+@media (max-width: 768px) {
+    .landing-container {
+        padding-left: max(14px, calc(14px + var(--safe-left, 0px))) !important;
+        padding-right: max(14px, calc(14px + var(--safe-right, 0px))) !important;
+        overflow-x: hidden !important;
+    }
+
+    .hero-eyebrow {
+        white-space: normal !important;
+        word-break: break-word !important;
+        line-height: 1.5 !important;
+    }
+
+    .header-nav-btn {
+        min-height: 40px !important;
+        min-width: 40px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        touch-action: manipulation;
+    }
+
+    .mobile-nav-item {
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        touch-action: manipulation;
+    }
+
+    .btn-hitl-action {
+        min-height: 42px !important;
+        touch-action: manipulation;
+    }
+
+    .btn-duty-chip {
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        touch-action: manipulation;
+    }
+
+    .comparison-table-wrapper {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: thin !important;
+    }
+}
+
