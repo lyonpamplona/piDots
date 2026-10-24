@@ -9,15 +9,15 @@
            COLUNA 1: SIDEBAR ESQUERDA (ACTIVITY RAIL + CONTEXT STACK OPENDOTS)
            --------------------------------------------------------------------- */
         aside.left-sidebar {
-            width: var(--rail-left-width, 270px);
-            min-width: var(--rail-left-width, 270px);
+            width: var(--rail-left-width, 284px);
+            min-width: var(--rail-left-width, 284px);
             background: var(--paper-sheet);
-            border-right: 2px solid var(--border-default);
+            border-right: 1px solid var(--border-default);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             flex-shrink: 0;
-            transition: width 0.15s steps(2), min-width 0.15s steps(2);
+            transition: width 0.15s ease, min-width 0.15s ease;
         }
 
         aside.left-sidebar.collapsed {
@@ -27,7 +27,7 @@
             border-right: none;
         }
 
-        /* Layout Composto OpenDots: Activity Rail (46px) + Context Stack (244px) */
+        /* Layout Composto OpenDots: Activity Rail (44px) + Context Stack (240px) */
         .opendots-sidebar-layout {
             display: flex;
             flex-direction: row;
@@ -39,24 +39,25 @@
         }
 
         .activity-rail {
-            width: 46px;
-            min-width: 46px;
+            width: var(--rail-activity-width, 44px);
+            min-width: var(--rail-activity-width, 44px);
             background: var(--paper-surface-recessed);
             border-right: 1px solid var(--border-default);
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 8px 4px;
+            padding: 8px 3px;
             gap: 6px;
             flex-shrink: 0;
             user-select: none;
         }
 
         .rail-btn {
-            width: 38px;
-            height: 40px;
+            width: 36px;
+            height: 38px;
             background: var(--paper-surface);
             border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm, 3px);
             color: var(--ink-secondary);
             display: flex;
             flex-direction: column;
@@ -64,16 +65,16 @@
             justify-content: center;
             gap: 2px;
             cursor: pointer;
-            box-shadow: 1px 1px 0px #000000;
-            transition: transform 0.05s steps(1), border-color 0.05s steps(1);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.12s ease;
             padding: 2px;
         }
 
         .rail-btn:hover {
             border-color: var(--border-accent);
             color: var(--ink-main);
-            transform: translate(-1px, -1px);
-            box-shadow: 2px 2px 0px #000000;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .rail-btn.active {
@@ -248,26 +249,27 @@
             margin-bottom: 8px;
         }
 
-        /* Mini-cards de Dots Coworkers */
+        /* Mini-cards de Dots Coworkers (Padrao OpenDots) */
         .dot-card {
             background: var(--paper-surface);
             border: 1px solid var(--border-default);
+            border-radius: var(--radius-sm, 3px);
             padding: 8px 10px;
             margin-bottom: 6px;
             cursor: pointer;
-            box-shadow: 1px 1px 0px #000;
-            transition: transform 0.05s steps(1);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.12s ease;
         }
 
         .dot-card:hover {
             border-color: var(--border-accent);
-            transform: translate(-1px, -1px);
-            box-shadow: 2px 2px 0px #000;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .dot-card.active {
             border-color: var(--border-accent);
-            border-left: 3px solid var(--border-accent);
+            border-left: 3px solid var(--blueprint-cyan);
             background: var(--paper-surface-elevated);
         }
 
@@ -286,15 +288,19 @@
         }
 
         .dot-card-status {
-            font-size: 8px;
+            font-family: var(--font-mono);
+            font-size: 8.5px;
+            font-weight: 600;
             padding: 1px 5px;
+            border-radius: var(--radius-xs, 2px);
             background: var(--paper-surface-recessed);
             border: 1px solid var(--border-subtle);
             color: var(--phosphor-green);
         }
 
         .dot-card-role {
-            font-size: 10px;
+            font-family: var(--font-sans);
+            font-size: 10.5px;
             color: var(--ink-secondary);
         }
 
@@ -302,6 +308,7 @@
         .space-item {
             background: var(--paper-surface-recessed);
             border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xs, 2px);
             padding: 6px 8px;
             margin-bottom: 4px;
             font-size: 11px;
@@ -309,6 +316,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.12s ease;
         }
 
         .space-item:hover, .space-item.active {
@@ -932,22 +940,25 @@
             font-family: var(--font-sans);
             font-size: 11.5px;
             font-weight: 600;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.01em;
             padding: 8px 12px;
             background: transparent;
             color: var(--ink-secondary);
             border: 1px solid transparent;
             border-bottom: none;
+            border-radius: var(--radius-sm, 3px) var(--radius-sm, 3px) 0 0;
             cursor: pointer;
             user-select: none;
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.15s ease;
+            white-space: nowrap;
+            transition: all 0.12s ease;
         }
 
         .canvas-tab:hover {
-            color: var(--blueprint-cyan);
+            color: var(--ink-main);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .canvas-tab.active {

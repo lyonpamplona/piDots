@@ -31,12 +31,12 @@
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     padding: 6px 12px;
     background: var(--paper-surface);
     color: var(--ink-main);
     border: 1px solid var(--border-default);
-    border-radius: 2px;
+    border-radius: var(--radius-sm, 3px);
     box-shadow: var(--shadow-sm);
     cursor: pointer;
     user-select: none;
@@ -44,7 +44,7 @@
     align-items: center;
     gap: 6px;
     white-space: nowrap;
-    transition: all 0.15s ease;
+    transition: all 0.12s ease;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     position: relative;
@@ -75,8 +75,14 @@
     box-shadow: none;
 }
 
+.pixel-btn:focus-visible {
+    outline: none;
+    border-color: var(--blueprint-cyan);
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
 .pixel-btn.btn-cyan {
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(56, 189, 248, 0.12);
     border-color: var(--blueprint-cyan);
     color: var(--blueprint-cyan);
 }
@@ -97,15 +103,31 @@
     color: #0c1012;
 }
 
-.pixel-btn.btn-danger {
+.pixel-btn.btn-danger,
+.pixel-btn.btn-stop {
     background: rgba(244, 63, 94, 0.12);
     border-color: var(--stamp-danger);
     color: var(--stamp-danger);
 }
 
-.pixel-btn.btn-danger:hover {
+.pixel-btn.btn-danger:hover,
+.pixel-btn.btn-stop:hover {
     background: var(--stamp-danger);
     color: #ffffff;
+}
+
+.pixel-btn.btn-secondary,
+.pixel-btn-secondary {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-subtle);
+    color: var(--ink-secondary);
+}
+
+.pixel-btn.btn-secondary:hover,
+.pixel-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-default);
+    color: var(--ink-main);
 }
 
 .pixel-btn.btn-green,
@@ -127,11 +149,13 @@
     padding: 10px 18px;
     font-size: 13px;
     font-weight: 600;
+    border-radius: var(--radius-sm, 3px);
 }
 
 .pixel-btn.btn-sm {
     padding: 4px 8px;
     font-size: 10px;
+    border-radius: var(--radius-xs, 2px);
 }
 
 /* =====================================================================
@@ -632,4 +656,334 @@
 .silicon-badge.badge-red {
     border-color: var(--stamp-danger);
     color: var(--stamp-danger);
+}
+
+/* =====================================================================
+   14. COMPONENTES DO SPATIAL WORKSPACE OPENDOTS (PIXEL PAPER UI)
+   ===================================================================== */
+
+/* Ficha Catalografica da Persona (Empty State) */
+.empty-chat-persona {
+    background: var(--paper-surface-sheet);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm, 3px);
+    padding: 20px 24px;
+    margin: 16px 0 24px 0;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.empty-chat-persona-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.empty-chat-persona-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.empty-chat-persona-name {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-main);
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.empty-chat-persona-archetype {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: var(--radius-xs, 2px);
+    background: rgba(56, 189, 248, 0.10);
+    border: 1px solid var(--blueprint-cyan);
+    color: var(--blueprint-cyan);
+    text-transform: uppercase;
+}
+
+.empty-chat-persona-desc {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+}
+
+/* Monograma Quadrado de Identidade do Dot */
+.dot-monogram-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm, 3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-pixel);
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--blueprint-cyan);
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+    user-select: none;
+}
+
+.dot-monogram-avatar.avatar-supervisor {
+    color: var(--phosphor-green);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.dot-monogram-avatar.avatar-coder {
+    color: var(--blueprint-cyan);
+    border-color: rgba(56, 189, 248, 0.4);
+}
+
+.dot-monogram-avatar.avatar-auditor {
+    color: var(--stamp-danger);
+    border-color: rgba(244, 63, 94, 0.4);
+}
+
+/* Pilula Mecanica de Pulso de Estado */
+.dot-pulse-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 600;
+}
+
+.dot-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--phosphor-green);
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.dot-pulse-dot.status-idle { background: var(--phosphor-green); }
+.dot-pulse-dot.status-busy { background: var(--thermal-amber); }
+.dot-pulse-dot.status-thinking { background: var(--blueprint-cyan); animation: pulse-glow 1.2s infinite ease-in-out; }
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.15); }
+}
+
+/* Pilulas de Sugestao Inicial (Starter Suggestions) */
+.starter-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.starter-suggestions-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+}
+
+.starter-pills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.starter-pill {
+    background: var(--paper-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm, 3px);
+    padding: 7px 12px;
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--ink-secondary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.12s ease;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.starter-pill:hover {
+    background: var(--paper-surface-elevated);
+    border-color: var(--border-accent);
+    color: var(--ink-main);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.starter-pill:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.starter-pill .pill-icon {
+    color: var(--blueprint-cyan);
+    font-family: var(--font-mono);
+    font-size: 10px;
+}
+
+/* Barra de Injeção de Fonte URL */
+.source-input-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm, 3px);
+    padding: 6px 10px;
+    margin-top: 6px;
+}
+
+.source-input-bar .source-input-field {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--ink-main);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    outline: none;
+}
+
+.source-input-bar .source-input-field::placeholder {
+    color: var(--ink-muted);
+}
+
+/* Cards de Ferramentas Inline (Generative UI) */
+.inline-computer-slip,
+.inline-tool-card {
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    border-left: 3px solid var(--blueprint-cyan);
+    border-radius: var(--radius-sm, 3px);
+    padding: 10px 12px;
+    margin: 8px 0;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.inline-tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.inline-tool-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--blueprint-cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.inline-tool-status {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: var(--radius-xs, 2px);
+    background: var(--paper-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--phosphor-green);
+}
+
+.inline-tool-code {
+    background: #020305;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xs, 2px);
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-main);
+    max-height: 180px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.45;
+}
+
+.inline-tool-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+/* Card Forense de Governanca Human-in-the-Loop (HITL) Inline */
+.inline-hitl-card {
+    background: rgba(245, 158, 11, 0.04);
+    border: 1.5px solid var(--thermal-amber);
+    border-radius: var(--radius-sm, 3px);
+    padding: 12px 14px;
+    margin: 10px 0;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.inline-hitl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--thermal-amber);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.inline-hitl-risk-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: var(--radius-xs, 2px);
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid var(--stamp-danger);
+    color: var(--stamp-danger);
+    font-weight: 700;
+}
+
+.inline-hitl-code {
+    background: #020305;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: var(--radius-xs, 2px);
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--phosphor-green);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.inline-hitl-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
 }
