@@ -26,14 +26,29 @@
         function toggleTheme() {
             isBlueprint = !isBlueprint;
             playHapticMechanicalClick();
-            if (isBlueprint) {
-                document.documentElement.setAttribute('data-theme', 'blueprint');
-                showToast('Tema comutado para Blueprint Tecnico de Prancheta.', 'info');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-                showToast('Tema comutado para Dark Paper Noir Oficial.', 'info');
-            }
+            try {
+                if (isBlueprint) {
+                    document.documentElement.setAttribute('data-theme', 'blueprint');
+                    localStorage.setItem('pidots-theme', 'blueprint');
+                    showToast('Tema comutado para Blueprint Tecnico de Prancheta.', 'info');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('pidots-theme', 'noir');
+                    showToast('Tema comutado para Dark Paper Noir Oficial.', 'info');
+                }
+            } catch (e) {}
         }
+
+        // Carregamento Imediato do Tema Salvo
+        (function initSavedTheme() {
+            try {
+                const saved = localStorage.getItem('pidots-theme');
+                if (saved === 'blueprint') {
+                    isBlueprint = true;
+                    document.documentElement.setAttribute('data-theme', 'blueprint');
+                }
+            } catch (e) {}
+        })();
 
         // Controle do Menu Retratil Direito (Guia Tecnico)
         function toggleDrawer() {
@@ -120,7 +135,7 @@
         // Controle de Ciclo de Trabalho Diario da Calculadora
         function setDutyCycle(hours, btnElement) {
             dutyCycleHours = hours;
-            const buttons = document.querySelectorAll('.calc-mode-btn');
+            const buttons = document.querySelectorAll('.btn-duty-chip, .calc-mode-btn');
             buttons.forEach(b => b.classList.remove('active'));
             if (btnElement) btnElement.classList.add('active');
 
