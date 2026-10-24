@@ -230,5 +230,10 @@
     PiDotsI18n.init();
     window.PiDotsI18n = PiDotsI18n;
     window.t = PiDotsI18n.t;
+    window.toggleLanguage = function() {
+        if (window.PiDotsI18n && typeof window.PiDotsI18n.toggleLanguage === 'function') {
+            window.PiDotsI18n.toggleLanguage();
+        }
+    };
 
 })(window);

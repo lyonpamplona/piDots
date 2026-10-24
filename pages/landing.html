@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>piDots: Agentes de IA Autonomos no seu Proprio Hardware</title>
-    <meta name="description" content="Execute uma equipe de AI coworkers persistentes no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6 Watts. Sem taxas de nuvem, memoria duravel em SQLite WAL e governanca fisica com aprovacao humana.">
+    <title>piDots: Agentes de IA Autonomos no seu Proprio Hardware de Borda</title>
+    <meta name="description" content="Execute uma equipe de AI coworkers persistentes no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6.2 Watts. Sem taxas de nuvem, memoria duravel em SQLite WAL e governanca fisica com aprovacao humana.">
     
     <!-- Favicon e Icones Oficiais PWA -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -80,7 +80,7 @@
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 <span class="nav-btn-text">Tema</span>
             </button>
-            <button type="button" class="header-nav-btn nav-btn-lang" onclick="toggleLanguage()" title="Comutar Idioma PT/EN" aria-label="Alternar Idioma">
+            <button type="button" class="header-nav-btn nav-btn-lang" onclick="PiDotsI18n.toggleLanguage()" title="Comutar Idioma PT/EN" aria-label="Alternar Idioma">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                 <span id="navLangLabel">PT</span>
             </button>
@@ -92,8 +92,32 @@
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 <span class="nav-btn-text">Manual</span>
             </button>
+            <button type="button" class="header-nav-btn nav-btn-mobile" onclick="toggleMobileNavMenu()" title="Menu de Secoes Mobile" aria-label="Menu Movel">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+            </button>
         </div>
     </header>
+
+    <!-- Painel Retratil de Navegacao Movel -->
+    <nav id="mobileNavPanel" class="mobile-nav-panel" aria-label="Menu Movel">
+        <div class="mobile-nav-header">
+            <span>SECOES // NAVEGACAO</span>
+            <button type="button" class="btn-close-mobile-nav" onclick="toggleMobileNavMenu()" aria-label="Fechar Menu Movel">
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="mobile-nav-links">
+            <a href="#hero" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">01 // VISAO GERAL</a>
+            <a href="#metricas" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">02 // METRICAS DE SILICIO</a>
+            <a href="#coworkers" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">03 // COWORKERS (@DOTS)</a>
+            <a href="#pilares" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">04 // 4 PILARES ARQUITETURA</a>
+            <a href="#matriz" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">05 // MATRIZ COMPARATIVA</a>
+            <a href="#arena-hitl" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">06 // ARENA INTERATIVA HITL</a>
+            <a href="#calculadora-roi" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">07 // CALCULADORA DE ROI</a>
+            <a href="#faq" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">08 // FAQ TECNICO</a>
+            <a href="#quickstart" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">09 // DEPLOY 1-CLIQUE</a>
+        </div>
+    </nav>
 
     <!-- ===================================================================
          CONTAINER PRINCIPAL DA LANDING PAGE
@@ -101,28 +125,29 @@
     <main class="landing-container">
 
         <!-- ===============================================================
-             2. HERO SECTION DE ALTO IMPACTO
+             2. HERO SECTION DE ALTO IMPACTO (SHOW, DON'T TELL)
              =============================================================== -->
         <section class="hero-section" id="hero">
             <div class="hero-eyebrow">
                 <span class="eyebrow-dot"></span>
-                <span>ARM64 // RASPBERRY PI 4B // CONSUMO: 6W // 55 MB RAM RSS // OPEN SOURCE MIT</span>
+                <span class="eyebrow-text">ARM64 CORTEX-A72 · 6.2W USB-C · &lt; 70MB RAM RSS · OPEN SOURCE MIT</span>
             </div>
 
             <div class="hero-split-grid">
+                <!-- Coluna Esquerda: Narrativa de Engenharia e Deploy -->
                 <div class="hero-col-left">
                     <h1 class="hero-title">
                         Agentes de IA autônomos no seu <span class="highlight">próprio hardware</span>.
                     </h1>
 
                     <p class="hero-description">
-                        Execute uma equipe de AI coworkers persistentes no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6 Watts. Memória durável em SQLite WAL, governança física com aprovação humana e zero taxas de nuvem recorrentes.
+                        Execute uma equipe de AI coworkers persistentes no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6.2 Watts. Memória durável em SQLite WAL, isolamento Bubblewrap em sub-15ms e governança Human-in-the-Loop sem taxas de nuvem recorrentes.
                     </p>
 
                     <!-- Terminal de Deploy em 1 Comando (Atrito Zero) -->
                     <div class="hero-deploy-deck">
                         <div class="deploy-deck-top">
-                            <span>COMANDO UNICO DE INSTALACAO (DOCKER COMPOSE):</span>
+                            <span>COMANDO ÚNICO DE INSTALAÇÃO (DOCKER COMPOSE):</span>
                             <span>TEMPO ESTIMADO: 45S</span>
                         </div>
                         <div class="deploy-cmd-box">
@@ -133,12 +158,12 @@
                             </button>
                         </div>
                         <div class="deploy-ports-hint">
-                            <span>Portas ativas: :8081 (Landing) // :8082 (Workspace) // :8083 (Docs) // :8088 (Gateway)</span>
-                            <span>Saude: curl http://localhost:8088/health</span>
+                            <span>Portas ativas: :8081 (Landing) · :8082 (Workspace) · :8083 (Docs) · :8088 (Gateway)</span>
+                            <span>Saúde: curl http://localhost:8088/health</span>
                         </div>
                     </div>
 
-                    <!-- Botoes de Acao Primarios -->
+                    <!-- Botões de Ação Primários -->
                     <div class="hero-cta-group">
                         <a href="/app" class="pixel-btn-cta-primary" id="heroCtaWorkspace" data-surface="workspace">
                             <span>Iniciar Console Operacional</span>
@@ -150,38 +175,45 @@
                         </a>
                     </div>
 
-                    <!-- Badges de Metricas Duras de Silicio -->
+                    <!-- Badges de Métricas Duras de Silício -->
                     <div class="hero-silicon-badges">
                         <span class="silicon-chip">RAM: <strong>55 MB RSS</strong></span>
-                        <span class="silicon-chip">Potência: <strong>6 Watts</strong></span>
+                        <span class="silicon-chip">Potência: <strong>6.2 Watts</strong></span>
                         <span class="silicon-chip">Persistência: <strong>SQLite WAL</strong></span>
                         <span class="silicon-chip">Sandbox: <strong>Bubblewrap ARM64</strong></span>
                     </div>
                 </div>
 
-                <!-- Coluna Direita: Showcase de Execucao em Tempo Real -->
+                <!-- Coluna Direita: Live ReAct Simulator Deck -->
                 <div class="hero-col-right">
-                    <div class="hero-paper-slip-showcase">
-                        <div class="showcase-header">
-                            <div class="terminal-traffic-lights" aria-hidden="true">
-                                <span class="light-dot red"></span>
-                                <span class="light-dot yellow"></span>
-                                <span class="light-dot green"></span>
+                    <div class="hero-simulator-deck" id="heroSimulatorDeck">
+                        <!-- Topbar de Abas do Simulador -->
+                        <div class="sim-tab-bar">
+                            <div class="sim-tabs-left">
+                                <button type="button" class="sim-tab-btn active" id="tabBtnTerminal" onclick="switchSimulatorTab('terminal')">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                                    <span>Terminal AG-UI</span>
+                                </button>
+                                <button type="button" class="sim-tab-btn" id="tabBtnTelemetry" onclick="switchSimulatorTab('telemetry')">
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                    <span>Telemetria ARM64</span>
+                                </button>
                             </div>
-                            <div class="showcase-status">
+                            <div class="sim-tabs-right">
                                 <span class="pulse-dot"></span>
-                                <span>SISTEMA DE TELETIPO // EXECUCAO AO VIVO</span>
+                                <span class="sim-status-label" id="heroSimStatusText">NÓ ATIVO // 3 AGENTES EM ESPERA // RSS: 64.2MB</span>
+                                <button type="button" class="pixel-btn btn-xs" onclick="clearSimViewport()" title="Limpar bobina">Limpar</button>
                             </div>
-                            <span class="brand-badge">HITL SEGURO</span>
                         </div>
 
-                        <div class="showcase-ticker-body" id="heroSimViewport">
+                        <!-- Viewport 1: Terminal ReAct ao Vivo -->
+                        <div class="sim-viewport" id="heroSimViewport">
                             <div class="slip-entry">
                                 <div class="slip-meta">
                                     <span class="slip-agent">@dot-supervisor</span>
-                                    <span>SEQ# 0001</span>
+                                    <span>SEQ# 0001 · PROT: AG-UI</span>
                                 </div>
-                                <p class="slip-text">Missão iniciada. Carregando especialistas via Dynamic Tool Pruning (3/23 ferramentas ativas no contexto).</p>
+                                <p class="slip-text">Missão inicializada. Alocando especialistas via Dynamic Tool Pruning (3/23 esquemas JSON ativos no contexto).</p>
                             </div>
 
                             <div class="ticker-divider"></div>
@@ -189,17 +221,17 @@
                             <div class="slip-entry">
                                 <div class="slip-meta">
                                     <span class="slip-agent">@dot-coder</span>
-                                    <span>SEQ# 0002</span>
+                                    <span>SEQ# 0002 · SANDBOX BWRAP</span>
                                 </div>
-                                <p class="slip-text">Gerando teste de integração de hardware em sandbox Bubblewrap. Solicitando autorização do operador.</p>
+                                <p class="slip-text">Gerando teste de integração de hardware em sandbox Bubblewrap sub-15ms. Solicitando autorização do operador humano.</p>
 
-                                <!-- Card HITL Clicavel e Interativo -->
+                                <!-- Card HITL Interativo -->
                                 <div class="hitl-box" id="heroDemoHitlBox">
                                     <div class="hitl-box-header">
                                         <span>EXECUCAO STRICT SANDBOX</span>
                                         <span>HMAC-SHA256 VALIDO</span>
                                     </div>
-                                    <div class="hitl-box-cmd">bwrap --ro-bind /usr /usr --tmpfs /tmp python3 -m pytest</div>
+                                    <div class="hitl-box-cmd">bwrap --ro-bind /usr /usr --tmpfs /tmp python3 -m pytest tests/test_silicon.py</div>
                                     <div class="hitl-box-actions" id="heroDemoHitlActions">
                                         <button type="button" class="btn-hitl-action btn-hitl-approve" id="btnHeroDemoApprove" onclick="handleHeroDemoHitl('approve')">
                                             <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -209,9 +241,76 @@
                                             <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                             <span>Vetar</span>
                                         </button>
+                                        <button type="button" class="btn-hitl-action" onclick="handleHeroDemoHitl('inspect')" style="background: var(--paper-surface); border: 1px solid var(--border-default);">
+                                            <span>Inspecionar</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Viewport 2: Osciloscópios SVG de Silício (Alternável) -->
+                        <div class="sim-viewport" id="heroTelemetryViewport" style="display: none;">
+                            <div style="padding: 12px; display: flex; flex-direction: column; gap: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">OSCILOSCOPIO DE MEMORIA RSS // uvloop</span>
+                                    <span style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-secondary);" id="arenaRamDisplay">64.2 MB (21.4% / 300MB TETO)</span>
+                                </div>
+                                <svg viewBox="0 0 310 80" style="width: 100%; height: 70px; background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); shape-rendering: crispEdges;">
+                                    <defs>
+                                        <linearGradient id="ramGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
+                                            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <polygon id="arenaRamPolygon" points="0,80 0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44 310,80" fill="url(#ramGrad)"/>
+                                    <polyline id="arenaRamPolyline" points="0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44" fill="none" stroke="#38bdf8" stroke-width="2"/>
+                                </svg>
+
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">TEMPERATURA BROADCOM BCM2711 // SoC</span>
+                                    <span style="font-family: var(--font-mono); font-size: 10px; color: var(--phosphor-green);" id="arenaTempDisplay">48.2 C (NOMINAL)</span>
+                                </div>
+                                <svg viewBox="0 0 310 80" style="width: 100%; height: 70px; background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); shape-rendering: crispEdges;">
+                                    <defs>
+                                        <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#33ff66" stop-opacity="0.35"/>
+                                            <stop offset="100%" stop-color="#33ff66" stop-opacity="0.0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <polygon id="arenaTempPolygon" points="0,80 0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47 310,80" fill="url(#tempGrad)"/>
+                                    <polyline id="arenaTempPolyline" points="0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47" fill="none" stroke="#33ff66" stroke-width="2"/>
+                                </svg>
+
+                                <div style="display: flex; gap: 8px; margin-top: 6px;">
+                                    <button type="button" class="pixel-btn btn-xs" onclick="injectTelemetryPulse()" style="flex: 1; justify-content: center;">
+                                        Testar Pulso Carga RAM
+                                    </button>
+                                    <button type="button" class="pixel-btn btn-xs btn-amber" onclick="simulateThermalTriggerAlert()" style="flex: 1; justify-content: center;">
+                                        Simular Alerta Térmico
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Barra de Chips de Comandos Rápidos Clicáveis -->
+                        <div class="sim-chips-bar">
+                            <span class="chips-label">COMANDOS:</span>
+                            <button type="button" class="sim-chip" onclick="executeSimulatedOrder('slash_telemetry')">/telemetry</button>
+                            <button type="button" class="sim-chip" onclick="executeSimulatedOrder('audit_flash')">@dot-coder flash</button>
+                            <button type="button" class="sim-chip" onclick="executeSimulatedOrder('council_debate')">@conselho debate</button>
+                            <button type="button" class="sim-chip" onclick="executeSimulatedOrder('self_healing')">@self-healing ast</button>
+                            <button type="button" class="sim-chip" onclick="executeSimulatedOrder('hitl_danger')">@hitl retenção</button>
+                        </div>
+
+                        <!-- Campo de Input Customizado Interativo -->
+                        <div class="sim-input-row">
+                            <span class="sim-input-prompt">&gt;</span>
+                            <input type="text" class="sim-input-field" id="heroSimInput" placeholder="Envie comando ou /slash (ex: /telemetry, /coagents)..." onkeydown="if(event.key==='Enter') handleCustomSimOrder();" autocomplete="off" spellcheck="false">
+                            <button type="button" class="sim-btn-send" onclick="handleCustomSimOrder()">
+                                <span>Disparar</span>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -219,90 +318,197 @@
         </section>
 
         <!-- ===============================================================
-             3. O CICLO DE VIDA DO DOT (SHOW, DON'T TELL - 4 ETAPAS)
+             3. METRICAS DURAS DE SILICIO (TELEMETRIA REAL EM CHIPS DE ALTO CONTRASTE)
              =============================================================== -->
-        <section class="lifecycle-section" id="ciclo-de-vida">
+        <section class="silicon-metrics-section" id="metricas-silicio">
             <div class="section-head">
-                <span class="section-tag">ARQUITETURA COGNITIVA EM 4 ETAPAS</span>
-                <h2 class="section-title">O que acontece enquanto você trabalha</h2>
+                <span class="section-tag">DADOS DE ENGENHARIA DE SILÍCIO</span>
+                <h2 class="section-title">Medições de hardware auditáveis em runtime real</h2>
                 <p class="section-lead">
-                    O piDots organiza a autonomia dos seus agentes em um pipeline contínuo de 4 fases, protegendo seu hardware e garantindo previsibilidade total.
+                    Substituímos adjetivos subjetivos por números empíricos coletados diretamente do kernel Linux ARM64 em operação contínua.
                 </p>
             </div>
 
-            <div class="lifecycle-grid">
-                <div class="lifecycle-card">
-                    <span class="lifecycle-step-idx">ETAPA 01</span>
-                    <h3 class="lifecycle-card-title">Ingestão Multi-Canal</h3>
-                    <p class="lifecycle-card-desc">
-                        Receba demandas pelo terminal bash, console SPA, WebSockets, ou via canais de mensageria móvel (Telegram e WhatsApp via Evolution API) com travas anti-loop.
-                    </p>
+            <div class="metrics-grid-4">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-badge">POTÊNCIA TÉRMICA</span>
+                        <span class="metric-val">6.2 W</span>
+                    </div>
+                    <div class="metric-body">
+                        Alimentação estável via fonte USB-C padrão de 5V/3A. Custo elétrico anual inferior a R$ 38,00 em operação contínua 24/7.
+                    </div>
                 </div>
 
-                <div class="lifecycle-card">
-                    <span class="lifecycle-step-idx">ETAPA 02</span>
-                    <h3 class="lifecycle-card-title">Deliberação Racional</h3>
-                    <p class="lifecycle-card-desc">
-                        O agente pensa token a token pelo protocolo AG-UI, aciona o debate dialético do Conselho Consultivo e reduz esquemas em 65% via Dynamic Tool Pruning.
-                    </p>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-badge">CONSUMO DE RAM</span>
+                        <span class="metric-val">&lt; 70 MB</span>
+                    </div>
+                    <div class="metric-body">
+                        Monólito Python 3.13 com uvloop e Poda Dinâmica de Ferramentas. Utiliza menos de 2% dos 4GB LPDDR4 do nó Raspberry Pi.
+                    </div>
                 </div>
 
-                <div class="lifecycle-card">
-                    <span class="lifecycle-step-idx">ETAPA 03</span>
-                    <h3 class="lifecycle-card-title">Execução Segura</h3>
-                    <p class="lifecycle-card-desc">
-                        Ações são isoladas em namespaces Linux Bubblewrap (bwrap). Operações de risco exigem assinatura do operador humano (HITL) com edição de argumentos.
-                    </p>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-badge">BOOT DO SANDBOX</span>
+                        <span class="metric-val">&lt; 15 MS</span>
+                    </div>
+                    <div class="metric-body">
+                        Namespaces Bubblewrap (bwrap) montados sem sobrecarga gráfica ou demoras de container Docker. Consumo &lt; 3MB por sandbox.
+                    </div>
                 </div>
 
-                <div class="lifecycle-card">
-                    <span class="lifecycle-step-idx">ETAPA 04</span>
-                    <h3 class="lifecycle-card-title">Memória Durável</h3>
-                    <p class="lifecycle-card-desc">
-                        Fatos e lições são persistidos no SQLite WAL com busca híbrida FTS5 e projeção vetorial 64D. Rotinas noturnas amortecem a mídia flash do MicroSD.
-                    </p>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-badge">PERSISTÊNCIA ACID</span>
+                        <span class="metric-val">SQLITE WAL</span>
+                    </div>
+                    <div class="metric-body">
+                        Escritas sequenciais em append-only com temp_store em RAM volátil. Preservação garantida da vida útil do cartão MicroSD.
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- ===============================================================
-             4. BENTO GRID DE SILICIO (4 PILARES DE ALTO CONTRASTE)
+             4. COWORKERS DE BORDA (@DOTS) EM FICHAS CATALOGRAFICAS CHANFRADAS
+             =============================================================== -->
+        <section class="coworkers-section" id="coworkers">
+            <div class="section-head">
+                <span class="section-tag">SQUAD DE ESPECIALISTAS PERSISTENTES</span>
+                <h2 class="section-title">Equipe autônoma de AI Coworkers com papéis definidos</h2>
+                <p class="section-lead">
+                    Cada Dot opera como um especialista dedicado com identidade própria, system prompt calibrado e permissões granulares de execução.
+                </p>
+            </div>
+
+            <div class="catalog-cards-grid">
+                <!-- Card 1: Supervisor -->
+                <div class="catalog-tab-card">
+                    <div class="card-tab-edge">
+                        <span class="card-serial">DOT-SPV-01</span>
+                        <span class="card-archetype">SUPERVISOR</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title-row">
+                            <span class="dot-handle">@dot-supervisor</span>
+                            <span class="card-tag tag-cyan">ORQUESTRADOR</span>
+                        </div>
+                        <p class="card-desc">
+                            Coordenador executivo do squad. Gerencia o desdobramento de tarefas, handoffs entre dots, resolução tripartite do Conselho e despachos de cronograma.
+                        </p>
+                        <div class="card-meta-list">
+                            <div class="card-meta-item"><span>Permissões:</span> <strong>Memória Central · Spaces · Handoffs</strong></div>
+                            <div class="card-meta-item"><span>Isolamento:</span> <strong>Loop Cognitivo AG-UI</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Coder -->
+                <div class="catalog-tab-card">
+                    <div class="card-tab-edge">
+                        <span class="card-serial">DOT-CDR-02</span>
+                        <span class="card-archetype">CODER</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title-row">
+                            <span class="dot-handle">@dot-coder</span>
+                            <span class="card-tag tag-green">ENGENHEIRO</span>
+                        </div>
+                        <p class="card-desc">
+                            Especialista em desenvolvimento de software e infraestrutura Linux. Executa scripts em sandbox Bubblewrap sub-15ms e aciona auto-cura via Self-Healing Harness.
+                        </p>
+                        <div class="card-meta-list">
+                            <div class="card-meta-item"><span>Permissões:</span> <strong>Sandbox Shell · Workspace /workspaces</strong></div>
+                            <div class="card-meta-item"><span>Isolamento:</span> <strong>Linux Namespaces Bubblewrap</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Architect -->
+                <div class="catalog-tab-card">
+                    <div class="card-tab-edge">
+                        <span class="card-serial">DOT-ARC-03</span>
+                        <span class="card-archetype">ARCHITECT</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title-row">
+                            <span class="dot-handle">@dot-architect</span>
+                            <span class="card-tag tag-cyan">ARQUITETO</span>
+                        </div>
+                        <p class="card-desc">
+                            Modelador de dados e guardião documental. Organiza a árvore de Spaces Markdown versionada, esquemas relacionais SQLite WAL e contratos de API REST.
+                        </p>
+                        <div class="card-meta-list">
+                            <div class="card-meta-item"><span>Permissões:</span> <strong>Árvore de Spaces · Diffs WAL</strong></div>
+                            <div class="card-meta-item"><span>Isolamento:</span> <strong>Versionamento Optimistic Locking</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Auditor -->
+                <div class="catalog-tab-card">
+                    <div class="card-tab-edge">
+                        <span class="card-serial">DOT-AUD-04</span>
+                        <span class="card-archetype">AUDITOR</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title-row">
+                            <span class="dot-handle">@dot-auditor</span>
+                            <span class="card-tag tag-amber">SEGURANÇA</span>
+                        </div>
+                        <p class="card-desc">
+                            Auditor forense e sentinela de hardware. Intercepta comandos de alto risco gerando cards de retenção HITL, monitora a saúde térmica do SoC e previne desgaste flash.
+                        </p>
+                        <div class="card-meta-list">
+                            <div class="card-meta-item"><span>Permissões:</span> <strong>Travas HITL · Telemetria Broadcom</strong></div>
+                            <div class="card-meta-item"><span>Isolamento:</span> <strong>Assinaturas HMAC-SHA256</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             5. ARQUITETURA BENTO GRID (4 PILARES DE SILICIO)
              =============================================================== -->
         <section class="bento-section" id="pilares">
             <div class="section-head">
                 <span class="section-tag">ENGENHARIA PARA RECURSOS REAIS</span>
                 <h2 class="section-title">Construído para o silício físico, não para a nuvem infinita</h2>
                 <p class="section-lead">
-                    Enquanto frameworks corporativos dependem de múltiplos contêineres pesados e navegadores headless ocultos, o piDots foi calibrado para operar com folga em nós de 4GB.
+                    Enquanto frameworks corporativos dependem de múltiplos contêineres pesados e navegadores ocultos, o piDots foi calibrado para operar com folga em nós de 4GB.
                 </p>
             </div>
 
             <div class="bento-grid-4">
                 <div class="bento-box">
                     <div class="bento-box-top">
-                        <span class="bento-pill">CONSUMO DE MEMORIA</span>
-                        <span class="bento-stat">55 MB RAM RSS</span>
+                        <span class="bento-pill">SPACES &amp; CONHECIMENTO</span>
+                        <span class="bento-stat">DOCS VIVOS</span>
                     </div>
-                    <h3 class="bento-box-title">Folga Real de Memória no Raspberry Pi</h3>
+                    <h3 class="bento-box-title">Árvore Hierárquica de Conhecimento Durável</h3>
                     <p class="bento-box-body">
-                        Consome menos de 2% dos 4GB do Raspberry Pi 4B, eliminando qualquer risco de OOM Killer do Linux e deixando o processador livre para suas tarefas.
+                        Documentos Markdown versionados com controle de concorrência otimista (expectedRevision). Cada Space mantém histórico imutável sem necessidade de bancos vetoriais em nuvem.
                     </p>
                 </div>
 
                 <div class="bento-box">
                     <div class="bento-box-top">
-                        <span class="bento-pill">VIDA UTIL DO FLASH</span>
+                        <span class="bento-pill">VIDA ÚTIL DO FLASH</span>
                         <span class="bento-stat">SQLITE WAL &amp; TMPFS</span>
                     </div>
                     <h3 class="bento-box-title">Preservação Radical do Cartão MicroSD</h3>
                     <p class="bento-box-body">
-                        Gravações em modo append-only sequencial sem reescrita de blocos, diretório temporário montado em RAM volátil (tmpfs 64MB) e rotina de compactação às 03:00.
+                        Gravações sequenciais em append-only sem reescrita de blocos, diretório temporário montado em RAM volátil (tmpfs 64MB) e rotina de consolidação às 03:00 com WAL TRUNCATE.
                     </p>
                 </div>
 
                 <div class="bento-box">
                     <div class="bento-box-top">
-                        <span class="bento-pill">SEGURANCA DE BORDA</span>
+                        <span class="bento-pill">SEGURANÇA DE BORDA</span>
                         <span class="bento-stat">HMAC-SHA256 &amp; BWRAP</span>
                     </div>
                     <h3 class="bento-box-title">Governança Human-in-the-Loop Sem Bloqueios</h3>
@@ -325,14 +531,14 @@
         </section>
 
         <!-- ===============================================================
-             5. COMPARATIVO TRANSPARENTE ("O QUE MUDA COM O PIDOTS")
+             6. MATRIZ COMPARATIVA DE ENGENHARIA COMPLETA (14 DIMENSOES)
              =============================================================== -->
         <section class="comparison-section" id="comparativo">
             <div class="section-head">
-                <span class="section-tag">COMPARATIVO DE ENGENHARIA</span>
-                <h2 class="section-title">O que muda ao migrar para hardware local</h2>
+                <span class="section-tag">COMPARATIVO DE ENGENHARIA COMPLETO</span>
+                <h2 class="section-title">O que muda ao migrar para hardware soberano local</h2>
                 <p class="section-lead">
-                    Veja como o piDots se diferencia de soluções em nuvem tradicionais que tratam agentes de IA como caixas-pretas de alto custo.
+                    Veja como o piDots se diferencia de soluções em nuvem tradicionais e frameworks pesados de agentes que tratam IA como caixas-pretas de alto custo.
                 </p>
             </div>
 
@@ -340,41 +546,96 @@
                 <table class="comparison-table">
                     <thead>
                         <tr>
-                            <th class="col-dimension">DIMENSAO</th>
-                            <th class="col-cloud">FRAMEWORKS EM NUVEM TRADICIONAIS</th>
+                            <th class="col-dimension">DIMENSÃO TÉCNICA</th>
+                            <th class="col-cloud">SOLUÇÕES EM NUVEM TRADICIONAIS</th>
+                            <th class="col-heavy">FRAMEWORKS DE AGENTES PESADOS</th>
                             <th class="col-pidots">PIDOTS EM HARDWARE DE BORDA</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="col-dimension">Infraestrutura</td>
-                            <td class="col-cloud">VPS e instâncias em nuvem com faturas contínuas em dólar</td>
-                            <td class="col-pidots">Seu próprio Raspberry Pi 4B consumindo apenas 6 Watts</td>
+                            <td class="col-dimension">Hardware Alvo</td>
+                            <td class="col-cloud">Datacenters proprietários de nuvem</td>
+                            <td class="col-heavy">Servidores dedicados com GPUs caras</td>
+                            <td class="col-pidots"><strong>SBC local ARM64 (Raspberry Pi 4B)</strong></td>
                         </tr>
                         <tr>
-                            <td class="col-dimension">Consumo de RAM</td>
-                            <td class="col-cloud">1.800 MB a 3.500 MB (dependência de Node.js SSR e Chromium)</td>
-                            <td class="col-pidots">Menos de 70 MB de RAM RSS medidos em runtime real</td>
+                            <td class="col-dimension">Consumo de Memória RAM</td>
+                            <td class="col-cloud">1.800 MB a 3.500 MB (Node.js/Chromium)</td>
+                            <td class="col-heavy">2.500 MB a 6.000 MB (vários containers)</td>
+                            <td class="col-pidots"><strong>Menos de 70 MB RAM RSS real</strong></td>
                         </tr>
                         <tr>
-                            <td class="col-dimension">Persistência e Memória</td>
-                            <td class="col-cloud">Bancos vetoriais pesados em nuvem ou perda total no reboot</td>
-                            <td class="col-pidots">SQLite WAL nativo local com Core Memory e Archival FTS5</td>
+                            <td class="col-dimension">Potência Térmica Dissipada</td>
+                            <td class="col-cloud">250W a 600W por instância compartilhada</td>
+                            <td class="col-heavy">350W a 800W em clusters de servidor</td>
+                            <td class="col-pidots"><strong>6.2 Watts via cabo USB-C padrão</strong></td>
                         </tr>
                         <tr>
-                            <td class="col-dimension">Execução de Comandos</td>
-                            <td class="col-cloud">Execuções cegas no host ou contêineres Docker efêmeros lentos</td>
-                            <td class="col-pidots">Sandbox Bubblewrap ultraleve e aprovação humana (HITL)</td>
+                            <td class="col-dimension">Boot do Sandbox de Execução</td>
+                            <td class="col-cloud">3 a 8 segundos (VMs ou Docker remoto)</td>
+                            <td class="col-heavy">4 a 12 segundos (containers pesados)</td>
+                            <td class="col-pidots"><strong>Sub-15ms via Bubblewrap nativo</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Preservação do Armazenamento</td>
+                            <td class="col-cloud">I/O cobrado por requisição de bloco</td>
+                            <td class="col-heavy">Escritas descontroladas em logs locais</td>
+                            <td class="col-pidots"><strong>SQLite WAL + Tmpfs Flash-Safe</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Protocolo de Comunicação</td>
+                            <td class="col-cloud">Polling HTTP e websockets proprietários</td>
+                            <td class="col-heavy">REST síncrono com bloqueio de thread</td>
+                            <td class="col-pidots"><strong>AG-UI SSE padronizado sub-milissegundo</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Governança e Segurança</td>
+                            <td class="col-cloud">Telas genéricas de aceite assíncrono</td>
+                            <td class="col-heavy">Confirmações simples no terminal CLI</td>
+                            <td class="col-pidots"><strong>Cards HITL inline com modified_args</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Mensageria Integrada</td>
+                            <td class="col-cloud">Dependência de conectores pagos de SaaS</td>
+                            <td class="col-heavy">Apenas linha de comando ou terminal</td>
+                            <td class="col-pidots"><strong>Telegram e WhatsApp nativo (Evolution)</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Autonomia em Segundo Plano</td>
+                            <td class="col-cloud">Workers Celery / Redis em nuvem</td>
+                            <td class="col-heavy">Loops de polling contínuos bloqueantes</td>
+                            <td class="col-pidots"><strong>Dot Heartbeat 24/7 com HEARTBEAT_OK</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Memória Cognitiva</td>
+                            <td class="col-cloud">Bancos vetoriais em nuvem ou efêmera</td>
+                            <td class="col-heavy">Context window truncado sem persistência</td>
+                            <td class="col-pidots"><strong>MemGPT 3 Camadas + Archival FTS5</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Resolução de Conflitos</td>
+                            <td class="col-cloud">Falha exposta ao usuário final</td>
+                            <td class="col-heavy">Tentativas cegas de retry síncrono</td>
+                            <td class="col-pidots"><strong>Debate Tripartite do Conselho</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="col-dimension">Resiliência de Código</td>
+                            <td class="col-cloud">Parada com traceback de erro</td>
+                            <td class="col-heavy">Parada exigindo reinício do agente</td>
+                            <td class="col-pidots"><strong>Self-Healing Harness com parser AST</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Acesso Remoto</td>
-                            <td class="col-cloud">Portas abertas no roteador ou serviços pagos de proxy reverso</td>
-                            <td class="col-pidots">Cloudflare Tunnel (cloudflared) nativo com Zero Trust 2FA</td>
+                            <td class="col-cloud">Portas abertas no roteador ou VPN paga</td>
+                            <td class="col-heavy">Complexidade de túneis manuais</td>
+                            <td class="col-pidots"><strong>Cloudflare Tunnel Zero Trust nativo</strong></td>
                         </tr>
                         <tr>
-                            <td class="col-dimension">Licenciamento</td>
-                            <td class="col-cloud">SaaS fechado, planos enterprise e limites artificiais de uso</td>
-                            <td class="col-pidots">100% Open Source MIT com código transparente e auditável</td>
+                            <td class="col-dimension">Custo Mensal Recorrente</td>
+                            <td class="col-cloud">R$ 400 a R$ 2.500/mês em faturas em dólar</td>
+                            <td class="col-heavy">Custos imprevisíveis de computação</td>
+                            <td class="col-pidots"><strong>R$ 0/mês de nuvem (100% Soberano)</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -382,7 +643,271 @@
         </section>
 
         <!-- ===============================================================
-             6. QUICKSTART / FECHAMENTO DA LANDING PAGE
+             7. ARENA INTERATIVA DE ENGENHARIA E GOVERNANCA HITL
+             =============================================================== -->
+        <section class="arena-section" id="arena-hitl">
+            <div class="section-head">
+                <span class="section-tag">GOVERNANCA, DIALETICA E RESILIENCIA AO VIVO</span>
+                <h2 class="section-title">Arena de Execucao: Auditoria de Borda em Silicio</h2>
+                <p class="section-lead">
+                    Simule os mecanismos criticos que impedem execucoes nao autorizadas, resolvem conflitos de agentes via dialetica tripartite e aplicam auto-cura com parser AST.
+                </p>
+            </div>
+
+            <div class="arena-grid">
+                <!-- Painel 1: Trava Mecanica e Carimbos HITL -->
+                <article class="arena-panel" id="hitl-forensics">
+                    <div class="feature-top">
+                        <span class="feature-num">PAINEL 01 // GOVERNANCA</span>
+                        <span class="feature-badge" style="color: var(--thermal-amber);">SIMULADOR HITL</span>
+                    </div>
+
+                    <h3 class="feature-title">Trava Mecanica &amp; Carimbos de Seguranca</h3>
+                    <p class="feature-desc">
+                        Destrave o switch fisico virtual e homologue ou vete a ordem retida na fila transacional do SQLite WAL:
+                    </p>
+
+                    <!-- Trava Mecanica -->
+                    <div class="safety-lock-row" onclick="toggleMechanicalSafetyLock()">
+                        <div class="safety-lock-content" style="display: flex; align-items: center; gap: 8px;">
+                            <div class="mechanical-switch" id="demoSafetySwitch">
+                                <div class="mechanical-switch-thumb"></div>
+                            </div>
+                            <span class="safety-lock-label" id="demoSafetyLabel" style="font-family: var(--font-pixel); font-size: 8px;">TRAVA ENGATADA</span>
+                        </div>
+                        <span class="safety-lock-action" style="font-size: 10px; color: var(--ink-secondary);">RM -RF /SCRATCH_CACHE</span>
+                    </div>
+
+                    <!-- Arena de Carimbos Analogicos -->
+                    <div class="rubber-stamps-arena">
+                        <div class="rubber-stamp stamp-rejected" id="demoStampReject">
+                            <span>VETADO</span>
+                            <span class="stamp-sub">ACAO CANCELADA</span>
+                            <span style="font-size: 8px;">OP: LYON</span>
+                        </div>
+                        <div class="rubber-stamp stamp-approved" id="demoStampApprove">
+                            <span>HOMOLOGADO</span>
+                            <span class="stamp-sub">COMANDO OK</span>
+                            <span style="font-size: 8px;">WAL-AUTH</span>
+                        </div>
+                    </div>
+
+                    <div class="arena-actions-row" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: auto;">
+                        <button type="button" class="btn-hitl-action btn-hitl-reject" onclick="triggerDemoVeto()">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            <span>Vetar</span>
+                        </button>
+                        <button type="button" class="btn-hitl-action btn-hitl-approve" id="btnDemoApprove" disabled onclick="triggerDemoApprove()">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>Homologar</span>
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Painel 2: Conselho Tripartite -->
+                <article class="arena-panel" id="conselho-live">
+                    <div class="feature-top">
+                        <span class="feature-num">PAINEL 02 // DIALETICA</span>
+                        <span class="feature-badge" style="color: var(--blueprint-cyan);">CONSELHO TRIPARTITE</span>
+                    </div>
+
+                    <h3 class="feature-title">Deliberacao Multi-Bot em 3 Rodadas</h3>
+                    <p class="feature-desc">
+                        Simule a dialetica entre Propositor (@dot-coder), Auditor (@dot-auditor) e Supervisor (@dot-supervisor):
+                    </p>
+
+                    <div class="arena-council-feed" id="councilDemoFeed">
+                        <div class="feed-placeholder" style="color: var(--ink-muted); font-size: 9px;">[SISTEMA] Aguardando convocacao da sessao do conselho consultivo...</div>
+                    </div>
+
+                    <div class="arena-actions-row" style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: auto;">
+                        <span class="arena-status-label" id="councilRoundStatus" style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary);">STATUS: OCIOSO</span>
+                        <button type="button" class="btn-terminal-action" onclick="runCouncilDemoSimulation()">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Convocar Sessao</span>
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Painel 3: Self-Healing Harness -->
+                <article class="arena-panel" id="healing-live">
+                    <div class="feature-top">
+                        <span class="feature-num">PAINEL 03 // RESILIENCIA</span>
+                        <span class="feature-badge" style="color: var(--phosphor-green);">SELF-HEALING HARNESS</span>
+                    </div>
+
+                    <h3 class="feature-title">Auto-Cura e Reparo de Traceback</h3>
+                    <p class="feature-desc">
+                        O agente intercepta falhas de execucao, analisa o traceback sintatico via AST e aplica a correcao cirurgica:
+                    </p>
+
+                    <div class="arena-healing-feed" id="healingDemoFeed">
+                        <div class="feed-placeholder" style="color: var(--ink-muted); font-size: 9px;">[SISTEMA] Pressione o botao para simular uma falha e observar a auto-cura...</div>
+                    </div>
+
+                    <div class="arena-actions-row" style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: auto;">
+                        <span class="arena-status-label" id="healingStatus" style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary);">HARNESS: ARMED</span>
+                        <button type="button" class="btn-terminal-action" onclick="runHealingDemoSimulation()">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                            <span>Simular Falha &amp; Auto-Cura</span>
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             8. CALCULADORA INTERATIVA DE ROI DE SILICIO E ECONOMIA DE BORDA
+             =============================================================== -->
+        <section class="calculator-section" id="calculadora-roi">
+            <div class="section-head">
+                <span class="section-tag">SIMULADOR DE ECONOMIA DE SILÍCIO</span>
+                <h2 class="section-title">Calcule a amortização do hardware versus faturas em nuvem</h2>
+                <p class="section-lead">
+                    Ajuste os controles deslizantes para projetar a economia real acumulada ao substituir instâncias virtuais caras pelo nó físico local.
+                </p>
+            </div>
+
+            <div class="calc-container-deck">
+                <!-- Painel Esquerdo: Controles e Sliders -->
+                <div class="calc-controls-pane">
+                    <div class="calc-slider-block">
+                        <div class="slider-label-row">
+                            <span class="slider-title">QUANTIDADE DE AI COWORKERS ATIVOS:</span>
+                            <span class="slider-display" id="displayAgentsCount">3 AGENTES</span>
+                        </div>
+                        <input type="range" class="pixel-slider" id="sliderAgents" min="1" max="8" value="3" step="1" oninput="recalculateRoi()">
+                        <div class="slider-ticks">
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>4</span>
+                            <span>5</span>
+                            <span>6</span>
+                            <span>7</span>
+                            <span>8</span>
+                        </div>
+                    </div>
+
+                    <div class="calc-slider-block" style="margin-top: 20px;">
+                        <div class="slider-label-row">
+                            <span class="slider-title">CUSTO MENSAL POR AGENTE EM NUVEM (VPS / API):</span>
+                            <span class="slider-display" id="displayCloudCost">R$ 400 / MÊS</span>
+                        </div>
+                        <input type="range" class="pixel-slider" id="sliderCloudCost" min="100" max="1200" value="400" step="50" oninput="recalculateRoi()">
+                        <div class="slider-ticks">
+                            <span>R$ 100</span>
+                            <span>R$ 400</span>
+                            <span>R$ 800</span>
+                            <span>R$ 1.200</span>
+                        </div>
+                    </div>
+
+                    <div class="calc-duty-block" style="margin-top: 24px;">
+                        <span class="slider-title" style="display: block; margin-bottom: 8px;">REGIME DE OPERAÇÃO DIÁRIO:</span>
+                        <div class="calc-mode-group">
+                            <button type="button" class="calc-mode-btn" onclick="setDutyCycle(8, this)">8 HORAS / DIA</button>
+                            <button type="button" class="calc-mode-btn" onclick="setDutyCycle(16, this)">16 HORAS / DIA</button>
+                            <button type="button" class="calc-mode-btn active" onclick="setDutyCycle(24, this)">24/7 CONTÍNUO</button>
+                        </div>
+                        <span id="displayHoursMode" style="display: none;">24/7 CONTINUO</span>
+                    </div>
+                </div>
+
+                <!-- Painel Direito: Resultados Financeiros e Ficha Térmica -->
+                <div class="calc-results-pane">
+                    <div class="results-header-tag">PROJEÇÃO FINANCEIRA OFICIAL · AUDITORIA DE BORDA</div>
+                    
+                    <div class="result-highlight-block">
+                        <span class="result-sub-label">ECONOMIA ANUAL PROJETADA:</span>
+                        <div class="result-big-number" id="resAnnualSavingsBRL">R$ 14.400</div>
+                        <div class="result-usd-hint" id="resAnnualSavingsUSD">Aproximadamente US$ 2.618 / ano (câmbio 5.50)</div>
+                    </div>
+
+                    <div class="result-meta-grid">
+                        <div class="result-meta-box">
+                            <span class="meta-label">PAYBACK DO RPI4:</span>
+                            <span class="meta-value" id="resPaybackDays">17 DIAS</span>
+                        </div>
+                        <div class="result-meta-box">
+                            <span class="meta-label">ENERGIA POUPADA:</span>
+                            <span class="meta-value" id="resEnergySaved">2.575 KWH</span>
+                        </div>
+                        <div class="result-meta-box">
+                            <span class="meta-label">CO2 EVITADO:</span>
+                            <span class="meta-value" id="resCo2Avoided">206 KG</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="pixel-btn btn-cyan btn-full-width" onclick="generateRoiSummaryToast()" style="margin-top: 18px; justify-content: center;">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        <span>Gerar Dossiê Forense de Economia</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             8. FAQ TECNICO DE ENGENHARIA (ACORDEAO MECANICO)
+             =============================================================== -->
+        <section class="faq-section" id="faq">
+            <div class="section-head">
+                <span class="section-tag">RESPOSTAS DIRETAS DE ENGENHARIA</span>
+                <h2 class="section-title">Perguntas frequentes sobre hardware, limites e segurança</h2>
+                <p class="section-lead">
+                    Esclarecimentos técnicos transparentes sobre memória, preservação da mídia flash, governança e modelos de linguagem.
+                </p>
+            </div>
+
+            <div class="faq-accordion-list">
+                <!-- FAQ 1: OOM Killer -->
+                <div class="objection-card expanded" id="faq-card-oom" onclick="toggleObjection('faq-card-oom')">
+                    <header class="objection-header">
+                        <span class="objection-title">Como o piDots previne travamentos e o OOM Killer do Linux com apenas 4GB de RAM?</span>
+                        <span class="objection-indicator">[-]</span>
+                    </header>
+                    <div class="objection-body">
+                        O piDots opera sob um monólito modular assíncrono em Python 3.13 com uvloop, consumindo menos de 70 MB de RAM RSS em repouso. Além disso, aplicamos a Poda Dinâmica de Ferramentas (Dynamic Tool Pruning), reduzindo o payload de esquemas JSON em até 65%, e utilizamos namespaces Bubblewrap nativos que alocam menos de 3 MB de RAM por sandbox em vez de pesados contêineres Docker.
+                    </div>
+                </div>
+
+                <!-- FAQ 2: MicroSD Flash -->
+                <div class="objection-card" id="faq-card-flash" onclick="toggleObjection('faq-card-flash')">
+                    <header class="objection-header">
+                        <span class="objection-title">O banco de dados SQLite gravando continuamente não vai desgastar o cartão MicroSD?</span>
+                        <span class="objection-indicator">[+]</span>
+                    </header>
+                    <div class="objection-body">
+                        Não. Configuramos o SQLite com <code>journal_mode=WAL</code> (Write-Ahead Logging) em modo de escrita sequencial append-only, eliminando reescritas randômicas destrutivas. Tabelas temporárias operam em RAM volátil (<code>temp_store=MEMORY</code> e tmpfs 64MB) e uma rotina automática consolida os checkpoints às 03:00 com <code>WAL TRUNCATE</code>, preservando a integridade das células Flash por anos.
+                    </div>
+                </div>
+
+                <!-- FAQ 3: Governança HITL -->
+                <div class="objection-card" id="faq-card-hitl" onclick="toggleObjection('faq-card-hitl')">
+                    <header class="objection-header">
+                        <span class="objection-title">O que impede um agente autônomo de executar comandos perigosos no sistema operacional?</span>
+                        <span class="objection-indicator">[+]</span>
+                    </header>
+                    <div class="objection-body">
+                        Nossa camada de governança Human-in-the-Loop (HITL) intercepta preventivamente qualquer comando destrutivo (como exclusões em massa ou alterações de rede). O agente é congelado no SQLite WAL emitindo o evento <code>hitl:approval_required</code>. O operador humano pode homologar, vetar ou editar os argumentos (modified_args) diretamente na interface ou via Telegram/WhatsApp antes que qualquer byte atinja o sandbox Bubblewrap.
+                    </div>
+                </div>
+
+                <!-- FAQ 4: Modelos BYOM -->
+                <div class="objection-card" id="faq-card-byom" onclick="toggleObjection('faq-card-byom')">
+                    <header class="objection-header">
+                        <span class="objection-title">Sou obrigado a utilizar provedores específicos ou posso plugar meus próprios modelos de IA?</span>
+                        <span class="objection-indicator">[+]</span>
+                    </header>
+                    <div class="objection-body">
+                        O piDots é 100% agnóstico (Bring Your Own Model). Você pode conectar inferência local rodando no mesmo hardware ou rede (Ollama, vLLM, llama.cpp em ARM64) ou qualquer provedor em nuvem compatível com o protocolo OpenAI Chat Completions (OpenAI, Anthropic Claude, Verboo, Groq, Mistral, OpenRouter) apenas ajustando a Base URL e a chave de API na aba de configurações.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             9. QUICKSTART DEPLOY & FECHAMENTO DA LANDING PAGE
              =============================================================== -->
         <section class="quickstart-section" id="quickstart">
             <span class="section-tag">COMECE AGORA MESMO</span>
@@ -404,6 +929,10 @@
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
                     <span>Repositório GitHub</span>
                 </a>
+                <button type="button" class="pixel-btn-cta-secondary" id="btnLandingPwaInstall" style="display: none;">
+                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span>Instalar PWA</span>
+                </button>
             </div>
         </section>
 
@@ -484,7 +1013,7 @@
 
             <div class="guide-step">
                 <div class="step-num">PASSO 06 // PRESERVACAO FLASH &amp; DEPLOY</div>
-                <div class="step-heading">Calibração SQLite WAL e Consumo 6W</div>
+                <div class="step-heading">Calibração SQLite WAL e Consumo 6.2W</div>
                 <div class="step-body">Com journal_mode=WAL e temp_store=MEMORY, escritas são amortecidas garantindo vida útil estendida ao MicroSD.</div>
             </div>
 
