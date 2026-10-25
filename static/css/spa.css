@@ -2385,6 +2385,9 @@
         .pixel-tour-body {
             padding: 12px;
             font-family: var(--font-mono);
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
         }
 
         .pixel-tour-title {
@@ -2578,6 +2581,10 @@
                 bottom: calc(56px + max(8px, var(--safe-bottom, env(safe-area-inset-bottom, 0px)))) !important;
                 top: auto !important;
                 clip-path: none !important;
+            }
+            .pixel-tour-popover.popover-bottom-avoid {
+                bottom: auto !important;
+                top: calc(52px + max(6px, var(--safe-top, env(safe-area-inset-top, 0px)))) !important;
             }
             .pixel-tour-caret {
                 display: none !important;

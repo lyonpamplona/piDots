@@ -34,9 +34,10 @@
             },
 
             finish() {
-                localStorage.setItem(this.STORAGE_KEY, 'true');
                 if (window.PiDotsTourEngine) {
                     window.PiDotsTourEngine.exit(true);
+                } else {
+                    localStorage.setItem(this.STORAGE_KEY, 'true');
                 }
             },
 

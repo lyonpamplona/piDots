@@ -54,6 +54,47 @@
     "badge": "PIDOTS OPERATIONAL CONSOLE // ONBOARDING TOUR",
     "title": "WELCOME TO THE PIDOTS OPERATIONAL CONSOLE",
     "subtitle": "A quick 2-minute tour to master controlling your local edge agents.",
+    "step_counter_prefix": "STEP",
+    "btn_skip": "[SKIP TOUR]",
+    "btn_prev": "[PREVIOUS]",
+    "btn_next": "[NEXT STEP]",
+    "btn_finish": "[FINISH TOUR]",
+    "toast_completed": "Operational walkthrough completed successfully. Good work!",
+    "step1": {
+      "title": "ACTIVITY RAIL & SPACES COORDINATION",
+      "badge": "// NAVIGATION & SPACES",
+      "what": "Vertical 48px Activity Rail with 5 operational contexts (Spaces, Dots, Tasks, Memory, and Configs) and an artifact directory persisted to SQLite WAL.",
+      "how": "Click rail icons to switch context panes or select a Space to load files, documents, and system specs directly onto the canvas.",
+      "tip": "Press <kbd>Alt+1</kbd> through <kbd>Alt+5</kbd> to toggle context panes or <kbd>Ctrl+B</kbd> to collapse the left sidebar."
+    },
+    "step2": {
+      "title": "REACT TELETYPE & COMMAND TERMINAL",
+      "badge": "// TELETYPE & COMMANDS",
+      "what": "Conversational mission dispatch console with continuous pin-feed paper ticker, Source Input Bar with channel and active agent tags, and ReAct scratchpad.",
+      "how": "Type <kbd>/</kbd> or click the <kbd>/</kbd> button to open the slash commands catalog; type <kbd>@</kbd> to summon autonomous coworker specialists.",
+      "tip": "Press <kbd>Enter</kbd> to transmit instructions, <kbd>Shift+Enter</kbd> for line breaks, or <kbd>Ctrl+L</kbd> to wipe the paper ticker."
+    },
+    "step3": {
+      "title": "DOT'S COMPUTER & BUBBLEWRAP SANDBOX",
+      "badge": "// ISOLATION & SILICON",
+      "what": "Local execution environment secured by Linux Bubblewrap (bwrap) in /workspace, ensuring coworkers manipulate files without endangering the host node.",
+      "how": "Inspect the active Dot workspace directory in the top console banner and click <kbd>[Observation Mode]</kbd> to assume terminal control (Takeover).",
+      "tip": "Sandbox operates as a native ARM64 process with strict read/write boundaries and network isolation for unvetted actions."
+    },
+    "step4": {
+      "title": "LIVE CANVAS & 4 OPERATIONAL TABS",
+      "badge": "// ARTIFACTS, COAGENTS & HITL",
+      "what": "High-density technical workbench organized into 4 strict tabs: Artifact (Spaces & Diffs), CoAgents (Shared State), Terminal, and HITL Governance.",
+      "how": "Switch between tabs to inspect coworker plan state, review executed tool logs, or approve sensitive operations via mechanical locks.",
+      "tip": "Press <kbd>Alt+I</kbd> to focus the active artifact, <kbd>Alt+H</kbd> to open the HITL dossier, or <kbd>Ctrl+S</kbd> to save revisions to the WAL database."
+    },
+    "step5": {
+      "title": "ARM64 TELEMETRY & AI HOT-RELOAD",
+      "badge": "// SILICON & PROVIDERS",
+      "what": "Operational hardware and AI model control hub. Update inference keys and base endpoints on-the-fly without restarting the edge process.",
+      "how": "Monitor real-time vector graphs for RSS RAM (300MB ceiling) and SoC temperature, adjust inference settings, and test connections instantly.",
+      "tip": "Press <kbd>Alt+5</kbd> or click the ASCII telemetry footer to open configuration settings; press <kbd>F1</kbd> to display the Technical Manual."
+    },
     "step1_title": "01 // CONCEPT: PERSISTENT EDGE AGENTS",
     "step1_desc": "piDots turns your edge device into a smart workstation. Lightweight async Python monolith running multiple specialists using under 70 MB RAM.",
     "step2_title": "02 // MENTIONS & DELEGATION: @SPECIALIST",
@@ -64,10 +105,7 @@
     "step4_desc": "Potentially destructive commands (like deleting files or editing system configs) are paused instantly. You review the exact command before granting approval.",
     "step5_title": "05 // KEYBOARD SHORTCUTS & PWA",
     "step5_desc": "Fast navigation: F1 opens the manual, Alt+I inspects artifacts, Ctrl+L clears the ticker. Install as PWA on mobile or desktop for full-screen mode.",
-    "btn_skip": "[SKIP TOUR]",
-    "btn_prev": "[PREVIOUS STEP]",
-    "btn_next": "[NEXT STEP]",
-    "btn_finish": "[FINISH TOUR & START]"
+    "btn_ack": "[UNDERSTOOD]"
   },
   "patch": {
     "header": "PIDOTS // RELEASE NOTES - VERSION 1.5.3",

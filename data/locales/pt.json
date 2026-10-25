@@ -54,6 +54,47 @@
     "badge": "PIDOTS OPERATIONAL CONSOLE // TOUR DE INICIACAO",
     "title": "BEM-VINDO AO CONSOLE OPERACIONAL DO PIDOTS",
     "subtitle": "Um tour rapido de 2 minutos para voce dominar o controle dos seus agentes locais.",
+    "step_counter_prefix": "ETAPA",
+    "btn_skip": "[PULAR TOUR]",
+    "btn_prev": "[ANTERIOR]",
+    "btn_next": "[PROXIMO PASSO]",
+    "btn_finish": "[CONCLUIR TOUR]",
+    "toast_completed": "Tour operacional concluido com exito. Bom trabalho!",
+    "step1": {
+      "title": "ACTIVITY RAIL E COORDENACAO SPACES",
+      "badge": "// NAVEGACAO & SPACES",
+      "what": "Trilho de atividades vertical de 48px com 5 contextos operacionais (Spaces, Dots, Tasks, Memoria e Configs) e diretorio de artefatos persistidos no SQLite WAL.",
+      "how": "Clique nos icones do trilho para chavear contextos ou selecione um Space para abrir arquivos, documentos e especificacoes na prancheta.",
+      "tip": "Use <kbd>Alt+1</kbd> a <kbd>Alt+5</kbd> para alternar os paineis contextuais ou <kbd>Ctrl+B</kbd> para recolher a barra lateral."
+    },
+    "step2": {
+      "title": "TELETIPO REACT E TERMINAL DE COMANDO",
+      "badge": "// TELETIPO & COMANDOS",
+      "what": "Console conversacional de emissao de missoes com bobina continua matricial, Source Input Bar com indicador de canal e agente ativo, e caderno ReAct.",
+      "how": "Digite <kbd>/</kbd> ou clique no botao <kbd>/</kbd> para abrir o catalogo de comandos rapidos; digite <kbd>@</kbd> para convocar especialistas autonomos.",
+      "tip": "Pressione <kbd>Enter</kbd> para transmitir a instrucao, <kbd>Shift+Enter</kbd> para quebrar linha ou <kbd>Ctrl+L</kbd> para limpar a bobina de papel."
+    },
+    "step3": {
+      "title": "COMPUTADOR DO DOT E SANDBOX BWRAP",
+      "badge": "// ISOLAMENTO & SILICIO",
+      "what": "Ambiente de execucao local isolado por Linux Bubblewrap (bwrap) em /workspace, garantindo que o agente manipule arquivos sem risco ao no host.",
+      "how": "Inspecione o diretorio do Dot pelo banner superior e clique em <kbd>[Modo Observacao]</kbd> para assumir o controle interativo via terminal (Takeover).",
+      "tip": "O Sandbox roda em processo nativo ARM64 com restricao estrita de leitura/escrita e isolamento total de rede para operacoes nao autorizadas."
+    },
+    "step4": {
+      "title": "LIVE CANVAS E AS 4 ABAS OPERACIONAIS",
+      "badge": "// ARTEFATOS, COAGENTS & HITL",
+      "what": "Prancheta tecnica de alto rendimento organizada em 4 abas estritas: Artefato (Spaces e Diffs), CoAgents (Shared State), Terminal e Governanca HITL.",
+      "how": "Alterne entre as abas para verificar o estado compartilhado dos agentes, inspecionar logs de ferramentas ou aprovar acoes criticas na trava HITL.",
+      "tip": "Use <kbd>Alt+I</kbd> para focar no artefato ativo, <kbd>Alt+H</kbd> para abrir o dossie HITL ou <kbd>Ctrl+S</kbd> para gravar revisoes no banco WAL."
+    },
+    "step5": {
+      "title": "TELEMETRIA ARM64 E HOT-RELOAD DE IA",
+      "badge": "// SILICIO & PROVEDORES",
+      "what": "Central de controle operacional de hardware e modelos. Permite atualizar chaves e endpoints de IA a quente sem reiniciar o no de borda.",
+      "how": "Monitore os graficos vetoriais em tempo real de RAM RSS (teto de 300MB) e temperatura do SoC, ajuste o provedor de IA e teste a conexao imediatamente.",
+      "tip": "Pressione <kbd>Alt+5</kbd> ou clique no rodape de telemetria ASCII para acessar o painel de configuracoes; pressione <kbd>F1</kbd> para o Manual Tecnico."
+    },
     "step1_title": "01 // CONCEITO: AGENTES PERSISTENTES NA BORDA",
     "step1_desc": "O piDots transforma seu dispositivo de borda em uma estacao de trabalho inteligente. Monolito leve em Python assincrono que roda multiplos especialistas consumindo menos de 70 MB de RAM.",
     "step2_title": "02 // MENCOES E DELEGACAO: @ESPECIALISTA",
@@ -64,10 +105,7 @@
     "step4_desc": "Comandos potencialmente perigosos (como apagar arquivos ou alterar o sistema) sao pausados na hora. Voce revisa exatamente o que o assistente quer rodar antes de autorizar.",
     "step5_title": "05 // ATALHOS DE TECLADO & PWA",
     "step5_desc": "Operacao veloz: F1 abre o manual, Alt+I inspeciona artefatos, Ctrl+L limpa o teletipo. Instale como PWA no celular ou desktop para usar em tela cheia.",
-    "btn_skip": "[PULAR INTRODUCAO]",
-    "btn_prev": "[PASSO ANTERIOR]",
-    "btn_next": "[PROXIMO PASSO]",
-    "btn_finish": "[CONCLUIR TOUR & INICIAR]"
+    "btn_ack": "[ENTENDIDO]"
   },
   "patch": {
     "header": "PIDOTS // NOTAS DE ATUALIZACAO - VERSAO 1.5.3",

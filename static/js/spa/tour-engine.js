@@ -31,13 +31,13 @@
             // -----------------------------------------------------------------
             steps: [
                 {
-                    elementSelector: '#dotsListContainer, #leftSidebar',
-                    title: 'SQUAD DE AGENTES COWORKERS',
-                    badge: '// SQUAD DE COWORKERS',
+                    elementSelector: '.opendots-sidebar-layout, #leftSidebar',
+                    title: 'ACTIVITY RAIL E COORDENACAO SPACES',
+                    badge: '// NAVEGACAO & SPACES',
                     placement: 'right',
-                    what: 'Barra lateral de agentes autônomos persistentes (Supervisores, Especialistas e Workers) gerenciados via SQLite WAL.',
-                    how: 'Clique no card de um Dot para alternar o especialista ativo e direcionar sua missão.',
-                    tip: 'Pressione <kbd>Ctrl+B</kbd> para alternar a barra lateral ou use o comando slash <kbd>/dots</kbd>.',
+                    what: 'Trilho de atividades vertical de 48px com 5 contextos operacionais (Spaces, Dots, Tasks, Memoria e Configs) e diretorio de artefatos persistidos no SQLite WAL.',
+                    how: 'Clique nos icones do trilho para chavear contextos ou selecione um Space para abrir arquivos, documentos e especificacoes na prancheta.',
+                    tip: 'Use <kbd>Alt+1</kbd> a <kbd>Alt+5</kbd> para alternar os paineis contextuais ou <kbd>Ctrl+B</kbd> para recolher a barra lateral.',
                     beforeStep: function() {
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile && typeof setMobileView === 'function') {
@@ -51,16 +51,19 @@
                         if (sidebar && sidebar.classList.contains('collapsed')) {
                             if (typeof toggleSidebar === 'function') toggleSidebar();
                         }
+                        if (typeof switchSidebarContext === 'function') {
+                            switchSidebarContext('spaces');
+                        }
                     }
                 },
                 {
                     elementSelector: '.ticker-input-bar, #instructionInput',
-                    title: 'TERMINAL DE COMANDO E TELETIPO',
-                    badge: '// TELETIPO & COMANDO',
+                    title: 'TELETIPO REACT E TERMINAL DE COMANDO',
+                    badge: '// TELETIPO & COMANDOS',
                     placement: 'top',
-                    what: 'Terminal de emissão de missões com bobina matricial contínua e caderno de raciocínio interno dos Dots.',
-                    how: 'Digite <kbd>/</kbd> para abrir o catálogo de comandos rápidos ou <kbd>@</kbd> para chamar especialistas.',
-                    tip: 'Pressione <kbd>Enter</kbd> para transmitir a instrução ou <kbd>Shift+Enter</kbd> para quebrar linha.',
+                    what: 'Console conversacional de emissao de missoes com bobina continua matricial, Source Input Bar com indicador de canal e agente ativo, e caderno ReAct.',
+                    how: 'Digite <kbd>/</kbd> ou clique no botao <kbd>/</kbd> para abrir o catalogo de comandos rapidos; digite <kbd>@</kbd> para convocar especialistas autonomos.',
+                    tip: 'Pressione <kbd>Enter</kbd> para transmitir a instrucao, <kbd>Shift+Enter</kbd> para quebrar linha ou <kbd>Ctrl+L</kbd> para limpar a bobina de papel.',
                     beforeStep: function() {
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile && typeof setMobileView === 'function') {
@@ -73,25 +76,13 @@
                     }
                 },
                 {
-                    elementSelector: '#btnToggleMode, .header-center-controls',
-                    title: 'MODOS DE CONCENTRAÇÃO E SESSÃO',
-                    badge: '// MODOS DE FOCO',
+                    elementSelector: '#computerConsoleBanner, #rightCanvas',
+                    title: 'COMPUTADOR DO DOT E SANDBOX BWRAP',
+                    badge: '// ISOLAMENTO & SILICIO',
                     placement: 'bottom',
-                    what: 'Comutador ergonômico para alternar entre visão dividida e concentração de fluxo contínuo.',
-                    how: 'Alterne entre o Modo Criação 50/50 (com Live Canvas aberto) e o Modo Foco Zen centrado.',
-                    tip: 'Clique em <kbd>[+ NOVA CONVERSA]</kbd> ou pressione <kbd>Ctrl+N</kbd> para abrir uma sessão limpa.',
-                    beforeStep: function() {
-                        window.scrollTo({ top: 0, behavior: 'instant' });
-                    }
-                },
-                {
-                    elementSelector: '#rightCanvas, #canvas-artifact',
-                    title: 'LIVE CANVAS E FICHAS SPACES',
-                    badge: '// LIVE CANVAS & DIFFS',
-                    placement: 'left',
-                    what: 'Prancheta técnica de visualização e edição em tempo real de código, documentos e especificações.',
-                    how: 'Inspecione entregas, visualize alterações no botão <kbd>[DIFFS]</kbd> e grave versões no SQLite WAL.',
-                    tip: 'Pressione <kbd>Alt+I</kbd> para inspecionar artefato ou <kbd>Ctrl+S</kbd> para gravar revisão no banco.',
+                    what: 'Ambiente de execucao local isolado por Linux Bubblewrap (bwrap) em /workspace, garantindo que o agente manipule arquivos sem risco ao no host.',
+                    how: 'Inspecione o diretorio do Dot pelo banner superior e clique em <kbd>[Modo Observacao]</kbd> para assumir o controle interativo via terminal (Takeover).',
+                    tip: 'O Sandbox roda em processo nativo ARM64 com restricao estrita de leitura/escrita e isolamento total de rede para operacoes nao autorizadas.',
                     beforeStep: function() {
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile && typeof setMobileView === 'function') {
@@ -106,22 +97,64 @@
                             if (typeof toggleCanvasSplit === 'function') toggleCanvasSplit();
                             else canvas.classList.remove('collapsed');
                         }
-                        const tabs = document.querySelectorAll('.canvas-tab');
-                        if (tabs && tabs.length > 0 && typeof switchCanvasTab === 'function') {
-                            switchCanvasTab('canvas-artifact', tabs[0]);
+                        const tabTerminal = document.getElementById('canvasTabTerminal');
+                        if (tabTerminal && typeof switchCanvasTab === 'function') {
+                            switchCanvasTab('canvas-terminal', tabTerminal);
                         }
                     }
                 },
                 {
-                    elementSelector: '#btn-system-drawer, #edgePulseSummaryBtn',
-                    title: 'TELEMETRIA DE SILÍCIO E AJUDA',
-                    badge: '// HARDWARE & MANUAL',
-                    placement: 'bottom',
-                    what: 'Central técnica com telemetria do nó ARM64 (temperatura, RAM, CPU), governança e manual operacional.',
-                    how: 'Monitore o consumo físico do Raspberry Pi 4B e configure chaves de provedor de IA com segurança.',
-                    tip: 'Pressione a tecla física <kbd>F1</kbd> a qualquer momento para abrir ou fechar a Gaveta Técnica.',
+                    elementSelector: '.canvas-tab-bar, #rightCanvas',
+                    title: 'LIVE CANVAS E AS 4 ABAS OPERACIONAIS',
+                    badge: '// ARTEFATOS, COAGENTS & HITL',
+                    placement: 'left',
+                    what: 'Prancheta tecnica de alto rendimento organizada em 4 abas estritas: Artefato (Spaces e Diffs), CoAgents (Shared State), Terminal e Governanca HITL.',
+                    how: 'Alterne entre as abas para verificar o estado compartilhado dos agentes, inspecionar logs de ferramentas ou aprovar acoes criticas na trava HITL.',
+                    tip: 'Use <kbd>Alt+I</kbd> para focar no artefato ativo, <kbd>Alt+H</kbd> para abrir o dossie HITL ou <kbd>Ctrl+S</kbd> para gravar revisoes no banco WAL.',
                     beforeStep: function() {
-                        window.scrollTo({ top: 0, behavior: 'instant' });
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile && typeof setMobileView === 'function') {
+                            setMobileView('canvas');
+                        }
+                        const shell = document.querySelector('.triptych-shell');
+                        if (shell && shell.classList.contains('mode-focus-zen')) {
+                            if (typeof toggleWorkspaceMode === 'function') toggleWorkspaceMode();
+                        }
+                        const canvas = document.getElementById('rightCanvas');
+                        if (canvas && canvas.classList.contains('collapsed')) {
+                            if (typeof toggleCanvasSplit === 'function') toggleCanvasSplit();
+                            else canvas.classList.remove('collapsed');
+                        }
+                        const tabArtifact = document.getElementById('canvasTabArtifact');
+                        if (tabArtifact && typeof switchCanvasTab === 'function') {
+                            switchCanvasTab('canvas-artifact', tabArtifact);
+                        }
+                    }
+                },
+                {
+                    elementSelector: '#sidebarCtxConfigs, #sidebarHardwareFooter, #edgePulseSummaryBtn',
+                    title: 'TELEMETRIA ARM64 E HOT-RELOAD DE IA',
+                    badge: '// SILICIO & PROVEDORES',
+                    placement: 'right',
+                    what: 'Central de controle operacional de hardware e modelos. Permite atualizar chaves e endpoints de IA a quente sem reiniciar o no de borda.',
+                    how: 'Monitore os graficos vetoriais em tempo real de RAM RSS (teto de 300MB) e temperatura do SoC, ajuste o provedor de IA e teste a conexao imediatamente.',
+                    tip: 'Pressione <kbd>Alt+5</kbd> ou clique no rodape de telemetria ASCII para acessar o painel de configuracoes; pressione <kbd>F1</kbd> para o Manual Tecnico.',
+                    beforeStep: function() {
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile && typeof setMobileView === 'function') {
+                            setMobileView('dots');
+                        }
+                        const shell = document.querySelector('.triptych-shell');
+                        if (shell && shell.classList.contains('mode-focus-zen')) {
+                            if (typeof toggleWorkspaceMode === 'function') toggleWorkspaceMode();
+                        }
+                        const sidebar = document.getElementById('leftSidebar');
+                        if (sidebar && sidebar.classList.contains('collapsed')) {
+                            if (typeof toggleSidebar === 'function') toggleSidebar();
+                        }
+                        if (typeof switchSidebarContext === 'function') {
+                            switchSidebarContext('configs');
+                        }
                     }
                 }
             ],
@@ -133,6 +166,17 @@
                 this.overlayEl = document.getElementById('pixelTourOverlay');
                 this.targetBoxEl = document.getElementById('pixelTourTargetBox');
                 this.popoverEl = document.getElementById('pixelTourPopover');
+                this.stepIndicator = document.getElementById('pixelTourStepIndicator');
+                this.stepBadge = document.getElementById('pixelTourStepBadge');
+                this.titleEl = document.getElementById('pixelTourTitle');
+                this.whatEl = document.getElementById('pixelTourWhatText');
+                this.howEl = document.getElementById('pixelTourHowText');
+                this.tipEl = document.getElementById('pixelTourTipText');
+                this.btnNext = document.getElementById('pixelTourBtnNext');
+                this.btnPrev = document.getElementById('pixelTourBtnPrev');
+                this.btnSkip = document.getElementById('pixelTourBtnSkip');
+                this.btnClose = document.getElementById('pixelTourBtnClose');
+                this.btnFinish = document.getElementById('pixelTourBtnFinish');
                 this.bindEvents();
             },
 
@@ -140,17 +184,11 @@
                 if (this.elementsBound) return;
 
                 const self = this;
-                const btnNext = document.getElementById('pixelTourBtnNext');
-                const btnPrev = document.getElementById('pixelTourBtnPrev');
-                const btnSkip = document.getElementById('pixelTourBtnSkip');
-                const btnClose = document.getElementById('pixelTourBtnClose');
-                const btnFinish = document.getElementById('pixelTourBtnFinish');
-
-                if (btnNext) btnNext.addEventListener('click', function() { self.next(); });
-                if (btnPrev) btnPrev.addEventListener('click', function() { self.prev(); });
-                if (btnSkip) btnSkip.addEventListener('click', function() { self.exit(false); });
-                if (btnClose) btnClose.addEventListener('click', function() { self.exit(false); });
-                if (btnFinish) btnFinish.addEventListener('click', function() { self.exit(true); });
+                if (this.btnNext) this.btnNext.addEventListener('click', function() { self.next(); });
+                if (this.btnPrev) this.btnPrev.addEventListener('click', function() { self.prev(); });
+                if (this.btnSkip) this.btnSkip.addEventListener('click', function() { self.exit(false); });
+                if (this.btnClose) this.btnClose.addEventListener('click', function() { self.exit(false); });
+                if (this.btnFinish) this.btnFinish.addEventListener('click', function() { self.exit(true); });
 
                 // Atalhos de Teclado Operacionais
                 window.addEventListener('keydown', function(e) {
@@ -233,57 +271,53 @@
                     }
                 }
 
-                // Atualiza textos e rótulos
+                // Atualiza textos e rótulos com i18n dinâmico e fallback seguro
                 const currentNum = String(index + 1).padStart(2, '0');
                 const totalNum = String(this.steps.length).padStart(2, '0');
-                
-                const stepIndicator = document.getElementById('pixelTourStepIndicator');
-                const stepBadge = document.getElementById('pixelTourStepBadge');
-                const titleEl = document.getElementById('pixelTourTitle');
-                const whatEl = document.getElementById('pixelTourWhatText');
-                const howEl = document.getElementById('pixelTourHowText');
-                const tipEl = document.getElementById('pixelTourTipText');
+                const stepKey = `step${index + 1}`;
 
                 const t = (k, fallback) => (window.PiDotsI18n && typeof window.PiDotsI18n.t === 'function' ? window.PiDotsI18n.t(k) : fallback);
 
-                if (stepIndicator) stepIndicator.textContent = `[ETAPA ${currentNum}/${totalNum}]`;
-                if (stepBadge) stepBadge.textContent = step.badge;
-                if (titleEl) titleEl.textContent = step.title;
-                if (whatEl) whatEl.innerHTML = step.what;
-                if (howEl) howEl.innerHTML = step.how;
-                if (tipEl) tipEl.innerHTML = step.tip;
+                const stepPrefix = t('onboarding.step_counter_prefix', 'ETAPA');
+                const title = t(`onboarding.${stepKey}.title`, step.title);
+                const badge = t(`onboarding.${stepKey}.badge`, step.badge);
+                const what = t(`onboarding.${stepKey}.what`, step.what);
+                const how = t(`onboarding.${stepKey}.how`, step.how);
+                const tip = t(`onboarding.${stepKey}.tip`, step.tip);
+
+                if (this.stepIndicator) this.stepIndicator.textContent = `[${stepPrefix} ${currentNum}/${totalNum}]`;
+                if (this.stepBadge) this.stepBadge.textContent = badge;
+                if (this.titleEl) this.titleEl.textContent = title;
+                if (this.whatEl) this.whatEl.innerHTML = what;
+                if (this.howEl) this.howEl.innerHTML = how;
+                if (this.tipEl) this.tipEl.innerHTML = tip;
 
                 // Estado dos botões de controle com suporte a i18n
-                const btnPrev = document.getElementById('pixelTourBtnPrev');
-                const btnNext = document.getElementById('pixelTourBtnNext');
-                const btnFinish = document.getElementById('pixelTourBtnFinish');
-                const btnSkip = document.getElementById('pixelTourBtnSkip');
-
-                if (btnSkip) btnSkip.textContent = t('onboarding.btn_skip', '[PULAR TOUR]');
-                if (btnPrev) {
-                    btnPrev.disabled = (index === 0);
-                    btnPrev.textContent = t('onboarding.btn_prev', '[ANTERIOR]');
+                if (this.btnSkip) this.btnSkip.textContent = t('onboarding.btn_skip', '[PULAR TOUR]');
+                if (this.btnPrev) {
+                    this.btnPrev.disabled = (index === 0);
+                    this.btnPrev.textContent = t('onboarding.btn_prev', '[ANTERIOR]');
                 }
 
                 if (index === this.steps.length - 1) {
-                    if (btnNext) btnNext.style.display = 'none';
-                    if (btnFinish) {
-                        btnFinish.style.display = 'inline-block';
-                        btnFinish.textContent = t('onboarding.btn_finish', '[CONCLUIR]');
+                    if (this.btnNext) this.btnNext.style.display = 'none';
+                    if (this.btnFinish) {
+                        this.btnFinish.style.display = 'inline-block';
+                        this.btnFinish.textContent = t('onboarding.btn_finish', '[CONCLUIR TOUR]');
                     }
                 } else {
-                    if (btnNext) {
-                        btnNext.style.display = 'inline-block';
-                        btnNext.textContent = t('onboarding.btn_next', '[PROXIMO PASSO]');
+                    if (this.btnNext) {
+                        this.btnNext.style.display = 'inline-block';
+                        this.btnNext.textContent = t('onboarding.btn_next', '[PROXIMO PASSO]');
                     }
-                    if (btnFinish) btnFinish.style.display = 'none';
+                    if (this.btnFinish) this.btnFinish.style.display = 'none';
                 }
 
                 // Calcula coordenadas com micro-delay para acomodar mudanças no layout
                 const self = this;
                 setTimeout(function() {
                     self.repositionActiveStep();
-                }, 50);
+                }, 60);
             },
 
             exit: function(completed) {
@@ -293,8 +327,10 @@
 
                 if (completed) {
                     localStorage.setItem(STORAGE_KEY, 'true');
+                    const t = (k, fallback) => (window.PiDotsI18n && typeof window.PiDotsI18n.t === 'function' ? window.PiDotsI18n.t(k) : fallback);
+                    const msg = t('onboarding.toast_completed', 'Tour operacional concluido com exito. Bom trabalho!');
                     if (window.PixelSystem && typeof window.PixelSystem.toast === 'function') {
-                        window.PixelSystem.toast('Tour operacional concluido com exito. Bom trabalho!', 'success');
+                        window.PixelSystem.toast(msg, 'success');
                     }
                 }
             },
@@ -328,9 +364,20 @@
                     return;
                 }
 
-                const rect = targetEl.getBoundingClientRect();
                 const vw = window.innerWidth;
                 const vh = window.innerHeight;
+
+                // Scroll preventivo para assegurar visibilidade do elemento alvo no desktop
+                if (vw > 768 && typeof targetEl.scrollIntoView === 'function') {
+                    try {
+                        const targetRect = targetEl.getBoundingClientRect();
+                        if (targetRect.top < 0 || targetRect.bottom > vh) {
+                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    } catch (e) {}
+                }
+
+                const rect = targetEl.getBoundingClientRect();
 
                 // 4.1 Posiciona o Spotlight Target Box (orifício translúcido crisp)
                 const boxTop = Math.max(0, rect.top - PADDING);
@@ -351,14 +398,19 @@
                         this.popoverEl.removeAttribute('data-placement');
                         this.popoverEl.style.top = '';
                         this.popoverEl.style.left = '';
+                        if (rect.top > vh * 0.65) {
+                            this.popoverEl.classList.add('popover-bottom-avoid');
+                        } else {
+                            this.popoverEl.classList.remove('popover-bottom-avoid');
+                        }
                     }
                     return;
                 }
 
                 // 4.3 Posiciona o Balão Flutuante (Popover) com Flip Dinâmico
                 let placement = step.placement || 'bottom';
-                const popWidth = this.popoverEl.offsetWidth || 360;
-                const popHeight = this.popoverEl.offsetHeight || 300;
+                const popWidth = this.popoverEl ? (this.popoverEl.offsetWidth || 360) : 360;
+                const popHeight = this.popoverEl ? (this.popoverEl.offsetHeight || 300) : 300;
                 const GAP = 12; // Distância entre a caixa de foco e o popover (px)
 
                 let top = 0;
@@ -430,7 +482,5 @@
     })();
 
     // Exposição global para o console operacional
-    window.PiDotsTourEngine = PiDotsTourEngine;
-
     window.PiDotsTourEngine = PiDotsTourEngine;
 })(typeof window !== 'undefined' ? window : this);
