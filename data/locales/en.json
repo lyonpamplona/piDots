@@ -12,8 +12,8 @@
     "lang_toggle": "EN / PT",
     "pwa_install": "Install App",
     "onboarding": "Operational Tour",
-    "patch_notes": "Release Notes (v1.5.3)",
-    "Changelog": "Release Notes (v1.5.3)",
+    "patch_notes": "Release Notes (v1.5.5)",
+    "Changelog": "Release Notes (v1.5.5)",
     "clean": "Clear",
     "split_canvas": "Canvas",
     "manual": "Tech Manual"
@@ -33,9 +33,9 @@
     "badge": "EDGE COMPUTING // SYSTEMS ENGINEERING",
     "title": "AI COWORKER TEAMS ON YOUR OWN HARDWARE.",
     "subtitle": "24/7 local operation under 6 Watts, using less than 70 MB RAM.",
-    "lead": "Persistent autonomous coworkers running 24/7 on your Raspberry Pi, Mini PC, or home server. No cloud bill surprises, no hidden headless browsers, and zero file leakage to third-party SaaS.",
+    "lead": "Persistent autonomous agents executing 24/7 on your Raspberry Pi, Mini PC, or home server. No recurring cloud fees, no hidden headless browsers, and complete local isolation for your files.",
     "cta_workspace": "[LAUNCH WORKSPACE /app]",
-    "cta_docs": "[EXPLORE DOCS /docs]",
+    "cta_docs": "[READ MANUAL /docs]",
     "cta_install": "[INSTALL PWA]",
     "cta_onboarding": "[FIRST-RUN WALKTHROUGH]"
   },
@@ -46,7 +46,7 @@
     "sec2_title": "MOST AI FRAMEWORKS ASSUME INFINITE RAM. PIDOTS WAS BUILT FOR REAL SILICON.",
     "sec8_badge": "SECTION 08 // 8 ENGINEERING FACTS & DIRECT ANSWERS",
     "sec8_title": "FREQUENT QUESTIONS & ARCHITECTURE DETAILS",
-    "cta_final_badge": "INSTANT START // ZERO FRICTION",
+    "cta_final_badge": "LOCAL STARTUP // STEP-BY-STEP",
     "cta_final_title": "SPIN UP YOUR STATION IN UNDER TWO MINUTES",
     "cta_final_lead": "Clone the repository and run Docker Compose. No hidden steps, no convoluted configs, and 100% auditable code."
   },
@@ -56,12 +56,12 @@
     "input_placeholder": "Type an instruction or mention @dot (Enter sends)...",
     "send_btn": "Send",
     "welcome_system": "[SYSTEM] piDots ready. Local connection established with SQLite WAL. Inference engine active (RSS Memory: 52 MB).",
-    "welcome_agent": "Hello, Lyon. The environment is ready to work. Local workspace (/workspace) is mapped and hardware telemetry is stable. What are we building or reviewing today? You can type a task directly, summon another specialist with @coder, or press F1 to open the quick manual."
+    "welcome_agent": "Operational environment ready. Local workspace /workspace is mapped and hardware telemetry is nominal. Enter an instruction in the terminal, summon specialists with @coder, or press F1 for the technical manual."
   },
   "onboarding": {
     "badge": "PIDOTS OPERATIONAL CONSOLE // ONBOARDING TOUR",
     "title": "WELCOME TO THE PIDOTS OPERATIONAL CONSOLE",
-    "subtitle": "A quick 2-minute tour to master controlling your local edge agents.",
+    "subtitle": "Practical operational navigation guide for console and edge resources.",
     "step_counter_prefix": "STEP",
     "btn_skip": "[SKIP TOUR]",
     "btn_prev": "[PREVIOUS]",
@@ -93,8 +93,8 @@
       "title": "LIVE CANVAS & 4 OPERATIONAL TABS",
       "badge": "// ARTIFACTS, COAGENTS & HITL",
       "what": "High-density technical workbench organized into 4 strict tabs: Artifact (Spaces & Diffs), CoAgents (Shared State), Terminal, and HITL Governance.",
-      "how": "Switch between tabs to inspect coworker plan state, review executed tool logs, or approve sensitive operations via mechanical locks.",
-      "tip": "Press <kbd>Alt+I</kbd> to focus the active artifact, <kbd>Alt+H</kbd> to open the HITL dossier, or <kbd>Ctrl+S</kbd> to save revisions to the WAL database."
+      "how": "Switch between tabs to inspect agent plan state, review execution logs, and authorize pending commands in the HITL queue.",
+      "tip": "Press <kbd>Alt+I</kbd> to focus the active artifact, <kbd>Alt+H</kbd> to open the HITL authorization panel, or <kbd>Ctrl+S</kbd> to save revisions to the WAL database."
     },
     "step5": {
       "title": "ARM64 TELEMETRY & AI HOT-RELOAD",
@@ -110,15 +110,15 @@
     "step3_title": "03 // LIVE CANVAS & ARTIFACTS",
     "step3_desc": "Files, code diffs, and diagrams appear in the right-side canvas without cluttering the chat. Inspect diffs and restore revisions at any time.",
     "step4_title": "04 // HITL GOVERNANCE & SAFETY",
-    "step4_desc": "Potentially destructive commands (like deleting files or editing system configs) are paused instantly. You review the exact command before granting approval.",
+    "step4_desc": "High-risk operational commands (such as deleting files or modifying system configs) are paused immediately. You review parameters before granting execution.",
     "step5_title": "05 // KEYBOARD SHORTCUTS & PWA",
     "step5_desc": "Fast navigation: F1 opens the manual, Alt+I inspects artifacts, Ctrl+L clears the ticker. Install as PWA on mobile or desktop for full-screen mode.",
     "btn_ack": "[UNDERSTOOD]"
   },
   "patch": {
-    "header": "PIDOTS // RELEASE NOTES - VERSION 1.5.3",
+    "header": "PIDOTS // RELEASE NOTES - VERSION 1.5.5",
     "badge": "JUST APPLIED",
-    "title": "RELEASE NOTES - VERSION 1.5.3",
+    "title": "RELEASE NOTES - VERSION 1.5.5",
     "subtitle": "MCP Lite Module, Signed HITL Governance with HMAC-SHA256, Dot Packs v1.1, and Physical GPIO/MQTT Bus.",
     "tag_new": "[INCLUDED / NEW]",
     "tag_opt": "[TUNED / IMPROVED]",
@@ -194,7 +194,7 @@
     "deploy_ports": "Active ports: :8081 (Landing) · :8082 (Workspace) · :8083 (Docs) · :8088 (Gateway)",
     "deploy_health": "Health: curl http://localhost:8088/health",
     "cta_workspace": "Launch Operational Console",
-    "cta_docs": "Explore Documentation",
+    "cta_docs": "Read Documentation",
     "cta_manual": "Open Step-by-Step Manual",
     "cta_github": "GitHub Repository",
     "cta_pwa": "Install PWA",
@@ -226,9 +226,9 @@
     "sec9_tag": "DIRECT ENGINEERING ANSWERS",
     "sec9_title": "Frequently asked questions on hardware, limits, and safety",
     "sec9_lead": "Transparent technical details on memory footprint, flash wear prevention, HITL governance, and BYOM models.",
-    "sec10_tag": "GET STARTED RIGHT NOW",
+    "sec10_tag": "DEPLOYMENT & QUICKSTART",
     "sec10_title": "Put your AI coworker squad to work in 45 seconds",
-    "sec10_lead": "Zero unnecessary complexity. A single Docker Compose command spins up the entire ecosystem with telemetry and safety ready.",
+    "sec10_lead": "Zero extra manual steps. A single Docker Compose command initializes all services with telemetry and governance ready.",
     "footer_hw": "PIDOTS // ARM64 EDGE HARDWARE",
     "footer_author": "CREATED BY LYON CHRISTOPHER // LOGGER ASSISTANT",
     "footer_docs": "Documentation (/docs)",

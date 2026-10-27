@@ -164,7 +164,7 @@
                 <li class="drawer-item" data-keywords="multi-bot mencao delegate handoff fitas carbono raciocinio inter-agente">
                     <a href="#passo-2" class="drawer-link" onclick="handleDrawerNav(event, 'passo-2')">
                         <span class="drawer-step-idx">02</span>
-                        <span>Chat Multi-Bot &amp; Fitas de Carbono</span>
+                        <span>Chat Multi-Bot &amp; Caderno de Raciocínio</span>
                     </a>
                 </li>
                 <li class="drawer-item" data-keywords="heartbeat proativo cron croniter heartbeat_ok tarefas tasks agendamento">
@@ -326,7 +326,7 @@
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        O <strong>piDots</strong> nasceu para responder a uma pergunta simples: é possível ter assistentes técnicos de IA colaborando de verdade em um computador de placa única, sem travamentos e sem depender de servidores caros na nuvem?
+                        O <strong>piDots</strong> foi projetado para executar assistentes técnicos locais com consumo inferior a 70 MB de RAM, mantendo os dados no hardware do operador e eliminando faturas de nuvem.
                     </p>
                     <p class="step-paragraph">
                         A resposta está na disciplina de arquitetura. Em vez de subir navegadores Chromium pesados ou bancos vetoriais em contêineres separados, o piDots é um monólito enxuto em Python assíncrono. O estado, as conversas e as revisões de arquivos ficam salvos localmente em um banco SQLite configurado em modo WAL, garantindo que nada se perca caso falte luz.
@@ -346,7 +346,7 @@
                             </div>
                             <p class="pixel-card-body">
                                 <strong>Identificador:</strong> <code>dot-supervisor</code> | <strong>Arquetipo:</strong> <code>general</code><br>
-                                <strong>Missao:</strong> Atua como lider da sessao. Recebe as ordens complexas do operador humano, decompoe metas macro em planos de acao executaveis, delega subtarefas tecnicas aos especialistas e compoe a sintese final executiva.<br>
+                                <strong>Missao:</strong> Lidera a sessão operacional. Recebe as ordens do operador humano, decompõe metas em planos de ação executáveis, delega subtarefas técnicas aos especialistas e compõe a síntese final executiva.<br>
                                 <strong>Ferramentas Autorizadas:</strong> <code>delegate_task</code>, <code>handoff_to_dot</code>, <code>get_current_time</code>.
                             </p>
                         </article>
@@ -385,13 +385,13 @@
                             <div class="pixel-card-header">
                                 <span class="pixel-card-title">
                                     <span class="brand-badge" style="color: var(--stamp-danger); border-color: var(--stamp-danger);">AUD</span>
-                                    AUDITOR FORENSE
+                                    AUDITOR DE SEGURANÇA
                                 </span>
                                 <span class="pixel-stamp stamp-critical" style="font-size: 9px; padding: 2px 6px;">SEGURANCA &amp; HITL</span>
                             </div>
                             <p class="pixel-card-body">
                                 <strong>Identificador:</strong> <code>dot-auditor</code> | <strong>Arquetipo:</strong> <code>auditor</code><br>
-                                <strong>Missao:</strong> Inspetor forense e cao de guarda da integridade. Avalia o risco operacional de comandos bash, audita o historico de execucoes na tabela <code>tool_runs</code> e valida a conformidade com as regras Human-in-the-Loop.<br>
+                                <strong>Missao:</strong> Supervisor de segurança e integridade do nó. Avalia o risco operacional de comandos bash, audita o histórico de execuções na tabela <code>tool_runs</code> e valida a conformidade com as regras Human-in-the-Loop.<br>
                                 <strong>Ferramentas Autorizadas:</strong> <code>workspace_read_file</code>, <code>workspace_list_files</code>, <code>get_edge_telemetry</code>, <code>get_current_time</code>.
                             </p>
                         </article>
@@ -439,7 +439,7 @@
                                 <tr>
                                     <td><strong>Auditor</strong></td>
                                     <td><code>AUD</code></td>
-                                    <td>Classificacao de risco previa, conformidade HITL e trilhas forenses.</td>
+                                    <td>Classificação de risco prévia, conformidade HITL e registros de auditoria.</td>
                                     <td><code>workspaces/dot-auditor/</code></td>
                                     <td>Minimo (Leitura estrita sem comandos destrutivos).</td>
                                 </tr>
@@ -460,7 +460,7 @@
                 <div class="step-module-footer">
                     <span class="step-counter-tag">PASSO 01 DE 14 // GUIA DIDATICO</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-2')">
-                        <span>AVANCAR: CHAT MULTI-BOT &amp; FITAS DE CARBONO</span>
+                        <span>AVANCAR: CHAT MULTI-BOT &amp; CADERNO DE RACIOCINIO</span>
                         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
@@ -473,7 +473,7 @@
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 02</span>
-                        <h2 class="step-heading">CHAT MULTI-BOT COLABORATIVO E FITAS DE CARBONO</h2>
+                        <h2 class="step-heading">CHAT MULTI-BOT COLABORATIVO E CADERNO DE RACIOCINIO</h2>
                     </div>
                     <span class="pixel-stamp stamp-notice">INTERACAO INTER-AGENTE</span>
                 </div>
@@ -515,11 +515,11 @@
 
                         <article class="pixel-card">
                             <div class="pixel-card-header">
-                                <span class="pixel-card-title">4. FITAS DE CARBONO EXPANSIVEIS</span>
+                                <span class="pixel-card-title">4. LOGS INTERNOS E CADERNO DE RACIOCINIO</span>
                                 <span class="brand-badge">[+] CADERNO DE RACIOCINIO</span>
                             </div>
                             <p class="pixel-card-body">
-                                Toda iteracao de pensamento (Thought) e mensagens internas de delegacao (<code>visibility='internal'</code>) sao formatadas como Fitas de Carbono. No console, aparecem colapsadas por padrao sob o titulo <code>[+] CADERNO DE RACIOCINIO</code>, permitindo inspecao cirurgica com um simples clique.
+                                Toda iteração de pensamento (Thought) e mensagens internas de delegação (<code>visibility='internal'</code>) são salvas como logs de bastidores. No console, aparecem recolhidas sob o rótulo <code>[+] CADERNO DE RACIOCÍNIO</code>, permitindo inspeção direta pelo operador.
                             </p>
                         </article>
                     </div>
@@ -548,7 +548,7 @@
                     <div class="pixel-callout info">
                         <div class="pixel-callout-header">
                             <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                            O QUE ACONTECE NO BANCO DURANTE UM HANDOFF?
+                            TRANSAÇÃO NO BANCO DE DADOS DURANTE O HANDOFF
                         </div>
                         <div class="pixel-callout-text">
                             Durante um <code>handoff_to_dot</code>, o piDots executa uma transacao atomica no SQLite: atualiza o campo <code>threads.dot_id</code> para o novo lider, insere um registro na tabela <code>agent_handoffs</code> com o motivo detalhado e grava uma mensagem do sistema com a nota publica <code>[TRANSFERENCIA DE COMANDO]</code>.
@@ -608,7 +608,7 @@
 
                     <div class="slip-perforation">
                         <span class="perforation-line"></span>
-                        <span class="perforation-label">POR QUE O SILENCIO E CRUCIAL NO EDGE?</span>
+                        <span class="perforation-label">COMO O SILÊNCIO OPERACIONAL PRESERVA PROCESSAMENTO NA BORDA</span>
                         <span class="perforation-line"></span>
                     </div>
 
@@ -964,7 +964,7 @@
 
                     <div class="slip-perforation">
                         <span class="perforation-line"></span>
-                        <span class="perforation-label">SEGURANCA FORENSE E SIMULADOR HITL</span>
+                        <span class="perforation-label">AUDITORIA DE SEGURANÇA E SIMULADOR HITL</span>
                         <span class="perforation-line"></span>
                     </div>
 
@@ -1479,7 +1479,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                             <!-- Loop de Retorno Inferior -->
                             <path d="M762 110 V126 H85 V110" stroke="#33ff66" stroke-width="1.5" stroke-dasharray="4 2"/>
                             <polygon points="85,110 82,116 88,116" fill="#33ff66"/>
-                            <text x="422" y="124" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="9" text-anchor="middle">RE-EXECUCAO AUTOMATICA COM TETO MAX_HEAL_ATTEMPTS=2 (ESCALONAMENTO FORENSE APOS 2 FALHAS)</text>
+                            <text x="422" y="124" fill="#33ff66" font-family="'Silkscreen', monospace" font-size="9" text-anchor="middle">RE-EXECUCAO AUTOMATICA COM TETO MAX_HEAL_ATTEMPTS=2 (ESCALONAMENTO DE SEGURANÇA APOS 2 FALHAS)</text>
                         </svg>
                     </div>
 
@@ -1606,7 +1606,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                             ISOLAMENTO DE FITAS E SAIDA ANTECIPADA POR CONSENSO
                         </div>
                         <div class="pixel-callout-text">
-                            O debate interno ocorre em fitas de carbono com <code>visibility = 'internal'</code>, mantendo o feed do usuario limpo. Somente o veredito final e publicado com o cabecalho <code>[CONSELHO CONSULTIVO - RESOLUCAO FINAL]</code>. Se na Rodada 2 o Auditor classificar a proposta como <code>RISK_LOW / APPROVED</code>, o Supervisor ativa a <strong>Saida Antecipada por Consenso (Early Consensus Exit)</strong>, homologando a decisao imediatamente sem desperdicio de tokens na Rodada 3.
+                            O debate interno ocorre em mensagens internas de depuração com <code>visibility = 'internal'</code>, mantendo o feed do usuário limpo. Somente o veredito final e publicado com o cabecalho <code>[CONSELHO CONSULTIVO - RESOLUCAO FINAL]</code>. Se na Rodada 2 o Auditor classificar a proposta como <code>RISK_LOW / APPROVED</code>, o Supervisor ativa a <strong>Saida Antecipada por Consenso (Early Consensus Exit)</strong>, homologando a decisao imediatamente sem desperdicio de tokens na Rodada 3.
                         </div>
                     </div>
                 </div>
@@ -2028,7 +2028,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                                     <td><code>/info</code></td>
                                     <td><code>/info</code></td>
                                     <td>REST (/health)</td>
-                                    <td>Dossie tecnico do no: arquitetura Cortex-A72, uvloop, SQLite WAL e modelo ativo.</td>
+                                    <td>Relatório técnico do nó: arquitetura Cortex-A72, uvloop, SQLite WAL e modelo ativo.</td>
                                 </tr>
                                 <tr>
                                     <td><code>/status</code></td>

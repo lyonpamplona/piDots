@@ -523,7 +523,7 @@
                     <div class="empty-chat-persona" id="emptyChatPersona">
                         <div class="dot-monogram-avatar" id="emptyChatAvatar" style="width: 48px; height: 48px; font-size: 16px; margin: 0 auto 12px auto;">DA</div>
                         <div style="font-family: var(--font-pixel); font-size: 14px; font-weight: 700; color: var(--blueprint-cyan); margin-bottom: 4px;" id="emptyChatName">Dev Assistant</div>
-                        <div style="font-size: 11px; color: var(--ink-secondary); max-width: 440px; margin: 0 auto 16px auto; line-height: 1.5;" id="emptyChatRole">Especialista de borda em código, refatoração e auditoria no Raspberry Pi ARM64. O que vamos construir ou revisar agora?</div>
+                        <div style="font-size: 11px; color: var(--ink-secondary); max-width: 440px; margin: 0 auto 16px auto; line-height: 1.5;" id="emptyChatRole">Especialista em desenvolvimento, refatoração e testes no nó Raspberry Pi ARM64. Selecione uma sugestão abaixo ou envie uma instrução via terminal.</div>
                         <div class="starter-suggestions" id="starterSuggestions">
                             <button type="button" class="starter-pill" onclick="applyStarterSuggestion('Verificar saúde térmica do SOC e memória RSS do processo')">
                                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
@@ -640,7 +640,7 @@
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
                     <span>Terminal</span>
                 </button>
-                <button class="canvas-tab" id="canvasTabHitl" role="tab" aria-selected="false" aria-controls="canvas-hitl" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria Forense e Carimbos HITL">
+                <button class="canvas-tab" id="canvasTabHitl" role="tab" aria-selected="false" aria-controls="canvas-hitl" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria de Segurança e Carimbos HITL">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <span>HITL</span>
                 </button>
@@ -705,7 +705,7 @@
 ## 3. Interface Técnica Minimalista em Layout Tríptico
 - Coluna 1: Sidebar de Dots, Spaces e Fila HITL
 - Coluna 2: Teletipo ReAct com fita termica e furos de trator
-- Coluna 3: Live Canvas de Artefatos, Telemetria e Dox forense</textarea>
+- Coluna 3: Live Canvas de Artefatos, Telemetria e Governança HITL</textarea>
                     </div>
                 </div>
 
@@ -804,11 +804,11 @@
                     </div>
                 </div>
 
-                <!-- ABA CANVAS 4: GOVERNANÇA HITL (DOSSIÊ & CARIMBOS) -->
+                <!-- ABA CANVAS 4: GOVERNANÇA HITL (AUTORIZAÇÃO & CARIMBOS) -->
                 <div class="canvas-panel-view" id="canvas-hitl">
                     <div style="background: var(--paper-surface); border: 2px solid var(--thermal-amber); padding: 12px; display: flex; flex-direction: column; height: 100%; box-shadow: var(--shadow-sm);">
                         <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber); margin-bottom: 8px; border-bottom: 1px solid var(--thermal-amber); padding-bottom: 4px;">
-                            DOSSIÊ DE GOVERNANÇA FORENSE · HITL
+                            PAINEL DE GOVERNANÇA E AUTORIZAÇÃO · HITL
                         </div>
                         <div id="hitlDossierDetailsBox" style="font-size: 11px; line-height: 1.5; margin-bottom: 10px; color: var(--ink-secondary);">
                             <strong>AGENTE:</strong> DOT-DEV-CORE<br>
@@ -836,7 +836,7 @@
 
                         <!-- Trava Mecânica e Ações -->
                         <div class="hitl-canvas-footer" style="margin-top: auto; border-top: 1px dashed var(--border-default); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                            <div class="pixel-switch-wrapper" onclick="toggleSafetySwitch(this)" data-tooltip="Trava mecânica analógica de liberação de comandos sensíveis">
+                            <div class="pixel-switch-wrapper" onclick="toggleSafetySwitch(this)" data-tooltip="Confirmação manual em duas etapas para liberação de comandos sensíveis">
                                 <div class="pixel-switch" id="safetySwitchMechanical">
                                     <div class="pixel-switch-thumb"></div>
                                 </div>
@@ -898,7 +898,7 @@
             <div style="padding: 12px; margin-bottom: 14px; border: 1px solid var(--blueprint-cyan); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 8px;">
                 <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); letter-spacing: 0.05em; text-transform: uppercase;">RECURSO DIDÁTICO INTERATIVO</div>
                 <div style="font-size: 11px; color: var(--ink-secondary); line-height: 1.4;">
-                    Deseja rever as 5 ferramentas fundamentais do console guiadas diretamente na interface real?
+                    Apresentação interativa das 5 superfícies principais do console na interface ativa.
                 </div>
                 <button type="button" class="pixel-btn btn-cyan" onclick="toggleDrawer(); if (window.PiDotsTourEngine) PiDotsTourEngine.start();" style="width: 100%; justify-content: center;">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
@@ -932,7 +932,7 @@
 
             <div class="guide-step">
                 <div class="step-num">PASSO 04 // GOVERNANCA HUMAN-IN-THE-LOOP</div>
-                <div class="step-heading">APROVAÇÃO FORENSE DE COMANDOS</div>
+                <div class="step-heading">AUTORIZAÇÃO DE SEGURANÇA DE COMANDOS</div>
                 <div class="step-body">
                     Comandos de destruição de arquivos (como <code>rm -rf</code>) ou elevação de privilégios são bloqueados automaticamente. A aprovação requer destravar a trava de segurança e carimbar a aprovação da ação.
                 </div>
@@ -1042,7 +1042,7 @@
             <span class="context-menu-shortcut">CTRL+S</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('hitl')">
-            <span>Abrir Dossiê HITL</span>
+            <span>Abrir Painel HITL</span>
             <span class="context-menu-shortcut">ALT+H</span>
         </div>
         <div class="context-menu-item" onclick="PixelSystem.contextAction('split')">
@@ -1279,7 +1279,7 @@
                             </div>
                             <ul class="history-ver-list">
                                 <li>Lançamento do console tríptico oficial para agentes autônomos piDots.</li>
-                                <li>Implementação do roteador de mensageria com suporte a menção @dot e dossiê HITL.</li>
+                                <li>Implementação do roteador de mensageria com suporte a menção @dot e fila de autorização HITL.</li>
                                 <li>Engine de renderização de interface técnica minimalista e integração com modelos LLM locais e em nuvem.</li>
                             </ul>
                         </div>

@@ -112,7 +112,7 @@
       "highlights": [
         "Micro-motor i18n Vanilla JS com comutacao ultraleve [PT | EN].",
         "Dicionarios data/locales/pt.json e en.json com cache estatico resiliente.",
-        "Humanizacao radical de voz e eliminacao de cliches de AI slop."
+        "Revisão minuciosa de tom técnico e eliminação de clichês de IA."
       ]
     },
     {
@@ -140,7 +140,7 @@
       "type": "RELEASE INAUGURAL",
       "highlights": [
         "Lancamento do console triptych oficial para agentes autonomos piDots.",
-        "Roteador de mensageria com suporte a mencao @dot e dossie HITL.",
+        "Roteador de mensageria com suporte a menção @dot e fila de autorização HITL.",
         "Engine de renderizacao triptica minimalista e integracao LLM."
       ]
     }
