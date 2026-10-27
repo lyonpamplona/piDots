@@ -106,7 +106,7 @@ piDots provides in-process multi-agent collaboration optimized for edge resource
 - **Dynamic Mentions (@dot):** The `ThreadRouter` parses `@dot_name` mentions, resolves interlocutors against SQLite, and enrolls them into `thread_participants`.
 - **Supervisor-Worker Topology:** A supervisor plans and delegates subtasks using the `delegate_task` tool, executing workers in isolated threads and consolidating summaries into the parent conversation.
 - **Leadership Handoff:** The `handoff_to_dot` tool formally reassigns thread leadership to a domain specialist, persisting audit trails in `agent_handoffs`.
-- **Carbon-Copy Internal Messages:** Inter-bot exchanges are marked with `visibility: 'internal'`, keeping technical dialogues accessible for auditing without cluttering user feeds.
+- **Internal Diagnostic Messages:** Inter-bot exchanges are marked with `visibility: 'internal'`, keeping technical dialogues accessible for auditing without cluttering user feeds.
 - **Cognitive Archetypes:**
   - `supervisor`: Workflow coordinator, planning, and executive goal tracking.
   - `coder`: Software development, terminal debugging, isolated sandbox runs, and automated testing.
@@ -137,7 +137,7 @@ The `pidots/core/messaging_gateway.py` module exposes stateless HTTP endpoints f
 The core piDots engine enforces an end-to-end resilient execution loop:
 - **Typed Provider Exceptions:** The `OpenAIUniversalProvider` client strictly differentiates `ProviderAuthError` (HTTP 401/403 with immediate short-circuiting and no wasteful retries) from `ProviderTransientError` (HTTP 503/429/timeout with exponential backoff and jitter).
 - **Standardized AG-UI v1.0 Protocol Contract:** The `DotAgent.run_thread` lifecycle emits a terminal `run:finished` event with `status: "failed"`, providing structured `error`, `error_type` (`auth_error` or `transient_error`), and `final_response: ""`.
-- **Internal Diagnostic Tape:** Root-cause errors are persisted to SQLite WAL `messages` with `internal` visibility (`[INFERENCE_ERROR]` or `[AUTH_ERROR]`), ensuring complete technical auditability without polluting human-facing feeds.
+- **Internal Diagnostic Logs:** Root-cause errors are persisted to SQLite WAL `messages` with `internal` visibility (`[INFERENCE_ERROR]` or `[AUTH_ERROR]`), ensuring complete technical auditability without polluting human-facing feeds.
 - **Integrated Resilience across Three Consumer Subsystems:**
   - *EdgeScheduler:* Accurately persists `FAILED` status with actual technical error summaries in SQLite, eliminating false-positive completions.
   - *MessagingGateway:* Returns structured, user-friendly error notices (`[OPERATIONAL_ERROR]`) across external chat bridges.
@@ -499,7 +499,7 @@ piDots includes a native dark-mode SPA/PWA interface served on the canonical pat
 - **SemVer v1.5.5 Patch Notes Hub:** Dynamic update notes modal synchronized via `/api/changelog`, categorizing modifications across Four Pillars: Included, Adjusted, Deprecated, and Security & Edge.
 
 #### Cross-Surface Navigation via Global Keyboard Chords
-Instant, zero-friction transition between system surfaces without requiring a mouse:
+Instant transition between system surfaces using sequential keyboard chords:
 
 | Sequential Chord | Target Surface | Description |
 | :--- | :--- | :--- |
@@ -508,7 +508,7 @@ Instant, zero-friction transition between system surfaces without requiring a mo
 | `g` followed by `d` | `/docs` | Go Docs: Interactive Operator Guide & Technical Reference |
 
 #### High-Productivity SPA Console Shortcuts
-Tactical terminal and artifact operations without interface friction:
+Keyboard shortcuts for terminal and artifact navigation:
 
 | Shortcut | Operational Action | Description |
 | :--- | :--- | :--- |
@@ -519,7 +519,7 @@ Tactical terminal and artifact operations without interface friction:
 | `Alt+B` / `Ctrl+B` | Toggle Sidebar | Toggles visibility of coworkers and spaces sidebar |
 | `Alt+I` | Inspect Artifact | Focuses and expands active artifact in Live Canvas |
 | `Ctrl+S` / `Cmd+S` | Save Revision | Persists atomic document revision in Spaces to SQLite WAL |
-| `Alt+H` | HITL Dossier | Focuses and opens Human-in-the-Loop governance approval card |
+| `Alt+H` | HITL Queue | Opens the Human-in-the-Loop governance approval card |
 | `F11` | Toggle Canvas | Toggles between split view and maximized canvas view |
 | `Ctrl+L` | Clear Teletype | Clears local screen messages from active teletype spool (/clear) |
 | `F1` | Technical Panel / Help | Opens retractable side drawer with telemetry, shortcuts, and manual |
@@ -529,7 +529,7 @@ The Operational SPA Console features a native slash command (`/`) engine designe
 - **Zero Token Cost for Local Commands:** System, UI, and hardware inspection commands execute locally in the browser under 16ms with zero LLM API calls.
 - **Floating Autocomplete Popover:** Triggered on typing `/`, with fuzzy memory filtering, keyboard navigation (Arrow keys), and instant selection via `Tab` or `Enter`.
 - **Levenshtein Fault Tolerance:** Proactively suggests the closest valid command when minor typing mistakes occur (*"Did you mean: /command?"*).
-- **Physical Teletype Receipt Slips:** Structured responses with `[CMD] SISTEMA` stamps, ISO UTC timestamps, sequential audit IDs (`SEQ# 000X`), and perforated tear-off edges under a 150-node DOM ceiling.
+- **Physical Teletype Receipt Slips:** Structured responses with `[CMD] SYSTEM` stamps, ISO UTC timestamps, sequential audit IDs (`SEQ# 000X`), and perforated tear-off edges under a 150-node DOM ceiling.
 
 | Category | Primary Commands | Usage Examples |
 | :--- | :--- | :--- |
@@ -622,11 +622,6 @@ python3 scripts/stress_test.py
 ├── MANUAL_OPERACIONAL.md            # Operational administration guide
 ├── nginx/                           # Lightweight edge reverse proxy (< 6MB RAM)
 │   └── nginx.conf                   # Four listening servers (8081, 8082, 8083, 8088)
-├── pages/                           # Decoupled HTML monolithic surfaces
-│   ├── docs.html                    # Step-by-step user guide and interactive manual
-│   ├── landing.html                 # Official product showcase and onboarding
-│   ├── relatorio.html               # Reverse engineering report and ARM64 benchmarks
-│   └── spa.html                     # Operational Workspace SPA/PWA console
 ├── pidots/                          # Core application package source code
 │   ├── config.py                    # Pydantic configuration and environment variables
 │   ├── main.py                      # FastAPI server, REST endpoints, and SSE streaming

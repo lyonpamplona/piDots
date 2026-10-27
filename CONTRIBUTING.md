@@ -1,50 +1,50 @@
-# Diretrizes de Contribuicao (CONTRIBUTING)
+# Diretrizes de Contribuição (CONTRIBUTING)
 
-Agradecemos o seu interesse em contribuir com o **piDots**. Este projeto e voltado para a criacao de AI Coworkers persistentes, eficientes e estaveis em ambientes de borda com recursos restritos (como o Raspberry Pi 4B ARM64).
+O **piDots** é uma plataforma de AI Coworkers persistentes projetada para rodar em hardware com recursos restritos, tendo o Raspberry Pi 4B ARM64 como bancada de referência.
 
-Para manter a integridade arquitetural, a seguranca e a eficiencia computacional, solicitamos que leia e siga as diretrizes abaixo.
+Siga estas diretrizes para manter a estabilidade do sistema, o isolamento de segurança e a disciplina de recursos.
 
 ---
 
-## 1. Principios de Engenharia do Projeto
+## 1. Princípios de Engenharia do Projeto
 
-Ao propor alteracoes no piDots, mantenha em mente os seguintes principios fundamentais:
+Ao propor alterações no piDots, mantenha em mente os seguintes requisitos:
 
-1. **Eficiencia Extrema de Memoria:**
-   - O consumo de RAM em repouso (idle) deve permanecer rigorosamente abaixo de **60 MB**.
-   - O consumo maximo sob carga com agentes ativos nao deve ultrapassar **150 MB**.
-   - Nunca introduza bibliotecas pesadas de aprendizado profundo (PyTorch, TensorFlow, Transformers locais) ou navegadores headless (Puppeteer, Playwright, Chromium) no runtime principal.
+1. **Eficiência de Memória:**
+   - O consumo de RAM em repouso (idle) deve permanecer abaixo de **60 MB**.
+   - O consumo sob carga com agentes ativos não ultrapassa **150 MB**.
+   - Não introduza bibliotecas pesadas de aprendizado profundo (PyTorch, TensorFlow, Transformers locais) ou navegadores headless (Puppeteer, Playwright, Chromium) no runtime principal.
 
-2. **Preservacao de Hardware e I/O de Disco:**
-   - Evite chamadas excessivas ou sincronas de gravacao em disco (`fsync`).
-   - Todas as operacoes de persistencia devem utilizar a camada gerenciada de SQLite em modo WAL (`journal_mode=WAL`, `synchronous=NORMAL`).
+2. **Preservação de Hardware e I/O de Disco:**
+   - Evite chamadas excessivas ou síncronas de gravação em disco (`fsync`).
+   - Todas as operações de persistência utilizam a camada gerenciada de SQLite em modo WAL (`journal_mode=WAL`, `synchronous=NORMAL`).
 
 3. **Assincronismo Estrito:**
-   - Todo codigo deve ser compativel com AsyncIO e uvloop.
-   - Nunca execute chamadas bloqueantes de I/O de rede ou disco diretamente na thread principal do event loop. Use `asyncio.to_thread` ou APIs nativamente assincronas (`httpx`, `aiofiles`).
+   - Todo código deve ser compatível com AsyncIO e uvloop.
+   - Nunca execute chamadas bloqueantes de I/O de rede ou disco diretamente na thread principal do event loop. Use `asyncio.to_thread` ou APIs nativamente assíncronas (`httpx`, `aiofiles`).
 
-4. **Regra de Estilo e Padronizacao: Zero Emojis:**
-   - E expressamente proibido o uso de emojis no codigo-fonte, nomes de variaveis, logs, documentacao tecnica, mensagens de commit e interfaces.
+4. **Regra de Estilo: Zero Emojis:**
+   - É proibido o uso de emojis no código-fonte, nomes de variáveis, logs, documentação técnica, mensagens de commit e interfaces.
 
 ---
 
-## 2. Padrao de Commits Semanticos (Conventional Commits)
+## 2. Padrão de Commits Semânticos (Conventional Commits)
 
-Adotamos a convencao de [Conventional Commits](https://www.conventionalcommits.org/) para manter o historico de versoes legivel e auditavel. As mensagens de commit devem seguir o formato:
+Adotamos a convenção de [Conventional Commits](https://www.conventionalcommits.org/) para manter o histórico de versões legível e auditável. As mensagens de commit seguem o formato:
 
 ```
-<tipo>(<escopo>): <descricao em texto claro e direto>
+<tipo>(<escopo>): <descrição em texto claro e direto>
 ```
 
 ### Tipos Permitidos:
-- `feat`: Adicao de nova funcionalidade ou ferramenta.
-- `fix`: Correcao de defeito ou falha de execucao.
-- `docs`: Alteracoes em documentacao, manuais ou diagramas.
-- `perf`: Melhorias de desempenho ou reducao de consumo de memoria RAM/CPU.
-- `refactor`: Refatoracao de codigo sem alteracao de comportamento externo.
-- `test`: Criacao ou atualizacao de suites de testes automatizados.
-- `chore`: Atualizacao de dependencias, empacotamento ou tarefas de manutencao.
-- `ci`: Alteracoes nos workflows de integracao continua.
+- `feat`: Adição de nova funcionalidade ou ferramenta.
+- `fix`: Correção de defeito ou falha de execução.
+- `docs`: Alterações em documentação, manuais ou diagramas.
+- `perf`: Melhorias de desempenho ou redução de consumo de memória RAM/CPU.
+- `refactor`: Refatoração de código sem alteração de comportamento externo.
+- `test`: Criação ou atualização de suítes de testes automatizados.
+- `chore`: Atualização de dependências, empacotamento ou tarefas de manutenção.
+- `ci`: Alterações nos workflows de integração contínua.
 
 ### Exemplos:
 - `feat(tools): adicionar timeout configuravel para o extrator web`
@@ -54,27 +54,27 @@ Adotamos a convencao de [Conventional Commits](https://www.conventionalcommits.o
 
 ---
 
-## 3. Fluxo de Trabalho e Submissao de Pull Requests
+## 3. Fluxo de Trabalho e Submissão de Pull Requests
 
-1. **Fork do Repositorio:**
-   Crie um fork do repositorio oficial para a sua conta no GitHub.
+1. **Fork do Repositório:**
+   Crie um fork do repositório oficial na sua conta do GitHub.
 
-2. **Criacao de Branch Tematica:**
+2. **Criação de Branch Temática:**
    Crie uma branch descritiva a partir da branch principal (`main`):
    ```bash
    git checkout -b feat/nova-ferramenta-telemetria
    ```
 
 3. **Ambiente de Desenvolvimento Local:**
-   Instale o ambiente virtual e as dependencias do projeto em modo editavel:
+   Configure o ambiente virtual e instale as dependências do projeto em modo editável:
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    pip install -e .
    ```
 
-4. **Validacao e Testes:**
-   Antes de submeter o Pull Request, execute obrigatoriamente toda a suite de testes de regressao e o teste de estresse de concorrencia:
+4. **Validação e Testes:**
+   Antes de submeter o Pull Request, execute toda a suíte de testes de regressão e o teste de estresse de concorrência:
    ```bash
    python3 scripts/test_phase1.py
    python3 scripts/test_phase2.py
@@ -83,18 +83,18 @@ Adotamos a convencao de [Conventional Commits](https://www.conventionalcommits.o
    python3 scripts/test_phase5.py
    python3 scripts/stress_test.py
    ```
-   Todos os testes devem passar com 100% de sucesso.
+   Todos os testes precisam passar integralmente antes da submissão.
 
 5. **Abertura do Pull Request:**
-   - Preencha o template padrao de PR detalhando as motivacoes da alteracao.
-   - Forneca evidencias de que a alteracao nao elevou a pegada de memoria RAM nem inseriu vulnerabilidades de execucao de comandos.
-   - Certifique-se de que a regra de zero emojis foi estritamente respeitada.
+   - Preencha o template padrão de PR detalhando as motivações técnicas da alteração.
+   - Forneça evidências de que a alteração não elevou o consumo de memória RAM nem inseriu vulnerabilidades de execução de comandos.
+   - Certifique-se de que a regra de zero emojis foi rigorosamente respeitada.
 
 ---
 
-## 4. Governanca e Revisao de Codigo
+## 4. Governança e Revisão de Código
 
-Todos os Pull Requests passam por revisao tecnica pelo mantenedor do projeto (**lyon christopher**). Aprovacoes exigem:
-- Aprovacao no pipeline de CI/CD.
+Todos os Pull Requests passam por revisão técnica pelo mantenedor do projeto (**lyon christopher**). Aprovações exigem:
+- Aprovação no pipeline de CI/CD.
 - Cobertura de testes automatizados para novas capacidades.
-- Conformidade estrita com o padrao assincrono e o sandbox de seguranca.
+- Conformidade estrita com o padrão assíncrono e o sandbox de segurança.
