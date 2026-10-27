@@ -109,8 +109,8 @@
                     badge: '// ARTEFATOS, COAGENTS & HITL',
                     placement: 'left',
                     what: 'Prancheta tecnica de alto rendimento organizada em 4 abas estritas: Artefato (Spaces e Diffs), CoAgents (Shared State), Terminal e Governanca HITL.',
-                    how: 'Alterne entre as abas para verificar o estado compartilhado dos agentes, inspecionar logs de ferramentas ou aprovar acoes criticas na trava HITL.',
-                    tip: 'Use <kbd>Alt+I</kbd> para focar no artefato ativo, <kbd>Alt+H</kbd> para abrir o dossie HITL ou <kbd>Ctrl+S</kbd> para gravar revisoes no banco WAL.',
+                    how: 'Alterne entre as abas para verificar o plano dos agentes, inspecionar logs de execução e homologar comandos retidos na fila HITL.',
+                    tip: 'Use <kbd>Alt+I</kbd> para focar no artefato ativo, <kbd>Alt+H</kbd> para abrir a fila de governança HITL ou <kbd>Ctrl+S</kbd> para gravar revisões no banco WAL.',
                     beforeStep: function() {
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile && typeof setMobileView === 'function') {
@@ -328,7 +328,7 @@
                 if (completed) {
                     localStorage.setItem(STORAGE_KEY, 'true');
                     const t = (k, fallback) => (window.PiDotsI18n && typeof window.PiDotsI18n.t === 'function' ? window.PiDotsI18n.t(k) : fallback);
-                    const msg = t('onboarding.toast_completed', 'Tour operacional concluido com exito. Bom trabalho!');
+                    const msg = t('onboarding.toast_completed', 'Tour operacional concluído. Interface técnica liberada para comandos.');
                     if (window.PixelSystem && typeof window.PixelSystem.toast === 'function') {
                         window.PixelSystem.toast(msg, 'success');
                     }

@@ -236,7 +236,7 @@
                 const labelSpan = btn.querySelector('span');
                 const originalText = labelSpan ? labelSpan.textContent : '';
                 if (labelSpan) {
-                    labelSpan.textContent = 'Copiado!';
+                    labelSpan.textContent = 'Copiado';
                 }
                 btn.classList.add('btn-green');
                 setTimeout(() => {
@@ -351,7 +351,7 @@
                     arch: "aarch64 / x86_64 (Linux Edge Node)",
                     status: "healthy",
                     timestamp: new Date().toISOString(),
-                    note: "Conexao local restabelecida com zero falhas no console."
+                    note: "Conexão local ativa via IPC/HTTP."
                 };
                 if (outputElem) outputElem.innerText = JSON.stringify(fallbackPayload, null, 2);
             } finally {
@@ -367,16 +367,16 @@
             {
                 id: 'passo-1',
                 step: 'PASSO 01',
-                title: 'O Que É o piDots & Novos Arquétipos Cognitivos',
+                title: 'O Que É o piDots & Especialistas Autônomos',
                 keywords: 'arquetipos supervisor coder desenvolvedor arquiteto auditor conceitos edge react persistencia modular arm64',
                 desc: 'Estacao de trabalho soberana para Raspberry Pi 4B. Quatro arquetipos especializados: Supervisor, Desenvolvedor (@coder), Arquiteto (@arquiteto) e Auditor.'
             },
             {
                 id: 'passo-2',
                 step: 'PASSO 02',
-                title: 'Chat Multi-Bot & Fitas de Carbono de Raciocínio',
-                keywords: 'multi-bot mencao delegate handoff fitas carbono raciocinio inter-agente visibilidade internal threads',
-                desc: 'Dialogos colaborativos com mencoes @dot, delegacao de subtarefas sem poluir a thread principal e fitas expansivas de pensamento.'
+                title: 'Chat Multi-Bot & Logs Internos de Raciocínio',
+                keywords: 'multi-bot mencao delegate handoff logs internos raciocinio inter-agente visibilidade internal threads',
+                desc: 'Diálogos colaborativos com menções @dot, delegação de subtarefas sem poluir a thread principal e transcrições expansivas de raciocínio.'
             },
             {
                 id: 'passo-3',

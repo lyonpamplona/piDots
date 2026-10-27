@@ -28,6 +28,7 @@ class MockMultiBotProvider:
 
     def __init__(self) -> None:
         self.call_count = 0
+        self.default_model = "mock-model"
 
     async def chat_completion(
         self,

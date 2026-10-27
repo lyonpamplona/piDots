@@ -27,7 +27,7 @@
                 { cmd: '/clear', cat: 'sistema', args: '[chat|terminal|canvas|all]', exec: 'client', desc: 'Limpa a bobina de papel ou buffers de visualizacao.' },
                 { cmd: '/theme', cat: 'sistema', args: '[noir|blueprint|toggle]', exec: 'client', desc: 'Alterna os pigmentos graficos entre Dark Noir e Blueprint.' },
                 { cmd: '/lang', cat: 'sistema', args: '[pt|en]', exec: 'client', desc: 'Comuta a quente o dicionario de internacionalizacao.' },
-                { cmd: '/info', cat: 'sistema', args: '', exec: 'rest', desc: 'Exibe dossie de hardware, modelo e status do SQLite WAL.' },
+                { cmd: '/info', cat: 'sistema', args: '', exec: 'rest', desc: 'Exibe telemetria de hardware, modelo e status do SQLite WAL.' },
                 { cmd: '/status', cat: 'sistema', args: '', exec: 'rest', desc: 'Apresenta resumo executivo dos coworkers ativos e conexoes.' },
                 { cmd: '/telemetry', cat: 'sistema', args: '', exec: 'rest', desc: 'Mede temperatura do SoC Broadcom, memoria RAM e carga.' },
                 { cmd: '/pwa', cat: 'sistema', args: '[status|update|cache-clear]', exec: 'client', desc: 'Inspeciona Service Worker e conformidade de cache offline.' },
@@ -40,7 +40,7 @@
                 { cmd: '/handoff', cat: 'agentes', args: '<target_dot_id> [motivo]', exec: 'rest', desc: 'Transfere titularidade da thread para outro especialista.' },
                 { cmd: '/council', cat: 'agentes', args: '<topico> [rounds]', exec: 'stream', desc: 'Inicia debate dialetico Propositor vs Auditor vs Supervisor.' },
                 { cmd: '/delegate', cat: 'agentes', args: '<target_dot_id> <tarefa>', exec: 'rest', desc: 'Despacha subtarefa isolada em topologia Supervisor-Worker.' },
-                { cmd: '/archetype', cat: 'agentes', args: '[supervisor|coder|arquiteto|auditor]', exec: 'rest', desc: 'Configura o arquétipo cognitivo do agente atual.' },
+                { cmd: '/archetype', cat: 'agentes', args: '[supervisor|coder|arquiteto|auditor]', exec: 'rest', desc: 'Configura o perfil de especialidade do agente atual.' },
                 { cmd: '/tools', cat: 'agentes', args: '[dot_id]', exec: 'rest', desc: 'Catalogo de ferramentas ativas com Dynamic Tool Pruning.' },
 
                 // [MEMORIA & CONHECIMENTO]
@@ -603,7 +603,7 @@
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">PROTOCOLO SSE:</td><td>AG-UI v1.0 Streaming Contrato</td></tr>
                             </table>
                         `;
-                        renderSlashReceiptSlip('/info', 'DOSSIE DE ESPECIFICACOES', tableHtml, '[OK]');
+                        renderSlashReceiptSlip('/info', 'ESPECIFICAÇÕES TÉCNICAS', tableHtml, '[OK]');
                     } catch (e) {
                         renderSlashReceiptSlip('/info', 'FALHA DE CONSULTA', `Erro ao consultar /health: ${escapeHtml(e.message)}`, '[ERRO]');
                     }
@@ -889,7 +889,7 @@
                     }
                     try {
                         const out = `
-                            <div>Ordem de delegação técnica despachada para <strong style="color: var(--blueprint-cyan);">@${escapeHtml(targetId)}</strong>!</div>
+                            <div>Ordem de delegação despachada para <strong style="color: var(--blueprint-cyan);">@${escapeHtml(targetId)}</strong>.</div>
                             <div style="margin-top: 4px; font-size: 10px; color: var(--ink-secondary);">Instrução: <em>"${escapeHtml(taskDesc)}"</em></div>
                             <div style="margin-top: 4px; font-size: 9.5px; color: var(--ink-muted);">Acompanhe a resposta e o raciocínio na bobina do teletipo.</div>
                         `;

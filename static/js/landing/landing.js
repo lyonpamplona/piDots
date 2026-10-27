@@ -145,8 +145,8 @@
 
             const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
             const msg = isEn 
-                ? 'HOMOLOGATED: Official action authenticated in SQLite WAL! Command dispatched to sandbox.'
-                : 'HOMOLOGADO: Acao oficial autenticada no SQLite WAL! Comando liberado para o sandbox.';
+                ? 'HOMOLOGATED: Action authorized in SQLite WAL. Command dispatched to sandbox.'
+                : 'HOMOLOGADO: Ação autorizada no SQLite WAL. Comando liberado para o sandbox.';
 
             setTimeout(() => {
                 showToast(msg, 'success');
@@ -254,8 +254,8 @@
 
             const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
             const msg = isEn
-                ? `FORENSIC REPORT: Projected annual savings of ${savingsText}. Hardware amortization in just ${paybackText}!`
-                : `DOSSIE FORENSE: Economia anual projetada de ${savingsText}. Amortizacao do hardware em apenas ${paybackText}!`;
+                ? `SAVINGS ESTIMATE: Projected annual savings of ${savingsText}. Hardware amortization in ${paybackText}.`
+                : `PROJEÇÃO DE ECONOMIA: Economia anual estimada em ${savingsText}. Amortização do hardware em ${paybackText}.`;
 
             showToast(msg, 'success', 4500);
             playHapticMechanicalClick();
@@ -390,7 +390,7 @@
 
                 registerSimTimer(() => {
                     appendSimLine(vp, `<div class="sim-line success">[TOOL RESULT] Codigo: 0 | Saida: MemFree: 3120 MB | Particao Flash: 68% livre. Desgaste 0.</div>`);
-                    appendSimLine(vp, `<div class="sim-line" style="color: var(--phosphor-green); font-weight: bold;">[DOT-CODER // RESPOSTA] O ecossistema esta operando com 64.2MB de RAM real. Nenhuma escrita sincrona danosa foi detectada no MicroSD.</div>`);
+                    appendSimLine(vp, `<div class="sim-line" style="color: var(--phosphor-green); font-weight: bold;">[DOT-CODER // RESPOSTA] O nó de borda opera com 64.2MB de RAM física. Nenhuma escrita síncrona nociva foi detectada no MicroSD.</div>`);
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'NO ATIVO // 3 AGENTES EM ESPERA // RSS: 64.2MB';
                 }, 1200);
@@ -430,9 +430,9 @@
                 }, 850);
 
                 registerSimTimer(() => {
-                    appendSimLine(vp, `<div class="sim-line success">[AUTO-CURA CONCLUIDA // EXIT 0]<br>Script reexecutado com sucesso em sandbox Bubblewrap. 100% dos testes aprovados sem intervencao humana!</div>`);
+                    appendSimLine(vp, `<div class="sim-line success">[AUTO-CURA CONCLUÍDA // EXIT 0]<br>Script reexecutado em sandbox Bubblewrap. Testes validados sem intervenção do operador.</div>`);
                     vp.scrollTop = vp.scrollHeight;
-                    if (statusText) statusText.innerText = 'AUTO-CURA FINALIZADA COM SUCESSO';
+                    if (statusText) statusText.innerText = 'AUTO-CURA CONCLUÍDA // VALIDAÇÃO NOMINAL';
                 }, 1350);
 
             } else if (type === 'proactive_heartbeat') {
@@ -465,7 +465,7 @@
 </div>`);
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'SLASH COMMAND EXECUTADO LOCALMENTE // 0 TOKENS';
-                    showToast('Comando /telemetry executado em 4ms sem consumo de tokens!', 'info');
+                    showToast('Comando /telemetry executado localmente sem consumo de tokens.', 'info');
                 }, 150);
 
             } else if (type === 'mcp_tools') {
@@ -478,10 +478,10 @@
                 }, 300);
 
                 registerSimTimer(() => {
-                    appendSimLine(vp, `<div class="sim-line success">[TOOL PRUNING ATIVO]<br>Ferramentas descobertas: 4 | Injetadas no prompt: 2 (apenas allowed_tools_json do @dot-coder). Zero inflacao de contexto!</div>`);
+                    appendSimLine(vp, `<div class="sim-line success">[TOOL PRUNING ATIVO]<br>Ferramentas descobertas: 4 | Injetadas no prompt: 2 (apenas allowed_tools_json do @dot-coder). Zero inflação de contexto.</div>`);
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'MCP LITE CONECTADO // DYNAMIC TOOL PRUNING';
-                    showToast('Servidores MCP Lite listados com Dynamic Tool Pruning!', 'info');
+                    showToast('Servidores MCP Lite listados com Dynamic Tool Pruning.', 'info');
                 }, 750);
 
             } else if (type === 'coagents_state') {
@@ -497,7 +497,7 @@
                     appendSimLine(vp, `<div class="sim-line success">[SSE // STATE_DELTA SINCRONIZADO AO VIVO]<br>Delta aplicado em sub-4ms: {"active_tool": "execute_shell_command", "plan_progress": 100, "process_rss_mb": 64.2}</div>`);
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'COAGENTS STATE SINCRONIZADO // STATE_DELTA OK';
-                    showToast('Estado compartilhado CoAgents sincronizado ao vivo!', 'info');
+                    showToast('Estado compartilhado CoAgents sincronizado.', 'info');
                 }, 650);
 
             } else if (type === 'dots_computer') {
@@ -513,7 +513,7 @@
                     appendSimLine(vp, `<div class="sim-line success">[MODO TAKEOVER ATIVO // CONTROLE HUMANO DIRETO]<br>Operador assumiu o terminal bwrap em sub-12ms. Acoes sincronizadas no feed AG-UI da thread!</div>`);
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'DOT COMPUTER // MODO TAKEOVER HUMANO ATIVO';
-                    showToast('Computador de Borda aberto em Modo Takeover!', 'success');
+                    showToast('Terminal do Computador de Borda ativo.', 'success');
                 }, 750);
 
             } else if (type === 'save_space') {
@@ -529,7 +529,7 @@
                     appendSimLine(vp, `<div class="sim-line success">[SPACE CRIADO // REVISAO #1 GRAVADA NO SQLITE WAL]<br>Artefato "Arquitetura_CoAgents_Edge.md" disponivel no painel Spaces &amp; Canais e no Live Canvas!</div>`);
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'THREAD SALVA COMO SPACE // MOTOR 64D INDEXADO';
-                    showToast('Conversa convertida em Space versionado com sucesso!', 'success');
+                    showToast('Conversa versionada em Spaces no SQLite WAL.', 'success');
                 }, 750);
 
             } else if (type === 'hitl_danger') {
@@ -545,7 +545,7 @@
                     appendSimLine(vp, `<div class="sim-line success">[HITL RESOLVE // RETOMADA AUTOMATICA DO AGENTE]<br>POST /api/hitl/apr_01/resolve (modified_args aplicado) -> Agente retomou turno automaticamente com seguranca!</div>`);
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'HITL HOMOLOGADO COM MODIFIED_ARGS // RETOMADO';
-                    showToast('HITL homologado com edicao de argumentos e retomada automatica!', 'success');
+                    showToast('Ordem HITL autorizada pelo operador e retomada.', 'success');
                 }, 950);
             }
         }
@@ -589,7 +589,7 @@
                         executeSimulatedOrder('mcp_tools');
                     } else {
                         appendSimLine(vp, `<div class="sim-line success">[RECIBO] Comando ${safeCmd} executado no cliente em sub-16ms | 0 tokens gastos | Sessao intacta.</div>`);
-                        showToast(`Slash command ${safeCmd} executado localmente!`, 'info');
+                        showToast(`Comando ${safeCmd} processado localmente.`, 'info');
                     }
                     vp.scrollTop = vp.scrollHeight;
                 }, 120);
@@ -607,7 +607,7 @@
             }, 700);
 
             registerSimTimer(() => {
-                appendSimLine(vp, `<div class="sim-line success">[RESPOSTA DO AGENTE]<br>Comando processado com sucesso pelo ecossistema soberano piDots em menos de 14ms.</div>`);
+                appendSimLine(vp, `<div class="sim-line success">[RESPOSTA DO AGENTE]<br>Comando processado pelo nó local piDots em menos de 14ms.</div>`);
                 vp.scrollTop = vp.scrollHeight;
             }, 1100);
         }
@@ -640,7 +640,7 @@
                 if (status) status.innerText = 'STATUS: CONCLUIDO (RODADA 3/3)';
                 appendSimLine(feed, `<div class="council-bubble supervisor"><strong>[@dot-supervisor // VEREDITO]:</strong> Aprovado com a restricao do auditor. Registrando resolucao na tabela agent_handoffs como COMPLETED.</div>`);
                 feed.scrollTop = feed.scrollHeight;
-                showToast('Conselho Consultivo: Deliberacao tripartite homologada!', 'success');
+                showToast('Conselho Consultivo: Deliberação tripartite concluída.', 'success');
             }, 1200);
         }
 
@@ -664,7 +664,7 @@
                 appendSimLine(feed, `<div style="color: var(--phosphor-green); font-weight: bold;">[AUTO-CURA] Correcao aplicada: adicionada guarda 'max(taxa, 1e-6)'. Reexecutando... SUCESSO (Exit: 0).</div>`);
                 if (status) status.innerText = 'HARNESS: REPARADO COM EXITO';
                 feed.scrollTop = feed.scrollHeight;
-                showToast('Self-Healing: Script reparado automaticamente sem parada de servico!', 'success');
+                showToast('Self-Healing: Script corrigido em sandbox.', 'success');
             }, 1100);
         }
 
@@ -680,7 +680,7 @@
             if (ramPolyline) ramPolyline.setAttribute('points', '0,60 40,60 40,35 90,35 90,38 140,38 140,25 190,25 190,30 240,30 240,40 290,40 290,42 310,42');
             if (ramPolygon) ramPolygon.setAttribute('points', '0,80 0,60 40,60 40,35 90,35 90,38 140,38 140,25 190,25 190,30 240,30 240,40 290,40 290,42 310,42 310,80');
 
-            showToast('TELEMETRIA: Pulso de estresse injetado. RAM estabilizada abaixo de 200MB!', 'warning');
+            showToast('TELEMETRIA: Pulso de estresse injetado. RAM contida em limite seguro.', 'warning');
 
             registerSimTimer(() => {
                 if (ramDisplay) ramDisplay.innerText = '118.4 MB (39.4% // RECUPERADO)';
@@ -701,7 +701,7 @@
             if (tempPolyline) tempPolyline.setAttribute('points', '0,52 50,52 50,30 110,30 110,22 170,22 170,18 230,18 230,15 290,15 290,14 310,14');
             if (tempPolygon) tempPolygon.setAttribute('points', '0,80 0,52 50,52 50,30 110,30 110,22 170,22 170,18 230,18 230,15 290,15 290,14 310,14 310,80');
 
-            showToast('ALERTA TERMICO: Temperatura acima de 72 C! EdgeHardwareTriggers ativou desaceleracao de polling preventivo.', 'danger', 4500);
+            showToast('ALERTA TÉRMICO: Temperatura acima de 72 °C. EdgeHardwareTriggers ativou desaceleração de polling.', 'danger', 4500);
 
             registerSimTimer(() => {
                 if (tempDisplay) tempDisplay.innerHTML = '<span>48.2 C (NOMINAL)</span>';
@@ -715,7 +715,7 @@
         function copySnippet(text) {
             playHapticMechanicalClick();
             const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
-            const successMsg = isEn ? 'Command copied to clipboard!' : 'Comando copiado para a area de transferencia!';
+            const successMsg = isEn ? 'Command copied to clipboard.' : 'Comando copiado para a área de transferência.';
 
             if (window.PixelSystem && window.PixelSystem.copyToClipboard) {
                 window.PixelSystem.copyToClipboard(text).then(() => {
@@ -861,7 +861,7 @@
                 if (arena) {
                     arena.scrollIntoView({ behavior: 'smooth' });
                 }
-                showToast('Abrindo analise forense e arena interativa de seguranca.', 'info');
+                showToast('Abrindo auditoria de governança e arena interativa de segurança.', 'info');
             }
         }
 

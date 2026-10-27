@@ -1,5 +1,5 @@
 """
-CLI Oficial do piDots - Always-On AI Coworkers.
+Interface de linha de comando do piDots para nós edge Linux.
 Entrypoints para gerenciamento operacional e inicialização do servidor Edge.
 """
 
@@ -103,7 +103,7 @@ def cli_entrypoint() -> None:
     """Ponto de entrada do comando 'pidots' com subcomandos."""
     parser = argparse.ArgumentParser(
         prog="pidots",
-        description="piDots - Gerenciador de AI Coworkers para Edge Computing."
+        description="piDots: orquestrador de agentes autônomos para hardware restrito (ARM64)."
     )
     parser.add_argument("--version", action="version", version=f"piDots {__version__}")
     subparsers = parser.add_subparsers(dest="subcommand", help="Comandos disponíveis")

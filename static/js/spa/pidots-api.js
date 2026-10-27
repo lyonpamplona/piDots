@@ -87,7 +87,7 @@
                 });
                 if (!res.ok) throw new Error(`Status ${res.status}`);
                 await res.json();
-                PixelSystem.toast(`SUCESSO: Hot-Reload de IA aplicado! Modelo ativo: ${model}`, 'success');
+                PixelSystem.toast(`Hot-reload de IA aplicado. Modelo ativo: ${model}.`, 'success');
                 await this.fetchTelemetry();
             } catch (e) {
                 PixelSystem.toast(`Erro ao aplicar Hot-Reload: ${e}`, 'danger');
@@ -421,7 +421,7 @@
                             })
                         });
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        PixelSystem.toast(`Canal #${slug} criado com sucesso!`, 'success');
+                        PixelSystem.toast(`Canal #${slug} criado.`, 'success');
                         await this.loadChannels();
                     } catch (e) {
                         PixelSystem.toast(`Erro ao criar canal: ${e}`, 'danger');
@@ -612,7 +612,7 @@
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
                         this.selectDot(cleanTarget);
                         await this.loadActiveThreadState();
-                        PixelSystem.toast(`Handoff concluido para @${cleanTarget}!`, 'success');
+                        PixelSystem.toast(`Handoff concluído para @${cleanTarget}.`, 'success');
                     } catch (e) {
                         PixelSystem.toast(`Falha no handoff: ${e}`, 'danger');
                     }
@@ -687,7 +687,7 @@
                         });
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
                         const saved = await res.json();
-                        PixelSystem.toast(`Conversa salva como '${saved.filename}' em Spaces!`, 'success');
+                        PixelSystem.toast(`Conversa persistida como '${saved.filename}' em Spaces.`, 'success');
                         await this.loadSpaces();
                         if (saved.space_id) {
                             await this.loadArtifact(saved.space_id);
@@ -988,7 +988,7 @@
                 const revBadge = document.querySelector('.artifact-header .space-item-rev');
                 if (revBadge) revBadge.textContent = `REV ${saved.version || 1}`;
 
-                PixelSystem.toast(`Artefato '${filename}' persistido no SQLite WAL com sucesso! Revisão ${saved.version || 1}.`, 'success');
+                PixelSystem.toast(`Artefato '${filename}' persistido no SQLite WAL (rev ${saved.version || 1}).`, 'success');
                 await this.loadSpaces();
             } catch (e) {
                 PixelSystem.toast(`Falha ao gravar no SQLite WAL: ${e}`, 'danger');
@@ -1018,7 +1018,7 @@
                         const created = await res.json();
                         const docId = created.space_id || created.id;
 
-                        PixelSystem.toast(`Arquivo '${nome}' criado com sucesso no SQLite WAL!`, 'success');
+                        PixelSystem.toast(`Arquivo '${nome}' criado no SQLite WAL.`, 'success');
                         await this.loadSpaces();
                         if (docId) {
                             await this.loadArtifact(docId);
@@ -1171,14 +1171,14 @@
                 if (approveStamp) approveStamp.style.transform = 'rotate(2.5deg) scale(1.15)';
                 if (rejectStamp) rejectStamp.style.opacity = '0.3';
                 setTimeout(() => {
-                    PixelSystem.toast('HOMOLOGADO: Acao oficial autenticada e despachada no SQLite WAL!', 'success');
+                    PixelSystem.toast('HOMOLOGADO: Ação aprovada e despachada para o sandbox.', 'success');
                     if (approveStamp) approveStamp.style.transform = 'rotate(2.5deg) scale(1.0)';
                 }, 200);
             } else {
                 if (rejectStamp) rejectStamp.style.transform = 'rotate(-3deg) scale(1.15)';
                 if (approveStamp) approveStamp.style.opacity = '0.3';
                 setTimeout(() => {
-                    PixelSystem.toast('VETO REGISTRADO: Acao cancelada e arquivada com seguranca no SQLite WAL.', 'danger');
+                    PixelSystem.toast('VETO REGISTRADO: Ação cancelada e arquivada na fila de governança.', 'danger');
                     if (rejectStamp) rejectStamp.style.transform = 'rotate(-3deg) scale(1.0)';
                 }, 200);
             }
@@ -1322,7 +1322,7 @@
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 if (typeof window.closeDotCreatorModal === 'function') window.closeDotCreatorModal();
                 await this.loadDotsStudioPane();
-                PixelSystem.toast(`Coworker @${idVal} salvo com sucesso no SQLite WAL!`, 'success');
+                PixelSystem.toast(`Coworker @${idVal} salvo no SQLite WAL.`, 'success');
             } catch (e) {
                 PixelSystem.toast(`Erro ao salvar Coworker: ${e}`, 'danger');
             }
@@ -1405,7 +1405,7 @@
                         });
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
                         await this.loadTasksSidebar();
-                        PixelSystem.toast(`Tarefa '${name}' agendada no EdgeScheduler!`, 'success');
+                        PixelSystem.toast(`Tarefa '${name}' agendada no EdgeScheduler.`, 'success');
                     } catch (e) {
                         PixelSystem.toast(`Erro ao agendar tarefa: ${e}`, 'danger');
                     }
@@ -1417,7 +1417,7 @@
             try {
                 const res = await fetch(`/api/tasks/${encodeURIComponent(taskId)}/run`, { method: 'POST' });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                PixelSystem.toast(`Tarefa ${taskId} disparada em background!`, 'success');
+                PixelSystem.toast(`Tarefa ${taskId} despachada em background.`, 'success');
                 await this.loadTasksSidebar();
             } catch (e) {
                 PixelSystem.toast(`Erro ao disparar tarefa: ${e}`, 'danger');
@@ -1515,7 +1515,7 @@
                 const res = await fetch(`/api/dots/packs/install/${encodeURIComponent(packId)}`, { method: 'POST' });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
-                PixelSystem.toast(`DotPack '${packId}' validado (SHA-256) e instalado como @${data.dot_id}!`, 'success');
+                PixelSystem.toast(`DotPack '${packId}' validado (SHA-256) e instalado como @${data.dot_id}.`, 'success');
                 await this.loadDots();
             } catch (e) {
                 PixelSystem.toast(`Falha ao instalar DotPack: ${e.message || e}`, 'danger');
@@ -1557,7 +1557,7 @@
                     })
                 ]);
                 if (!r1.ok || !r2.ok) throw new Error(`HTTP ${r1.status}/${r2.status}`);
-                PixelSystem.toast(`Core Memory de @${this.activeDotId} atualizada no SQLite WAL!`, 'success');
+                PixelSystem.toast(`Core Memory de @${this.activeDotId} atualizada no SQLite WAL.`, 'success');
             } catch (e) {
                 PixelSystem.toast(`Erro ao salvar Core Memory: ${e}`, 'danger');
             }
@@ -1578,7 +1578,7 @@
                         });
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
                         await this.loadMemorySidebar();
-                        PixelSystem.toast('Fato indexado na Archival Memory 64D!', 'success');
+                        PixelSystem.toast('Fato indexado na Archival Memory 64D.', 'success');
                     } catch (e) {
                         PixelSystem.toast(`Erro ao arquivar fato: ${e}`, 'danger');
                     }
@@ -1645,7 +1645,7 @@
                         });
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
                         await this.loadMcpServersSidebar();
-                        PixelSystem.toast(`Servidor MCP '${name}' acoplado com sucesso!`, 'success');
+                        PixelSystem.toast(`Servidor MCP '${name}' acoplado ao barramento.`, 'success');
                     } catch (e) {
                         PixelSystem.toast(`Erro ao registrar MCP: ${e}`, 'danger');
                     }

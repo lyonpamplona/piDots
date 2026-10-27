@@ -296,7 +296,7 @@
                     if (typeof window.openHitlCanvas === 'function') {
                         window.openHitlCanvas();
                     }
-                    this.toast('Dossie de governanca HITL carregado.', 'warning');
+                    this.toast('Fila de governança HITL carregada.', 'info');
                     break;
                 case 'split':
                     if (typeof window.toggleCanvasExpand === 'function') {

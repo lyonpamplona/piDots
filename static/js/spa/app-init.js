@@ -503,7 +503,7 @@
             const agentName = document.getElementById('headerActiveAgentName')?.textContent || 'Dev Assistant';
             const activeDot = (window.PiDotsAPI && PiDotsAPI.dotsCache) ? PiDotsAPI.dotsCache.find(d => d.id === PiDotsAPI.activeDotId) : null;
             const monogram = agentName.split(/[\s-_]+/).map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'DA';
-            const roleText = activeDot?.role || 'Especialista de borda em código, refatoração e auditoria no Raspberry Pi ARM64. O que vamos construir ou revisar agora?';
+            const roleText = activeDot?.role || 'Especialista em desenvolvimento, refatoração e testes no nó Raspberry Pi ARM64. Selecione uma sugestão abaixo ou envie uma instrução via terminal.';
 
             if (scrollArea) {
                 scrollArea.innerHTML = `
@@ -611,11 +611,11 @@
             if (isSafetyUnlocked) {
                 if (switchEl) switchEl.classList.add('active');
                 if (btnApprove) btnApprove.disabled = false;
-                PixelSystem.toast('TRAVA DESTRIVADA: Autorizacao de comandos criticos liberada.', 'warning');
+                PixelSystem.toast('CONFIRMAÇÃO MANUAL: Autorização de comandos críticos liberada.', 'warning');
             } else {
                 if (switchEl) switchEl.classList.remove('active');
                 if (btnApprove) btnApprove.disabled = true;
-                PixelSystem.toast('TRAVA ENGATADA: Protecao de seguranca ativa.', 'info');
+                PixelSystem.toast('BLOQUEIO DE SEGURANÇA: Autorização manual reengatada.', 'info');
             }
         }
 
@@ -791,7 +791,7 @@
                 return;
             }
 
-            // Alt+H: Abrir Dossie de Governanca HITL
+            // Alt+H: Abrir Fila de Governança HITL
             if (e.altKey && (e.key === 'h' || e.key === 'H')) {
                 e.preventDefault();
                 PixelSystem.contextAction('hitl');

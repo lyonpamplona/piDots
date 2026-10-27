@@ -190,7 +190,7 @@ async def lifespan(app: FastAPI):
     if settings.ai_api_key in ("", "sua_chave_aqui", "placeholder"):
         logger.warning(
             "AVISO DE CONFIGURAÇÃO EDGE: AI_API_KEY não configurada ou com valor placeholder ('%s'). "
-            "Chamadas cognitivas que dependem do provedor remoto entrarão em modo protegido até que uma chave válida seja configurada no .env.",
+            "Requisições de inferência que dependem do provedor remoto falharão até que uma chave válida seja configurada no .env.",
             settings.ai_api_key
         )
     else:

@@ -47,7 +47,7 @@ def test_bilingual_i18n_synchronization():
     # Verificar tratamento condicional de idioma nas acoes da arena HITL
     assert 'HOMOLOGATED:' in content and 'HOMOLOGADO:' in content, "Tratativa bilingue ausente em triggerDemoApprove"
     assert 'VETO RECORDED:' in content and 'VETO REGISTRADO:' in content, "Tratativa bilingue ausente em triggerDemoVeto"
-    assert 'FORENSIC REPORT:' in content and 'DOSSIE FORENSE:' in content, "Tratativa bilingue ausente em generateRoiSummaryToast"
+    assert 'SAVINGS ESTIMATE:' in content and 'PROJEÇÃO DE ECONOMIA:' in content, "Tratativa bilingue ausente em generateRoiSummaryToast"
 
     print("[OK] Teste 2: Sincronizacao bilingue (PT/EN) dinâmica homologada nas rotinas operacionais.")
 
