@@ -24,6 +24,7 @@ class WebhookCallbackPayload(BaseModel):
     approval_id: str
     approved: bool
     notes: str | None = None
+    hmac_token: str | None = None
 
 
 @router.get("/api/hitl/pending")
@@ -100,11 +101,23 @@ async def resolve_hitl(approval_id: str, payload: HITLResolutionPayload):
 
 @router.post("/api/hitl/webhook-callback")
 async def handle_hitl_webhook_callback(payload: WebhookCallbackPayload):
-    """Endpoint de retorno para resolução de aprovação HITL via mensageria/webhook."""
+    """
+    Endpoint de retorno para resolução de aprovação HITL via mensageria/webhook.
+    Exige autenticação HMAC-SHA256 para prevenir resoluções não autorizadas de operações sensíveis.
+    """
+    from ..core.hitl_crypto import verify_hitl_hmac
+
+    action = "approve" if payload.approved else "reject"
+    if not payload.hmac_token or not verify_hitl_hmac(payload.approval_id, action, payload.hmac_token):
+        raise HTTPException(
+            status_code=403,
+            detail="Assinatura HMAC-SHA256 ausente, inválida ou não autorizada para esta solicitação HITL."
+        )
+
     success = await HITLManager.resolve_approval(
         approval_id=payload.approval_id,
         approved=payload.approved,
-        notes=payload.notes or "Resolvido via Webhook Callback Remoto"
+        notes=payload.notes or f"Resolvido via Webhook Callback com HMAC validado (Ação: {action})"
     )
     if not success:
         raise HTTPException(status_code=404, detail="Solicitação HITL não encontrada ou já resolvida.")

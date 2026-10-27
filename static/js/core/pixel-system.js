@@ -25,15 +25,32 @@
 
     const PixelSystem = {
         dialogCallback: null,
+        _sharedAudioCtx: null,
+        _tooltipsInitialized: false,
 
         /**
-         * Emite som de clique mecânico analógico usando Web Audio API.
+         * Retorna a instância compartilhada singleton de AudioContext, retomando-a se suspensa.
+         */
+        _getAudioContext() {
+            if (!this._sharedAudioCtx) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) {
+                    this._sharedAudioCtx = new AudioCtx();
+                }
+            }
+            if (this._sharedAudioCtx && this._sharedAudioCtx.state === 'suspended') {
+                this._sharedAudioCtx.resume().catch(() => {});
+            }
+            return this._sharedAudioCtx;
+        },
+
+        /**
+         * Emite som de clique mecânico analógico usando Web Audio API reutilizando singleton.
          */
         playMechanicalClick(freq = 850, duration = 0.02) {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
+                const ctx = this._getAudioContext();
+                if (!ctx) return;
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
 
@@ -313,11 +330,13 @@
         },
 
         /**
-         * Inicializador de Tooltips Flutuantes.
+         * Inicializador de Tooltips Flutuantes com guarda de inicialização única.
          */
         initTooltips() {
+            if (this._tooltipsInitialized) return;
             const tooltipEl = document.getElementById('pixelTooltip');
             if (!tooltipEl) return;
+            this._tooltipsInitialized = true;
 
             document.body.addEventListener('mouseover', (e) => {
                 const target = e.target.closest('[data-tooltip]');
@@ -345,9 +364,125 @@
                     tooltipEl.style.display = 'none';
                 }
             });
+        },
+
+        /**
+         * Gerenciador Universal de Temas (Dark Noir vs Blueprint)
+         * Persistência garantida via localStorage ('pidots-theme') e sincronização de rótulos.
+         */
+        ThemeManager: {
+            STORAGE_KEY: 'pidots-theme',
+            getTheme() {
+                try {
+                    return localStorage.getItem(this.STORAGE_KEY) === 'blueprint' ? 'blueprint' : 'noir';
+                } catch (e) {
+                    return 'noir';
+                }
+            },
+            setTheme(theme, notify = false) {
+                const isBp = theme === 'blueprint';
+                try {
+                    if (isBp) {
+                        document.documentElement.setAttribute('data-theme', 'blueprint');
+                        localStorage.setItem(this.STORAGE_KEY, 'blueprint');
+                    } else {
+                        document.documentElement.removeAttribute('data-theme');
+                        localStorage.setItem(this.STORAGE_KEY, 'noir');
+                    }
+                } catch (e) {}
+
+                // Sincroniza botões e rótulos de tema em todas as superfícies
+                const btn = document.getElementById('btn-theme-toggle') || document.getElementById('btnThemeToggle');
+                if (btn) {
+                    const span = btn.querySelector('span');
+                    if (span) span.textContent = isBp ? 'Blueprint' : 'Dark Noir';
+                    else btn.textContent = isBp ? 'Tema: Blueprint' : 'Tema: Dark Noir';
+                }
+
+                if (notify && PixelSystem.toast) {
+                    PixelSystem.toast(
+                        isBp ? 'Tema comutado para Blueprint Técnico de Prancheta.' : 'Tema comutado para Dark Paper Noir Oficial.',
+                        'info'
+                    );
+                }
+            },
+            toggleTheme(notify = true) {
+                if (PixelSystem.playMechanicalClick) {
+                    PixelSystem.playMechanicalClick();
+                }
+                const current = this.getTheme();
+                const next = current === 'blueprint' ? 'noir' : 'blueprint';
+                this.setTheme(next, notify);
+                return next;
+            },
+            init() {
+                const theme = this.getTheme();
+                if (theme === 'blueprint') {
+                    this.setTheme('blueprint', false);
+                }
+            }
+        },
+
+        /**
+         * Copiador Universal de Texto com Fallback para Ambientes HTTP/LAN e Restritos.
+         */
+        copyToClipboard(text) {
+            return new Promise((resolve, reject) => {
+                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(resolve).catch(() => {
+                        this._fallbackCopyText(text, resolve, reject);
+                    });
+                } else {
+                    this._fallbackCopyText(text, resolve, reject);
+                }
+            });
+        },
+
+        _fallbackCopyText(text, resolve, reject) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.top = '-9999px';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                ta.setSelectionRange(0, text.length);
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok) resolve();
+                else reject(new Error('Falha no comando de cópia fallback'));
+            } catch (e) {
+                reject(e);
+            }
+        },
+
+        /**
+         * Registro Resiliente de Service Worker PWA para Todas as Superfícies.
+         */
+        pwa: {
+            register(swUrl = '/sw.js') {
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register(swUrl).catch((err) => {
+                            console.warn('[piDots PWA] Falha ao registrar Service Worker:', err);
+                        });
+                    });
+                }
+            }
         }
     };
 
+    PixelSystem.ThemeManager.init();
+    PixelSystem.pwa.register();
+
     window.escapeHtml = escapeHtml;
     window.PixelSystem = PixelSystem;
+    window.toggleTheme = function() {
+        return PixelSystem.ThemeManager.toggleTheme(true);
+    };
+    window.copyToClipboard = function(text) {
+        return PixelSystem.copyToClipboard(text);
+    };
 })(typeof window !== 'undefined' ? window : this);

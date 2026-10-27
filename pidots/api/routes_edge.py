@@ -18,7 +18,7 @@ from ..core.edge_triggers import EdgeHardwareTriggers
 from ..providers.openai_client import OpenAIUniversalProvider
 from ..tools.terminal import TerminalSandbox
 from ..tools.file_ops import FileManager
-from ..tools.registry import ToolRegistry
+from ..tools.registry import registry as default_tool_registry, ToolRegistry
 from ..tools.mcp_client import LiteMCPClient, MCPRegistryManager
 
 logger = logging.getLogger("pidots.api.edge")
@@ -263,8 +263,7 @@ async def write_computer_file(payload: ComputerWriteFilePayload):
 @router.get("/api/tools")
 async def list_available_tools():
     """Retorna o catálogo completo de ferramentas operacionais nativas e MCP disponíveis para os Dots."""
-    registry = ToolRegistry()
-    definitions = registry.get_tool_definitions()
+    definitions = default_tool_registry.get_tool_definitions()
     tools_catalog: list[dict[str, Any]] = []
     for t in definitions:
         fn = t.get("function", {})
@@ -315,11 +314,10 @@ async def register_mcp_server(payload: MCPServerRegisterPayload):
         sse_url=payload.sse_url,
         http_endpoint=payload.http_endpoint
     )
-    registry = ToolRegistry()
     registered_tools = await MCPRegistryManager.register_server(
         server_name=payload.server_name,
         client=client,
-        tool_registry=registry
+        tool_registry=default_tool_registry
     )
     if not registered_tools and not client._is_initialized:
         raise HTTPException(
@@ -336,12 +334,13 @@ async def register_mcp_server(payload: MCPServerRegisterPayload):
 
 @router.delete("/api/mcp/servers/{server_name}")
 async def disconnect_mcp_server(server_name: str):
-    """Desconecta e remove um servidor MCP ativo."""
-    client = MCPRegistryManager.get_client(server_name)
-    if not client:
+    """Desconecta e remove um servidor MCP ativo e suas ferramentas do catálogo."""
+    success = await MCPRegistryManager.unregister_server(
+        server_name=server_name,
+        tool_registry=default_tool_registry
+    )
+    if not success:
         raise HTTPException(status_code=404, detail=f"Servidor MCP '{server_name}' não encontrado.")
-    await client.close()
-    MCPRegistryManager._active_clients.pop(server_name, None)
     return {"status": "disconnected", "server_name": server_name}
 
 

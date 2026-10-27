@@ -32,6 +32,11 @@ class ToolRegistry:
         self._tools[name] = schema
         self._handlers[name] = handler
 
+    def unregister(self, name: str) -> None:
+        """Remove uma ferramenta registrada pelo nome."""
+        self._tools.pop(name, None)
+        self._handlers.pop(name, None)
+
     def get_tool_definitions(self, tool_names: list[str] | None = None) -> list[dict[str, Any]]:
         """
         Retorna as definições das ferramentas no formato da OpenAI API.

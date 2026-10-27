@@ -92,8 +92,9 @@ class HITLNotifier:
 
                 # Callback data compacto assinado (max 64 bytes): h:a:<id>:<hmac> ou h:r:<id>:<hmac>
                 # h:a = hitl approve, h:r = hitl reject
-                cb_approve = f"h:a:{approval_id}:{hmac_approve[:12]}"
-                cb_reject = f"h:r:{approval_id}:{hmac_reject[:12]}"
+                # 16 caracteres hexadecimais garantem 64 bits de entropia e mantêm o payload em 57 bytes (< 64B)
+                cb_approve = f"h:a:{approval_id}:{hmac_approve[:16]}"
+                cb_reject = f"h:r:{approval_id}:{hmac_reject[:16]}"
 
                 tg_url = f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendMessage"
                 tg_payload = {
@@ -137,8 +138,8 @@ class HITLNotifier:
                     f"Risco: {risk_level}\n"
                     f"Acao: {action_type}\n"
                     f"ID: {approval_id}\n\n"
-                    f"Para aprovar: Responda 'APROVAR {approval_id} {hmac_approve[:12]}'\n"
-                    f"Para bloquear: Responda 'BLOQUEAR {approval_id} {hmac_reject[:12]}'"
+                    f"Para aprovar: Responda 'APROVAR {approval_id} {hmac_approve}'\n"
+                    f"Para bloquear: Responda 'BLOQUEAR {approval_id} {hmac_reject}'"
                 )
                 client = http_client or httpx.AsyncClient(timeout=5.0)
                 try:

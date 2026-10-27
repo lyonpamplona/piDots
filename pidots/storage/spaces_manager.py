@@ -5,6 +5,7 @@ Gerenciador de Spaces (Biblioteca de Artefatos) com Versionamento Incremental e 
 import os
 import io
 import uuid
+import asyncio
 import zipfile
 import difflib
 import logging
@@ -174,41 +175,46 @@ class SpacesManager:
     @classmethod
     async def export_workspace_zip(cls, dot_id: str) -> bytes:
         """
-        Compacta todos os arquivos do workspace do Dot em um arquivo ZIP em memória.
+        Compacta todos os arquivos do workspace do Dot em um arquivo ZIP em memória em worker thread.
         Inclui fallback para recuperar documentos versionados da tabela spaces caso o disco local
         ainda não tenha sido sincronizado ou contenha arquivos apenas no banco.
         """
         workspace_dir = FileManager._get_safe_path(dot_id, "")
-        zip_buffer = io.BytesIO()
-        written_files = set()
 
-        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_f:
-            if os.path.exists(workspace_dir):
-                real_workspace = os.path.realpath(workspace_dir)
-                for root, _, files in os.walk(workspace_dir, followlinks=False):
-                    for file in files:
-                        full_path = os.path.join(root, file)
-                        # Prevenção estrita de symlink traversal: valida se o arquivo real reside dentro do workspace
-                        real_file = os.path.realpath(full_path)
-                        if os.path.commonpath([real_workspace, real_file]) != real_workspace:
-                            continue
-                        rel_path = os.path.relpath(full_path, workspace_dir)
-                        zip_f.write(full_path, arcname=rel_path)
-                        written_files.add(rel_path)
+        # Coleta prévia dos documentos do banco SQLite de forma assíncrona
+        async with get_db() as db:
+            cursor = await db.execute(
+                "SELECT filename, content FROM spaces WHERE dot_id = ?",
+                (dot_id,)
+            )
+            space_rows = await cursor.fetchall()
+            db_docs = [(r["filename"], r["content"].encode("utf-8")) for r in space_rows]
 
-            # Complemento resiliente: inclui documentos de Spaces que não estejam no disco
-            async with get_db() as db:
-                cursor = await db.execute(
-                    "SELECT filename, content FROM spaces WHERE dot_id = ?",
-                    (dot_id,)
-                )
-                space_rows = await cursor.fetchall()
-                for row in space_rows:
-                    fname = row["filename"]
+        def _compress_sync() -> bytes:
+            zip_buffer = io.BytesIO()
+            written_files = set()
+
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_f:
+                if os.path.exists(workspace_dir):
+                    real_workspace = os.path.realpath(workspace_dir)
+                    for root, _, files in os.walk(workspace_dir, followlinks=False):
+                        for file in files:
+                            full_path = os.path.join(root, file)
+                            # Prevenção estrita de symlink traversal
+                            real_file = os.path.realpath(full_path)
+                            if os.path.commonpath([real_workspace, real_file]) != real_workspace:
+                                continue
+                            rel_path = os.path.relpath(full_path, workspace_dir)
+                            zip_f.write(full_path, arcname=rel_path)
+                            written_files.add(rel_path)
+
+                # Complemento: inclui documentos de Spaces que não estejam no disco
+                for fname, content_bytes in db_docs:
                     if fname not in written_files:
-                        content_bytes = row["content"].encode("utf-8")
                         zip_f.writestr(fname, content_bytes)
                         written_files.add(fname)
 
-        zip_buffer.seek(0)
-        return zip_buffer.getvalue()
+            zip_buffer.seek(0)
+            return zip_buffer.getvalue()
+
+        return await asyncio.to_thread(_compress_sync)

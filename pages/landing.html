@@ -40,6 +40,7 @@
     <script defer src="/static/js/landing/landing.js"></script>
 </head>
 <body>
+    <a href="#mainContent" class="skip-link sr-only" data-i18n="a11y.skip_to_content">Pular para o conteúdo principal</a>
 
     <!-- ===================================================================
          1. CABECALHO FIXO / TOP-DECK UNIFICADO (48px)
@@ -63,14 +64,17 @@
                 <a href="/" class="surface-tab active" id="tab-overview" data-surface="overview" title="Atalho: G H">
                     <span class="tab-idx">01</span>
                     <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
+                    <span class="tab-lbl-short" data-i18n="nav.overview_short">VIS</span>
                 </a>
                 <a href="/app" class="surface-tab" id="tab-workspace" data-surface="workspace" title="Atalho: G W">
                     <span class="tab-idx">02</span>
                     <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
+                    <span class="tab-lbl-short" data-i18n="nav.workspace_short">APP</span>
                 </a>
                 <a href="/docs" class="surface-tab" id="tab-docs" data-surface="docs" title="Atalho: G D">
                     <span class="tab-idx">03</span>
                     <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
+                    <span class="tab-lbl-short" data-i18n="nav.docs_short">DOC</span>
                 </a>
             </nav>
         </div>
@@ -122,7 +126,7 @@
     <!-- ===================================================================
          CONTAINER PRINCIPAL DA LANDING PAGE
          =================================================================== -->
-    <main class="landing-container">
+    <main id="mainContent" class="landing-container">
 
         <!-- ===============================================================
              2. HERO SECTION DE ALTO IMPACTO (SHOW, DON'T TELL)
@@ -306,7 +310,7 @@
                         <!-- Campo de Input Customizado Interativo -->
                         <div class="sim-input-row">
                             <span class="sim-input-prompt">&gt;</span>
-                            <input type="text" class="sim-input-field" id="heroSimInput" placeholder="Envie comando ou /slash (ex: /telemetry, /coagents)..." data-i18n-placeholder="landing.sim_input_placeholder" onkeydown="if(event.key==='Enter') handleCustomSimOrder();" autocomplete="off" spellcheck="false">
+                            <input type="text" class="sim-input-field" id="heroSimInput" placeholder="Envie comando ou /slash (ex: /telemetry, /coagents)..." data-i18n-placeholder="landing.sim_input_placeholder" aria-label="Comando do simulador" data-i18n-aria="landing.sim_input_aria" onkeydown="if(event.key==='Enter') handleCustomSimOrder();" autocomplete="off" spellcheck="false">
                             <button type="button" class="sim-btn-send" onclick="handleCustomSimOrder()">
                                 <span data-i18n="landing.btn_send">Disparar</span>
                                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
@@ -776,7 +780,7 @@
                             <span class="slider-title">QUANTIDADE DE AI COWORKERS ATIVOS:</span>
                             <span class="slider-display" id="displayAgentsCount">3 AGENTES</span>
                         </div>
-                        <input type="range" class="pixel-slider" id="sliderAgents" min="1" max="8" value="3" step="1" oninput="recalculateRoi()">
+                        <input type="range" class="pixel-slider" id="sliderAgents" min="1" max="8" value="3" step="1" aria-label="Quantidade de agentes" data-i18n-aria="landing.slider_agents_aria" oninput="recalculateRoi()">
                         <div class="slider-ticks">
                             <span>1</span>
                             <span>2</span>
@@ -794,7 +798,7 @@
                             <span class="slider-title">CUSTO MENSAL POR AGENTE EM NUVEM (VPS / API):</span>
                             <span class="slider-display" id="displayCloudCost">R$ 400 / MÊS</span>
                         </div>
-                        <input type="range" class="pixel-slider" id="sliderCloudCost" min="100" max="1200" value="400" step="50" oninput="recalculateRoi()">
+                        <input type="range" class="pixel-slider" id="sliderCloudCost" min="100" max="1200" value="400" step="50" aria-label="Custo mensal por agente em nuvem" data-i18n-aria="landing.slider_cost_aria" oninput="recalculateRoi()">
                         <div class="slider-ticks">
                             <span>R$ 100</span>
                             <span>R$ 400</span>
@@ -971,7 +975,7 @@
         </header>
         
         <div class="drawer-search-box">
-            <input type="text" class="drawer-search-input" id="drawerSearchInput" placeholder="Filtrar tópicos do manual..." data-i18n-placeholder="landing.drawer_search_placeholder" oninput="filterDrawerSteps(this.value)">
+            <input type="text" class="drawer-search-input" id="drawerSearchInput" placeholder="Filtrar tópicos do manual..." data-i18n-placeholder="landing.drawer_search_placeholder" aria-label="Filtrar tópicos do manual" data-i18n-aria="landing.drawer_search_aria" oninput="filterDrawerSteps(this.value)">
         </div>
 
         <div class="drawer-content" id="drawerContentList">

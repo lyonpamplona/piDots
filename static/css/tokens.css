@@ -52,11 +52,11 @@
     --paper-noir-base:      var(--paper-base);
     --paper-surface-sheet:  var(--paper-sheet);
 
-    /* Tintas Tecnicas, Contraste Harmonico e Acentos Sutis */
+    /* Tintas Tecnicas, Contraste Harmonico e Acentos Sutis (Calibrado WCAG 2.1 AA) */
     --ink-main: #f0f2f1;
     --ink-primary: var(--ink-main);
     --ink-secondary: #9aa8ad;
-    --ink-muted: #67787e;
+    --ink-muted: #82959c;
     --ink-carbon: #1e292d;
 
     /* Acentos de Silicio com Precisao Cirurgica */
@@ -137,7 +137,7 @@
 
     --ink-main: #10191e;
     --ink-secondary: #3b4e54;
-    --ink-muted: #667c83;
+    --ink-muted: #4a6067;
     --ink-carbon: #b6c3c7;
 
     --phosphor-green: #15803d;

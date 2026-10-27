@@ -27,13 +27,15 @@ def generate_hitl_hmac(approval_id: str, action: str, secret: str | None = None)
 def verify_hitl_hmac(approval_id: str, action: str, token: str, secret: str | None = None) -> bool:
     """
     Verifica a autenticidade da assinatura HMAC-SHA256 em tempo constante (anti-timing attacks).
+    Suporta tokens compactos de 12 ou 16 caracteres (para mensageiros móveis e Telegram callback_data)
+    ou o hash completo de 64 caracteres hexadecimais (para webhooks REST/JSON).
     """
     if not approval_id or not action or not token:
         return False
     expected = generate_hitl_hmac(approval_id, action, secret)
-    # Suporta tokens de 16 chars ou tokens completos caso enviados por webhook REST
-    if len(token) == 16:
-        return hmac.compare_digest(expected, token)
+    # Suporta tokens compactos de 12 ou 16 chars
+    if len(token) in (12, 16):
+        return hmac.compare_digest(expected[:len(token)], token)
     elif len(token) == 64:
         key = (secret or settings.hitl_hmac_secret).encode("utf-8")
         payload = f"{approval_id}:{action}".encode("utf-8")

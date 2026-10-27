@@ -238,19 +238,15 @@
         }
 
         // Alternância de Tema: Dark Paper Noir vs Blueprint
-        let isBlueprint = false;
         function toggleTheme() {
-            isBlueprint = !isBlueprint;
-            const btn = document.getElementById('btn-theme-toggle');
-            const span = btn ? btn.querySelector('span') : null;
-            if (isBlueprint) {
-                document.documentElement.setAttribute('data-theme', 'blueprint');
-                if (span) span.textContent = 'Blueprint';
-                else if (btn) btn.textContent = 'Tema: Blueprint';
-            } else {
+            if (window.PixelSystem && window.PixelSystem.ThemeManager) {
+                return window.PixelSystem.ThemeManager.toggleTheme(true);
+            }
+            const current = document.documentElement.getAttribute('data-theme');
+            if (current === 'blueprint') {
                 document.documentElement.removeAttribute('data-theme');
-                if (span) span.textContent = 'Dark Noir';
-                else if (btn) btn.textContent = 'Tema: Dark Noir';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'blueprint');
             }
         }
 

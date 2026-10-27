@@ -79,7 +79,7 @@ header.guide-header::-webkit-scrollbar {
     height: 7px;
     border-radius: 50%;
     background: var(--phosphor-green);
-    box-shadow: 0 0 6px var(--phosphor-green);
+    box-shadow: 0 0 0 1px var(--phosphor-green);
     display: inline-block;
     flex-shrink: 0;
 }
@@ -1130,8 +1130,9 @@ code.inline-pixel {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(4, 6, 8, 0.78);
-    backdrop-filter: blur(2px);
+    background: rgba(4, 6, 8, 0.85);
+    background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
+    background-size: 4px 4px;
     z-index: 998;
 }
 
@@ -1460,8 +1461,8 @@ footer.guide-paper-footer {
     border: 1px solid var(--border-default);
     box-shadow: var(--shadow-sm);
     color: var(--blueprint-cyan);
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 4px;
     display: none;
     align-items: center;
@@ -1553,7 +1554,7 @@ footer.guide-paper-footer {
         transform: translateX(100%) !important;
         transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
         z-index: 100 !important;
-        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.5) !important;
+        box-shadow: -4px 0 0px #000000 !important;
     }
 
     aside.retractable-drawer.is-open,
@@ -1575,8 +1576,9 @@ footer.guide-paper-footer {
         left: 0;
         width: 100vw;
         height: calc(100vh - var(--header-height, 48px));
-        background: rgba(0, 0, 0, 0.65);
-        backdrop-filter: blur(2px);
+        background: rgba(0, 0, 0, 0.75);
+        background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
+        background-size: 4px 4px;
         z-index: 95;
         display: none;
     }

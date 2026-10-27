@@ -45,6 +45,7 @@
     <script defer src="/static/js/docs/docs.js"></script>
 </head>
 <body id="top">
+    <a href="#mainContent" class="skip-link sr-only" data-i18n="a11y.skip_to_content">Pular para o conteúdo principal</a>
 
     <!-- BARRA MECANICA DE PROGRESSO DE LEITURA (0-100% DINAMICA FIXA) -->
     <div id="readingProgressBar" class="reading-progress-track" aria-hidden="true">
@@ -72,16 +73,19 @@
                 <a href="/" class="surface-tab" id="tab-overview" data-surface="overview" title="Atalho: G H">
                     <span class="tab-idx">01</span>
                     <span class="tab-lbl" data-i18n="nav.overview">VISAO GERAL</span>
+                    <span class="tab-lbl-short" data-i18n="nav.overview_short">VIS</span>
                     <span class="tab-chord">g h</span>
                 </a>
                 <a href="/app" class="surface-tab" id="tab-workspace" data-surface="workspace" title="Atalho: G W">
                     <span class="tab-idx">02</span>
                     <span class="tab-lbl" data-i18n="nav.workspace">WORKSPACE</span>
+                    <span class="tab-lbl-short" data-i18n="nav.workspace_short">APP</span>
                     <span class="tab-chord">g w</span>
                 </a>
                 <a href="/docs" class="surface-tab active" id="tab-docs" data-surface="docs" title="Atalho: G D">
                     <span class="tab-idx">03</span>
                     <span class="tab-lbl" data-i18n="nav.docs">DOCUMENTACAO</span>
+                    <span class="tab-lbl-short" data-i18n="nav.docs_short">DOC</span>
                     <span class="tab-chord">g d</span>
                 </a>
             </nav>
@@ -91,7 +95,7 @@
             <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch (Desktop) -->
             <div class="header-search-box" onclick="abrirOmnisearch()" style="cursor: pointer;" title="Abrir Omnisearch (Atalho: Ctrl+K ou /)">
                 <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (CTRL+K OU /)..." data-i18n-placeholder="guide.search_placeholder" readonly style="cursor: pointer;">
+                <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (CTRL+K OU /)..." data-i18n-placeholder="guide.search_placeholder" aria-label="Buscar Guia" data-i18n-aria="guide.search_placeholder" readonly style="cursor: pointer;">
                 <kbd class="kbd-badge">CTRL+K</kbd>
             </div>
 
@@ -146,7 +150,7 @@
 
             <!-- Campo de Busca no Drawer -->
             <div class="drawer-search-wrapper">
-                <input type="text" id="drawerSearchInput" class="pixel-search-input" style="width: 100%;" placeholder="Filtrar tópicos do manual...">
+                <input type="text" id="drawerSearchInput" class="pixel-search-input" style="width: 100%;" placeholder="Filtrar tópicos do manual..." aria-label="Filtrar tópicos do manual">
             </div>
 
             <ul class="drawer-list-scroll" id="drawerListScroll">
@@ -975,7 +979,7 @@
                         </div>
 
                         <div class="hitl-input-group">
-                            <input type="text" id="hitlTestInput" class="hitl-input-field" value="rm -rf /var/log &amp;&amp; sudo reboot" placeholder="DIGITE UM COMANDO BASH PARA CLASSIFICAR O RISCO...">
+                            <input type="text" id="hitlTestInput" class="hitl-input-field" value="rm -rf /var/log &amp;&amp; sudo reboot" placeholder="DIGITE UM COMANDO BASH PARA CLASSIFICAR O RISCO..." aria-label="Comando Bash para classificar o risco">
                             <button class="pixel-btn btn-cyan" onclick="analisarComandoHITL()">
                                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                                 <span>Analisar Comando</span>
@@ -1117,7 +1121,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
 
                         <div class="api-tester-bar">
                             <span class="api-method-badge" id="apiTestMethod">GET</span>
-                            <input type="text" id="apiTestUrlInput" class="api-url-input" value="/health" placeholder="/api/endpoint...">
+                            <input type="text" id="apiTestUrlInput" class="api-url-input" value="/health" placeholder="/api/endpoint..." aria-label="URL do endpoint de API para testar">
                             <button class="pixel-btn btn-green" id="btnRunApiTest" onclick="executarTesteApi()">
                                 <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                 <span>Disparar Requisição REST</span>
@@ -1131,7 +1135,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                                 <span class="terminal-circle"></span>
                                 <span class="terminal-title" id="apiTestTerminalTitle">RESPOSTA JSON DO SERVIDOR // HTTP 200</span>
                             </div>
-                            <pre class="terminal-pre" style="max-height: 220px; overflow-y: auto;"><code id="apiTestJsonOutput">{
+                            <pre class="terminal-pre" style="max-height: 220px; overflow-y: auto;"><code id="apiTestJsonOutput" role="log" aria-live="polite">{
   "status": "healthy",
   "node": "pidots-core",
   "arch": "aarch64",
@@ -2474,7 +2478,7 @@ sudo systemctl status cloudflared</code></pre>
     <div id="omnisearchModal" class="omnisearch-modal" role="dialog" aria-modal="true" aria-label="Omnisearch do Guia piDots">
         <div class="omnisearch-header">
             <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="omnisearchInput" class="omnisearch-input" placeholder="DIGITE TERMO DE BUSCA (EX: HITL, SPACES, DOCKER, WAL)..." autocomplete="off">
+            <input type="text" id="omnisearchInput" class="omnisearch-input" placeholder="DIGITE TERMO DE BUSCA (EX: HITL, SPACES, DOCKER, WAL)..." aria-label="Digite termo de busca no guia" autocomplete="off">
             <span class="omnisearch-counter" id="omnisearchCounter">14 PASSOS</span>
             <button class="pixel-btn" onclick="fecharOmnisearch()" style="padding: 3px 6px;"><kbd>Esc</kbd></button>
         </div>

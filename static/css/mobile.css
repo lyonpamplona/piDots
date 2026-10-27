@@ -191,6 +191,21 @@ nav.mobile-bottom-nav {
     .surface-tab {
         padding: 4px 6px !important;
         font-size: 8px !important;
+        min-height: 38px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+        touch-action: manipulation;
+    }
+
+    .surface-tab::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        left: -2px;
+        right: -2px;
     }
 
     .surface-tab .tab-chord,
@@ -198,9 +213,10 @@ nav.mobile-bottom-nav {
         display: none !important;
     }
 
-    .surface-tab#tab-overview .tab-idx::after { content: " VIS"; }
-    .surface-tab#tab-workspace .tab-idx::after { content: " APP"; }
-    .surface-tab#tab-docs .tab-idx::after { content: " DOC"; }
+    .surface-tab .tab-lbl-short {
+        display: inline !important;
+        margin-left: 2px;
+    }
 
     /* Botoes de Acao do Cabecalho Mobile */
     .header-actions {
@@ -211,7 +227,18 @@ nav.mobile-bottom-nav {
     .header-actions .pixel-btn {
         padding: 4px 6px !important;
         font-size: 8px !important;
-        min-height: 32px !important;
+        min-height: 38px !important;
+        position: relative !important;
+        touch-action: manipulation;
+    }
+
+    .header-actions .pixel-btn::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        left: -2px;
+        right: -2px;
     }
 
     #btn-canvas-toggle {

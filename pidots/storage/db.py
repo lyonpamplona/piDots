@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS messages (
     content TEXT NOT NULL,
     thought_log TEXT,
     tool_calls_json TEXT,
+    tool_call_id TEXT,
     parent_message_id TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(thread_id) REFERENCES threads(id) ON DELETE CASCADE
@@ -374,6 +375,8 @@ async def _apply_schema_migrations(db: aiosqlite.Connection) -> None:
         await db.execute("ALTER TABLE messages ADD COLUMN visibility TEXT DEFAULT 'public';")
     if "parent_message_id" not in msg_cols:
         await db.execute("ALTER TABLE messages ADD COLUMN parent_message_id TEXT;")
+    if "tool_call_id" not in msg_cols:
+        await db.execute("ALTER TABLE messages ADD COLUMN tool_call_id TEXT;")
 
     # 4. Tabela scheduled_tasks: colunas para resiliência e circuit breaker
     cursor = await db.execute("PRAGMA table_info(scheduled_tasks);")

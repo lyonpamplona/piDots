@@ -46,6 +46,8 @@
     <script defer src="/static/js/spa/app-init.js"></script>
 </head>
 <body class="spa-shell">
+    <a href="#mainContent" class="skip-link sr-only" data-i18n="a11y.skip_to_content">Pular para o conteúdo principal</a>
+    <h1 class="sr-only" data-i18n="a11y.page_title_app">piDots // Console Operacional Workspace</h1>
 
     <!-- CABEÇALHO OPERACIONAL MINIMALISTA (TOP DECK UNIFICADO 48PX) -->
     <header class="top-deck mission-header">
@@ -66,16 +68,19 @@
             <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
                 <span class="tab-idx">01</span>
                 <span class="tab-lbl" data-i18n="nav.overview">Apresentação</span>
+                <span class="tab-lbl-short" data-i18n="nav.overview_short">VIS</span>
                 <span class="tab-chord">g h</span>
             </a>
             <a href="/app" class="surface-tab active" id="tab-workspace" title="Atalho: G W">
                 <span class="tab-idx">02</span>
                 <span class="tab-lbl" data-i18n="nav.workspace">Workspace</span>
+                <span class="tab-lbl-short" data-i18n="nav.workspace_short">APP</span>
                 <span class="tab-chord">g w</span>
             </a>
             <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
                 <span class="tab-idx">03</span>
                 <span class="tab-lbl" data-i18n="nav.docs">Manual</span>
+                <span class="tab-lbl-short" data-i18n="nav.docs_short">DOC</span>
                 <span class="tab-chord">g d</span>
             </a>
         </nav>
@@ -226,7 +231,7 @@
                             </div>
 
                             <div style="margin-bottom: 6px;">
-                                <input type="text" class="drawer-search-input" id="sidebarSpacesSearchInput" placeholder="Buscar em Spaces (KNN 64D)..." style="width: 100%; padding: 4px 6px; font-size: 10px;" oninput="PiDotsAPI.filterOrSearchSpaces(this.value)">
+                                <input type="text" class="drawer-search-input" id="sidebarSpacesSearchInput" placeholder="Buscar em Spaces (KNN 64D)..." aria-label="Buscar em Spaces" style="width: 100%; padding: 4px 6px; font-size: 10px;" oninput="PiDotsAPI.filterOrSearchSpaces(this.value)">
                             </div>
 
                             <div id="spacesListContainer">
@@ -324,9 +329,9 @@
                                 <button type="button" class="pixel-btn btn-cyan" style="padding: 1px 5px; font-size: 9px;" onclick="PiDotsAPI.saveActiveDotCoreMemory()">Salvar</button>
                             </div>
                             <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); display: block; margin-bottom: 3px;">BLOCO PERSONA DO DOT ATIVO:</label>
-                            <textarea class="drawer-search-input" id="sidebarCorePersonaInput" rows="3" style="width: 100%; font-size: 10px; margin-bottom: 6px; resize: vertical;" placeholder="Diretrizes permanentes da persona..."></textarea>
+                            <textarea class="drawer-search-input" id="sidebarCorePersonaInput" rows="3" aria-label="Diretrizes permanentes da persona" style="width: 100%; font-size: 10px; margin-bottom: 6px; resize: vertical;" placeholder="Diretrizes permanentes da persona..."></textarea>
                             <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber); display: block; margin-bottom: 3px;">BLOCO HUMAN / OPERADOR:</label>
-                            <textarea class="drawer-search-input" id="sidebarCoreHumanInput" rows="2" style="width: 100%; font-size: 10px; resize: vertical;" placeholder="Contexto do operador humano..."></textarea>
+                            <textarea class="drawer-search-input" id="sidebarCoreHumanInput" rows="2" aria-label="Contexto do operador humano" style="width: 100%; font-size: 10px; resize: vertical;" placeholder="Contexto do operador humano..."></textarea>
                         </div>
 
                         <div class="sidebar-section">
@@ -334,7 +339,7 @@
                                 <span>Memória de Arquivo (FTS5 + 64D)</span>
                                 <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="PiDotsAPI.promptInsertArchivalMemory()">+ Fato</button>
                             </div>
-                            <input type="text" class="drawer-search-input" id="sidebarArchivalSearchInput" placeholder="Pesquisar fatos arquivados..." style="width: 100%; padding: 4px 6px; font-size: 10px; margin-bottom: 6px;" oninput="PiDotsAPI.searchActiveDotArchival(this.value)">
+                            <input type="text" class="drawer-search-input" id="sidebarArchivalSearchInput" placeholder="Pesquisar fatos arquivados..." aria-label="Pesquisar fatos arquivados" style="width: 100%; padding: 4px 6px; font-size: 10px; margin-bottom: 6px;" oninput="PiDotsAPI.searchActiveDotArchival(this.value)">
                             <div id="sidebarArchivalListContainer" style="display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto;"></div>
                         </div>
 
@@ -372,27 +377,27 @@
 
                             <div style="margin-bottom: 6px;">
                                 <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">ENDPOINT BASE URL:</label>
-                                <input type="text" class="drawer-search-input" id="cfgBaseUrl" value="https://api.openai.com/v1" style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                                <input type="text" class="drawer-search-input" id="cfgBaseUrl" value="https://api.openai.com/v1" aria-label="Endpoint Base URL do Provedor" style="width: 100%; font-size: 10px; padding: 4px 6px;">
                             </div>
 
                             <div style="margin-bottom: 6px;">
                                 <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">MODELO ALVO:</label>
-                                <input type="text" class="drawer-search-input" id="cfgModel" value="gpt-4o-mini" style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                                <input type="text" class="drawer-search-input" id="cfgModel" value="gpt-4o-mini" aria-label="Modelo Alvo de Inferência" style="width: 100%; font-size: 10px; padding: 4px 6px;">
                             </div>
 
                             <div style="margin-bottom: 6px;">
                                 <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">API KEY (BEARER TOKEN):</label>
-                                <input type="password" class="drawer-search-input" id="cfgApiKey" placeholder="sk-..." style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                                <input type="password" class="drawer-search-input" id="cfgApiKey" placeholder="sk-..." aria-label="API Key Token do Provedor" style="width: 100%; font-size: 10px; padding: 4px 6px;">
                             </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
                                 <div>
                                     <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">MAX RETRIES:</label>
-                                    <input type="number" class="drawer-search-input" id="cfgRetries" value="3" min="1" max="6" style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                                    <input type="number" class="drawer-search-input" id="cfgRetries" value="3" min="1" max="6" aria-label="Máximo de Tentativas de Retry" style="width: 100%; font-size: 10px; padding: 4px 6px;">
                                 </div>
                                 <div>
                                     <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">TIMEOUT (SEG):</label>
-                                    <input type="number" class="drawer-search-input" id="cfgTimeout" value="60" min="10" max="180" style="width: 100%; font-size: 10px; padding: 4px 6px;">
+                                    <input type="number" class="drawer-search-input" id="cfgTimeout" value="60" min="10" max="180" aria-label="Timeout de Resposta em Segundos" style="width: 100%; font-size: 10px; padding: 4px 6px;">
                                 </div>
                             </div>
 
@@ -473,7 +478,7 @@
         <!-- -------------------------------------------------------------------
              COLUNA 2: CENTRO (TELETIPO CONVERSACIONAL REACt & AG-UI STREAM)
              ------------------------------------------------------------------- -->
-        <main class="center-ticker-column mobile-view-active">
+        <main id="mainContent" class="center-ticker-column mobile-view-active">
             <div class="ticker-header-bar">
                 <div class="ticker-header-left" style="display: flex; flex-direction: column; gap: 4px; min-width: 0;">
                     <div class="ticker-channel-name" id="activeDotChannel">
@@ -513,7 +518,7 @@
             <div class="ticker-rail-wrapper">
                 <div class="tractor-feed feed-left" aria-hidden="true"></div>
 
-                <div class="ticker-scroll-area" id="tickerScroll">
+                <div class="ticker-scroll-area" id="tickerScroll" role="log" aria-live="polite" aria-relevant="additions" aria-label="Bobina de Mensagens">
                     <!-- Empty State Dinâmico com Starter Suggestions (Padrão OpenDots) -->
                     <div class="empty-chat-persona" id="emptyChatPersona">
                         <div class="dot-monogram-avatar" id="emptyChatAvatar" style="width: 48px; height: 48px; font-size: 16px; margin: 0 auto 12px auto;">DA</div>
@@ -588,7 +593,7 @@
                     <button type="button" class="pixel-btn slash-trigger-btn" id="slashTriggerBtn" onclick="toggleSlashPopover(event)" title="Comandos de Barra (/)" aria-label="Abrir Comandos de Barra">
                         <span style="font-weight: 700; font-family: var(--font-pixel);">/</span>
                     </button>
-                    <textarea class="ticker-textarea" id="instructionInput" placeholder="Digite uma instrução ou mencione @dot (Enter envia)..." data-i18n-placeholder="console.input_placeholder" onkeydown="handleInputKey(event)" oninput="handleMentionInput(event)" rows="1"></textarea>
+                    <textarea class="ticker-textarea" id="instructionInput" placeholder="Digite uma instrução ou mencione @dot (Enter envia)..." data-i18n-placeholder="console.input_placeholder" aria-label="Entrada de instrução do operador" data-i18n-aria="console.input_aria" onkeydown="handleInputKey(event)" oninput="handleMentionInput(event)" rows="1"></textarea>
                     <button type="button" class="pixel-btn btn-danger btn-stop" id="btnStopStream" onclick="PiDotsAPI.stopStream()" title="Interromper Resposta do Agente" style="display: none;">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"></rect></svg>
                         <span>Parar</span>
@@ -622,20 +627,20 @@
             </div>
 
             <!-- Abas do Canvas Superior (Purificado: 4 Abas Operacionais de Trabalho Puro) -->
-            <div class="canvas-tab-bar">
-                <button class="canvas-tab active" id="canvasTabArtifact" onclick="switchCanvasTab('canvas-artifact', this)">
+            <div class="canvas-tab-bar" role="tablist" aria-label="Abas do Painel Canvas">
+                <button class="canvas-tab active" id="canvasTabArtifact" role="tab" aria-selected="true" aria-controls="canvas-artifact" onclick="switchCanvasTab('canvas-artifact', this)">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                     <span>Artefato</span>
                 </button>
-                <button class="canvas-tab" id="canvasTabCoagents" onclick="switchCanvasTab('canvas-coagent-state', this); if (window.PiDotsAPI && PiDotsAPI.loadActiveThreadState) PiDotsAPI.loadActiveThreadState();" data-tooltip="Inspetor de Shared State CoAgents (Plano, Quadro Negro e Handoffs)">
+                <button class="canvas-tab" id="canvasTabCoagents" role="tab" aria-selected="false" aria-controls="canvas-coagent-state" onclick="switchCanvasTab('canvas-coagent-state', this); if (window.PiDotsAPI && PiDotsAPI.loadActiveThreadState) PiDotsAPI.loadActiveThreadState();" data-tooltip="Inspetor de Shared State CoAgents (Plano, Quadro Negro e Handoffs)">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                     <span id="canvasTabCoagentsLabel">CoAgents</span>
                 </button>
-                <button class="canvas-tab" id="canvasTabTerminal" onclick="switchCanvasTab('canvas-terminal', this)" data-tooltip="Terminal Bubblewrap e Arquivos do Workspace">
+                <button class="canvas-tab" id="canvasTabTerminal" role="tab" aria-selected="false" aria-controls="canvas-terminal" onclick="switchCanvasTab('canvas-terminal', this)" data-tooltip="Terminal Bubblewrap e Arquivos do Workspace">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
                     <span>Terminal</span>
                 </button>
-                <button class="canvas-tab" id="canvasTabHitl" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria Forense e Carimbos HITL">
+                <button class="canvas-tab" id="canvasTabHitl" role="tab" aria-selected="false" aria-controls="canvas-hitl" onclick="switchCanvasTab('canvas-hitl', this)" data-tooltip="Auditoria Forense e Carimbos HITL">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <span>HITL</span>
                 </button>
@@ -661,7 +666,7 @@
                         <header class="artifact-header">
                             <div class="artifact-title-box" style="display: flex; align-items: center; gap: 8px;">
                                 <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber);">Spaces ·</span>
-                                <select id="spaceDocSelector" class="drawer-search-input" style="padding: 2px 6px; font-size: 11px; background: var(--paper-surface); color: var(--ink-main); border: 1px solid var(--border-default);" onchange="PiDotsAPI.selectSpaceFromDropdown(this.value)">
+                                <select id="spaceDocSelector" class="drawer-search-input" aria-label="Selecionar documento de Spaces" style="padding: 2px 6px; font-size: 11px; background: var(--paper-surface); color: var(--ink-main); border: 1px solid var(--border-default);" onchange="PiDotsAPI.selectSpaceFromDropdown(this.value)">
                                     <option value="architecture_spec.md">architecture_spec.md</option>
                                     <option value="sqlite_guide.md">sqlite_guide.md</option>
                                     <option value="fibonacci.py">fibonacci.py</option>
@@ -683,7 +688,7 @@
                             <div id="diffContentArea" style="white-space: pre-wrap;">Nenhuma diferença registrada.</div>
                         </div>
 
-                        <textarea class="artifact-editor-textarea" id="artifactContent"># piDots Architecture Specification v3.0
+                        <textarea class="artifact-editor-textarea" id="artifactContent" aria-label="Editor de Conteúdo do Artefato Spaces"># piDots Architecture Specification v3.0
 
 ## 1. Edge Core Topology
 - Framework: FastAPI + uvloop (Single Worker Process)
@@ -793,7 +798,7 @@
                         <!-- Barra de Execução Direta no Sandbox (Modo Takeover) -->
                         <div id="computerTakeoverBar" style="display: flex; gap: 6px; align-items: center; border-top: 1px dashed var(--border-default); padding-top: 6px;">
                             <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber);">$</span>
-                            <input type="text" class="drawer-search-input" id="computerExecInput" placeholder="Comando direto no Sandbox (ex: ls -la, python3 script.py)..." style="flex: 1; padding: 6px 8px; font-size: 11px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); PiDotsAPI.executeInDotComputer();}">
+                            <input type="text" class="drawer-search-input" id="computerExecInput" placeholder="Comando direto no Sandbox (ex: ls -la, python3 script.py)..." aria-label="Comando para o Sandbox Bubblewrap" style="flex: 1; padding: 6px 8px; font-size: 11px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); PiDotsAPI.executeInDotComputer();}">
                             <button type="button" class="pixel-btn btn-cyan" onclick="PiDotsAPI.executeInDotComputer()">Executar</button>
                         </div>
                     </div>
@@ -862,7 +867,7 @@
         </header>
         
         <div class="drawer-search-box">
-            <input type="text" class="drawer-search-input" id="drawerSearchInput" placeholder="Pesquisar manual tecnico..." oninput="filterDrawerContent(this.value)">
+            <input type="text" class="drawer-search-input" id="drawerSearchInput" placeholder="Pesquisar manual tecnico..." aria-label="Pesquisar manual técnico" oninput="filterDrawerContent(this.value)">
         </div>
 
         <div class="drawer-content" id="drawerContentList">
@@ -1015,7 +1020,7 @@
             <div class="dialog-body">
                 <p class="dialog-message" id="pixelDialogMessage">Mensagem de instrução do sistema.</p>
                 <div id="pixelDialogInputContainer" style="display: none;">
-                    <input type="text" class="dialog-input" id="pixelDialogInput" autocomplete="off" spellcheck="false">
+                    <input type="text" class="dialog-input" id="pixelDialogInput" aria-label="Valor de confirmação" autocomplete="off" spellcheck="false">
                 </div>
             </div>
             <footer class="dialog-footer">
@@ -1344,21 +1349,21 @@
                 <div class="dot-form-row-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <div>
                         <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 3px;">HANDLE ID (@DOT-ID)</label>
-                        <input type="text" class="drawer-search-input" id="dotFormId" placeholder="ex: dot-security-ops" style="width: 100%; font-size: 11px;">
+                        <input type="text" class="drawer-search-input" id="dotFormId" placeholder="ex: dot-security-ops" aria-label="Handle ID do Dot" style="width: 100%; font-size: 11px;">
                     </div>
                     <div>
                         <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 3px;">NOME DE EXIBICAO</label>
-                        <input type="text" class="drawer-search-input" id="dotFormName" placeholder="ex: Security Ops Specialist" style="width: 100%; font-size: 11px;">
+                        <input type="text" class="drawer-search-input" id="dotFormName" placeholder="ex: Security Ops Specialist" aria-label="Nome de exibição do Dot" style="width: 100%; font-size: 11px;">
                     </div>
                 </div>
                 <div class="dot-form-row-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
                     <div>
                         <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 3px;">PAPEL / FUNCAO OPERACIONAL</label>
-                        <input type="text" class="drawer-search-input" id="dotFormRole" placeholder="ex: Auditor de Seguranca e Redes Linux" style="width: 100%; font-size: 11px;">
+                        <input type="text" class="drawer-search-input" id="dotFormRole" placeholder="ex: Auditor de Seguranca e Redes Linux" aria-label="Papel e função operacional do Dot" style="width: 100%; font-size: 11px;">
                     </div>
                     <div>
                         <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 3px;">ARQUETIPO</label>
-                        <select class="drawer-search-input" id="dotFormArchetype" style="width: 100%; font-size: 11px;">
+                        <select class="drawer-search-input" id="dotFormArchetype" aria-label="Arquétipo do Dot" style="width: 100%; font-size: 11px;">
                             <option value="coder">CODER</option>
                             <option value="architect">ARCHITECT</option>
                             <option value="auditor">AUDITOR</option>
@@ -1369,7 +1374,7 @@
                 </div>
                 <div>
                     <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); display: block; margin-bottom: 3px;">SYSTEM PROMPT (DIRETRIZES COGNITIVAS DO DOT)</label>
-                    <textarea class="drawer-search-input" id="dotFormPrompt" rows="4" style="width: 100%; font-size: 11px; resize: vertical;" placeholder="Descreva a identidade, limites operacionais e estilo de resposta deste Dot..."></textarea>
+                    <textarea class="drawer-search-input" id="dotFormPrompt" rows="4" aria-label="System prompt com diretrizes cognitivas do Dot" style="width: 100%; font-size: 11px; resize: vertical;" placeholder="Descreva a identidade, limites operacionais e estilo de resposta deste Dot..."></textarea>
                 </div>
                 <div>
                     <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--phosphor-green); display: block; margin-bottom: 3px;">PODA DINAMICA DE FERRAMENTAS (ALLOWED TOOLS - VAZIO = TODAS)</label>

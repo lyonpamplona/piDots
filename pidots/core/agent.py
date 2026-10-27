@@ -558,16 +558,16 @@ class DotAgent:
                             "content": tool_content_str
                         })
 
-                        # Persiste o retorno da ferramenta no SQLite WAL
+                        # Persiste o retorno da ferramenta no SQLite WAL com o respectivo tool_call_id
                         try:
                             tool_msg_id = str(uuid.uuid4())
                             async with get_db() as db:
                                 await db.execute(
                                     """
-                                    INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility)
-                                    VALUES (?, ?, 'tool', ?, ?, 'dot', 'internal')
+                                    INSERT INTO messages (id, thread_id, role, content, actor_id, actor_type, visibility, tool_call_id)
+                                    VALUES (?, ?, 'tool', ?, ?, 'dot', 'internal', ?)
                                     """,
-                                    (tool_msg_id, thread_id, tool_content_str, self.dot_id)
+                                    (tool_msg_id, thread_id, tool_content_str, self.dot_id, call_id)
                                 )
                                 await db.commit()
                         except Exception as save_err:
@@ -645,8 +645,8 @@ class DotAgent:
             # Obtém histórico da thread (filtrando mensagens públicas ou direcionadas a este Dot)
             cursor = await db.execute(
                 """
-                SELECT role, content, actor_id, actor_type, tool_calls_json FROM (
-                    SELECT rowid AS rid, role, content, actor_id, actor_type, tool_calls_json, created_at FROM messages
+                SELECT role, content, actor_id, actor_type, tool_calls_json, tool_call_id FROM (
+                    SELECT rowid AS rid, role, content, actor_id, actor_type, tool_calls_json, tool_call_id, created_at FROM messages
                     WHERE thread_id = ? AND (visibility = 'public' OR target_dot_id = ? OR actor_id = ?)
                     ORDER BY created_at DESC, rowid DESC
                     LIMIT 20
@@ -693,6 +693,8 @@ class DotAgent:
                     entry["tool_calls"] = json.loads(r["tool_calls_json"])
                 except Exception:
                     pass
+            if r["role"] == "tool":
+                entry["tool_call_id"] = r["tool_call_id"] if "tool_call_id" in r.keys() and r["tool_call_id"] else f"call_{r['rid'] if 'rid' in r.keys() else 'fallback'}"
             actor = r["actor_id"] if "actor_id" in r.keys() else None
             if actor and r["role"] not in ("tool", "system"):
                 entry["name"] = actor.replace("-", "_")[:64]

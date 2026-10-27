@@ -179,6 +179,9 @@
 
         // 5. Copia de Comandos com Fallback Resiliente para HTTP LAN (.code-paper-box, .terminal-block, .terminal-card)
         function copyToClipboardFallback(text) {
+            if (window.PixelSystem && window.PixelSystem.copyToClipboard) {
+                return window.PixelSystem.copyToClipboard(text);
+            }
             return new Promise((resolve, reject) => {
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(text).then(resolve).catch(() => {
@@ -691,6 +694,9 @@
 
         // 9. Alternador de Tema Dark Noir vs Blueprint Tecnico
         function toggleTheme() {
+            if (window.PixelSystem && window.PixelSystem.ThemeManager) {
+                return window.PixelSystem.ThemeManager.toggleTheme(false);
+            }
             const current = document.documentElement.getAttribute('data-theme');
             const next = current === 'blueprint' ? 'noir' : 'blueprint';
             

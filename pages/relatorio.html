@@ -78,7 +78,7 @@
             <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch (Desktop) -->
             <div class="header-search-box" id="headerRelatorioSearchBox" style="cursor: pointer;" title="Buscar Topicos do Estudo (Atalho: Ctrl+K ou /)">
                 <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="globalRelatorioSearchInput" class="pixel-search-input" placeholder="BUSCAR TOPICO (CTRL+K OU /)..." readonly style="cursor: pointer;">
+                <input type="text" id="globalRelatorioSearchInput" class="pixel-search-input" placeholder="BUSCAR TOPICO (CTRL+K OU /)..." aria-label="Buscar tópicos do estudo" readonly style="cursor: pointer;">
                 <kbd class="kbd-badge">CTRL+K</kbd>
             </div>
 
@@ -815,7 +815,7 @@ bwrap \
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" class="search-input" id="topicSearchInput" placeholder="Filtrar tópicos...">
+                    <input type="text" class="search-input" id="topicSearchInput" placeholder="Filtrar tópicos..." aria-label="Filtrar tópicos do relatório">
                 </div>
             </div>
 

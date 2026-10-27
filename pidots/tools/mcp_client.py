@@ -297,6 +297,7 @@ class MCPRegistryManager:
     """
 
     _active_clients: dict[str, LiteMCPClient] = {}
+    _server_tools: dict[str, list[str]] = {}
 
     @classmethod
     async def register_server(
@@ -344,11 +345,29 @@ class MCPRegistryManager:
             registered_names.append(std_name)
 
         cls._active_clients[server_name] = client
+        cls._server_tools[server_name] = registered_names
         logger.info(
             "Servidor MCP '%s' registrado no ToolRegistry com %d ferramentas: %s",
             server_name, len(registered_names), registered_names
         )
         return registered_names
+
+    @classmethod
+    async def unregister_server(cls, server_name: str, tool_registry: Any = None) -> bool:
+        """Desconecta o servidor MCP e remove suas ferramentas do ToolRegistry."""
+        client = cls.get_client(server_name)
+        if not client:
+            return False
+
+        if tool_registry:
+            tool_names = cls._server_tools.get(server_name, [])
+            for t_name in tool_names:
+                tool_registry.unregister(t_name)
+
+        cls._server_tools.pop(server_name, None)
+        cls._active_clients.pop(server_name, None)
+        await client.close()
+        return True
 
     @classmethod
     def get_client(cls, server_name: str) -> LiteMCPClient | None:

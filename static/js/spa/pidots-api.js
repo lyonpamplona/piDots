@@ -104,7 +104,7 @@
             }
         },
 
-        // 1. Inicialização Geral de Dados
+        // 1. Inicialização Geral de Dados com Agendador Inteligente
         async init() {
             await this.fetchTelemetry();
             await this.loadDots();
@@ -115,22 +115,53 @@
             await this.loadSettings();
 
             this._telemetryFetching = false;
-            setInterval(async () => {
-                if (this._telemetryFetching) return;
-                this._telemetryFetching = true;
-                try {
-                    await this.fetchTelemetry();
-                } finally {
-                    this._telemetryFetching = false;
+            let failureCount = 0;
+
+            const scheduleTelemetry = () => {
+                let delay = 4000;
+                if (document.hidden) {
+                    delay = 30000; // Throttling para 30s se a aba estiver em segundo plano
+                } else if (failureCount > 0) {
+                    // Backoff exponencial com jitter (4s, 8s, 16s, máx 30s)
+                    delay = Math.min(30000, 4000 * Math.pow(2, failureCount - 1)) + Math.floor(Math.random() * 1000);
                 }
-            }, 4000);
+
+                setTimeout(async () => {
+                    if (this._telemetryFetching) {
+                        scheduleTelemetry();
+                        return;
+                    }
+                    this._telemetryFetching = true;
+                    try {
+                        const success = await this.fetchTelemetry();
+                        if (success) {
+                            failureCount = 0;
+                        } else {
+                            failureCount++;
+                        }
+                    } catch (_) {
+                        failureCount++;
+                    } finally {
+                        this._telemetryFetching = false;
+                        scheduleTelemetry();
+                    }
+                }, delay);
+            };
+
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && !this._telemetryFetching) {
+                    this.fetchTelemetry().catch(() => {});
+                }
+            });
+
+            scheduleTelemetry();
         },
 
         // 2. Telemetria Real (/health) com process_rss_mb
         async fetchTelemetry() {
             try {
                 const res = await fetch('/health');
-                if (!res.ok) return;
+                if (!res.ok) return false;
                 const data = await res.json();
 
                 if (data.soc_temperature_celsius !== undefined) {
@@ -178,8 +209,10 @@
                     const asciiWalEl = document.getElementById('sidebarAsciiWal');
                     if (asciiWalEl) asciiWalEl.textContent = `${String(data.database.mode).toUpperCase()} OK`;
                 }
+                return true;
             } catch (e) {
                 console.warn('Telemetria offline ou isolada:', e);
+                return false;
             }
         },
 
@@ -1883,16 +1916,42 @@
                 this.activeStreamReader = reader;
                 const decoder = new TextDecoder();
                 let currentSseEvent = '';
+                let sseRemainder = '';
+                let scrollPending = false;
+                const scheduleScroll = () => {
+                    if (!scrollPending) {
+                        scrollPending = true;
+                        requestAnimationFrame(() => {
+                            if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
+                            scrollPending = false;
+                        });
+                    }
+                };
 
                 while (true) {
                     const {done, value} = await reader.read();
-                    if (done) break;
+                    if (done) {
+                        if (sseRemainder.trim()) {
+                            const line = sseRemainder.trim();
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const evData = JSON.parse(line.slice(6));
+                                    if (evData.content_chunk) {
+                                        textAccumulator += evData.content_chunk;
+                                    }
+                                } catch (_) {}
+                            }
+                        }
+                        break;
+                    }
 
                     const chunk = decoder.decode(value, {stream: true});
-                    const lines = chunk.split('\n');
+                    const raw = sseRemainder + chunk;
+                    const lines = raw.split('\n');
+                    sseRemainder = lines.pop() || '';
 
                     for (let i = 0; i < lines.length; i++) {
-                        const line = lines[i];
+                        const line = lines[i].trim();
                         if (line.startsWith('event: ')) {
                             currentSseEvent = line.slice(7).trim();
                         } else if (line.startsWith('data: ')) {
@@ -1968,7 +2027,7 @@
                             } catch (_) {}
                         }
                     }
-                    scrollArea.scrollTop = scrollArea.scrollHeight;
+                    scheduleScroll();
                 }
 
                 this.enforceDomCeiling();

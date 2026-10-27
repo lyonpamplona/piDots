@@ -221,6 +221,10 @@ header.top-bar {
     opacity: 0.6;
 }
 
+.surface-tab .tab-lbl-short {
+    display: none;
+}
+
 .surface-tab .tab-chord {
     font-size: 7px;
     padding: 1px 3px;

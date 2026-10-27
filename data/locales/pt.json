@@ -1,8 +1,11 @@
 {
   "nav": {
     "overview": "Apresentação",
+    "overview_short": "VIS",
     "workspace": "Workspace",
+    "workspace_short": "APP",
     "docs": "Manual",
+    "docs_short": "DOC",
     "swagger": "Swagger",
     "theme": "Tema",
     "guide_index": "Índice Guia",
@@ -14,6 +17,10 @@
     "clean": "Limpar",
     "split_canvas": "Canvas",
     "manual": "Manual Técnico"
+  },
+  "a11y": {
+    "skip_to_content": "Pular para o conteúdo principal",
+    "page_title_app": "piDots // Console Operacional Workspace"
   },
   "telemetry": {
     "node_title": "No Edge Online // Hardware de Borda ARM64",

@@ -67,11 +67,14 @@ class SelfHealingHarness:
             cls._attempt_counters.pop(key, None)
             return None
 
-        # Rastreia contagem de tentativas consecutivas
+        # Rastreia contagem de tentativas consecutivas com teto de retenção em memória (max 256 chaves)
         if attempt is not None:
             current_attempt = attempt
         else:
             current_attempt = cls._attempt_counters.get(key, 0) + 1
+            if len(cls._attempt_counters) >= 256 and key not in cls._attempt_counters:
+                oldest_key = next(iter(cls._attempt_counters))
+                cls._attempt_counters.pop(oldest_key, None)
             cls._attempt_counters[key] = current_attempt
 
         combined_output = f"{stderr}\n{stdout}".strip()
