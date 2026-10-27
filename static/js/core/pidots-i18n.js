@@ -165,17 +165,20 @@
                 }
             }
 
-            // 5. Atualiza o rotulo do seletor discreto [IDIOMA: PT | EN]
+            // 5. Atualiza o rotulo do seletor discreto PT / EN
             const toggleBtns = document.querySelectorAll('.lang-toggle-btn');
             for (let i = 0; i < toggleBtns.length; i++) {
                 const btn = toggleBtns[i];
                 const fullSpan = btn.querySelector('.lang-text-full');
                 const shortSpan = btn.querySelector('.lang-text-short');
+                const labelMode = btn.querySelector('#labelLangMode') || btn.querySelector('span');
                 if (fullSpan && shortSpan) {
-                    fullSpan.textContent = currentLang === 'pt' ? '[IDIOMA: PT | EN]' : '[LANG: EN | PT]';
-                    shortSpan.textContent = currentLang === 'pt' ? '[PT]' : '[EN]';
+                    fullSpan.textContent = currentLang === 'pt' ? 'PT / EN' : 'EN / PT';
+                    shortSpan.textContent = currentLang === 'pt' ? 'PT' : 'EN';
+                } else if (labelMode) {
+                    labelMode.textContent = currentLang === 'pt' ? 'PT / EN' : 'EN / PT';
                 } else {
-                    btn.textContent = currentLang === 'pt' ? '[IDIOMA: PT | EN]' : '[LANG: EN | PT]';
+                    btn.textContent = currentLang === 'pt' ? 'PT / EN' : 'EN / PT';
                 }
                 btn.setAttribute('title', currentLang === 'pt' 
                     ? 'Alternar interface para Ingles Tecnico (EN)' 

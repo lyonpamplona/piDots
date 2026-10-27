@@ -1,18 +1,19 @@
 {
   "nav": {
-    "overview": "[VISAO GERAL]",
-    "workspace": "[WORKSPACE]",
-    "docs": "[DOCUMENTACAO]",
-    "swagger": "[SWAGGER]",
-    "theme": "[TEMA]",
-    "guide_index": "[INDICE GUIA]",
-    "lang_toggle": "[IDIOMA: PT | EN]",
-    "pwa_install": "[INSTALAR PWA]",
-    "onboarding": "[TOUR]",
-    "patch_notes": "[NOTAS V1.5.3]",
-    "clean": "[LIMPAR]",
-    "split_canvas": "[CANVAS: DIVIDIDO]",
-    "manual": "[MANUAL TECNICO]"
+    "overview": "Apresentação",
+    "workspace": "Workspace",
+    "docs": "Manual",
+    "swagger": "Swagger",
+    "theme": "Tema",
+    "guide_index": "Índice Guia",
+    "lang_toggle": "PT / EN",
+    "pwa_install": "Instalar App",
+    "onboarding": "Tour Operacional",
+    "patch_notes": "Notas da Versão (v1.5.3)",
+    "Changelog": "Notas da Versão (v1.5.3)",
+    "clean": "Limpar",
+    "split_canvas": "Canvas",
+    "manual": "Manual Técnico"
   },
   "telemetry": {
     "node_title": "No Edge Online // Hardware de Borda ARM64",
@@ -45,8 +46,8 @@
   "console": {
     "chat_title": "TELETIPO DE COMUNICACAO // CHAT DE AGENTES",
     "canvas_title": "PAINEL DE DOCUMENTOS // LIVE ARTIFACT CANVAS",
-    "input_placeholder": "Digite uma tarefa ou mencione @coder, @arquiteto, @auditor...",
-    "send_btn": "[ENVIAR]",
+    "input_placeholder": "Digite uma instrução ou mencione @dot (Enter envia)...",
+    "send_btn": "Enviar",
     "welcome_system": "[SISTEMA] piDots pronto. Conexao local estabelecida com SQLite WAL. Motor de inferencia ativo (Memoria RSS: 52 MB).",
     "welcome_agent": "Ola, Lyon. O ambiente esta pronto para trabalhar. O espaco de trabalho local (/workspace) esta mapeado e a telemetria do hardware esta estavel. O que vamos construir ou revisar hoje? Voce pode digitar uma tarefa diretamente, chamar outro especialista usando @coder ou pressionar F1 para abrir o manual rapido."
   },

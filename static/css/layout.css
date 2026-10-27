@@ -241,6 +241,8 @@ header.top-bar {
 .triptych-shell {
     display: flex;
     flex: 1;
+    min-height: 0;
+    min-width: 0;
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -250,6 +252,7 @@ header.top-bar {
 .col-sidebar, aside.sidebar-dots, aside.left-sidebar {
     width: 280px;
     min-width: 240px;
+    min-height: 0;
     background: var(--paper-sheet);
     border-right: 2px solid var(--border-default);
     display: flex;
@@ -264,6 +267,7 @@ header.top-bar {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    min-height: 0;
     background: var(--paper-base);
     overflow: hidden;
     position: relative;
@@ -273,6 +277,7 @@ header.top-bar {
 .col-canvas, aside.workspace-canvas, aside.right-canvas {
     width: 440px;
     min-width: 320px;
+    min-height: 0;
     background: var(--paper-sheet);
     border-left: 2px solid var(--border-default);
     display: flex;

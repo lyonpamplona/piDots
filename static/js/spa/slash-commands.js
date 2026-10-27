@@ -554,14 +554,20 @@
                     const arg = (args[0] || 'toggle').toLowerCase();
                     if (arg === 'blueprint') {
                         document.documentElement.setAttribute('data-theme', 'blueprint');
-                        isBlueprint = true;
                     } else if (arg === 'noir') {
                         document.documentElement.removeAttribute('data-theme');
-                        isBlueprint = false;
+                    } else if (typeof window.toggleTheme === 'function') {
+                        window.toggleTheme();
                     } else {
-                        toggleTheme();
+                        const currentlyBp = document.documentElement.getAttribute('data-theme') === 'blueprint';
+                        if (currentlyBp) document.documentElement.removeAttribute('data-theme');
+                        else document.documentElement.setAttribute('data-theme', 'blueprint');
                     }
-                    const activeTheme = isBlueprint ? 'BLUEPRINT (AZUL CIANO)' : 'DARK NOIR (VERDE FOSFORO)';
+                    const isBpNow = document.documentElement.getAttribute('data-theme') === 'blueprint';
+                    const btnTheme = document.getElementById('btn-theme-toggle');
+                    const spanTheme = btnTheme ? btnTheme.querySelector('span') : null;
+                    if (spanTheme) spanTheme.textContent = isBpNow ? 'Blueprint' : 'Dark Noir';
+                    const activeTheme = isBpNow ? 'BLUEPRINT (AZUL CIANO)' : 'DARK NOIR (VERDE FOSFORO)';
                     renderSlashReceiptSlip('/theme', 'PIGMENTACAO VISUAL', `Tema de interface atualizado para: <strong>${activeTheme}</strong>.`, '[OK]');
                     break;
                 }
@@ -1476,6 +1482,7 @@
 
 
     // Exportacao Global para compatibilidade total com manipuladores inline do HTML
+    SlashCommandsEngine.executeCommand = (cmdStr) => executeSlashCommand(cmdStr);
     window.SlashCommandsEngine = SlashCommandsEngine;
     window.handleMentionInput = handleMentionInput;
     window.handleInputKey = handleInputKey;

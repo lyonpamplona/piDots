@@ -350,6 +350,8 @@
            --------------------------------------------------------------------- */
         main.center-ticker-column {
             flex: 1;
+            min-width: 0;
+            min-height: 0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -359,22 +361,31 @@
         }
 
         .ticker-header-bar {
-            height: var(--subheader-height, 38px);
-            min-height: var(--subheader-height, 38px);
-            max-height: var(--subheader-height, 38px);
+            min-height: var(--subheader-height, 44px);
+            height: auto;
             box-sizing: border-box;
             background: var(--paper-sheet);
             border-bottom: 1px solid var(--border-default);
-            padding: 0 16px;
+            padding: 6px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 11px;
             flex-shrink: 0;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            scrollbar-width: none;
-            gap: 12px;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+        }
+
+        .triptych-shell:has(aside.right-canvas.collapsed) #btnHeaderOpenCanvas,
+        .triptych-shell.mode-focus-zen #btnHeaderOpenCanvas {
+            display: inline-flex !important;
+        }
+
+        .thread-participants-bar {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .ticker-header-bar::-webkit-scrollbar {
@@ -407,6 +418,8 @@
 
         .ticker-scroll-area {
             flex: 1;
+            min-height: 0;
+            min-width: 0;
             overflow-y: auto;
             padding: 16px 20px;
             display: flex;
@@ -426,7 +439,8 @@
             width: 100%;
         }
 
-        .tractor-feed {
+        .tractor-feed,
+        .tractor-feed.feed-left {
             background-color: var(--paper-surface-recessed);
             border-right: 1px solid var(--border-subtle);
             background-image: radial-gradient(var(--border-default) 38%, transparent 39%);
@@ -861,10 +875,50 @@
         .ticker-input-bar {
             background: var(--paper-sheet);
             border-top: 2px solid var(--border-default);
-            padding: 10px 16px;
+            padding: 8px 16px;
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 6px;
+            align-items: stretch;
+        }
+
+        .ticker-input-bar .source-input-bar {
+            margin-top: 0;
+            padding: 4px 8px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: none;
+            background: var(--paper-surface-recessed);
+            display: flex;
             align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .source-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            border: 1px solid var(--border-default);
+            background: var(--paper-surface);
+            color: var(--ink-secondary);
+            border-radius: 2px;
+        }
+
+        .source-tag-agent {
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+            background: rgba(56, 189, 248, 0.08);
+            font-weight: 600;
+        }
+
+        .ticker-input-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            width: 100%;
         }
 
         .ticker-prompt-sign {
@@ -906,6 +960,7 @@
             width: var(--rail-right-width, 340px);
             min-width: 320px;
             max-width: 460px;
+            min-height: 0;
             background: var(--paper-sheet);
             display: flex;
             flex-direction: column;
@@ -921,8 +976,15 @@
         }
 
         aside.right-canvas.expanded {
-            width: 100%;
-            min-width: 100%;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            flex: 1 1 100% !important;
+        }
+
+        .triptych-shell:has(aside.right-canvas.expanded) main.center-ticker-column,
+        .triptych-shell.canvas-maximized main.center-ticker-column {
+            display: none !important;
         }
 
         /* Abas do Painel de Artefatos / Canvas */
@@ -987,6 +1049,8 @@
 
         .canvas-content-area {
             flex: 1;
+            min-height: 0;
+            min-width: 0;
             overflow-y: auto;
             padding: 12px;
             display: flex;
@@ -997,6 +1061,8 @@
         .canvas-panel-view {
             display: none;
             flex-direction: column;
+            min-height: 0;
+            min-width: 0;
             height: 100%;
             gap: 12px;
         }
@@ -1012,6 +1078,8 @@
             box-shadow: var(--shadow-sm);
             display: flex;
             flex-direction: column;
+            min-height: 0;
+            min-width: 0;
             height: 100%;
         }
 
@@ -1087,7 +1155,7 @@
             flex-direction: column;
             align-items: center;
             gap: 2px;
-            background: rgba(11, 14, 18, 0.9);
+            background: var(--paper-surface);
         }
 
         .stamp-title {
@@ -1289,9 +1357,6 @@
     
         
         /* =====================================================================
-
-
-        /* =====================================================================
            COMPONENTES 100% PERSONALIZADOS (ZERO FUNÇÕES NATIVAS DO NAVEGADOR)
            ===================================================================== */
         
@@ -1342,6 +1407,7 @@
         #pixelToastContainer {
             position: fixed;
             top: 50px;
+            bottom: auto;
             right: 16px;
             z-index: 100000;
             display: flex;
@@ -1556,9 +1622,9 @@
         /* 6. Tooltips Customizadas Flutuantes */
         #pixelTooltip {
             position: fixed;
-            background: #020305;
+            background: var(--paper-sheet);
             border: 1px solid var(--border-accent);
-            box-shadow: 2px 2px 0px #000000;
+            box-shadow: var(--shadow-sm);
             color: var(--ink-main);
             font-family: var(--font-mono);
             font-size: 10px;
@@ -1674,57 +1740,6 @@
             border: 1px solid currentColor;
         }
 
-        /* Surface Switcher Global */
-        .surface-switcher {
-            display: inline-flex;
-            align-items: center;
-            background: var(--paper-surface-recessed, #0b0e12);
-            border: 1px solid var(--border-default, #283340);
-            padding: 2px;
-            gap: 2px;
-        }
-        .surface-tab {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 9px;
-            font-family: var(--font-mono, 'JetBrains Mono', monospace);
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--ink-muted, #64748b);
-            text-decoration: none;
-            border: 1px solid transparent;
-            transition: all 0.15s ease;
-            white-space: nowrap;
-        }
-        .surface-tab:hover {
-            color: var(--ink-primary, #f1f5f9);
-            background: rgba(255, 255, 255, 0.04);
-        }
-        .surface-tab.active {
-            color: var(--phosphor-green, #33ff66);
-            background: rgba(51, 255, 102, 0.08);
-            border-color: rgba(51, 255, 102, 0.4);
-            font-weight: 700;
-        }
-        .surface-tab .tab-idx {
-            font-family: var(--font-pixel, 'Silkscreen', monospace);
-            font-size: 8px;
-            opacity: 0.7;
-        }
-        .surface-tab.active .tab-idx {
-            opacity: 1;
-            color: var(--phosphor-green, #33ff66);
-        }
-        .surface-tab .tab-chord {
-            font-size: 8px;
-            padding: 1px 4px;
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid var(--border-default, #283340);
-            color: var(--ink-muted, #64748b);
-            border-radius: 0;
-            letter-spacing: 0.5px;
-        }
         @media (max-width: 1440px) {
             .brand-title {
                 display: none !important;
@@ -1809,12 +1824,17 @@
             background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
             background-size: 4px 4px;
             z-index: 100010;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             padding: 16px;
             box-sizing: border-box;
             animation: modalSnapIn 0.08s steps(2);
+        }
+
+        .pixel-modal-backdrop.active,
+        .pixel-modal-backdrop.is-open {
+            display: flex;
         }
 
         @keyframes modalSnapIn {
@@ -1905,7 +1925,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: rgba(7, 9, 12, 0.9);
+            background-color: var(--paper-surface);
         }
 
         .rubber-stamp .stamp-title {
@@ -2589,4 +2609,187 @@
             .pixel-tour-caret {
                 display: none !important;
             }
+        }
+
+        /* =====================================================================
+           SANEAMENTO FASE 1: RECONCILIACAO DE CLASSES ORFAS (HTML + JS)
+           ===================================================================== */
+        .slip-output {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.55;
+            color: var(--ink-main);
+            word-break: break-word;
+        }
+
+        .reasoning-state-badge {
+            margin-left: auto;
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--ink-muted);
+            padding: 1px 4px;
+            border: 1px solid var(--border-subtle);
+            background: var(--paper-surface);
+        }
+
+        .slash-receipt-slip {
+            border-left: 3px solid var(--blueprint-cyan);
+            background: var(--paper-surface-recessed);
+        }
+
+        .stamp-system {
+            color: var(--blueprint-cyan);
+            border-color: var(--blueprint-cyan);
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .slash-mode-tag {
+            font-family: var(--font-pixel);
+            font-size: 9px;
+            color: var(--blueprint-cyan);
+            padding: 1px 5px;
+            border: 1px solid var(--border-subtle);
+            background: var(--paper-surface);
+        }
+
+        .dot-tool-checkbox {
+            accent-color: var(--phosphor-green);
+            cursor: pointer;
+            width: 13px;
+            height: 13px;
+            vertical-align: middle;
+        }
+
+        .inline-tool-card.status-ok {
+            border-left: 3px solid var(--phosphor-green);
+        }
+
+        .inline-tool-card.status-warn {
+            border-left: 3px solid var(--thermal-amber);
+        }
+
+        .mobile-quick-controls-bar {
+            display: none;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-default);
+            background: var(--paper-surface-recessed);
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-quick-controls-bar {
+                display: flex;
+            }
+        }
+
+        .patchnotes-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .meta-item {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--ink-secondary);
+        }
+
+        .pwa-banner-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .lang-toggle-btn {
+            min-width: 58px;
+            justify-content: center;
+        }
+
+        .dot-form-row-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .dot-tools-checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+
+        /* =====================================================================
+           SANEAMENTO FASE 2: CONTRASTE ALTO EM [data-theme="blueprint"]
+           ===================================================================== */
+        [data-theme="blueprint"] .pill-green {
+            background-color: rgba(21, 128, 61, 0.12);
+            border-color: var(--phosphor-green);
+            color: var(--phosphor-green);
+        }
+
+        [data-theme="blueprint"] .pill-cyan {
+            background-color: rgba(3, 105, 161, 0.12);
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+        }
+
+        [data-theme="blueprint"] .pill-red {
+            background-color: rgba(185, 28, 28, 0.12);
+            border-color: var(--stamp-danger);
+            color: var(--stamp-danger);
+        }
+
+        [data-theme="blueprint"] .pill-amber {
+            background-color: rgba(180, 83, 9, 0.12);
+            border-color: var(--thermal-amber);
+            color: var(--thermal-amber);
+        }
+
+        [data-theme="blueprint"] .btn-phosphor {
+            background: rgba(21, 128, 61, 0.12) !important;
+            border-color: var(--phosphor-green) !important;
+            color: var(--phosphor-green) !important;
+        }
+
+        [data-theme="blueprint"] .btn-phosphor:hover {
+            background: var(--phosphor-green) !important;
+            color: #ffffff !important;
+        }
+
+        [data-theme="blueprint"] .pixel-tour-step-counter {
+            background: rgba(3, 105, 161, 0.12);
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+        }
+
+        [data-theme="blueprint"] .pixel-tour-chunk-text kbd {
+            background: var(--paper-surface-elevated);
+            border-color: var(--border-strong);
+            color: var(--blueprint-cyan);
+        }
+
+        [data-theme="blueprint"] .pixel-tour-btn-primary {
+            background: rgba(3, 105, 161, 0.14);
+            border-color: var(--blueprint-cyan);
+            color: var(--blueprint-cyan);
+        }
+
+        [data-theme="blueprint"] .pixel-tour-btn-finish {
+            background: rgba(21, 128, 61, 0.14);
+            border-color: var(--phosphor-green);
+            color: var(--phosphor-green);
+        }
+
+        [data-theme="blueprint"] .pixel-tour-btn-ghost:hover {
+            background: var(--paper-surface-elevated);
+            color: var(--ink-main);
+        }
+
+        [data-theme="blueprint"] .pixel-tour-target-box {
+            box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.55);
+        }
+
+        [data-theme="blueprint"] .plotter-frame {
+            background: var(--paper-surface-recessed);
         }

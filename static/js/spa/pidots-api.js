@@ -137,9 +137,7 @@
                     const tempEl = document.getElementById('val-temp');
                     if (tempEl) tempEl.textContent = `${data.soc_temperature_celsius} °C`;
                     const compactNodeEl = document.getElementById('val-compact-node');
-                    if (compactNodeEl) compactNodeEl.textContent = `${data.soc_temperature_celsius}°C`;
-                    const plotterTempEl = document.querySelector('.plotter-card:nth-child(2) .plotter-val');
-                    if (plotterTempEl) plotterTempEl.textContent = `${data.soc_temperature_celsius} °C`;
+                    if (compactNodeEl) compactNodeEl.textContent = `ARM64 · ${data.soc_temperature_celsius}°C`;
                     const asciiTempEl = document.getElementById('sidebarAsciiTemp');
                     if (asciiTempEl) {
                         asciiTempEl.textContent = `${data.soc_temperature_celsius}°C`;
@@ -154,9 +152,12 @@
                 if (data.memory) {
                     const rssMb = data.memory.process_rss_mb !== undefined ? data.memory.process_rss_mb : data.memory.used_mb;
                     const ramEl = document.getElementById('val-ram');
-                    if (ramEl) ramEl.textContent = `${rssMb} MB RSS (SO: ${data.memory.used_mb}/${data.memory.total_mb} MB)`;
-                    const plotterRamEl = document.querySelector('.plotter-card:nth-child(1) .plotter-val');
-                    if (plotterRamEl) plotterRamEl.textContent = `${rssMb} MB RSS`;
+                    if (ramEl) ramEl.textContent = `${rssMb} MB`;
+                    const ramSysEl = document.getElementById('val-ram-system');
+                    if (ramSysEl) {
+                        const pctStr = data.memory.percent !== undefined ? ` (${data.memory.percent}%)` : '';
+                        ramSysEl.textContent = `HOST RAM: ${data.memory.used_mb} / ${data.memory.total_mb} MB${pctStr}`;
+                    }
 
                     const asciiRamEl = document.getElementById('sidebarAsciiRamBar');
                     if (asciiRamEl) {
@@ -183,41 +184,43 @@
         },
 
         updateRamSvg() {
-            const polyline = document.querySelector('.plotter-card:nth-child(1) polyline');
-            const polygon = document.querySelector('.plotter-card:nth-child(1) polygon');
-            if (!polyline || !polygon) return;
+            const polyline = document.getElementById('ramPlotterPolyline') || document.querySelector('.plotter-card:nth-of-type(1) polyline');
+            const polygon = document.getElementById('ramPlotterPolygon') || document.querySelector('.plotter-card:nth-of-type(1) polygon');
+            if (!polyline) return;
 
-            const values = this.telemetryHistory.ram;
-            if (!values || values.length < 2) return;
+            const raw = this.telemetryHistory.ram || [];
+            if (raw.length === 0) return;
+            const values = raw.length === 1 ? [raw[0], raw[0]] : raw;
             const maxRam = 300;
-            let points = [];
+            const points = [];
             for (let i = 0; i < values.length; i++) {
-                const x = Math.round((i / (values.length - 1)) * 310);
-                const y = Math.round(105 - ((values[i] / maxRam) * 85));
-                points.push(`${x},${Math.max(10, Math.min(105, y))}`);
+                const x = Math.round((i / (values.length - 1)) * 320);
+                const y = Math.round(74 - ((values[i] / maxRam) * 58));
+                points.push(`${x},${Math.max(10, Math.min(76, y))}`);
             }
             const ptStr = points.join(' ');
             polyline.setAttribute('points', ptStr);
-            polygon.setAttribute('points', `0,110 ${ptStr} 310,110`);
+            if (polygon) polygon.setAttribute('points', `0,80 ${ptStr} 320,80`);
         },
 
         updateTempSvg() {
-            const polyline = document.querySelector('.plotter-card:nth-child(2) polyline');
-            const polygon = document.querySelector('.plotter-card:nth-child(2) polygon');
-            if (!polyline || !polygon) return;
+            const polyline = document.getElementById('tempPlotterPolyline') || document.querySelector('.plotter-card:nth-of-type(2) polyline');
+            const polygon = document.getElementById('tempPlotterPolygon') || document.querySelector('.plotter-card:nth-of-type(2) polygon');
+            if (!polyline) return;
 
-            const values = this.telemetryHistory.temp;
-            if (!values || values.length < 2) return;
+            const raw = this.telemetryHistory.temp || [];
+            if (raw.length === 0) return;
+            const values = raw.length === 1 ? [raw[0], raw[0]] : raw;
             const maxTemp = 85;
-            let points = [];
+            const points = [];
             for (let i = 0; i < values.length; i++) {
-                const x = Math.round((i / (values.length - 1)) * 310);
-                const y = Math.round(105 - ((values[i] / maxTemp) * 80));
-                points.push(`${x},${Math.max(15, Math.min(105, y))}`);
+                const x = Math.round((i / (values.length - 1)) * 320);
+                const y = Math.round(74 - ((values[i] / maxTemp) * 56));
+                points.push(`${x},${Math.max(12, Math.min(76, y))}`);
             }
             const ptStr = points.join(' ');
             polyline.setAttribute('points', ptStr);
-            polygon.setAttribute('points', `0,110 ${ptStr} 310,110`);
+            if (polygon) polygon.setAttribute('points', `0,80 ${ptStr} 320,80`);
         },
 
         // 3. Dots Coworkers (/api/dots) & Estúdio de Dots

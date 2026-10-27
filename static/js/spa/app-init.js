@@ -125,6 +125,10 @@
                 triptych.classList.remove('mode-focus-zen');
             }
 
+            if (typeof closeDrawer === 'function') {
+                closeDrawer();
+            }
+
             sidebar.classList.toggle('mobile-view-active', viewName === 'dots');
             ticker.classList.toggle('mobile-view-active', viewName === 'chat');
             canvas.classList.toggle('mobile-view-active', viewName === 'canvas');
@@ -134,6 +138,10 @@
                 const btnView = btn.getAttribute('data-view');
                 btn.classList.toggle('active', btnView === viewName);
             });
+
+            if (viewName === 'dots') {
+                sidebar.classList.remove('collapsed');
+            }
 
             // Se for para o canvas, garante que não fique colapsado e limpa badge mobile
             if (viewName === 'canvas') {
@@ -290,7 +298,8 @@
                 } else if (currentSidebarCtx === 'memory' && typeof PiDotsAPI.loadMemorySidebar === 'function') {
                     PiDotsAPI.loadMemorySidebar();
                 } else if (currentSidebarCtx === 'configs') {
-                    if (typeof PiDotsAPI.fetchSystemMetrics === 'function') PiDotsAPI.fetchSystemMetrics();
+                    if (typeof PiDotsAPI.fetchTelemetry === 'function') PiDotsAPI.fetchTelemetry();
+                    if (typeof PiDotsAPI.loadSettings === 'function') PiDotsAPI.loadSettings();
                 }
             }
         }
@@ -330,7 +339,8 @@
 
             if (isComputerTakeoverActive) {
                 if (btn) {
-                    btn.textContent = 'Modo Controle Ativo';
+                    const span = btn.querySelector('span');
+                    if (span) span.textContent = 'Modo Controle Ativo';
                     btn.classList.add('btn-amber');
                 }
                 switchCanvasTab('canvas-terminal', tabTerminal);
@@ -344,7 +354,8 @@
                 }
             } else {
                 if (btn) {
-                    btn.textContent = 'Modo Observação';
+                    const span = btn.querySelector('span');
+                    if (span) span.textContent = 'Modo Observação';
                     btn.classList.remove('btn-amber');
                 }
                 if (window.PixelSystem && PixelSystem.toast) {
@@ -357,15 +368,25 @@
         function toggleCanvasSplit() {
             const canvas = document.getElementById('rightCanvas');
             const btn = document.getElementById('btn-canvas-toggle');
+            const btnHeaderOpen = document.getElementById('btnHeaderOpenCanvas');
+            const triptych = document.querySelector('.triptych-shell');
             if (!canvas) return;
             canvas.classList.toggle('collapsed');
             if (canvas.classList.contains('collapsed')) {
-                if (btn) btn.innerHTML = '<span data-i18n="nav.split_canvas">Canvas: Oculto</span>';
-            } else {
-                if (btn) btn.innerHTML = '<span data-i18n="nav.split_canvas">Canvas</span>';
+                const span = btn ? btn.querySelector('span') : null;
+                if (span) span.textContent = 'Abrir';
+                if (btnHeaderOpen) btnHeaderOpen.style.display = 'inline-flex';
                 canvas.classList.remove('expanded');
+                if (triptych) triptych.classList.remove('canvas-maximized');
+            } else {
+                const span = btn ? btn.querySelector('span') : null;
+                if (span) span.textContent = 'Fechar';
+                if (btnHeaderOpen) btnHeaderOpen.style.display = 'none';
+                canvas.classList.remove('expanded');
+                if (triptych) triptych.classList.remove('canvas-maximized');
                 const btnExp = document.getElementById('btnCanvasExpand');
-                if (btnExp) btnExp.textContent = 'Expandir';
+                const spanExp = btnExp ? btnExp.querySelector('span') : null;
+                if (spanExp) spanExp.textContent = 'Maximizar';
             }
         }
 
@@ -374,17 +395,21 @@
             const canvas = document.getElementById('rightCanvas');
             const sidebar = document.getElementById('leftSidebar');
             const btn = document.getElementById('btnCanvasExpand');
+            const triptych = document.querySelector('.triptych-shell');
             if (!canvas) return;
 
+            const span = btn ? btn.querySelector('span') : null;
             if (canvas.classList.contains('expanded')) {
                 canvas.classList.remove('expanded');
+                if (triptych) triptych.classList.remove('canvas-maximized');
                 if (sidebar) sidebar.classList.remove('collapsed');
-                if (btn) btn.textContent = 'Expandir';
+                if (span) span.textContent = 'Maximizar';
             } else {
                 canvas.classList.remove('collapsed');
                 canvas.classList.add('expanded');
+                if (triptych) triptych.classList.add('canvas-maximized');
                 if (sidebar) sidebar.classList.add('collapsed');
-                if (btn) btn.textContent = 'Dividir';
+                if (span) span.textContent = 'Restaurar';
             }
         }
 
@@ -567,7 +592,10 @@
             const canvas = document.getElementById('rightCanvas');
             if (canvas) canvas.classList.remove('collapsed');
             const btnToggle = document.getElementById('btn-canvas-toggle');
-            if (btnToggle) btnToggle.innerHTML = '<span data-i18n="nav.split_canvas">[CANVAS]</span>';
+            const spanToggle = btnToggle ? btnToggle.querySelector('span') : null;
+            if (spanToggle) spanToggle.textContent = 'Fechar';
+            const btnHeaderOpen = document.getElementById('btnHeaderOpenCanvas');
+            if (btnHeaderOpen) btnHeaderOpen.style.display = 'none';
             const tabs = document.querySelectorAll('.canvas-tab');
             if (tabs.length) switchCanvasTab('canvas-artifact', tabs[0]);
             
@@ -672,7 +700,7 @@
             const timeStr = new Date().toTimeString().split(' ')[0];
             const div = document.createElement('div');
             div.innerHTML = `[${timeStr}] <span style="color: var(--blueprint-cyan);">piDots@rpi4-arm64:~$</span> bwrap --ro-bind / / --bind /workspace /workspace ls -la<br>
-<span style="color: #cbd5e1;">bwrap: namespace temporario montado com isolamento de PID e IPC.</span><br>
+<span style="color: var(--ink-secondary);">bwrap: namespace temporario montado com isolamento de PID e IPC.</span><br>
 <span style="color: var(--phosphor-green);">[OK] 4 arquivos ativos no espaco do Dot. Retorno: 0.</span>`;
             term.appendChild(div);
             term.scrollTop = term.scrollHeight;
@@ -724,6 +752,10 @@
                 PixelSystem.closeDialog(false);
                 closeDrawer();
                 closeDotCreatorModal();
+                const patchModal = document.getElementById('pixelPatchNotesModal');
+                if (patchModal && patchModal.style.display !== 'none' && window.PiDotsUX && PiDotsUX.PatchNotes) {
+                    PiDotsUX.PatchNotes.acknowledge();
+                }
                 if (typeof SlashCommandsEngine !== 'undefined') SlashCommandsEngine.closePopover();
                 const mentionDropdown = document.getElementById('mentionDropdown');
                 if (mentionDropdown) mentionDropdown.style.display = 'none';

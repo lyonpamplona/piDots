@@ -910,7 +910,7 @@
 }
 
 .inline-tool-code {
-    background: #020305;
+    background: var(--paper-surface);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-xs, 2px);
     padding: 8px 10px;

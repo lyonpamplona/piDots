@@ -1,18 +1,19 @@
 {
   "nav": {
-    "overview": "[OVERVIEW]",
-    "workspace": "[WORKSPACE]",
-    "docs": "[DOCS]",
-    "swagger": "[SWAGGER]",
-    "theme": "[THEME]",
-    "guide_index": "[GUIDE INDEX]",
-    "lang_toggle": "[LANG: EN | PT]",
-    "pwa_install": "[INSTALL PWA]",
-    "onboarding": "[TOUR]",
-    "patch_notes": "[NOTES V1.5.3]",
-    "clean": "[CLEAR]",
-    "split_canvas": "[CANVAS: SPLIT]",
-    "manual": "[TECH MANUAL]"
+    "overview": "Overview",
+    "workspace": "Workspace",
+    "docs": "Manual",
+    "swagger": "Swagger",
+    "theme": "Theme",
+    "guide_index": "Guide Index",
+    "lang_toggle": "EN / PT",
+    "pwa_install": "Install App",
+    "onboarding": "Operational Tour",
+    "patch_notes": "Release Notes (v1.5.3)",
+    "Changelog": "Release Notes (v1.5.3)",
+    "clean": "Clear",
+    "split_canvas": "Canvas",
+    "manual": "Tech Manual"
   },
   "telemetry": {
     "node_title": "Edge Node Online // ARM64 Edge Hardware",
@@ -45,8 +46,8 @@
   "console": {
     "chat_title": "TELETYPE TICKER FEED // AGENT CHAT",
     "canvas_title": "LIVE ARTIFACT CANVAS // DOCUMENTS",
-    "input_placeholder": "Type a task or mention @coder, @architect, @auditor...",
-    "send_btn": "[SEND]",
+    "input_placeholder": "Type an instruction or mention @dot (Enter sends)...",
+    "send_btn": "Send",
     "welcome_system": "[SYSTEM] piDots ready. Local connection established with SQLite WAL. Inference engine active (RSS Memory: 52 MB).",
     "welcome_agent": "Hello, Lyon. The environment is ready to work. Local workspace (/workspace) is mapped and hardware telemetry is stable. What are we building or reviewing today? You can type a task directly, summon another specialist with @coder, or press F1 to open the quick manual."
   },

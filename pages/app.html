@@ -64,14 +64,17 @@
         <!-- Seletor Canonico de Superficies -->
         <nav class="surface-switcher" aria-label="Superficies de Produto">
             <a href="/" class="surface-tab" id="tab-overview" title="Atalho: G H">
+                <span class="tab-idx">01</span>
                 <span class="tab-lbl" data-i18n="nav.overview">Apresentação</span>
                 <span class="tab-chord">g h</span>
             </a>
             <a href="/app" class="surface-tab active" id="tab-workspace" title="Atalho: G W">
+                <span class="tab-idx">02</span>
                 <span class="tab-lbl" data-i18n="nav.workspace">Workspace</span>
                 <span class="tab-chord">g w</span>
             </a>
             <a href="/docs" class="surface-tab" id="tab-docs" title="Atalho: G D">
+                <span class="tab-idx">03</span>
                 <span class="tab-lbl" data-i18n="nav.docs">Manual</span>
                 <span class="tab-chord">g d</span>
             </a>
@@ -165,7 +168,7 @@
                                 </span>
                                 <div style="display: flex; align-items: center; gap: 4px;">
                                     <span style="color: var(--blueprint-cyan);" id="dotsCountBadge">Ativos</span>
-                                    <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="openDotCreatorModal()" title="Criar novo AI Coworker (@dot)">+ Dot</button>
+                                    <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="openDotCreatorModal()" title="Criar novo AI Coworker (@dot)">+ Dot</button>
                                 </div>
                             </div>
 
@@ -181,7 +184,7 @@
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--blueprint-cyan);"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
                                     Canais Colaborativos
                                 </span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.promptCreateChannel()" title="Criar novo canal temático">+ Canal</button>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="PiDotsAPI.promptCreateChannel()" title="Criar novo canal temático">+ Canal</button>
                             </div>
                             <div id="channelsListContainer">
                                 <div class="space-item active" onclick="PiDotsAPI.selectChannel('ch-main', 'geral')">
@@ -202,7 +205,7 @@
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--thermal-amber);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                                     Conversas (Threads)
                                 </span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="startNewConversation()" title="Iniciar Nova Conversa">+ Nova</button>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="startNewConversation()" title="Iniciar Nova Conversa">+ Nova</button>
                             </div>
                             <div id="threadsListContainer">
                                 <div style="font-size: 10px; color: var(--ink-muted); padding: 4px;">Carregando histórico de sessões...</div>
@@ -216,7 +219,7 @@
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
                                     Spaces e Artefatos
                                 </span>
-                                <button class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="createNewSpaceCustom()" data-tooltip="Criar novo arquivo persistido no SQLite WAL">
+                                <button class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="createNewSpaceCustom()" data-tooltip="Criar novo arquivo persistido no SQLite WAL">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                     <span>Novo</span>
                                 </button>
@@ -256,7 +259,7 @@
 
                             <div id="hitlSidebarAlertContainer">
                                 <div class="sidebar-hitl-alert" onclick="openHitlCanvas()">
-                                    <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber); margin-bottom: 2px;">
+                                    <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber); margin-bottom: 2px;">
                                         Ação Crítica Retida · WAL
                                     </div>
                                     <div style="font-size: 10px; color: var(--ink-secondary);" id="hitlSidebarDesc">
@@ -272,7 +275,7 @@
                         <div class="sidebar-section">
                             <div class="sidebar-title">
                                 <span>Estúdio de Dots (@coworkers)</span>
-                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7.5px;" onclick="openDotCreatorModal()">+ Criar Dot</button>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 9px;" onclick="openDotCreatorModal()">+ Criar Dot</button>
                             </div>
                             <div style="font-size: 10px; color: var(--ink-secondary); margin-bottom: 8px; line-height: 1.4;">
                                 Gerencie especialistas autônomos, prompts de sistema e poda dinâmica de ferramentas (Dynamic Tool Pruning).
@@ -293,7 +296,7 @@
                         <div class="sidebar-section">
                             <div class="sidebar-title">
                                 <span>Tasks Proativas (Cron)</span>
-                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7.5px;" onclick="PiDotsAPI.promptCreateTask()">+ Agendar</button>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 9px;" onclick="PiDotsAPI.promptCreateTask()">+ Agendar</button>
                             </div>
                             <div style="font-size: 10px; color: var(--ink-secondary); margin-bottom: 8px; line-height: 1.4;">
                                 Tarefas executadas em background pelo EdgeScheduler com diretriz de silêncio <code>HEARTBEAT_OK</code>.
@@ -305,7 +308,7 @@
                         <div class="sidebar-section">
                             <div class="sidebar-title">
                                 <span>Gatilhos de Borda (GPIO / MQTT)</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.loadEdgeTriggersSidebar()">Atualizar</button>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="PiDotsAPI.loadEdgeTriggersSidebar()">Atualizar</button>
                             </div>
                             <div id="edgeTriggersSidebarBox" style="font-size: 10px; color: var(--ink-secondary); line-height: 1.5;">
                                 Monitorando sensores térmicos, disco MicroSD e barramento GPIO/MQTT...
@@ -318,18 +321,18 @@
                         <div class="sidebar-section">
                             <div class="sidebar-title">
                                 <span>Memória Central (Persona e Operador)</span>
-                                <button type="button" class="pixel-btn btn-cyan" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.saveActiveDotCoreMemory()">Salvar</button>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 1px 5px; font-size: 9px;" onclick="PiDotsAPI.saveActiveDotCoreMemory()">Salvar</button>
                             </div>
-                            <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--blueprint-cyan); display: block; margin-bottom: 3px;">BLOCO PERSONA DO DOT ATIVO:</label>
+                            <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); display: block; margin-bottom: 3px;">BLOCO PERSONA DO DOT ATIVO:</label>
                             <textarea class="drawer-search-input" id="sidebarCorePersonaInput" rows="3" style="width: 100%; font-size: 10px; margin-bottom: 6px; resize: vertical;" placeholder="Diretrizes permanentes da persona..."></textarea>
-                            <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--thermal-amber); display: block; margin-bottom: 3px;">BLOCO HUMAN / OPERADOR:</label>
+                            <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber); display: block; margin-bottom: 3px;">BLOCO HUMAN / OPERADOR:</label>
                             <textarea class="drawer-search-input" id="sidebarCoreHumanInput" rows="2" style="width: 100%; font-size: 10px; resize: vertical;" placeholder="Contexto do operador humano..."></textarea>
                         </div>
 
                         <div class="sidebar-section">
                             <div class="sidebar-title">
                                 <span>Memória de Arquivo (FTS5 + 64D)</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.promptInsertArchivalMemory()">+ Fato</button>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="PiDotsAPI.promptInsertArchivalMemory()">+ Fato</button>
                             </div>
                             <input type="text" class="drawer-search-input" id="sidebarArchivalSearchInput" placeholder="Pesquisar fatos arquivados..." style="width: 100%; padding: 4px 6px; font-size: 10px; margin-bottom: 6px;" oninput="PiDotsAPI.searchActiveDotArchival(this.value)">
                             <div id="sidebarArchivalListContainer" style="display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto;"></div>
@@ -338,7 +341,7 @@
                         <div class="sidebar-section">
                             <div class="sidebar-title">
                                 <span>Servidores MCP Lite</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.promptRegisterMcpServer()">+ MCP</button>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="PiDotsAPI.promptRegisterMcpServer()">+ MCP</button>
                             </div>
                             <div id="sidebarMcpServersList" style="font-size: 10px; color: var(--ink-muted);">Nenhum servidor MCP externo acoplado.</div>
                         </div>
@@ -346,7 +349,7 @@
                         <div class="sidebar-section">
                             <div class="sidebar-title">
                                 <span>Dot Packs v1.1 (SHA-256)</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="PiDotsAPI.loadDotPacksCatalogSidebar()">Catálogo</button>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="PiDotsAPI.loadDotPacksCatalogSidebar()">Catálogo</button>
                             </div>
                             <div id="sidebarDotPacksCatalogList" style="display: flex; flex-direction: column; gap: 4px; font-size: 9.5px; color: var(--ink-secondary);">
                                 Carregando pacotes oficiais (@dot-secops, @dot-homelab, @dot-finops)...
@@ -368,34 +371,34 @@
                             </div>
 
                             <div style="margin-bottom: 6px;">
-                                <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">ENDPOINT BASE URL:</label>
+                                <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">ENDPOINT BASE URL:</label>
                                 <input type="text" class="drawer-search-input" id="cfgBaseUrl" value="https://api.openai.com/v1" style="width: 100%; font-size: 10px; padding: 4px 6px;">
                             </div>
 
                             <div style="margin-bottom: 6px;">
-                                <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">MODELO ALVO:</label>
+                                <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">MODELO ALVO:</label>
                                 <input type="text" class="drawer-search-input" id="cfgModel" value="gpt-4o-mini" style="width: 100%; font-size: 10px; padding: 4px 6px;">
                             </div>
 
                             <div style="margin-bottom: 6px;">
-                                <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">API KEY (BEARER TOKEN):</label>
+                                <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">API KEY (BEARER TOKEN):</label>
                                 <input type="password" class="drawer-search-input" id="cfgApiKey" placeholder="sk-..." style="width: 100%; font-size: 10px; padding: 4px 6px;">
                             </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
                                 <div>
-                                    <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">MAX RETRIES:</label>
+                                    <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">MAX RETRIES:</label>
                                     <input type="number" class="drawer-search-input" id="cfgRetries" value="3" min="1" max="6" style="width: 100%; font-size: 10px; padding: 4px 6px;">
                                 </div>
                                 <div>
-                                    <label style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted); display: block; margin-bottom: 2px;">TIMEOUT (SEG):</label>
+                                    <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 2px;">TIMEOUT (SEG):</label>
                                     <input type="number" class="drawer-search-input" id="cfgTimeout" value="60" min="10" max="180" style="width: 100%; font-size: 10px; padding: 4px 6px;">
                                 </div>
                             </div>
 
                             <div style="display: flex; gap: 6px;">
-                                <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 7.5px; flex: 1;" onclick="testProviderConnectionCustom()">Testar Conexão</button>
-                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 7.5px; flex: 1;" onclick="saveAISettingsCustom()">Salvar Hot-Reload</button>
+                                <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 9px; flex: 1;" onclick="testProviderConnectionCustom()">Testar Conexão</button>
+                                <button type="button" class="pixel-btn btn-cyan" style="padding: 2px 6px; font-size: 9px; flex: 1;" onclick="saveAISettingsCustom()">Salvar Hot-Reload</button>
                             </div>
                         </div>
 
@@ -405,34 +408,36 @@
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--phosphor-green);"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                                     TELEMETRIA DE SILÍCIO
                                 </span>
-                                <span style="color: var(--phosphor-green); font-size: 8px;">ARM64</span>
+                                <span style="color: var(--phosphor-green); font-size: 9px;">ARM64</span>
                             </div>
 
                             <!-- Plotter RAM RSS -->
-                            <div style="margin-bottom: 8px;">
+                            <div class="plotter-card" style="margin-bottom: 8px; padding: 8px;">
                                 <div style="display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 2px;">
                                     <span style="color: var(--ink-muted);">RAM RSS (Teto 300MB):</span>
-                                    <strong style="color: var(--thermal-amber);" id="val-ram">52.4 MB</strong>
+                                    <strong class="plotter-val" style="color: var(--thermal-amber); font-size: 9.5px;" id="val-ram">52.4 MB</strong>
                                 </div>
-                                <div style="border: 1px solid var(--border-subtle); background: #040608; height: 42px;">
-                                    <svg class="plotter-svg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges" style="width: 100%; height: 100%;">
-                                        <line x1="0" y1="12" x2="320" y2="12" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,3" />
-                                        <polyline points="0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 320,44" fill="none" stroke="#ffb830" stroke-width="2" />
+                                <div class="plotter-frame" style="border: 1px solid var(--border-subtle); background: var(--paper-surface-recessed); height: 46px;">
+                                    <svg class="plotter-svg" id="ramPlotterSvg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges" style="width: 100%; height: 100%;">
+                                        <line x1="0" y1="12" x2="320" y2="12" stroke="var(--stamp-danger)" stroke-width="1" stroke-dasharray="3,3" />
+                                        <polygon id="ramPlotterPolygon" points="0,80 0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 320,44 320,80" fill="rgba(255, 184, 48, 0.12)" />
+                                        <polyline id="ramPlotterPolyline" points="0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 320,44" fill="none" stroke="var(--thermal-amber)" stroke-width="2" />
                                     </svg>
                                 </div>
-                                <div style="font-size: 8px; color: var(--ink-muted); margin-top: 2px;" id="val-ram-system">HOST RAM: -- MB</div>
+                                <div style="font-size: 9px; color: var(--ink-muted); margin-top: 3px;" id="val-ram-system">HOST RAM: -- MB</div>
                             </div>
 
                             <!-- Plotter SoC Temp -->
-                            <div>
+                            <div class="plotter-card" style="margin-bottom: 0; padding: 8px;">
                                 <div style="display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 2px;">
                                     <span style="color: var(--ink-muted);">Temperatura SoC:</span>
-                                    <strong style="color: var(--phosphor-green);" id="val-temp">48.2 °C</strong>
+                                    <strong class="plotter-val" style="color: var(--phosphor-green); font-size: 9.5px;" id="val-temp">48.2 °C</strong>
                                 </div>
-                                <div style="border: 1px solid var(--border-subtle); background: #040608; height: 42px;">
-                                    <svg class="plotter-svg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges" style="width: 100%; height: 100%;">
-                                        <line x1="0" y1="14" x2="320" y2="14" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,3" />
-                                        <polyline points="0,55 50,55 50,52 110,52 110,56 170,56 170,50 230,50 230,48 290,48 320,47" fill="none" stroke="#33ff66" stroke-width="2" />
+                                <div class="plotter-frame" style="border: 1px solid var(--border-subtle); background: var(--paper-surface-recessed); height: 46px;">
+                                    <svg class="plotter-svg" id="tempPlotterSvg" viewBox="0 0 320 80" preserveAspectRatio="none" shape-rendering="crispEdges" style="width: 100%; height: 100%;">
+                                        <line x1="0" y1="14" x2="320" y2="14" stroke="var(--stamp-danger)" stroke-width="1" stroke-dasharray="3,3" />
+                                        <polygon id="tempPlotterPolygon" points="0,80 0,55 50,55 50,52 110,52 110,56 170,56 170,50 230,50 230,48 290,48 320,47 320,80" fill="rgba(51, 255, 102, 0.12)" />
+                                        <polyline id="tempPlotterPolyline" points="0,55 50,55 50,52 110,52 110,56 170,56 170,50 230,50 230,48 290,48 320,47" fill="none" stroke="var(--phosphor-green)" stroke-width="2" />
                                     </svg>
                                 </div>
                             </div>
@@ -441,7 +446,7 @@
                         <div class="sidebar-section">
                             <div class="sidebar-title">
                                 <span>MANUTENÇÃO DO BANCO WAL</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="SlashCommandsEngine.executeCommand('/maintenance')">Truncar WAL</button>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="executeSlashCommand('/maintenance run')">Truncar WAL</button>
                             </div>
                             <div style="font-size: 9.5px; color: var(--ink-secondary); line-height: 1.4;">
                                 SQLite 3.45 com WAL autocheckpoint=1000 e zero desgaste de memória flash no MicroSD.
@@ -475,9 +480,9 @@
                         Canal de Trabalho · @dot-dev
                     </div>
                     <div class="thread-participants-bar" id="threadParticipantPills" style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
-                        <span class="actor-stamp stamp-supervisor" style="font-size: 7.5px; padding: 1px 5px;">@dot-supervisor</span>
-                        <span class="actor-stamp stamp-coder" style="font-size: 7.5px; padding: 1px 5px;">@dot-coder</span>
-                        <span class="actor-stamp stamp-auditor" style="font-size: 7.5px; padding: 1px 5px;">@dot-auditor</span>
+                        <span class="actor-stamp stamp-supervisor" style="font-size: 9px; padding: 1px 5px;">@dot-supervisor</span>
+                        <span class="actor-stamp stamp-coder" style="font-size: 9px; padding: 1px 5px;">@dot-coder</span>
+                        <span class="actor-stamp stamp-auditor" style="font-size: 9px; padding: 1px 5px;">@dot-auditor</span>
                     </div>
                 </div>
                 <div class="ticker-header-actions" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
@@ -496,6 +501,10 @@
                     </button>
                     <button type="button" class="pixel-btn pixel-btn-secondary" onclick="clearTickerStream()" title="Limpar Bobina de Mensagens">
                         <span>Limpar</span>
+                    </button>
+                    <button type="button" class="pixel-btn" id="btnHeaderOpenCanvas" onclick="toggleCanvasSplit()" title="Reabrir ou Alternar Painel Live Canvas (F3)" style="display: none;">
+                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+                        <span>Canvas</span>
                     </button>
                 </div>
             </div>
@@ -541,7 +550,7 @@
                     <span class="source-tag" id="composerActiveChannelTag" title="Canal de Conversação">
                         <span id="composerChannelName"># geral</span>
                     </span>
-                    <span style="margin-left: auto; font-size: 8.5px; color: var(--ink-muted);" id="composerShortcutsHint">Enter envia · Shift+Enter quebra linha</span>
+                    <span style="margin-left: auto; font-size: 9px; color: var(--ink-muted);" id="composerShortcutsHint">Enter envia · Shift+Enter quebra linha</span>
                 </div>
 
                 <!-- Dropdown de Autocomplete de Menção (@bot) -->
@@ -601,11 +610,11 @@
             <div class="computer-console-banner" id="computerConsoleBanner">
                 <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
                     <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--blueprint-cyan); border-radius: 50%;"></span>
-                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); letter-spacing: 0.05em;">Computador do Dot ·</span>
+                    <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); letter-spacing: 0.05em;">Computador do Dot ·</span>
                     <span id="computerActiveWorkspaceBadge" style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">/workspace/dot-dev-core</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
-                    <button type="button" class="pixel-btn" id="computerTakeoverBtn" style="padding: 2px 6px; font-size: 7.5px;" onclick="toggleComputerTakeoverMode()" title="Assumir ou devolver controle interativo do Sandbox Bubblewrap">
+                    <button type="button" class="pixel-btn" id="computerTakeoverBtn" style="padding: 2px 6px; font-size: 9px;" onclick="toggleComputerTakeoverMode()" title="Assumir ou devolver controle interativo do Sandbox Bubblewrap">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
                         <span>Modo Observação</span>
                     </button>
@@ -632,11 +641,11 @@
                 </button>
 
                 <div class="canvas-controls">
-                    <button class="pixel-btn" style="padding: 2px 6px; font-size: 7.5px;" onclick="toggleCanvasExpand()" id="btnCanvasExpand" title="Expandir ou Reduzir Painel Canvas">
+                    <button class="pixel-btn" style="padding: 2px 6px; font-size: 9px;" onclick="toggleCanvasExpand()" id="btnCanvasExpand" title="Expandir ou Reduzir Painel Canvas">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
                         <span>Maximizar</span>
                     </button>
-                    <button class="pixel-btn" id="btn-canvas-toggle" style="padding: 2px 6px; font-size: 7.5px;" onclick="toggleCanvasSplit()" title="Fechar Painel Canvas">
+                    <button class="pixel-btn" id="btn-canvas-toggle" style="padding: 2px 6px; font-size: 9px;" onclick="toggleCanvasSplit()" title="Fechar Painel Canvas">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         <span>Fechar</span>
                     </button>
@@ -651,14 +660,14 @@
                     <div class="artifact-card-wrapper">
                         <header class="artifact-header">
                             <div class="artifact-title-box" style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);">Spaces ·</span>
+                                <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber);">Spaces ·</span>
                                 <select id="spaceDocSelector" class="drawer-search-input" style="padding: 2px 6px; font-size: 11px; background: var(--paper-surface); color: var(--ink-main); border: 1px solid var(--border-default);" onchange="PiDotsAPI.selectSpaceFromDropdown(this.value)">
                                     <option value="architecture_spec.md">architecture_spec.md</option>
                                     <option value="sqlite_guide.md">sqlite_guide.md</option>
                                     <option value="fibonacci.py">fibonacci.py</option>
                                 </select>
                                 <span style="display: none;" id="currentArtifactTitle">architecture_spec.md</span>
-                                <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--phosphor-green); background: var(--paper-surface-recessed); padding: 1px 4px; border: 1px solid var(--border-subtle);" class="space-item-rev">Rev 3.0</span>
+                                <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--phosphor-green); background: var(--paper-surface-recessed); padding: 1px 4px; border: 1px solid var(--border-subtle);" class="space-item-rev">Rev 3.0</span>
                             </div>
                             <div style="display: flex; gap: 6px;">
                                 <button class="pixel-btn" onclick="toggleDiffHighlight()">Diffs</button>
@@ -667,8 +676,8 @@
                         </header>
                         
                         <!-- Visualizador de Diffs Integrado -->
-                        <div id="diffViewContainer" style="display: none; background: #020305; border: 1px solid var(--border-default); padding: 12px; font-family: var(--font-mono); font-size: 11px; overflow-y: auto; flex: 1; line-height: 1.5;">
-                            <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); margin-bottom: 8px; border-bottom: 1px dashed var(--border-subtle); padding-bottom: 4px;">
+                        <div id="diffViewContainer" style="display: none; background: var(--paper-surface-recessed); color: var(--ink-main); border: 1px solid var(--border-default); padding: 12px; font-family: var(--font-mono); font-size: 11px; overflow-y: auto; flex: 1; line-height: 1.5;">
+                            <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); margin-bottom: 8px; border-bottom: 1px dashed var(--border-subtle); padding-bottom: 4px;">
                                 Comparador de Revisões · SQLite WAL Diff
                             </div>
                             <div id="diffContentArea" style="white-space: pre-wrap;">Nenhuma diferença registrada.</div>
@@ -699,13 +708,13 @@
                 <div class="canvas-panel-view" id="canvas-coagent-state">
                     <div style="background: var(--paper-surface); border: 2px solid var(--border-default); padding: 12px; display: flex; flex-direction: column; height: 100%; overflow-y: auto; gap: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-default); padding-bottom: 6px;">
-                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">COAGENTS SHARED STATE · SINCRONIZAÇÃO AG-UI</span>
-                            <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 7.5px;" onclick="PiDotsAPI.loadActiveThreadState()">Sincronizar</button>
+                            <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--phosphor-green);">COAGENTS SHARED STATE · SINCRONIZAÇÃO AG-UI</span>
+                            <button type="button" class="pixel-btn" style="padding: 2px 6px; font-size: 9px;" onclick="PiDotsAPI.loadActiveThreadState()">Sincronizar</button>
                         </div>
 
                         <!-- Bloco 1: Plano de 2 Estágios Ativo -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
-                            <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--blueprint-cyan); margin-bottom: 6px;">
+                            <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); margin-bottom: 6px;">
                                 1. PLANO DE EXECUÇÃO ATIVO (TWO-STAGE PLANNER)
                             </div>
                             <div id="coagentActivePlanBox" style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
@@ -715,7 +724,7 @@
 
                         <!-- Bloco 2: Quadro Negro Compartilhado (Shared Space) -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
-                            <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--thermal-amber); margin-bottom: 6px;">
+                            <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber); margin-bottom: 6px;">
                                 2. QUADRO NEGRO COMPARTILHADO (SHARED NOTES)
                             </div>
                             <div id="coagentSharedNotesBox" style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
@@ -725,7 +734,7 @@
 
                         <!-- Bloco 3: Handoffs, Delegações e Rodadas do Conselho -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
-                            <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--phosphor-green); margin-bottom: 6px;">
+                            <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--phosphor-green); margin-bottom: 6px;">
                                 3. HANDOFFS, DELEGAÇÕES &amp; CONSELHO MULTI-BOT
                             </div>
                             <div id="coagentHandoffsBox" style="font-size: 11px; color: var(--ink-secondary); line-height: 1.5;">
@@ -735,7 +744,7 @@
 
                         <!-- Bloco 4: Auditoria Recente de Ferramentas (tool_runs) -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
-                            <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); margin-bottom: 6px;">
+                            <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); margin-bottom: 6px;">
                                 4. AUDITORIA DE FERRAMENTAS (TOOL RUNS)
                             </div>
                             <div id="coagentToolRunsBox" style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-secondary); line-height: 1.4;">
@@ -746,8 +755,8 @@
                         <!-- Bloco 5: Inspetor Rápido MemGPT (Core & Archival Memory 64D) -->
                         <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 8px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                <span style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--blueprint-cyan);">5. INSPETOR MEMGPT · CORE &amp; ARCHIVAL 64D</span>
-                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 7.5px;" onclick="switchSidebarContext('memory'); if (window.innerWidth <= 768 && typeof setMobileView === 'function') setMobileView('dots');">Editar Memória</button>
+                                <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan);">5. INSPETOR MEMGPT · CORE &amp; ARCHIVAL 64D</span>
+                                <button type="button" class="pixel-btn" style="padding: 1px 5px; font-size: 9px;" onclick="switchSidebarContext('memory'); if (window.innerWidth <= 768 && typeof setMobileView === 'function') setMobileView('dots');">Editar Memória</button>
                             </div>
                             <div id="coagentMemgptBox" style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-secondary); line-height: 1.45;">
                                 Sincronizando blocos Core Memory (Persona / Human) e fatos Archival...
@@ -760,7 +769,7 @@
                 <div class="canvas-panel-view" id="canvas-terminal">
                     <div style="background: var(--paper-surface); border: 2px solid var(--border-default); padding: 10px; display: flex; flex-direction: column; height: 100%; gap: 8px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-default); padding-bottom: 6px;">
-                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">BUBBLEWRAP · SANDBOX &amp; ARQUIVOS /WORKSPACE</span>
+                            <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan);">BUBBLEWRAP · SANDBOX &amp; ARQUIVOS /WORKSPACE</span>
                             <div style="display: flex; gap: 6px;">
                                 <button class="pixel-btn" onclick="PiDotsAPI.loadComputerFiles()">Arquivos</button>
                                 <button class="pixel-btn" onclick="simulateBwrapCommand()">Testar Bwrap</button>
@@ -770,20 +779,20 @@
 
                         <!-- Explorador Compacto de Arquivos em /workspace -->
                         <div id="computerWorkspaceFilesBox" style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 6px 8px; font-size: 10px; max-height: 95px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
-                            <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--thermal-amber);">/WORKSPACE:</span>
+                            <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber);">/WORKSPACE:</span>
                             <span style="color: var(--ink-muted);">Clique em Arquivos para listar o diretório isolado do Dot.</span>
                         </div>
 
-                        <div id="terminalViewport" style="background: #020305; border: 1px solid var(--border-subtle); padding: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--phosphor-green); flex: 1; overflow-y: auto; line-height: 1.6;">
+                        <div id="terminalViewport" style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--phosphor-green); flex: 1; overflow-y: auto; line-height: 1.6;">
                             <div>[22:30:00] <span style="color: var(--blueprint-cyan);">piDots@rpi4-arm64:~$</span> bwrap --ro-bind /usr /usr --bind /workspaces/dot-dev-core /workspace --unshare-all python3 fibonacci.py</div>
-                            <div>[22:30:01] <span style="color: #cbd5e1;">bwrap: namespace temporario criado em 82ms (RAM alocada: 2.1MB)</span></div>
+                            <div>[22:30:01] <span style="color: var(--ink-secondary);">bwrap: namespace temporario criado em 82ms (RAM alocada: 2.1MB)</span></div>
                             <div>[22:30:01] <span style="color: var(--thermal-amber);">Fib(8) = 21</span></div>
                             <div>[22:30:02] <span style="color: var(--phosphor-green);">[EXIT CODE 0] Execucao completada com isolamento estrito.</span></div>
                         </div>
 
                         <!-- Barra de Execução Direta no Sandbox (Modo Takeover) -->
                         <div id="computerTakeoverBar" style="display: flex; gap: 6px; align-items: center; border-top: 1px dashed var(--border-default); padding-top: 6px;">
-                            <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--thermal-amber);">$</span>
+                            <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber);">$</span>
                             <input type="text" class="drawer-search-input" id="computerExecInput" placeholder="Comando direto no Sandbox (ex: ls -la, python3 script.py)..." style="flex: 1; padding: 6px 8px; font-size: 11px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); PiDotsAPI.executeInDotComputer();}">
                             <button type="button" class="pixel-btn btn-cyan" onclick="PiDotsAPI.executeInDotComputer()">Executar</button>
                         </div>
@@ -808,14 +817,14 @@
                                 <div class="stamp-inner">
                                     <span class="stamp-title">VETADO</span>
                                     <span class="stamp-sub">AÇÃO CANCELADA</span>
-                                    <span style="font-size: 8px;">OP: LYON</span>
+                                    <span style="font-size: 9px;">OP: LYON</span>
                                 </div>
                             </div>
                             <div class="rubber-stamp stamp-approved" id="stampApproveVisual">
                                 <div class="stamp-inner">
                                     <span class="stamp-title">HOMOLOGADO</span>
                                     <span class="stamp-sub">COMANDO OK</span>
-                                    <span style="font-size: 8px;">9F2A-WAL</span>
+                                    <span style="font-size: 9px;">9F2A-WAL</span>
                                 </div>
                             </div>
                         </div>
@@ -826,7 +835,7 @@
                                 <div class="pixel-switch" id="safetySwitchMechanical">
                                     <div class="pixel-switch-thumb"></div>
                                 </div>
-                                <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-secondary);">DESTRAVAR SEGURANÇA</span>
+                                <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-secondary);">DESTRAVAR SEGURANÇA</span>
                             </div>
                             <div class="hitl-canvas-actions" style="display: flex; gap: 8px;">
                                 <button class="pixel-btn btn-danger" onclick="resolveHitlFull('REJEITADO')">Vetar</button>
@@ -858,22 +867,22 @@
 
         <div class="drawer-content" id="drawerContentList">
             <!-- CONTROLES RÁPIDOS MOBILE (ESPELHADOS DO CABEÇALHO PARA TELAS <= 768PX) -->
-            <div class="mobile-quick-controls-bar" id="mobileQuickControlsBar" style="padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-default); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 6px;">
-                <div style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--thermal-amber); letter-spacing: 0.05em;">ATALHOS DE SESSÃO &amp; INTERFACE</div>
+            <div class="mobile-quick-controls-bar" id="mobileQuickControlsBar">
+                <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--thermal-amber); letter-spacing: 0.05em;">ATALHOS DE SESSÃO &amp; INTERFACE</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                    <button type="button" class="pixel-btn btn-cyan" onclick="toggleDrawer(); startNewConversation();" style="justify-content: center; font-size: 8px;">
+                    <button type="button" class="pixel-btn btn-cyan" onclick="toggleDrawer(); startNewConversation();" style="justify-content: center; font-size: 9px;">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         <span>Nova Conversa</span>
                     </button>
-                    <button type="button" class="pixel-btn" onclick="toggleWorkspaceMode();" style="justify-content: center; font-size: 8px;">
+                    <button type="button" class="pixel-btn" onclick="toggleWorkspaceMode();" style="justify-content: center; font-size: 9px;">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
                         <span>Foco / Split</span>
                     </button>
-                    <button type="button" class="pixel-btn" onclick="PiDotsI18n.toggleLanguage();" style="justify-content: center; font-size: 8px;">
+                    <button type="button" class="pixel-btn" onclick="PiDotsI18n.toggleLanguage();" style="justify-content: center; font-size: 9px;">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                         <span>Idioma PT | EN</span>
                     </button>
-                    <button type="button" class="pixel-btn" onclick="toggleTheme();" style="justify-content: center; font-size: 8px;">
+                    <button type="button" class="pixel-btn" onclick="toggleTheme();" style="justify-content: center; font-size: 9px;">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                         <span>Tema</span>
                     </button>
@@ -882,7 +891,7 @@
 
             <!-- RECURSO DIDÁTICO INTERATIVO SPOTLIGHT -->
             <div style="padding: 12px; margin-bottom: 14px; border: 1px solid var(--blueprint-cyan); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 8px;">
-                <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); letter-spacing: 0.05em; text-transform: uppercase;">RECURSO DIDÁTICO INTERATIVO</div>
+                <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); letter-spacing: 0.05em; text-transform: uppercase;">RECURSO DIDÁTICO INTERATIVO</div>
                 <div style="font-size: 11px; color: var(--ink-secondary); line-height: 1.4;">
                     Deseja rever as 5 ferramentas fundamentais do console guiadas diretamente na interface real?
                 </div>
@@ -925,7 +934,7 @@
             </div>
 
             <div style="padding: 12px; margin-top: 14px; border: 1px solid var(--border-default); background: var(--paper-surface-recessed); display: flex; flex-direction: column; gap: 8px;">
-                <div style="font-family: var(--font-pixel); font-size: 8px; color: var(--ink-muted); letter-spacing: 0.05em; text-transform: uppercase;">INTERFACES REST DO NÓ EDGE:</div>
+                <div style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); letter-spacing: 0.05em; text-transform: uppercase;">INTERFACES REST DO NÓ EDGE:</div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <a href="/api/docs" target="_blank" class="pixel-btn btn-cyan" style="flex: 1; justify-content: center; text-decoration: none;" title="Abrir Documentação OpenAPI Interativa">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
@@ -972,13 +981,13 @@
             PIDOTS CORE ATIVO // NO DE BORDA ARM64 (REF: RPI4 4GB)
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
-            <button class="pixel-btn" onclick="PiDotsUX.Onboarding.open()" title="Rever Tour Operacional de Primeiro Acesso" data-i18n="nav.onboarding" style="padding: 2px 6px; font-size: 8px;">
+            <button class="pixel-btn" id="btnStartOnboardingTour" onclick="PiDotsUX.Onboarding.open()" title="Rever Tour Operacional de Primeiro Acesso" style="padding: 2px 6px; font-size: 9px;">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-                <span>Tour Operacional</span>
+                <span data-i18n="nav.onboarding">Tour Operacional</span>
             </button>
-            <button class="pixel-btn" id="btnFooterPatchNotes" onclick="PiDotsUX.PatchNotes.open()" title="Exibir Notas de Atualização e Changelog" style="padding: 2px 6px; font-size: 8px;">
+            <button class="pixel-btn" id="btnFooterPatchNotes" onclick="PiDotsUX.PatchNotes.open()" title="Exibir Notas de Atualização e Changelog" style="padding: 2px 6px; font-size: 9px;">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                <span>Notas da Versão (v1.2.0)</span>
+                <span data-i18n="nav.Changelog">Notas da Versão (v1.5.3)</span>
             </button>
         </div>
         <div>
@@ -1001,7 +1010,7 @@
         <div class="pixel-dialog-box" id="pixelDialogBox">
             <header class="dialog-header">
                 <span id="pixelDialogTitle">Protocolo · Diálogo Operacional</span>
-                <span style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-muted);">ESC PARA CANCELAR</span>
+                <span style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted);">ESC PARA CANCELAR</span>
             </header>
             <div class="dialog-body">
                 <p class="dialog-message" id="pixelDialogMessage">Mensagem de instrução do sistema.</p>
@@ -1149,7 +1158,7 @@
             <header class="patchnotes-header-block">
                 <div class="patchnotes-header-left">
                     <div class="patchnotes-sys-tag" data-i18n="patch.header">PIDOTS // SISTEMA OPERACIONAL DE AGENTES AUTONOMOS</div>
-                    <h2 class="patchnotes-main-title" id="patchNotesTitle" data-i18n="patch.title">NOTAS DE ATUALIZACAO - VERSAO 1.2.0</h2>
+                    <h2 class="patchnotes-main-title" id="patchNotesTitle" data-i18n="patch.title">NOTAS DE ATUALIZACAO - VERSAO 1.5.3</h2>
                     <div class="patchnotes-meta-bar">
                         <span class="meta-item" id="patchNotesBuildTag">BUILD: 20261012-ARM64</span>
                         <span class="meta-separator">//</span>
@@ -1329,26 +1338,26 @@
         <div class="pixel-dialog-box" style="max-width: 560px; width: 95vw; max-height: 88dvh; display: flex; flex-direction: column;">
             <header class="dialog-header">
                 <span id="dotCreatorModalTitle">Estúdio OpenDots · Criar ou Editar AI Coworker</span>
-                <button type="button" class="pixel-btn" style="padding: 1px 6px; font-size: 8px;" onclick="closeDotCreatorModal()">Esc</button>
+                <button type="button" class="pixel-btn" style="padding: 1px 6px; font-size: 9px;" onclick="closeDotCreatorModal()">Esc</button>
             </header>
             <div class="dialog-body" style="overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="dot-form-row-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <div>
-                        <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); display: block; margin-bottom: 3px;">HANDLE ID (@DOT-ID)</label>
+                        <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 3px;">HANDLE ID (@DOT-ID)</label>
                         <input type="text" class="drawer-search-input" id="dotFormId" placeholder="ex: dot-security-ops" style="width: 100%; font-size: 11px;">
                     </div>
                     <div>
-                        <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); display: block; margin-bottom: 3px;">NOME DE EXIBICAO</label>
+                        <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 3px;">NOME DE EXIBICAO</label>
                         <input type="text" class="drawer-search-input" id="dotFormName" placeholder="ex: Security Ops Specialist" style="width: 100%; font-size: 11px;">
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+                <div class="dot-form-row-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
                     <div>
-                        <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); display: block; margin-bottom: 3px;">PAPEL / FUNCAO OPERACIONAL</label>
+                        <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 3px;">PAPEL / FUNCAO OPERACIONAL</label>
                         <input type="text" class="drawer-search-input" id="dotFormRole" placeholder="ex: Auditor de Seguranca e Redes Linux" style="width: 100%; font-size: 11px;">
                     </div>
                     <div>
-                        <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--ink-muted); display: block; margin-bottom: 3px;">ARQUETIPO</label>
+                        <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--ink-muted); display: block; margin-bottom: 3px;">ARQUETIPO</label>
                         <select class="drawer-search-input" id="dotFormArchetype" style="width: 100%; font-size: 11px;">
                             <option value="coder">CODER</option>
                             <option value="architect">ARCHITECT</option>
@@ -1359,12 +1368,12 @@
                     </div>
                 </div>
                 <div>
-                    <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--blueprint-cyan); display: block; margin-bottom: 3px;">SYSTEM PROMPT (DIRETRIZES COGNITIVAS DO DOT)</label>
+                    <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--blueprint-cyan); display: block; margin-bottom: 3px;">SYSTEM PROMPT (DIRETRIZES COGNITIVAS DO DOT)</label>
                     <textarea class="drawer-search-input" id="dotFormPrompt" rows="4" style="width: 100%; font-size: 11px; resize: vertical;" placeholder="Descreva a identidade, limites operacionais e estilo de resposta deste Dot..."></textarea>
                 </div>
                 <div>
-                    <label style="font-family: var(--font-pixel); font-size: 7.5px; color: var(--phosphor-green); display: block; margin-bottom: 3px;">PODA DINAMICA DE FERRAMENTAS (ALLOWED TOOLS - VAZIO = TODAS)</label>
-                    <div id="dotFormToolsCheckboxes" style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 6px 8px; max-height: 110px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 10px;">
+                    <label style="font-family: var(--font-pixel); font-size: 9px; color: var(--phosphor-green); display: block; margin-bottom: 3px;">PODA DINAMICA DE FERRAMENTAS (ALLOWED TOOLS - VAZIO = TODAS)</label>
+                    <div id="dotFormToolsCheckboxes" class="dot-tools-checklist-grid" style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 6px 8px; max-height: 110px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 10px;">
                     </div>
                 </div>
             </div>

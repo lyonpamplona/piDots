@@ -65,7 +65,7 @@
         // ---------------------------------------------------------------------
         const PatchNotes = {
             STORAGE_KEY: 'pidots_last_seen_version',
-            activeVersion: '1.5.0',
+            activeVersion: '1.5.3',
             dataCache: null,
 
             async init() {
@@ -74,10 +74,13 @@
                     if (!res.ok) return;
                     const data = await res.json();
                     this.dataCache = data;
-                    this.activeVersion = data.current_version || '1.5.0';
+                    this.activeVersion = data.current_version || '1.5.3';
 
                     const footerBtn = document.getElementById('btnFooterPatchNotes');
-                    if (footerBtn) footerBtn.textContent = `[PATCH NOTES // V${this.activeVersion}]`;
+                    if (footerBtn) {
+                        const span = footerBtn.querySelector('span');
+                        if (span) span.textContent = `Notas da Versão (v${this.activeVersion})`;
+                    }
 
                     const lastSeen = localStorage.getItem(this.STORAGE_KEY);
                     if (lastSeen !== this.activeVersion) {
