@@ -86,7 +86,6 @@
     --text-muted:     var(--ink-muted);
     --accent-cyan:    var(--blueprint-cyan);
     --accent-emerald: var(--phosphor-green);
-    --accent-amber:   var(--thermal-amber);
     --accent-rose:    var(--stamp-danger);
 
     /* Aliases Curtos de Governanca e Cores Primarias */
@@ -168,7 +167,6 @@
     --text-muted:     var(--ink-muted);
     --accent-cyan:    var(--blueprint-cyan);
     --accent-emerald: var(--phosphor-green);
-    --accent-amber:   var(--thermal-amber);
     --accent-rose:    var(--stamp-danger);
 
     --cyan:           var(--blueprint-cyan);

@@ -14,6 +14,19 @@
         let isBlueprint = false;
         let isMechanicalUnlocked = false;
         let dutyCycleHours = 24; // Padrao continuo 24/7
+        let simActiveTimers = [];
+
+        function clearSimTimers() {
+            while (simActiveTimers.length > 0) {
+                clearTimeout(simActiveTimers.pop());
+            }
+        }
+
+        function registerSimTimer(fn, delay) {
+            const id = setTimeout(fn, delay);
+            simActiveTimers.push(id);
+            return id;
+        }
 
         // Sintetizador de Som Tatil Mecanico 8-Bit (Web Audio API sem dependencias)
         function playHapticMechanicalClick() {
@@ -56,6 +69,11 @@
             const backdrop = document.getElementById('drawerBackdrop');
             if (!drawer || !backdrop) return;
 
+            const mobilePanel = document.getElementById('mobileNavPanel');
+            if (mobilePanel && mobilePanel.classList.contains('open')) {
+                mobilePanel.classList.remove('open');
+            }
+
             const willOpen = !drawer.classList.contains('open');
             drawer.classList.toggle('open', willOpen);
             backdrop.classList.toggle('open', willOpen);
@@ -77,7 +95,7 @@
             const steps = document.querySelectorAll('#drawerContentList .guide-step');
             steps.forEach(step => {
                 const text = step.textContent.toLowerCase();
-                step.style.display = text.includes(term) ? 'block' : 'none';
+                step.style.display = text.includes(term) ? 'flex' : 'none';
             });
         }
 
@@ -93,12 +111,13 @@
 
             playHapticMechanicalClick();
 
+            const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
             if (isMechanicalUnlocked) {
-                if (labelEl) labelEl.textContent = 'TRAVA DESTRAVADA';
-                showToast('ALERTA: Trava mecanica de seguranca destravada pelo operador.', 'warning');
+                if (labelEl) labelEl.textContent = isEn ? 'SAFETY LOCK UNLOCKED' : 'TRAVA DESTRAVADA';
+                showToast(isEn ? 'WARNING: Mechanical safety lock unlocked by operator.' : 'ALERTA: Trava mecanica de seguranca destravada pelo operador.', 'warning');
             } else {
-                if (labelEl) labelEl.textContent = 'TRAVA ENGATADA';
-                showToast('SEGURANCA: Trava mecanica engatada. Homologacao bloqueada.', 'info');
+                if (labelEl) labelEl.textContent = isEn ? 'SAFETY LOCK ENGAGED' : 'TRAVA ENGATADA';
+                showToast(isEn ? 'SECURITY: Mechanical lock engaged. Homologation blocked.' : 'SEGURANCA: Trava mecanica engatada. Homologacao bloqueada.', 'info');
             }
         }
 
@@ -106,7 +125,10 @@
             const approveStamp = document.getElementById('demoStampApprove');
             const rejectStamp = document.getElementById('demoStampReject');
 
-            if (approveStamp) approveStamp.style.transform = 'rotate(2.5deg) scale(1.15)';
+            if (approveStamp) {
+                approveStamp.style.opacity = '1';
+                approveStamp.style.transform = 'rotate(2.5deg) scale(1.15)';
+            }
             if (rejectStamp) rejectStamp.style.opacity = '0.25';
 
             playHapticMechanicalClick();
@@ -121,7 +143,10 @@
             const approveStamp = document.getElementById('demoStampApprove');
             const rejectStamp = document.getElementById('demoStampReject');
 
-            if (rejectStamp) rejectStamp.style.transform = 'rotate(-3deg) scale(1.15)';
+            if (rejectStamp) {
+                rejectStamp.style.opacity = '1';
+                rejectStamp.style.transform = 'rotate(-3deg) scale(1.15)';
+            }
             if (approveStamp) approveStamp.style.opacity = '0.25';
 
             playHapticMechanicalClick();
@@ -240,6 +265,13 @@
             const panel = document.getElementById('mobileNavPanel');
             if (!panel) return;
 
+            const drawer = document.getElementById('retractableDrawer');
+            const backdrop = document.getElementById('drawerBackdrop');
+            if (drawer && drawer.classList.contains('open')) {
+                drawer.classList.remove('open');
+                if (backdrop) backdrop.classList.remove('open');
+            }
+
             const willOpen = !panel.classList.contains('open');
             panel.classList.toggle('open', willOpen);
 
@@ -261,13 +293,13 @@
             const btnTele = document.getElementById('tabBtnTelemetry');
 
             if (tab === 'terminal') {
-                if (termVp) termVp.style.display = 'block';
+                if (termVp) termVp.style.display = 'flex';
                 if (teleVp) teleVp.style.display = 'none';
                 if (btnTerm) btnTerm.classList.add('active');
                 if (btnTele) btnTele.classList.remove('active');
             } else {
                 if (termVp) termVp.style.display = 'none';
-                if (teleVp) teleVp.style.display = 'block';
+                if (teleVp) teleVp.style.display = 'flex';
                 if (btnTerm) btnTerm.classList.remove('active');
                 if (btnTele) btnTele.classList.add('active');
             }
@@ -276,6 +308,7 @@
         // Limpeza do Viewport do Simulador
         function clearSimViewport() {
             playHapticMechanicalClick();
+            clearSimTimers();
             const vp = document.getElementById('heroSimViewport');
             if (vp) {
                 vp.innerHTML = `
@@ -289,6 +322,7 @@
         // Execucao de Instrucoes Simuladas no Protocolo AG-UI
         function executeSimulatedOrder(type) {
             playHapticMechanicalClick();
+            clearSimTimers();
             switchSimulatorTab('terminal');
             const vp = document.getElementById('heroSimViewport');
             if (!vp) return;
@@ -303,17 +337,17 @@
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @dot-coder auditar integridade Flash MicroSD e consumo RSS</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line thought">[CADERNO DE RACIOCINIO // DOT-CODER]<br>Inspecionando /proc/meminfo, journal_mode do SQLite e espaco de particao /workspace...</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 350);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line tool">[TOOL CALL // SUB-15MS BWRAP]<br>execute_bwrap_command("cat /proc/meminfo | grep MemFree &amp;&amp; df -h /workspace")</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 750);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line success">[TOOL RESULT] Codigo: 0 | Saida: MemFree: 3120 MB | Particao Flash: 68% livre. Desgaste 0.</div>`;
                     vp.innerHTML += `<div class="sim-line" style="color: var(--phosphor-green); font-weight: bold;">[DOT-CODER // RESPOSTA] O ecossistema esta operando com 64.2MB de RAM real. Nenhuma escrita sincrona danosa foi detectada no MicroSD.</div>`;
                     vp.scrollTop = vp.scrollHeight;
@@ -324,17 +358,17 @@
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @conselho deliberar sobre politica de sincronizacao WAL para modo headless</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line thought">[CONSELHO // RODADA 1 - PROPOSTA]<br>@dot-coder: "Proponho manter PRAGMA synchronous=NORMAL e flush a cada 15 segundos."</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 400);
 
-                setTimeout(() => {
-                    vp.innerHTML += `<div class="sim-line thought" style="border-color: var(--stamp-danger); color: #fecaca;">[CONSELHO // RODADA 2 - AUDITORIA]<br>@dot-auditor: "Validado: sob kernel Linux com journaling, o risco de corrupcao e zero e poupa 94% de I/O."</div>`;
+                registerSimTimer(() => {
+                    vp.innerHTML += `<div class="sim-line thought" style="border-color: var(--stamp-danger); color: var(--ink-main);">[CONSELHO // RODADA 2 - AUDITORIA]<br>@dot-auditor: "Validado: sob kernel Linux com journaling, o risco de corrupcao e zero e poupa 94% de I/O."</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 850);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line success">[CONSELHO // RESOLUCAO DO SUPERVISOR]<br>@dot-supervisor: "Deliberacao encerrada com consenso. Gravando diretriz no SQLite WAL."</div>`;
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'DELIBERACAO HOMOLOGADA // WAL PERSISTIDO';
@@ -344,17 +378,17 @@
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @self-healing executar pipeline de validacao do script data/loader.py</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line danger">[FALHA DETECTADA // TRACEBACK]<br>ZeroDivisionError: division by zero na linha 28 de data/loader.py (divisor = 0)</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 400);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line thought">[SELF-HEALING HARNESS // DIAGNOSTICO CIRURGICO]<br>Detectada divisao por zero. Aplicando guarda condicional "if divisor == 0: return 0.0"...</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 850);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line success">[AUTO-CURA CONCLUIDA // EXIT 0]<br>Script reexecutado com sucesso em sandbox Bubblewrap. 100% dos testes aprovados sem intervencao humana!</div>`;
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'AUTO-CURA FINALIZADA COM SUCESSO';
@@ -364,12 +398,12 @@
                 vp.innerHTML += `<div class="sim-line prefix">[SISTEMA // CRONITER]&gt; Disparo de tarefa proativa agendada: rotina de checagem a cada 15s</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line tool">[EDGE SCHEDULER // CHECAGEM PROATIVA]<br>Lendo temperatura SoC (/sys/class/thermal), pool SQLite e portas de rede...</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 350);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line success">[SILENCIO INTELIGENTE // HEARTBEAT_OK]<br>Todos os parametros nominais. Nenhuma notificacao desnecessaria enviada ao operador (0 tokens desperdicados).</div>`;
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'PULSO OPERACIONAL NOMINAL // 0 TOKENS';
@@ -379,7 +413,7 @@
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /telemetry</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line" style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); margin-top: 4px;">=== [RECIBO DE SLASH COMMAND // LOCAL CLIENT-SIDE &lt; 16MS] ===</div>`;
                     vp.innerHTML += `<div class="sim-line" style="background: rgba(56, 189, 248, 0.08); border-left: 3px solid var(--blueprint-cyan); padding: 6px; font-family: var(--font-mono); font-size: 11px;">
 [COMANDO] /telemetry | STATUS: SUCESSO | LATENCIA: 4ms | CONSUMO TOKENS: 0<br>
@@ -397,12 +431,12 @@
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /mcp list</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line tool">[CLIENTE MCP LITE // PROTOCOLO JSON-RPC 2.0]<br>Servidores conectados: 2 (git-bridge, mqtt-telemetry) | Consumo RAM: 3.8 MB</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 300);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line success">[TOOL PRUNING ATIVO]<br>Ferramentas descobertas: 4 | Injetadas no prompt: 2 (apenas allowed_tools_json do @dot-coder). Zero inflacao de contexto!</div>`;
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'MCP LITE CONECTADO // DYNAMIC TOOL PRUNING';
@@ -413,12 +447,12 @@
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /coagents</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line tool">[AG-UI // COAGENTS SHARED STATE // STATE_SNAPSHOT]<br>GET /api/threads/thr_active/state -> dot_id: "dot-coder" | phase: "executing_tool" | hop_count: 1</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 250);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line success">[SSE // STATE_DELTA SINCRONIZADO AO VIVO]<br>Delta aplicado em sub-4ms: {"active_tool": "execute_shell_command", "plan_progress": 100, "process_rss_mb": 64.2}</div>`;
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'COAGENTS STATE SINCRONIZADO // STATE_DELTA OK';
@@ -429,12 +463,12 @@
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /computer takeover</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line tool">[DOT'S COMPUTER // COMPUTADOR DE BORDA]<br>Montando workspace isolado (/workspace/dot-coder) + Explorador de Arquivos + Terminal Bubblewrap...</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 300);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line success">[MODO TAKEOVER ATIVO // CONTROLE HUMANO DIRETO]<br>Operador assumiu o terminal bwrap em sub-12ms. Acoes sincronizadas no feed AG-UI da thread!</div>`;
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'DOT COMPUTER // MODO TAKEOVER HUMANO ATIVO';
@@ -445,12 +479,12 @@
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; /save-space Arquitetura_CoAgents_Edge</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line tool">[SAVE THREAD AS SPACE // POST /api/threads/thr_active/save-as-space]<br>Consolidando mensagens da thread e indexando no motor de embedding 64D unificado...</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 300);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line success">[SPACE CRIADO // REVISAO #1 GRAVADA NO SQLITE WAL]<br>Artefato "Arquitetura_CoAgents_Edge.md" disponivel no painel Spaces &amp; Canais e no Live Canvas!</div>`;
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'THREAD SALVA COMO SPACE // MOTOR 64D INDEXADO';
@@ -461,12 +495,12 @@
                 vp.innerHTML += `<div class="sim-line prefix">[OPERADOR]&gt; @dot-coder limpar logs antigos em /var/log</div>`;
                 vp.scrollTop = vp.scrollHeight;
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line danger" style="background: rgba(239, 68, 68, 0.15); border-left: 3px solid var(--stamp-danger); padding: 8px;">[GENERATIVE UI CARD // HITL RETENCAO DE SEGURANCA]<br>Tool: execute_shell_command | Args originais: {"command": "rm -rf /var/log/*"}<br>Operador editou modified_args para: {"command": "rm -f /workspace/logs/*.tmp"} e homologou!</div>`;
                     vp.scrollTop = vp.scrollHeight;
                 }, 400);
 
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line success">[HITL RESOLVE // RETOMADA AUTOMATICA DO AGENTE]<br>POST /api/hitl/apr_01/resolve (modified_args aplicado) -> Agente retomou turno automaticamente com seguranca!</div>`;
                     vp.scrollTop = vp.scrollHeight;
                     if (statusText) statusText.innerText = 'HITL HOMOLOGADO COM MODIFIED_ARGS // RETOMADO';
@@ -482,6 +516,7 @@
 
             const text = input.value.trim();
             playHapticMechanicalClick();
+            clearSimTimers();
             switchSimulatorTab('terminal');
 
             const vp = document.getElementById('heroSimViewport');
@@ -495,7 +530,7 @@
             if (text.startsWith('/')) {
                 const cmd = text.split(' ')[0].toLowerCase();
                 const safeCmd = cmd.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-                setTimeout(() => {
+                registerSimTimer(() => {
                     vp.innerHTML += `<div class="sim-line" style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan); margin-top: 4px;">=== [RECIBO DE SLASH COMMAND // CATALOGO DE 34 COMANDOS] ===</div>`;
                     if (cmd === '/clear') {
                         vp.innerHTML = `<div class="sim-line prefix">[BOOT] piDots Edge Core v1.5.3 inicializado sob SQLite WAL e Python 3.13 uvloop.</div>
@@ -520,17 +555,17 @@
                 return;
             }
 
-            setTimeout(() => {
+            registerSimTimer(() => {
                 vp.innerHTML += `<div class="sim-line thought">[CADERNO DE RACIOCINIO // AG-UI]<br>Analisando intencao semantica... Roteando comando atraves da poda dinamica de ferramentas...</div>`;
                 vp.scrollTop = vp.scrollHeight;
             }, 300);
 
-            setTimeout(() => {
+            registerSimTimer(() => {
                 vp.innerHTML += `<div class="sim-line tool">[TOOL CALL // LOCAL FIRST]<br>execute_bwrap_command("echo '[PROCESSO EM EXECUCAO NA BORDA]'")</div>`;
                 vp.scrollTop = vp.scrollHeight;
             }, 700);
 
-            setTimeout(() => {
+            registerSimTimer(() => {
                 vp.innerHTML += `<div class="sim-line success">[RESPOSTA DO AGENTE]<br>Comando processado com sucesso pelo ecossistema soberano piDots em menos de 14ms.</div>`;
                 vp.scrollTop = vp.scrollHeight;
             }, 1100);
@@ -624,14 +659,42 @@
             }, 3500);
         }
 
-        // Copiar Snippet com Feedback Tatil
+        // Copiar Snippet com Feedback Tatil e Fallback HTTP LAN
         function copySnippet(text) {
             playHapticMechanicalClick();
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Comando copiado para a area de transferencia!', 'success');
-            }).catch(() => {
-                showToast(`Comando: ${text}`, 'info');
-            });
+            const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
+            const successMsg = isEn ? 'Command copied to clipboard!' : 'Comando copiado para a area de transferencia!';
+
+            function fallbackCopyText(str) {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = str;
+                    ta.setAttribute('readonly', '');
+                    ta.style.position = 'fixed';
+                    ta.style.top = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    const ok = document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    if (ok) {
+                        showToast(successMsg, 'success');
+                    } else {
+                        showToast(`Comando: ${str}`, 'info');
+                    }
+                } catch (e) {
+                    showToast(`Comando: ${str}`, 'info');
+                }
+            }
+
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(successMsg, 'success');
+                }).catch(() => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
         }
 
         // Sistema de Notificacoes em Papel Termico (Pixel Toast)
@@ -654,14 +717,22 @@
             recalculateRoi();
         });
 
-        // Tecla ESC fecha Drawer
+        // Tecla ESC fecha Drawer e Menu Movel
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const drawer = document.getElementById('retractableDrawer');
                 if (drawer && drawer.classList.contains('open')) {
                     toggleDrawer();
                 }
+                const mobilePanel = document.getElementById('mobileNavPanel');
+                if (mobilePanel && mobilePanel.classList.contains('open')) {
+                    toggleMobileNavMenu();
+                }
             }
+        });
+
+        window.addEventListener('pidots:langchange', () => {
+            recalculateRoi();
         });
 
         // Navegacao Global por Teclado e Resolucao de Superficies delegada ao CrossSurfaceRouter (static/js/core/cross-surface-router.js)

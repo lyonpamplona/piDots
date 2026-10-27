@@ -125,6 +125,16 @@
                 }
             }
 
+            // 1b. Textos com marcacao estrutural interna controlada (strong, code, span)
+            const htmlNodes = document.querySelectorAll('[data-i18n-html]');
+            for (let i = 0; i < htmlNodes.length; i++) {
+                const el = htmlNodes[i];
+                const key = el.getAttribute('data-i18n-html');
+                if (key) {
+                    el.innerHTML = PiDotsI18n.t(key);
+                }
+            }
+
             // 2. Placeholders de entrada
             const placeholderNodes = document.querySelectorAll('[data-i18n-placeholder]');
             for (let i = 0; i < placeholderNodes.length; i++) {
@@ -169,6 +179,18 @@
                 }
                 btn.setAttribute('title', currentLang === 'pt' 
                     ? 'Alternar interface para Ingles Tecnico (EN)' 
+                    : 'Switch interface to Brazilian Portuguese (PT)');
+            }
+
+            // 5b. Atualiza #navLangLabel e .nav-btn-lang na Topbar unificada
+            const navLangLabel = document.getElementById('navLangLabel');
+            if (navLangLabel) {
+                navLangLabel.textContent = currentLang.toUpperCase();
+            }
+            const navLangBtns = document.querySelectorAll('.nav-btn-lang');
+            for (let i = 0; i < navLangBtns.length; i++) {
+                navLangBtns[i].setAttribute('title', currentLang === 'pt'
+                    ? 'Alternar interface para Ingles Tecnico (EN)'
                     : 'Switch interface to Brazilian Portuguese (PT)');
             }
 

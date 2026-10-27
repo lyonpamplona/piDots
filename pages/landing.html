@@ -78,7 +78,7 @@
         <div class="top-deck-right">
             <button type="button" class="header-nav-btn nav-btn-theme" onclick="toggleTheme()" title="Comutar Tema Claro/Escuro" aria-label="Alternar Tema">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <span class="nav-btn-text">Tema</span>
+                <span class="nav-btn-text" data-i18n="landing.btn_theme">Tema</span>
             </button>
             <button type="button" class="header-nav-btn nav-btn-lang" onclick="PiDotsI18n.toggleLanguage()" title="Comutar Idioma PT/EN" aria-label="Alternar Idioma">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
@@ -90,7 +90,7 @@
             </a>
             <button type="button" class="header-nav-btn nav-btn-manual" onclick="toggleDrawer()" title="Abrir Manual Passo a Passo">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                <span class="nav-btn-text">Manual</span>
+                <span class="nav-btn-text" data-i18n="landing.btn_manual">Manual</span>
             </button>
             <button type="button" class="header-nav-btn nav-btn-mobile" onclick="toggleMobileNavMenu()" title="Menu de Secoes Mobile" aria-label="Menu Movel">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
@@ -101,21 +101,21 @@
     <!-- Painel Retratil de Navegacao Movel -->
     <nav id="mobileNavPanel" class="mobile-nav-panel" aria-label="Menu Movel">
         <div class="mobile-nav-header">
-            <span>SECOES // NAVEGACAO</span>
+            <span data-i18n="landing.mobile_nav_title">SECOES // NAVEGACAO</span>
             <button type="button" class="btn-close-mobile-nav" onclick="toggleMobileNavMenu()" aria-label="Fechar Menu Movel">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
         </div>
         <div class="mobile-nav-links">
-            <a href="#hero" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">01 // VISAO GERAL</a>
-            <a href="#metricas" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">02 // METRICAS DE SILICIO</a>
-            <a href="#coworkers" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">03 // COWORKERS (@DOTS)</a>
-            <a href="#pilares" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">04 // 4 PILARES ARQUITETURA</a>
-            <a href="#matriz" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">05 // MATRIZ COMPARATIVA</a>
-            <a href="#arena-hitl" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">06 // ARENA INTERATIVA HITL</a>
-            <a href="#calculadora-roi" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">07 // CALCULADORA DE ROI</a>
-            <a href="#faq" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">08 // FAQ TECNICO</a>
-            <a href="#quickstart" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)">09 // DEPLOY 1-CLIQUE</a>
+            <a href="#hero" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_01">01 // VISAO GERAL</a>
+            <a href="#metricas-silicio" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_02">02 // METRICAS DE SILICIO</a>
+            <a href="#coworkers" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_03">03 // COWORKERS (@DOTS)</a>
+            <a href="#pilares" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_04">04 // 4 PILARES ARQUITETURA</a>
+            <a href="#comparativo" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_05">05 // MATRIZ COMPARATIVA</a>
+            <a href="#arena-hitl" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_06">06 // ARENA INTERATIVA HITL</a>
+            <a href="#calculadora-roi" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_07">07 // CALCULADORA DE ROI</a>
+            <a href="#faq" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_08">08 // FAQ TECNICO</a>
+            <a href="#quickstart" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_09">09 // DEPLOY 1-CLIQUE</a>
         </div>
     </nav>
 
@@ -130,48 +130,48 @@
         <section class="hero-section" id="hero">
             <div class="hero-eyebrow">
                 <span class="eyebrow-dot"></span>
-                <span class="eyebrow-text">ARM64 CORTEX-A72 · 6.2W USB-C · &lt; 70MB RAM RSS · OPEN SOURCE MIT</span>
+                <span class="eyebrow-text" data-i18n="landing.hero_eyebrow">ARM64 CORTEX-A72 · 6.2W USB-C · &lt; 70MB RAM RSS · OPEN SOURCE MIT</span>
             </div>
 
             <div class="hero-split-grid">
                 <!-- Coluna Esquerda: Narrativa de Engenharia e Deploy -->
                 <div class="hero-col-left">
-                    <h1 class="hero-title">
+                    <h1 class="hero-title" data-i18n-html="landing.hero_title_html">
                         Agentes de IA autônomos no seu <span class="highlight">próprio hardware</span>.
                     </h1>
 
-                    <p class="hero-description">
+                    <p class="hero-description" data-i18n="landing.hero_desc">
                         Execute uma equipe de AI coworkers persistentes no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6.2 Watts. Memória durável em SQLite WAL, isolamento Bubblewrap em sub-15ms e governança Human-in-the-Loop sem taxas de nuvem recorrentes.
                     </p>
 
                     <!-- Terminal de Deploy em 1 Comando (Atrito Zero) -->
                     <div class="hero-deploy-deck">
                         <div class="deploy-deck-top">
-                            <span>COMANDO ÚNICO DE INSTALAÇÃO (DOCKER COMPOSE):</span>
-                            <span>TEMPO ESTIMADO: 45S</span>
+                            <span data-i18n="landing.deploy_label">COMANDO ÚNICO DE INSTALAÇÃO (DOCKER COMPOSE):</span>
+                            <span data-i18n="landing.deploy_eta">TEMPO ESTIMADO: 45S</span>
                         </div>
                         <div class="deploy-cmd-box">
                             <span class="deploy-cmd-text" id="deployCmdSnippet">git clone https://github.com/lyonchristopher/piDots.git &amp;&amp; cd piDots &amp;&amp; docker compose up -d</span>
                             <button type="button" class="btn-copy-cmd" onclick="copySnippet('git clone https://github.com/lyonchristopher/piDots.git &amp;&amp; cd piDots &amp;&amp; docker compose up -d')">
                                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span>COPIAR</span>
+                                <span data-i18n="landing.btn_copy">COPIAR</span>
                             </button>
                         </div>
                         <div class="deploy-ports-hint">
-                            <span>Portas ativas: :8081 (Landing) · :8082 (Workspace) · :8083 (Docs) · :8088 (Gateway)</span>
-                            <span>Saúde: curl http://localhost:8088/health</span>
+                            <span data-i18n="landing.deploy_ports">Portas ativas: :8081 (Landing) · :8082 (Workspace) · :8083 (Docs) · :8088 (Gateway)</span>
+                            <span data-i18n="landing.deploy_health">Saúde: curl http://localhost:8088/health</span>
                         </div>
                     </div>
 
                     <!-- Botões de Ação Primários -->
                     <div class="hero-cta-group">
                         <a href="/app" class="pixel-btn-cta-primary" id="heroCtaWorkspace" data-surface="workspace">
-                            <span>Iniciar Console Operacional</span>
+                            <span data-i18n="landing.cta_workspace">Iniciar Console Operacional</span>
                             <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </a>
                         <a href="/docs" class="pixel-btn-cta-secondary" id="heroCtaDocs" data-surface="docs">
                             <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                            <span>Explorar Documentação</span>
+                            <span data-i18n="landing.cta_docs">Explorar Documentação</span>
                         </a>
                     </div>
 
@@ -192,17 +192,17 @@
                             <div class="sim-tabs-left">
                                 <button type="button" class="sim-tab-btn active" id="tabBtnTerminal" onclick="switchSimulatorTab('terminal')">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                                    <span>Terminal AG-UI</span>
+                                    <span data-i18n="landing.sim_tab_term">Terminal AG-UI</span>
                                 </button>
                                 <button type="button" class="sim-tab-btn" id="tabBtnTelemetry" onclick="switchSimulatorTab('telemetry')">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                                    <span>Telemetria ARM64</span>
+                                    <span data-i18n="landing.sim_tab_tele">Telemetria ARM64</span>
                                 </button>
                             </div>
                             <div class="sim-tabs-right">
                                 <span class="pulse-dot"></span>
-                                <span class="sim-status-label" id="heroSimStatusText">NÓ ATIVO // 3 AGENTES EM ESPERA // RSS: 64.2MB</span>
-                                <button type="button" class="pixel-btn btn-xs" onclick="clearSimViewport()" title="Limpar bobina">Limpar</button>
+                                <span class="sim-status-label" id="heroSimStatusText" data-i18n="landing.sim_status_idle">NÓ ATIVO // 3 AGENTES EM ESPERA // RSS: 64.2MB</span>
+                                <button type="button" class="pixel-btn btn-xs" onclick="clearSimViewport()" title="Limpar bobina" data-i18n="landing.btn_clear">Limpar</button>
                             </div>
                         </div>
 
@@ -251,12 +251,12 @@
 
                         <!-- Viewport 2: Osciloscópios SVG de Silício (Alternável) -->
                         <div class="sim-viewport" id="heroTelemetryViewport" style="display: none;">
-                            <div style="padding: 12px; display: flex; flex-direction: column; gap: 12px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--blueprint-cyan);">OSCILOSCOPIO DE MEMORIA RSS // uvloop</span>
-                                    <span style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-secondary);" id="arenaRamDisplay">64.2 MB (21.4% / 300MB TETO)</span>
+                            <div class="telemetry-deck-inner">
+                                <div class="telemetry-header-row">
+                                    <span class="telemetry-title telemetry-cyan">OSCILOSCOPIO DE MEMORIA RSS // uvloop</span>
+                                    <span class="telemetry-val" id="arenaRamDisplay">64.2 MB (21.4% / 300MB TETO)</span>
                                 </div>
-                                <svg viewBox="0 0 310 80" style="width: 100%; height: 70px; background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); shape-rendering: crispEdges;">
+                                <svg class="telemetry-svg-chart" viewBox="0 0 310 80" preserveAspectRatio="none">
                                     <defs>
                                         <linearGradient id="ramGrad" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
@@ -267,11 +267,11 @@
                                     <polyline id="arenaRamPolyline" points="0,60 40,60 40,55 90,55 90,62 140,62 140,50 190,50 190,52 240,52 240,46 290,46 290,44 310,44" fill="none" stroke="#38bdf8" stroke-width="2"/>
                                 </svg>
 
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-                                    <span style="font-family: var(--font-pixel); font-size: 8px; color: var(--phosphor-green);">TEMPERATURA BROADCOM BCM2711 // SoC</span>
-                                    <span style="font-family: var(--font-mono); font-size: 10px; color: var(--phosphor-green);" id="arenaTempDisplay">48.2 C (NOMINAL)</span>
+                                <div class="telemetry-header-row">
+                                    <span class="telemetry-title telemetry-green">TEMPERATURA BROADCOM BCM2711 // SoC</span>
+                                    <span class="telemetry-val telemetry-green" id="arenaTempDisplay">48.2 C (NOMINAL)</span>
                                 </div>
-                                <svg viewBox="0 0 310 80" style="width: 100%; height: 70px; background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); shape-rendering: crispEdges;">
+                                <svg class="telemetry-svg-chart" viewBox="0 0 310 80" preserveAspectRatio="none">
                                     <defs>
                                         <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="0%" stop-color="#33ff66" stop-opacity="0.35"/>
@@ -282,11 +282,11 @@
                                     <polyline id="arenaTempPolyline" points="0,52 50,52 50,50 110,50 110,54 170,54 170,49 230,49 230,48 290,48 290,47 310,47" fill="none" stroke="#33ff66" stroke-width="2"/>
                                 </svg>
 
-                                <div style="display: flex; gap: 8px; margin-top: 6px;">
-                                    <button type="button" class="pixel-btn btn-xs" onclick="injectTelemetryPulse()" style="flex: 1; justify-content: center;">
+                                <div class="telemetry-actions-row">
+                                    <button type="button" class="pixel-btn btn-xs" onclick="injectTelemetryPulse()">
                                         Testar Pulso Carga RAM
                                     </button>
-                                    <button type="button" class="pixel-btn btn-xs btn-amber" onclick="simulateThermalTriggerAlert()" style="flex: 1; justify-content: center;">
+                                    <button type="button" class="pixel-btn btn-xs btn-amber" onclick="simulateThermalTriggerAlert()">
                                         Simular Alerta Térmico
                                     </button>
                                 </div>
@@ -295,7 +295,7 @@
 
                         <!-- Barra de Chips de Comandos Rápidos Clicáveis -->
                         <div class="sim-chips-bar">
-                            <span class="chips-label">COMANDOS:</span>
+                            <span class="chips-label" data-i18n="landing.sim_chips_lbl">COMANDOS:</span>
                             <button type="button" class="sim-chip" onclick="executeSimulatedOrder('slash_telemetry')">/telemetry</button>
                             <button type="button" class="sim-chip" onclick="executeSimulatedOrder('audit_flash')">@dot-coder flash</button>
                             <button type="button" class="sim-chip" onclick="executeSimulatedOrder('council_debate')">@conselho debate</button>
@@ -306,9 +306,9 @@
                         <!-- Campo de Input Customizado Interativo -->
                         <div class="sim-input-row">
                             <span class="sim-input-prompt">&gt;</span>
-                            <input type="text" class="sim-input-field" id="heroSimInput" placeholder="Envie comando ou /slash (ex: /telemetry, /coagents)..." onkeydown="if(event.key==='Enter') handleCustomSimOrder();" autocomplete="off" spellcheck="false">
+                            <input type="text" class="sim-input-field" id="heroSimInput" placeholder="Envie comando ou /slash (ex: /telemetry, /coagents)..." data-i18n-placeholder="landing.sim_input_placeholder" onkeydown="if(event.key==='Enter') handleCustomSimOrder();" autocomplete="off" spellcheck="false">
                             <button type="button" class="sim-btn-send" onclick="handleCustomSimOrder()">
-                                <span>Disparar</span>
+                                <span data-i18n="landing.btn_send">Disparar</span>
                                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                             </button>
                         </div>
@@ -322,9 +322,9 @@
              =============================================================== -->
         <section class="silicon-metrics-section" id="metricas-silicio">
             <div class="section-head">
-                <span class="section-tag">DADOS DE ENGENHARIA DE SILÍCIO</span>
-                <h2 class="section-title">Medições de hardware auditáveis em runtime real</h2>
-                <p class="section-lead">
+                <span class="section-tag" data-i18n="landing.sec3_tag">DADOS DE ENGENHARIA DE SILÍCIO</span>
+                <h2 class="section-title" data-i18n="landing.sec3_title">Medições de hardware auditáveis em runtime real</h2>
+                <p class="section-lead" data-i18n="landing.sec3_lead">
                     Substituímos adjetivos subjetivos por números empíricos coletados diretamente do kernel Linux ARM64 em operação contínua.
                 </p>
             </div>
@@ -377,9 +377,9 @@
              =============================================================== -->
         <section class="coworkers-section" id="coworkers">
             <div class="section-head">
-                <span class="section-tag">SQUAD DE ESPECIALISTAS PERSISTENTES</span>
-                <h2 class="section-title">Equipe autônoma de AI Coworkers com papéis definidos</h2>
-                <p class="section-lead">
+                <span class="section-tag" data-i18n="landing.sec4_tag">SQUAD DE ESPECIALISTAS PERSISTENTES</span>
+                <h2 class="section-title" data-i18n="landing.sec4_title">Equipe autônoma de AI Coworkers com papéis definidos</h2>
+                <p class="section-lead" data-i18n="landing.sec4_lead">
                     Cada Dot opera como um especialista dedicado com identidade própria, system prompt calibrado e permissões granulares de execução.
                 </p>
             </div>
@@ -476,9 +476,9 @@
              =============================================================== -->
         <section class="bento-section" id="pilares">
             <div class="section-head">
-                <span class="section-tag">ENGENHARIA PARA RECURSOS REAIS</span>
-                <h2 class="section-title">Construído para o silício físico, não para a nuvem infinita</h2>
-                <p class="section-lead">
+                <span class="section-tag" data-i18n="landing.sec5_tag">ENGENHARIA PARA RECURSOS REAIS</span>
+                <h2 class="section-title" data-i18n="landing.sec5_title">Construído para o silício físico, não para a nuvem infinita</h2>
+                <p class="section-lead" data-i18n="landing.sec5_lead">
                     Enquanto frameworks corporativos dependem de múltiplos contêineres pesados e navegadores ocultos, o piDots foi calibrado para operar com folga em nós de 4GB.
                 </p>
             </div>
@@ -535,9 +535,9 @@
              =============================================================== -->
         <section class="comparison-section" id="comparativo">
             <div class="section-head">
-                <span class="section-tag">COMPARATIVO DE ENGENHARIA COMPLETO</span>
-                <h2 class="section-title">O que muda ao migrar para hardware soberano local</h2>
-                <p class="section-lead">
+                <span class="section-tag" data-i18n="landing.sec6_tag">COMPARATIVO DE ENGENHARIA COMPLETO</span>
+                <h2 class="section-title" data-i18n="landing.sec6_title">O que muda ao migrar para hardware soberano local</h2>
+                <p class="section-lead" data-i18n="landing.sec6_lead">
                     Veja como o piDots se diferencia de soluções em nuvem tradicionais e frameworks pesados de agentes que tratam IA como caixas-pretas de alto custo.
                 </p>
             </div>
@@ -647,9 +647,9 @@
              =============================================================== -->
         <section class="arena-section" id="arena-hitl">
             <div class="section-head">
-                <span class="section-tag">GOVERNANCA, DIALETICA E RESILIENCIA AO VIVO</span>
-                <h2 class="section-title">Arena de Execucao: Auditoria de Borda em Silicio</h2>
-                <p class="section-lead">
+                <span class="section-tag" data-i18n="landing.sec7_tag">GOVERNANCA, DIALETICA E RESILIENCIA AO VIVO</span>
+                <h2 class="section-title" data-i18n="landing.sec7_title">Arena de Execucao: Auditoria de Borda em Silicio</h2>
+                <p class="section-lead" data-i18n="landing.sec7_lead">
                     Simule os mecanismos criticos que impedem execucoes nao autorizadas, resolvem conflitos de agentes via dialetica tripartite e aplicam auto-cura com parser AST.
                 </p>
             </div>
@@ -669,13 +669,13 @@
 
                     <!-- Trava Mecanica -->
                     <div class="safety-lock-row" onclick="toggleMechanicalSafetyLock()">
-                        <div class="safety-lock-content" style="display: flex; align-items: center; gap: 8px;">
+                        <div class="safety-lock-content">
                             <div class="mechanical-switch" id="demoSafetySwitch">
                                 <div class="mechanical-switch-thumb"></div>
                             </div>
-                            <span class="safety-lock-label" id="demoSafetyLabel" style="font-family: var(--font-pixel); font-size: 8px;">TRAVA ENGATADA</span>
+                            <span class="safety-lock-label" id="demoSafetyLabel">TRAVA ENGATADA</span>
                         </div>
-                        <span class="safety-lock-action" style="font-size: 10px; color: var(--ink-secondary);">RM -RF /SCRATCH_CACHE</span>
+                        <span class="safety-lock-action">RM -RF /SCRATCH_CACHE</span>
                     </div>
 
                     <!-- Arena de Carimbos Analogicos -->
@@ -683,16 +683,16 @@
                         <div class="rubber-stamp stamp-rejected" id="demoStampReject">
                             <span>VETADO</span>
                             <span class="stamp-sub">ACAO CANCELADA</span>
-                            <span style="font-size: 8px;">OP: LYON</span>
+                            <span class="stamp-op">OP: LYON</span>
                         </div>
                         <div class="rubber-stamp stamp-approved" id="demoStampApprove">
                             <span>HOMOLOGADO</span>
                             <span class="stamp-sub">COMANDO OK</span>
-                            <span style="font-size: 8px;">WAL-AUTH</span>
+                            <span class="stamp-op">WAL-AUTH</span>
                         </div>
                     </div>
 
-                    <div class="arena-actions-row" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: auto;">
+                    <div class="arena-actions-row arena-actions-end">
                         <button type="button" class="btn-hitl-action btn-hitl-reject" onclick="triggerDemoVeto()">
                             <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             <span>Vetar</span>
@@ -717,11 +717,11 @@
                     </p>
 
                     <div class="arena-council-feed" id="councilDemoFeed">
-                        <div class="feed-placeholder" style="color: var(--ink-muted); font-size: 9px;">[SISTEMA] Aguardando convocacao da sessao do conselho consultivo...</div>
+                        <div class="feed-placeholder">[SISTEMA] Aguardando convocacao da sessao do conselho consultivo...</div>
                     </div>
 
-                    <div class="arena-actions-row" style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: auto;">
-                        <span class="arena-status-label" id="councilRoundStatus" style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary);">STATUS: OCIOSO</span>
+                    <div class="arena-actions-row">
+                        <span class="arena-status-label" id="councilRoundStatus">STATUS: OCIOSO</span>
                         <button type="button" class="btn-terminal-action" onclick="runCouncilDemoSimulation()">
                             <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                             <span>Convocar Sessao</span>
@@ -742,11 +742,11 @@
                     </p>
 
                     <div class="arena-healing-feed" id="healingDemoFeed">
-                        <div class="feed-placeholder" style="color: var(--ink-muted); font-size: 9px;">[SISTEMA] Pressione o botao para simular uma falha e observar a auto-cura...</div>
+                        <div class="feed-placeholder">[SISTEMA] Pressione o botao para simular uma falha e observar a auto-cura...</div>
                     </div>
 
-                    <div class="arena-actions-row" style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: auto;">
-                        <span class="arena-status-label" id="healingStatus" style="font-family: var(--font-pixel); font-size: 7px; color: var(--ink-secondary);">HARNESS: ARMED</span>
+                    <div class="arena-actions-row">
+                        <span class="arena-status-label" id="healingStatus">HARNESS: ARMED</span>
                         <button type="button" class="btn-terminal-action" onclick="runHealingDemoSimulation()">
                             <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
                             <span>Simular Falha &amp; Auto-Cura</span>
@@ -761,9 +761,9 @@
              =============================================================== -->
         <section class="calculator-section" id="calculadora-roi">
             <div class="section-head">
-                <span class="section-tag">SIMULADOR DE ECONOMIA DE SILÍCIO</span>
-                <h2 class="section-title">Calcule a amortização do hardware versus faturas em nuvem</h2>
-                <p class="section-lead">
+                <span class="section-tag" data-i18n="landing.sec8_tag">SIMULADOR DE ECONOMIA DE SILÍCIO</span>
+                <h2 class="section-title" data-i18n="landing.sec8_title">Calcule a amortização do hardware versus faturas em nuvem</h2>
+                <p class="section-lead" data-i18n="landing.sec8_lead">
                     Ajuste os controles deslizantes para projetar a economia real acumulada ao substituir instâncias virtuais caras pelo nó físico local.
                 </p>
             </div>
@@ -789,7 +789,7 @@
                         </div>
                     </div>
 
-                    <div class="calc-slider-block" style="margin-top: 20px;">
+                    <div class="calc-slider-block">
                         <div class="slider-label-row">
                             <span class="slider-title">CUSTO MENSAL POR AGENTE EM NUVEM (VPS / API):</span>
                             <span class="slider-display" id="displayCloudCost">R$ 400 / MÊS</span>
@@ -803,8 +803,8 @@
                         </div>
                     </div>
 
-                    <div class="calc-duty-block" style="margin-top: 24px;">
-                        <span class="slider-title" style="display: block; margin-bottom: 8px;">REGIME DE OPERAÇÃO DIÁRIO:</span>
+                    <div class="calc-duty-block">
+                        <span class="slider-title">REGIME DE OPERAÇÃO DIÁRIO:</span>
                         <div class="calc-mode-group">
                             <button type="button" class="calc-mode-btn" onclick="setDutyCycle(8, this)">8 HORAS / DIA</button>
                             <button type="button" class="calc-mode-btn" onclick="setDutyCycle(16, this)">16 HORAS / DIA</button>
@@ -820,14 +820,14 @@
                     
                     <div class="result-highlight-block">
                         <span class="result-sub-label">ECONOMIA ANUAL PROJETADA:</span>
-                        <div class="result-big-number" id="resAnnualSavingsBRL">R$ 14.400</div>
-                        <div class="result-usd-hint" id="resAnnualSavingsUSD">Aproximadamente US$ 2.618 / ano (câmbio 5.50)</div>
+                        <div class="result-big-number" id="resAnnualSavingsBRL">R$ 16.589</div>
+                        <div class="result-usd-hint" id="resAnnualSavingsUSD">Aproximadamente US$ 3.016 / ano (câmbio 5.50)</div>
                     </div>
 
                     <div class="result-meta-grid">
                         <div class="result-meta-box">
                             <span class="meta-label">PAYBACK DO RPI4:</span>
-                            <span class="meta-value" id="resPaybackDays">17 DIAS</span>
+                            <span class="meta-value" id="resPaybackDays">14 DIAS</span>
                         </div>
                         <div class="result-meta-box">
                             <span class="meta-label">ENERGIA POUPADA:</span>
@@ -839,7 +839,7 @@
                         </div>
                     </div>
 
-                    <button type="button" class="pixel-btn btn-cyan btn-full-width" onclick="generateRoiSummaryToast()" style="margin-top: 18px; justify-content: center;">
+                    <button type="button" class="pixel-btn btn-cyan btn-full-width" onclick="generateRoiSummaryToast()">
                         <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
                         <span>Gerar Dossiê Forense de Economia</span>
                     </button>
@@ -852,9 +852,9 @@
              =============================================================== -->
         <section class="faq-section" id="faq">
             <div class="section-head">
-                <span class="section-tag">RESPOSTAS DIRETAS DE ENGENHARIA</span>
-                <h2 class="section-title">Perguntas frequentes sobre hardware, limites e segurança</h2>
-                <p class="section-lead">
+                <span class="section-tag" data-i18n="landing.sec9_tag">RESPOSTAS DIRETAS DE ENGENHARIA</span>
+                <h2 class="section-title" data-i18n="landing.sec9_title">Perguntas frequentes sobre hardware, limites e segurança</h2>
+                <p class="section-lead" data-i18n="landing.sec9_lead">
                     Esclarecimentos técnicos transparentes sobre memória, preservação da mídia flash, governança e modelos de linguagem.
                 </p>
             </div>
@@ -910,28 +910,28 @@
              9. QUICKSTART DEPLOY & FECHAMENTO DA LANDING PAGE
              =============================================================== -->
         <section class="quickstart-section" id="quickstart">
-            <span class="section-tag">COMECE AGORA MESMO</span>
-            <h2 class="section-title">Coloque sua equipe de IA para trabalhar em 45 segundos</h2>
-            <p class="section-lead">
+            <span class="section-tag" data-i18n="landing.sec10_tag">COMECE AGORA MESMO</span>
+            <h2 class="section-title" data-i18n="landing.sec10_title">Coloque sua equipe de IA para trabalhar em 45 segundos</h2>
+            <p class="section-lead" data-i18n="landing.sec10_lead">
                 Sem complexidade desnecessária. Um único comando via Docker Compose coloca todo o ecossistema no ar com telemetria e segurança prontas para uso.
             </p>
 
             <div class="quickstart-actions">
                 <a href="/app" class="pixel-btn-cta-primary" data-surface="workspace">
-                    <span>Iniciar Console Operacional</span>
+                    <span data-i18n="landing.cta_workspace">Iniciar Console Operacional</span>
                     <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </a>
                 <button type="button" class="pixel-btn-cta-secondary" onclick="toggleDrawer()">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                    <span>Consultar Manual Passo a Passo</span>
+                    <span data-i18n="landing.cta_manual">Consultar Manual Passo a Passo</span>
                 </button>
                 <a href="https://github.com/lyonchristopher/piDots" target="_blank" rel="noopener" class="pixel-btn-cta-secondary">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                    <span>Repositório GitHub</span>
+                    <span data-i18n="landing.cta_github">Repositório GitHub</span>
                 </a>
-                <button type="button" class="pixel-btn-cta-secondary" id="btnLandingPwaInstall" style="display: none;">
+                <button type="button" class="pixel-btn-cta-secondary" id="btnLandingPwaInstall" onclick="PiDotsLandingPWA.install()" style="display: none;">
                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                    <span>Instalar PWA</span>
+                    <span data-i18n="landing.cta_pwa">Instalar PWA</span>
                 </button>
             </div>
         </section>
@@ -944,13 +944,13 @@
     <footer class="landing-footer">
         <div class="footer-content">
             <div class="footer-left">
-                <span>PIDOTS // HARDWARE DE BORDA ARM64</span>
-                <span>CRIADO POR LYON CHRISTOPHER // ASSISTENTE LOGGER</span>
+                <span data-i18n="landing.footer_hw">PIDOTS // HARDWARE DE BORDA ARM64</span>
+                <span data-i18n="landing.footer_author">CRIADO POR LYON CHRISTOPHER // ASSISTENTE LOGGER</span>
             </div>
             <div class="footer-links">
                 <a href="/app" class="footer-link" data-surface="workspace">Workspace (/app)</a>
-                <a href="/docs" class="footer-link" data-surface="docs">Documentação (/docs)</a>
-                <a href="/relatorio" class="footer-link" data-surface="report">Relatório Técnico</a>
+                <a href="/docs" class="footer-link" data-surface="docs" data-i18n="landing.footer_docs">Documentação (/docs)</a>
+                <a href="/relatorio" class="footer-link" data-surface="report" data-i18n="landing.footer_report">Relatório Técnico</a>
                 <a href="/api/docs" class="footer-link" data-surface="swagger">Swagger API</a>
                 <a href="https://github.com/lyonchristopher/piDots" target="_blank" rel="noopener" class="footer-link">GitHub</a>
             </div>
@@ -963,15 +963,15 @@
     <div class="drawer-backdrop" id="drawerBackdrop" onclick="toggleDrawer()"></div>
     <aside class="retractable-drawer" id="retractableDrawer">
         <header class="drawer-header">
-            <span class="drawer-title">MANUAL TECNICO // 14 PASSOS</span>
+            <span class="drawer-title" data-i18n="landing.drawer_title">MANUAL TECNICO // 14 PASSOS</span>
             <button type="button" class="header-nav-btn" onclick="toggleDrawer()" aria-label="Fechar Manual">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                <span>Fechar</span>
+                <span data-i18n="landing.btn_close">Fechar</span>
             </button>
         </header>
         
         <div class="drawer-search-box">
-            <input type="text" class="drawer-search-input" id="drawerSearchInput" placeholder="Filtrar tópicos do manual..." oninput="filterDrawerSteps(this.value)">
+            <input type="text" class="drawer-search-input" id="drawerSearchInput" placeholder="Filtrar tópicos do manual..." data-i18n-placeholder="landing.drawer_search_placeholder" oninput="filterDrawerSteps(this.value)">
         </div>
 
         <div class="drawer-content" id="drawerContentList">
