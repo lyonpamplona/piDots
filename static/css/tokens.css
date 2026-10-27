@@ -61,6 +61,7 @@
 
     /* Acentos de Silicio com Precisao Cirurgica */
     --accent-mint: #7cd9c6;
+    --ink-on-mint: #040608;
     --accent-amber: #dbad82;
     --accent-cyan: #38bdf8;
     --phosphor-green: #10b981;
@@ -149,6 +150,7 @@
     --brand-purple: #6d28d9;
 
     --accent-mint: #28685f;
+    --ink-on-mint: #ffffff;
     --accent-amber: #795034;
     --accent-cyan: #0284c7;
 
