@@ -123,6 +123,7 @@
     "title": "PIDOTS // MANUAL OPERACIONAL DE ENGENHARIA",
     "subtitle": "Guia passo a passo de configuracao, arquitetura de agentes locais e operacao continua de borda",
     "search_placeholder": "Pesquisar conceitos, rotas ou comandos (Ctrl+K)...",
+    "step1_title": "O QUE E O PIDOTS E A ARQUITETURA DE BORDA",
     "step1_tag": "PASSO 01 // CONCEITO E ARQUITETURA DE BORDA",
     "step2_tag": "PASSO 02 // INSTALACAO E DOCKER COMPOSE",
     "step3_tag": "PASSO 03 // AMBIENTE E VARIAVEIS (.ENV)",
@@ -130,7 +131,13 @@
     "step5_tag": "PASSO 05 // HEARTBEAT AUTONOMO E TELEGRAM/WHATSAPP",
     "step6_tag": "PASSO 06 // TESTADOR INTERATIVO DE API REST",
     "step7_tag": "PASSO 07 // AUDITORIA E GOVERNANCA HITL",
-    "step8_tag": "PASSO 08 // CATALOGO COMPLETO DE SLASH COMMANDS (/)"
+    "step8_tag": "PASSO 08 // MEMORIA CONTINUA SQLITE WAL E CONSOLIDACAO",
+    "step9_tag": "PASSO 09 // SANDBOX BUBBLEWRAP (BWRAP) E AUTO-HEALING AST",
+    "step10_tag": "PASSO 10 // SHARED STATE (COAGENTS), SPACES E DOT PACKS",
+    "step11_tag": "PASSO 11 // TRIGGERS DE HARDWARE EDGE E MANUTENCAO MICROSD",
+    "step12_tag": "PASSO 12 // MICRO-MOTOR DE INTERNACIONALIZACAO (I18N)",
+    "step13_tag": "PASSO 13 // PROTOCOLO DE 34 SLASH COMMANDS (/)",
+    "step14_tag": "PASSO 14 // DESACOPLAMENTO POR PORTAS E CLOUDFLARE TUNNEL"
   },
   "slash": {
     "popover_title": "SLASH COMMANDS // PROTOCOLO DE BORDA",

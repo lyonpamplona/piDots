@@ -123,6 +123,7 @@
     "title": "PIDOTS // OPERATIONAL ENGINEERING MANUAL",
     "subtitle": "Step-by-step setup guide, multi-agent architecture, and continuous edge operation",
     "search_placeholder": "Search concepts, routes, or commands (Ctrl+K)...",
+    "step1_title": "WHAT PIDOTS IS & THE EDGE ARCHITECTURE",
     "step1_tag": "STEP 01 // CONCEPT & EDGE ARCHITECTURE",
     "step2_tag": "STEP 02 // INSTALLATION & DOCKER COMPOSE",
     "step3_tag": "STEP 03 // ENVIRONMENT & VARIABLES (.ENV)",
@@ -130,7 +131,13 @@
     "step5_tag": "STEP 05 // AUTONOMOUS HEARTBEAT & TELEGRAM/WHATSAPP",
     "step6_tag": "STEP 06 // INTERACTIVE REST API TESTER",
     "step7_tag": "STEP 07 // AUDITING & HITL GOVERNANCE",
-    "step8_tag": "STEP 08 // COMPLETE SLASH COMMANDS CATALOG (/)"
+    "step8_tag": "STEP 08 // CONTINUOUS SQLITE WAL MEMORY & CONSOLIDATION",
+    "step9_tag": "STEP 09 // BUBBLEWRAP SANDBOX (BWRAP) & AST AUTO-HEALING",
+    "step10_tag": "STEP 10 // SHARED STATE (COAGENTS), SPACES & DOT PACKS",
+    "step11_tag": "STEP 11 // EDGE HARDWARE TRIGGERS & MICROSD MAINTENANCE",
+    "step12_tag": "STEP 12 // MICRO-I18N ENGINE & EDGE JSON DICTIONARIES",
+    "step13_tag": "STEP 13 // 34 SLASH COMMANDS PROTOCOL (/)",
+    "step14_tag": "STEP 14 // PORT DECOUPLING & CLOUDFLARE TUNNEL"
   },
   "slash": {
     "popover_title": "SLASH COMMANDS // EDGE PROTOCOL",

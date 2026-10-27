@@ -137,15 +137,36 @@ nav.mobile-bottom-nav {
         display: none;
     }
 
-    .top-deck-right .desktop-only-btn,
-    .top-deck-right #btn-lang-toggle,
-    .top-deck-right #btn-theme-toggle {
+    header.mission-header .top-deck-right .desktop-only-btn,
+    header.mission-header .top-deck-right #btn-lang-toggle,
+    header.mission-header .top-deck-right #btn-theme-toggle {
         display: none !important;
     }
 
+    .guide-header .brand-title,
+    .guide-header #headerNodeBadge,
     .mission-header .brand-title,
     .spa-shell .brand-title {
-        display: none !important; /* Oculta titulo extenso no cabecalho compacto do SPA */
+        display: none !important; /* Oculta titulo extenso no cabecalho compacto */
+    }
+
+    .guide-header #btn-lang-toggle,
+    .guide-header #btnThemeToggle {
+        display: inline-flex !important;
+        padding: 4px 8px !important;
+    }
+
+    .guide-header .lang-text-full,
+    .guide-header .theme-btn-label,
+    .guide-header .drawer-btn-label {
+        display: none !important;
+    }
+
+    .guide-header .lang-text-short {
+        display: inline-block !important;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
     }
 
     .header-breadcrumb-agent,
@@ -372,7 +393,7 @@ nav.mobile-bottom-nav {
     }
 
     /* Gaveta Retratil em Tela Cheia no Smartphone (abaixo da bottom-nav para manter navegacao ativa) */
-    aside.retractable-drawer {
+    aside.retractable-drawer:not(.docs-sidebar) {
         width: 100vw !important;
         max-width: 100vw !important;
         right: 0 !important;
@@ -383,9 +404,9 @@ nav.mobile-bottom-nav {
         z-index: 9990 !important;
     }
 
-    aside.retractable-drawer.open,
-    aside.retractable-drawer.is-open,
-    body.drawer-open aside.retractable-drawer {
+    aside.retractable-drawer:not(.docs-sidebar).open,
+    aside.retractable-drawer:not(.docs-sidebar).is-open,
+    body.drawer-open aside.retractable-drawer:not(.docs-sidebar) {
         transform: translateX(0) !important;
         right: 0 !important;
     }

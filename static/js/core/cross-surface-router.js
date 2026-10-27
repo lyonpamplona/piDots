@@ -149,6 +149,27 @@
     }
 
     /**
+     * Preserva query string (?inject_cmd=...) e hash (#passo-...) originais do atributo href
+     */
+    function preserveQueryAndHash(el, resolvedBaseUrl) {
+        var raw = el.getAttribute("data-original-href") || el.getAttribute("href") || "";
+        if (!el.getAttribute("data-original-href") && raw) {
+            el.setAttribute("data-original-href", raw);
+        }
+        var suffix = "";
+        var qIdx = raw.indexOf("?");
+        var hIdx = raw.indexOf("#");
+        if (qIdx !== -1) {
+            suffix = raw.substring(qIdx);
+        } else if (hIdx !== -1 && hIdx > 0) {
+            suffix = raw.substring(hIdx);
+        }
+        if (!suffix) return resolvedBaseUrl;
+        // Evitar barra dupla antes de ? ou # se necessario, mantendo semantica valida
+        return resolvedBaseUrl + suffix;
+    }
+
+    /**
      * Varre o DOM e atualiza os links do switcher e marcas de navegacao
      */
     function updateDomLinks() {
@@ -157,19 +178,19 @@
         // 1. Atualizacao de todos os Comutadores e Links de Superficie
         var overviewLinks = document.querySelectorAll("#tab-overview, [data-surface='overview'], .nav-surface-overview");
         for (var i = 0; i < overviewLinks.length; i++) {
-            overviewLinks[i].href = resolveSurfaceUrl("overview");
+            overviewLinks[i].href = preserveQueryAndHash(overviewLinks[i], resolveSurfaceUrl("overview"));
             overviewLinks[i].setAttribute("data-resolved-target", "overview");
         }
 
         var workspaceLinks = document.querySelectorAll("#tab-workspace, #heroCtaWorkspace, [data-surface='workspace'], a[href='/app'], a[href='/app/'], a[href='/workspace']");
         for (var j = 0; j < workspaceLinks.length; j++) {
-            workspaceLinks[j].href = resolveSurfaceUrl("workspace");
+            workspaceLinks[j].href = preserveQueryAndHash(workspaceLinks[j], resolveSurfaceUrl("workspace"));
             workspaceLinks[j].setAttribute("data-resolved-target", "workspace");
         }
 
         var docsLinks = document.querySelectorAll("#tab-docs, #heroCtaDocs, [data-surface='docs'], a[href='/docs'], a[href='/docs/'], a[href='/guia']");
         for (var k = 0; k < docsLinks.length; k++) {
-            docsLinks[k].href = resolveSurfaceUrl("docs");
+            docsLinks[k].href = preserveQueryAndHash(docsLinks[k], resolveSurfaceUrl("docs"));
             docsLinks[k].setAttribute("data-resolved-target", "docs");
         }
 

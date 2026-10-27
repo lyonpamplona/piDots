@@ -41,6 +41,49 @@ header.guide-header::-webkit-scrollbar {
     display: none;
 }
 
+.lang-text-full,
+.theme-btn-label,
+.drawer-btn-label {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.lang-toggle-btn,
+.pwa-install-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.node-telemetry-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--phosphor-green);
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-default);
+    padding: 4px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.telemetry-led {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--phosphor-green);
+    box-shadow: 0 0 6px var(--phosphor-green);
+    display: inline-block;
+    flex-shrink: 0;
+}
+
 /* Caixa de Busca Rapida no Cabecalho */
 .header-search-box {
     position: relative;
@@ -90,7 +133,7 @@ header.guide-header::-webkit-scrollbar {
     background: var(--paper-base, #0c1012);
 }
 
-/* Coluna 1: Sidebar de Navegacao (Fixa em Desktop >= 1024px) */
+/* Coluna 1: Sidebar de Navegacao (Fixa em Desktop > 1024px) */
 aside.retractable-drawer,
 aside.docs-sidebar {
     width: 270px;
@@ -98,6 +141,8 @@ aside.docs-sidebar {
     flex-shrink: 0;
     position: sticky;
     top: var(--header-height, 48px);
+    left: auto;
+    right: auto;
     height: calc(100vh - var(--header-height, 48px));
     background: var(--paper-surface, #11171a);
     border-right: 1px solid var(--border-default, rgba(255, 255, 255, 0.12));
@@ -117,13 +162,13 @@ aside.docs-sidebar {
     display: none;
 }
 
-/* Coluna 2: Prosa Central Continua */
+/* Coluna 2: Prosa Central Continua em Largura Total */
 main.guide-viewport,
 main.docs-main-prose {
     flex: 1;
     min-width: 0;
-    max-width: 860px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     padding: 32px 40px 96px;
     box-sizing: border-box;
     transition: none;
@@ -141,6 +186,8 @@ aside.docs-toc-col {
     position: sticky;
     top: calc(var(--header-height, 48px) + 24px);
     max-height: calc(100vh - var(--header-height, 48px) - 48px);
+    overflow-y: auto;
+    scrollbar-width: thin;
     padding: 12px 16px 24px;
     display: flex;
     flex-direction: column;
@@ -361,6 +408,10 @@ aside.docs-toc-col {
     gap: 6px;
 }
 
+.track-divider.track-cyan {
+    border-left-color: var(--blueprint-cyan);
+}
+
 .track-divider.track-purple {
     border-left-color: var(--brand-purple, #a855f7);
 }
@@ -383,6 +434,7 @@ aside.docs-toc-col {
     display: inline-block;
 }
 
+.track-divider.track-cyan .track-tag { color: var(--blueprint-cyan); }
 .track-divider.track-purple .track-tag { color: var(--brand-purple, #a855f7); }
 .track-divider.track-green .track-tag { color: var(--phosphor-green, #7cd9c6); }
 .track-divider.track-amber .track-tag { color: var(--thermal-amber, #dbad82); }
@@ -439,13 +491,22 @@ aside.docs-toc-col {
     gap: 12px;
 }
 
+#passo-13 > .step-module-header,
+#passo-14 > .step-module-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
 .step-header-title-box {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
-.step-index-badge {
+.step-index-badge,
+.step-badge {
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 600;
@@ -455,9 +516,12 @@ aside.docs-toc-col {
     padding: 3px 8px;
     border-radius: 3px;
     letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
 }
 
-.step-heading {
+.step-heading,
+.step-title {
     font-family: var(--font-sans);
     font-size: 22px;
     font-weight: 700;
@@ -467,7 +531,28 @@ aside.docs-toc-col {
     line-height: 1.3;
 }
 
-.step-content-body {
+.step-summary {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--ink-secondary);
+    line-height: 1.65;
+    margin: 6px 0 0 0;
+    width: 100%;
+}
+
+.step-subheading {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blueprint-cyan);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 20px 0 10px 0;
+    scroll-margin-top: calc(var(--header-height, 48px) + 24px);
+}
+
+.step-content-body,
+.step-module-body {
     padding: 0;
 }
 
@@ -523,6 +608,8 @@ aside.docs-toc-col {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-bottom: 10px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border-subtle);
@@ -548,14 +635,24 @@ aside.docs-toc-col {
 /* ---------------------------------------------------------------------
    CAIXAS DIDATICAS DE ALERTA TECNICO (CALLOUTS)
    --------------------------------------------------------------------- */
-.pixel-callout {
+.pixel-callout,
+.callout-box {
     margin: 20px 0;
     padding: 16px 20px;
     border: 1px solid var(--border-default);
+    border-left: 4px solid var(--blueprint-cyan);
     background: var(--paper-sheet);
     border-radius: 3px;
     position: relative;
     box-shadow: var(--shadow-sm);
+}
+
+.callout-box p {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--ink-secondary);
+    line-height: 1.6;
+    margin: 0;
 }
 
 .pixel-callout.tip {
@@ -571,7 +668,8 @@ aside.docs-toc-col {
     border-left: 4px solid var(--blueprint-cyan);
 }
 
-.pixel-callout-header {
+.pixel-callout-header,
+.callout-header {
     font-family: var(--font-mono);
     font-size: 10px;
     font-weight: 700;
@@ -581,6 +679,7 @@ aside.docs-toc-col {
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
+    color: var(--blueprint-cyan);
 }
 
 .pixel-callout.tip .pixel-callout-header { color: var(--phosphor-green); }
@@ -633,6 +732,12 @@ table.pixel-table td {
     font-family: var(--font-sans);
 }
 
+table.pixel-table td:first-child code,
+table.pixel-table td:nth-child(2) code {
+    white-space: nowrap;
+    word-break: normal;
+}
+
 table.pixel-table tr:hover td {
     background: var(--paper-surface-elevated);
     color: var(--ink-main);
@@ -656,6 +761,8 @@ table.pixel-table tr:hover td {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
     font-family: var(--font-mono);
     font-size: 11px;
     color: var(--ink-muted);
@@ -667,7 +774,7 @@ pre.code-paper-content {
     font-family: var(--font-mono);
     font-size: 12px;
     line-height: 1.55;
-    color: #cbd5e1;
+    color: var(--ink-main, #f1f5f9);
     overflow-x: auto;
     white-space: pre;
     word-break: normal;
@@ -684,7 +791,8 @@ code.inline-pixel {
 }
 
 /* Terminal de Linha de Comando */
-.terminal-block {
+.terminal-block,
+.terminal-card {
     background: var(--paper-surface-recessed);
     border: 1px solid var(--border-default);
     border-radius: 3px;
@@ -694,17 +802,33 @@ code.inline-pixel {
     overflow: hidden;
 }
 
-.terminal-top {
+.terminal-top,
+.terminal-card-header {
     background: var(--paper-surface);
     border-bottom: 1px solid var(--border-subtle);
     padding: 6px 12px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 6px;
     font-family: var(--font-mono);
     font-size: 10px;
     color: var(--ink-secondary);
     user-select: none;
+    flex-wrap: wrap;
+}
+
+.terminal-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--phosphor-green);
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-subtle);
+    padding: 2px 6px;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .terminal-circle {
@@ -826,28 +950,8 @@ code.inline-pixel {
 }
 
 /* ---------------------------------------------------------------------
-   MENU LATERAL DIREITO RETRATIL (DRAWER TECNICO)
+   ELEMENTOS DO INDICE LATERAL E DRAWER RETRATIL
    --------------------------------------------------------------------- */
-aside.retractable-drawer {
-    position: fixed;
-    top: var(--header-height, 48px);
-    right: 0;
-    width: var(--drawer-width, 360px);
-    height: calc(100vh - var(--header-height, 48px));
-    background: var(--paper-sheet);
-    border-left: 1px solid var(--border-default);
-    display: flex;
-    flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.2s ease;
-    z-index: 95;
-    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.4);
-}
-
-aside.retractable-drawer.is-open {
-    transform: translateX(0);
-}
-
 .drawer-top-bar {
     padding: 12px 16px;
     background: var(--paper-surface);
@@ -875,6 +979,7 @@ aside.retractable-drawer.is-open {
 
 .drawer-list-scroll {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     padding: 10px;
     list-style: none;
@@ -970,6 +1075,13 @@ aside.retractable-drawer.is-open {
     height: calc(100vh - var(--header-height, 48px));
     background: rgba(0, 0, 0, 0.6);
     z-index: 92;
+}
+
+@media (min-width: 1025px) {
+    .drawer-backdrop,
+    .drawer-backdrop.is-active {
+        display: none !important;
+    }
 }
 
 /* ---------------------------------------------------------------------
@@ -1300,6 +1412,13 @@ aside.retractable-drawer.is-open {
     gap: 8px;
 }
 
+.crisp-diagram-svg {
+    width: 100%;
+    min-width: 680px;
+    height: auto;
+    display: block;
+}
+
 /* ---------------------------------------------------------------------
    RODAPE GERAL DA DOCUMENTACAO
    --------------------------------------------------------------------- */
@@ -1358,6 +1477,54 @@ footer.guide-paper-footer {
 }
 
 /* ---------------------------------------------------------------------
+   ADEQUACAO DE ALTO CONTRASTE PARA TEMA CLARO ([data-theme="blueprint"])
+   --------------------------------------------------------------------- */
+[data-theme="blueprint"] .stamp-approved {
+    color: #15803d;
+    border-color: rgba(21, 128, 61, 0.45);
+    background: rgba(21, 128, 61, 0.1);
+}
+
+[data-theme="blueprint"] .stamp-notice {
+    color: #0369a1;
+    border-color: rgba(3, 105, 161, 0.45);
+    background: rgba(3, 105, 161, 0.1);
+}
+
+[data-theme="blueprint"] .stamp-critical {
+    color: #b91c1c;
+    border-color: rgba(185, 28, 28, 0.45);
+    background: rgba(185, 28, 28, 0.1);
+}
+
+[data-theme="blueprint"] .stamp-amber {
+    color: #b45309;
+    border-color: rgba(180, 83, 9, 0.45);
+    background: rgba(180, 83, 9, 0.1);
+}
+
+[data-theme="blueprint"] .step-index-badge,
+[data-theme="blueprint"] .step-badge {
+    color: #0f766e;
+    background: rgba(15, 118, 110, 0.12);
+    border-color: rgba(15, 118, 110, 0.38);
+}
+
+[data-theme="blueprint"] .drawer-link.active .drawer-step-idx {
+    color: #ffffff;
+}
+
+[data-theme="blueprint"] .omnisearch-item-desc mark {
+    background: rgba(2, 132, 199, 0.18);
+    color: #0369a1;
+    border-bottom-color: #0284c7;
+}
+
+[data-theme="blueprint"] .reading-progress-track {
+    background: rgba(0, 0, 0, 0.12);
+}
+
+/* ---------------------------------------------------------------------
    RESPONSIVIDADE MODERNA (TABLETS & SMARTPHONES)
    --------------------------------------------------------------------- */
 @media (max-width: 1200px) {
@@ -1366,7 +1533,7 @@ footer.guide-paper-footer {
     }
     main.guide-viewport,
     main.docs-main-prose {
-        max-width: 900px;
+        max-width: 100%;
         padding: 28px 36px 80px;
     }
 }
@@ -1376,15 +1543,17 @@ footer.guide-paper-footer {
     aside.docs-sidebar {
         position: fixed !important;
         top: var(--header-height, 48px) !important;
-        left: 0 !important;
-        width: 320px !important;
-        max-width: 85vw !important;
+        right: 0 !important;
+        left: auto !important;
+        width: 340px !important;
+        max-width: 88vw !important;
         height: calc(100vh - var(--header-height, 48px)) !important;
-        border-right: 1px solid var(--border-default) !important;
-        transform: translateX(-100%) !important;
+        border-left: 1px solid var(--border-default) !important;
+        border-right: none !important;
+        transform: translateX(100%) !important;
         transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
         z-index: 100 !important;
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.5) !important;
     }
 
     aside.retractable-drawer.is-open,
@@ -1431,6 +1600,13 @@ footer.guide-paper-footer {
     }
 }
 
+@media (max-width: 900px) {
+    header.guide-header .brand-title,
+    header.guide-header #headerNodeBadge {
+        display: none !important;
+    }
+}
+
 @media (max-width: 640px) {
     header.guide-header {
         padding: 0 12px;
@@ -1442,6 +1618,8 @@ footer.guide-paper-footer {
         max-width: 100vw !important;
         height: 100dvh !important;
         top: 0 !important;
+        right: 0 !important;
+        left: auto !important;
         padding-top: var(--safe-top, 0px);
         padding-bottom: var(--safe-bottom, 0px);
         z-index: 1000 !important;

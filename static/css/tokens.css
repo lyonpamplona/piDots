@@ -69,6 +69,7 @@
     --thermal-amber-muted: #d97706;
     --blueprint-cyan: #38bdf8;
     --stamp-danger: #f43f5e;
+    --brand-purple: #a855f7;
 
     /* Aliases Canonicos de Tintas Mecanicas (Especificacao Pixel Paper UI) */
     --ink-green-phosphor: var(--phosphor-green);
@@ -145,6 +146,7 @@
     --thermal-amber-muted: #92400e;
     --blueprint-cyan: #0284c7;
     --stamp-danger: #b91c1c;
+    --brand-purple: #6d28d9;
 
     --accent-mint: #28685f;
     --accent-amber: #795034;

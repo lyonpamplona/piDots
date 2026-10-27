@@ -54,25 +54,26 @@
 
         // 2. Controle do Drawer Retratil a Direita
         function openDrawer() {
+            if (!drawer) return;
             drawer.classList.add('is-open');
-            drawerBackdrop.classList.add('is-active');
+            if (drawerBackdrop) drawerBackdrop.classList.add('is-active');
             document.body.classList.add('drawer-open');
-            if (window.innerWidth < 900) {
+            if (window.innerWidth <= 1024) {
                 ScrollLockManager.bloquear();
             }
             if (drawerSearch) drawerSearch.focus();
         }
 
         function closeDrawer(restoreScroll = true) {
-            drawer.classList.remove('is-open');
-            drawerBackdrop.classList.remove('is-active');
+            if (drawer) drawer.classList.remove('is-open');
+            if (drawerBackdrop) drawerBackdrop.classList.remove('is-active');
             document.body.classList.remove('drawer-open');
             ScrollLockManager.desbloquear(false, restoreScroll);
         }
 
         if (toggleDrawerBtn) {
             toggleDrawerBtn.addEventListener('click', () => {
-                if (drawer.classList.contains('is-open')) {
+                if (drawer && drawer.classList.contains('is-open')) {
                     closeDrawer();
                 } else {
                     openDrawer();
@@ -89,8 +90,8 @@
         }
 
         function handleDrawerNav(e, stepId) {
-            e.preventDefault();
-            if (window.innerWidth < 900) {
+            if (e) e.preventDefault();
+            if (window.innerWidth <= 1024) {
                 closeDrawer(false);
             }
             requestAnimationFrame(() => {
@@ -98,45 +99,75 @@
             });
         }
 
-        // Destaque Ativo via Intersection Observer (Sidebar + Coluna TOC Nesta Página)
+        // Destaque Ativo Resiliente (ScrollSpy Híbrido para Seções Curtas e Longas como #passo-13)
         const tocLinks = document.querySelectorAll('.docs-toc-link');
-        const navObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.id;
-                    drawerLinks.forEach(link => {
-                        if (link.getAttribute('href') === '#' + id) {
-                            link.classList.add('active');
-                        } else {
-                            link.classList.remove('active');
-                        }
-                    });
-                    tocLinks.forEach(link => {
-                        if (link.getAttribute('href') === '#' + id) {
-                            link.classList.add('active');
-                        } else {
-                            link.classList.remove('active');
-                        }
-                    });
+        function setActiveStepHighlight(id) {
+            if (!id) return;
+            drawerLinks.forEach(link => {
+                if (link.getAttribute('href') === '#' + id) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
                 }
             });
-        }, { threshold: 0.15, rootMargin: "-48px 0px -50% 0px" });
+            tocLinks.forEach(link => {
+                if (link.getAttribute('href') === '#' + id) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
 
-        stepModules.forEach(step => navObserver.observe(step));
+        function updateActiveStepByScroll() {
+            if (!stepModules || stepModules.length === 0) return;
+            let activeId = stepModules[0].id;
+            const offsetThreshold = 140;
+            for (let i = 0; i < stepModules.length; i++) {
+                const rect = stepModules[i].getBoundingClientRect();
+                if (rect.top <= offsetThreshold) {
+                    activeId = stepModules[i].id;
+                } else {
+                    break;
+                }
+            }
+            setActiveStepHighlight(activeId);
+        }
 
-        // 4. Mecanismo de Busca no Drawer
+        window.addEventListener('scroll', updateActiveStepByScroll, { passive: true });
+        document.addEventListener('DOMContentLoaded', updateActiveStepByScroll);
+
+        // 4. Mecanismo de Busca no Drawer (Oculta itens e também cabeçalhos de trilha vazios)
         function filtrarDrawer(query) {
-            const q = query.trim().toLowerCase();
+            const q = (query || '').trim().toLowerCase();
             const items = document.querySelectorAll('.drawer-item');
 
             items.forEach(item => {
                 const text = item.innerText.toLowerCase();
-                const keywords = item.getAttribute('data-keywords') || '';
+                const keywords = (item.getAttribute('data-keywords') || '').toLowerCase();
                 if (!q || text.includes(q) || keywords.includes(q)) {
                     item.style.display = '';
                 } else {
                     item.style.display = 'none';
                 }
+            });
+
+            const trackHeaders = document.querySelectorAll('.drawer-track-header');
+            trackHeaders.forEach(header => {
+                if (!q) {
+                    header.style.display = '';
+                    return;
+                }
+                let next = header.nextElementSibling;
+                let hasVisibleItem = false;
+                while (next && !next.classList.contains('drawer-track-header')) {
+                    if (next.classList.contains('drawer-item') && next.style.display !== 'none') {
+                        hasVisibleItem = true;
+                        break;
+                    }
+                    next = next.nextElementSibling;
+                }
+                header.style.display = hasVisibleItem ? '' : 'none';
             });
         }
 
@@ -146,28 +177,67 @@
             });
         }
 
-        // 5. Copia de Comandos com Feedback Visual Limpo
-        function copiarTextoPixel(btn) {
-            const box = btn.closest('.code-paper-box');
-            const codeEl = box.querySelector('.code-paper-content');
-            if (!codeEl) return;
-            const code = codeEl.innerText;
-            navigator.clipboard.writeText(code).then(() => {
-                const originalHtml = btn.innerHTML;
-                btn.innerHTML = '<svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copiado!</span>';
-                btn.classList.add('btn-green');
-                setTimeout(() => {
-                    btn.innerHTML = originalHtml;
-                    btn.classList.remove('btn-green');
-                }, 2000);
+        // 5. Copia de Comandos com Fallback Resiliente para HTTP LAN (.code-paper-box, .terminal-block, .terminal-card)
+        function copyToClipboardFallback(text) {
+            return new Promise((resolve, reject) => {
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(resolve).catch(() => {
+                        execCommandCopy(text, resolve, reject);
+                    });
+                } else {
+                    execCommandCopy(text, resolve, reject);
+                }
             });
         }
 
+        function execCommandCopy(text, resolve, reject) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.top = '-9999px';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                ta.setSelectionRange(0, text.length);
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok) resolve();
+                else reject(new Error('execCommand copy failed'));
+            } catch (e) {
+                reject(e);
+            }
+        }
+
+        function copiarTextoPixel(btn) {
+            if (!btn) return;
+            const box = btn.closest('.code-paper-box, .terminal-block, .terminal-card');
+            if (!box) return;
+            const codeEl = box.querySelector('.code-paper-content, .terminal-pre code, .terminal-pre');
+            if (!codeEl) return;
+            const code = codeEl.innerText || codeEl.textContent || '';
+            copyToClipboardFallback(code).then(() => {
+                const labelSpan = btn.querySelector('span');
+                const originalText = labelSpan ? labelSpan.textContent : '';
+                if (labelSpan) {
+                    labelSpan.textContent = 'Copiado!';
+                }
+                btn.classList.add('btn-green');
+                setTimeout(() => {
+                    if (labelSpan && originalText) {
+                        labelSpan.textContent = originalText;
+                    }
+                    btn.classList.remove('btn-green');
+                }, 2000);
+            }).catch(() => {});
+        }
+
         // 6. Mini API Tester Interativo (Passo 06)
-        let currentApiPayload = null;
+        let currentApiPayload = '';
 
         function selecionarEndpointApi(metodo, rota, payload, btnElement) {
-            currentApiPayload = payload || null;
+            currentApiPayload = (payload !== undefined && payload !== null) ? payload : '';
             const chips = document.querySelectorAll('.api-chip-btn');
             chips.forEach(c => c.classList.remove('active'));
             
@@ -197,13 +267,15 @@
             const titleElem = document.getElementById('apiTestTerminalTitle');
             const outputElem = document.getElementById('apiTestJsonOutput');
             const runBtn = document.getElementById('btnRunApiTest');
+            const runBtnLabel = runBtn ? runBtn.querySelector('span') : null;
+            const originalLabel = runBtnLabel ? runBtnLabel.textContent : 'Disparar Requisição REST';
 
             const metodo = methodBadge ? methodBadge.innerText.trim() : 'GET';
             const rota = urlInput ? urlInput.value.trim() : '/health';
 
             if (runBtn) {
                 runBtn.disabled = true;
-                runBtn.innerHTML = '<span>Enviando requisição...</span>';
+                if (runBtnLabel) runBtnLabel.textContent = 'Enviando requisição...';
             }
 
             const t0 = performance.now();
@@ -211,9 +283,25 @@
             try {
                 let options = { method: metodo, headers: { 'Accept': 'application/json' } };
                 if (metodo === 'POST' || metodo === 'PUT') {
-                    options.headers['Content-Type'] = 'application/json';
-                    const bodyObj = currentApiPayload || { dot_id: 'dot-supervisor', title: 'Sessao Interativa Mini Tester ' + new Date().toLocaleTimeString('pt-BR') };
-                    options.body = JSON.stringify(bodyObj);
+                    if (typeof currentApiPayload === 'string' && currentApiPayload.trim().length > 0) {
+                        options.headers['Content-Type'] = 'application/json';
+                        // Evita double-stringify quando currentApiPayload ja e uma string JSON valida
+                        try {
+                            const parsed = JSON.parse(currentApiPayload);
+                            options.body = JSON.stringify(parsed);
+                        } catch (_) {
+                            options.body = currentApiPayload;
+                        }
+                    } else if (currentApiPayload && typeof currentApiPayload === 'object') {
+                        options.headers['Content-Type'] = 'application/json';
+                        options.body = JSON.stringify(currentApiPayload);
+                    } else if (rota === '/api/threads') {
+                        options.headers['Content-Type'] = 'application/json';
+                        options.body = JSON.stringify({
+                            dot_id: 'dot-supervisor',
+                            title: 'Sessao Interativa Mini Tester ' + new Date().toLocaleTimeString('pt-BR')
+                        });
+                    }
                 }
 
                 const resp = await fetch(rota, options);
@@ -254,7 +342,7 @@
             } finally {
                 if (runBtn) {
                     runBtn.disabled = false;
-                    runBtn.innerHTML = '<svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>Disparar Requisição REST</span>';
+                    if (runBtnLabel) runBtnLabel.textContent = originalLabel;
                 }
             }
         }
@@ -363,8 +451,44 @@
 
         let omnisearchSelectedIndex = 0;
         let omnisearchCurrentMatches = [];
+        let omnisearchDomIndexed = false;
+
+        function indexarConteudoDomOmnisearch() {
+            if (omnisearchDomIndexed) return;
+            OMNISEARCH_INDEX.forEach(item => {
+                const stepEl = document.getElementById(item.id);
+                if (stepEl) {
+                    item.bodyText = (stepEl.innerText || stepEl.textContent || '')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+                } else {
+                    item.bodyText = '';
+                }
+            });
+            omnisearchDomIndexed = true;
+        }
+
+        function extrairSnippetOmnisearch(item, query) {
+            if (!query) return item.desc;
+            const q = query.toLowerCase();
+            const headerHit = (item.title + ' ' + item.desc + ' ' + item.keywords + ' ' + item.step)
+                .toLowerCase()
+                .includes(q);
+            if (headerHit || !item.bodyText) {
+                return item.desc;
+            }
+            const bodyLower = item.bodyText.toLowerCase();
+            const matchIdx = bodyLower.indexOf(q);
+            if (matchIdx === -1) return item.desc;
+            const start = Math.max(0, matchIdx - 48);
+            const end = Math.min(item.bodyText.length, matchIdx + query.length + 72);
+            const prefix = start > 0 ? '...' : '';
+            const suffix = end < item.bodyText.length ? '...' : '';
+            return prefix + item.bodyText.slice(start, end).trim() + suffix;
+        }
 
         function abrirOmnisearch() {
+            indexarConteudoDomOmnisearch();
             const modal = document.getElementById('omnisearchModal');
             const backdrop = document.getElementById('omnisearchBackdrop');
             const input = document.getElementById('omnisearchInput');
@@ -396,6 +520,7 @@
         }
 
         function renderizarResultadosOmnisearch(query) {
+            indexarConteudoDomOmnisearch();
             const container = document.getElementById('omnisearchResults');
             const counter = document.getElementById('omnisearchCounter');
             const totalMatches = document.getElementById('omnisearchTotalMatches');
@@ -403,7 +528,13 @@
 
             omnisearchCurrentMatches = OMNISEARCH_INDEX.filter(item => {
                 if (!q) return true;
-                const fullText = (item.title + ' ' + item.desc + ' ' + item.keywords + ' ' + item.step).toLowerCase();
+                const fullText = (
+                    item.title + ' ' +
+                    item.desc + ' ' +
+                    item.keywords + ' ' +
+                    item.step + ' ' +
+                    (item.bodyText || '')
+                ).toLowerCase();
                 return fullText.includes(q);
             });
 
@@ -428,12 +559,13 @@
                     scrollToStep(item.id);
                 };
 
+                const snippet = extrairSnippetOmnisearch(item, q);
                 el.innerHTML = `
                     <div class="omnisearch-item-top">
                         <span class="omnisearch-item-title">${destacarTermo(item.title, q)}</span>
                         <span class="omnisearch-item-step">${item.step}</span>
                     </div>
-                    <div class="omnisearch-item-desc">${destacarTermo(item.desc, q)}</div>
+                    <div class="omnisearch-item-desc">${destacarTermo(snippet, q)}</div>
                 `;
                 container.appendChild(el);
             });
