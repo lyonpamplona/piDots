@@ -92,11 +92,11 @@
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
                 <span class="nav-btn-text">GitHub</span>
             </a>
-            <button type="button" class="header-nav-btn nav-btn-manual" onclick="toggleDrawer()" title="Abrir Manual Passo a Passo">
+            <button type="button" class="header-nav-btn nav-btn-manual" id="btnLandingManual" onclick="toggleDrawer()" title="Abrir Manual Passo a Passo" aria-label="Abrir Manual Passo a Passo" aria-expanded="false">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 <span class="nav-btn-text" data-i18n="landing.btn_manual">Manual</span>
             </button>
-            <button type="button" class="header-nav-btn nav-btn-mobile" onclick="toggleMobileNavMenu()" title="Menu de Secoes Mobile" aria-label="Menu Movel">
+            <button type="button" class="header-nav-btn nav-btn-mobile" id="btnLandingMobileNav" onclick="toggleMobileNavMenu()" title="Menu de Secoes Mobile" aria-label="Menu Movel" aria-expanded="false">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
             </button>
         </div>
@@ -863,47 +863,47 @@
                 </p>
             </div>
 
-            <div class="faq-accordion-list">
+            <div class="faq-accordion-list" role="region" aria-label="Perguntas Frequentes de Engenharia">
                 <!-- FAQ 1: OOM Killer -->
-                <div class="objection-card expanded" id="faq-card-oom" onclick="toggleObjection('faq-card-oom')">
-                    <header class="objection-header">
+                <div class="objection-card expanded" id="faq-card-oom">
+                    <header class="objection-header" role="button" tabindex="0" aria-expanded="true" aria-controls="faq-body-oom" onclick="toggleObjection('faq-card-oom')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleObjection('faq-card-oom');}">
                         <span class="objection-title">Como o piDots previne travamentos e o OOM Killer do Linux com apenas 4GB de RAM?</span>
                         <span class="objection-indicator">[-]</span>
                     </header>
-                    <div class="objection-body">
+                    <div class="objection-body" id="faq-body-oom">
                         O piDots opera sob um monólito modular assíncrono em Python 3.13 com uvloop, consumindo menos de 70 MB de RAM RSS em repouso. Além disso, aplicamos a Poda Dinâmica de Ferramentas (Dynamic Tool Pruning), reduzindo o payload de esquemas JSON em até 65%, e utilizamos namespaces Bubblewrap nativos que alocam menos de 3 MB de RAM por sandbox em vez de pesados contêineres Docker.
                     </div>
                 </div>
 
                 <!-- FAQ 2: MicroSD Flash -->
-                <div class="objection-card" id="faq-card-flash" onclick="toggleObjection('faq-card-flash')">
-                    <header class="objection-header">
+                <div class="objection-card" id="faq-card-flash">
+                    <header class="objection-header" role="button" tabindex="0" aria-expanded="false" aria-controls="faq-body-flash" onclick="toggleObjection('faq-card-flash')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleObjection('faq-card-flash');}">
                         <span class="objection-title">O banco de dados SQLite gravando continuamente não vai desgastar o cartão MicroSD?</span>
                         <span class="objection-indicator">[+]</span>
                     </header>
-                    <div class="objection-body">
+                    <div class="objection-body" id="faq-body-flash">
                         Não. Configuramos o SQLite com <code>journal_mode=WAL</code> (Write-Ahead Logging) em modo de escrita sequencial append-only, eliminando reescritas randômicas destrutivas. Tabelas temporárias operam em RAM volátil (<code>temp_store=MEMORY</code> e tmpfs 64MB) e uma rotina automática consolida os checkpoints às 03:00 com <code>WAL TRUNCATE</code>, preservando a integridade das células Flash por anos.
                     </div>
                 </div>
 
                 <!-- FAQ 3: Governança HITL -->
-                <div class="objection-card" id="faq-card-hitl" onclick="toggleObjection('faq-card-hitl')">
-                    <header class="objection-header">
+                <div class="objection-card" id="faq-card-hitl">
+                    <header class="objection-header" role="button" tabindex="0" aria-expanded="false" aria-controls="faq-body-hitl" onclick="toggleObjection('faq-card-hitl')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleObjection('faq-card-hitl');}">
                         <span class="objection-title">O que impede um agente autônomo de executar comandos perigosos no sistema operacional?</span>
                         <span class="objection-indicator">[+]</span>
                     </header>
-                    <div class="objection-body">
+                    <div class="objection-body" id="faq-body-hitl">
                         Nossa camada de governança Human-in-the-Loop (HITL) intercepta preventivamente qualquer comando destrutivo (como exclusões em massa ou alterações de rede). O agente é congelado no SQLite WAL emitindo o evento <code>hitl:approval_required</code>. O operador humano pode homologar, vetar ou editar os argumentos (modified_args) diretamente na interface ou via Telegram/WhatsApp antes que qualquer byte atinja o sandbox Bubblewrap.
                     </div>
                 </div>
 
                 <!-- FAQ 4: Modelos BYOM -->
-                <div class="objection-card" id="faq-card-byom" onclick="toggleObjection('faq-card-byom')">
-                    <header class="objection-header">
+                <div class="objection-card" id="faq-card-byom">
+                    <header class="objection-header" role="button" tabindex="0" aria-expanded="false" aria-controls="faq-body-byom" onclick="toggleObjection('faq-card-byom')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleObjection('faq-card-byom');}">
                         <span class="objection-title">Sou obrigado a utilizar provedores específicos ou posso plugar meus próprios modelos de IA?</span>
                         <span class="objection-indicator">[+]</span>
                     </header>
-                    <div class="objection-body">
+                    <div class="objection-body" id="faq-body-byom">
                         O piDots é 100% agnóstico (Bring Your Own Model). Você pode conectar inferência local rodando no mesmo hardware ou rede (Ollama, vLLM, llama.cpp em ARM64) ou qualquer provedor em nuvem compatível com o protocolo OpenAI Chat Completions (OpenAI, Anthropic Claude, Verboo, Groq, Mistral, OpenRouter) apenas ajustando a Base URL e a chave de API na aba de configurações.
                     </div>
                 </div>

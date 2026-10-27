@@ -77,11 +77,16 @@
             const mobilePanel = document.getElementById('mobileNavPanel');
             if (mobilePanel && mobilePanel.classList.contains('open')) {
                 mobilePanel.classList.remove('open');
+                const btnMobile = document.querySelector('.nav-btn-mobile');
+                if (btnMobile) btnMobile.setAttribute('aria-expanded', 'false');
             }
 
             const willOpen = !drawer.classList.contains('open');
             drawer.classList.toggle('open', willOpen);
             backdrop.classList.toggle('open', willOpen);
+
+            const btnManual = document.querySelector('.nav-btn-manual');
+            if (btnManual) btnManual.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
 
             if (window.ScrollLockManager) {
                 if (willOpen) {
@@ -138,8 +143,13 @@
 
             playHapticMechanicalClick();
 
+            const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
+            const msg = isEn 
+                ? 'HOMOLOGATED: Official action authenticated in SQLite WAL! Command dispatched to sandbox.'
+                : 'HOMOLOGADO: Acao oficial autenticada no SQLite WAL! Comando liberado para o sandbox.';
+
             setTimeout(() => {
-                showToast('HOMOLOGADO: Acao oficial autenticada no SQLite WAL! Comando liberado para o sandbox.', 'success');
+                showToast(msg, 'success');
                 if (approveStamp) approveStamp.style.transform = 'rotate(2deg) scale(1.0)';
             }, 180);
         }
@@ -156,8 +166,13 @@
 
             playHapticMechanicalClick();
 
+            const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
+            const msg = isEn
+                ? 'VETO RECORDED: Action cancelled and archived securely in governance queue.'
+                : 'VETO REGISTRADO: Acao cancelada e arquivada com seguranca na fila de governanca.';
+
             setTimeout(() => {
-                showToast('VETO REGISTRADO: Acao cancelada e arquivada com seguranca na fila de governanca.', 'danger');
+                showToast(msg, 'danger');
                 if (rejectStamp) rejectStamp.style.transform = 'rotate(-3deg) scale(1.0)';
             }, 180);
         }
@@ -237,7 +252,12 @@
             const savingsText = elBRL ? elBRL.textContent : 'R$ 11.309';
             const paybackText = elPayback ? elPayback.textContent : '21 DIAS';
 
-            showToast(`DOSSIE FORENSE: Economia anual projetada de ${savingsText}. Amortizacao do hardware em apenas ${paybackText}!`, 'success', 4500);
+            const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
+            const msg = isEn
+                ? `FORENSIC REPORT: Projected annual savings of ${savingsText}. Hardware amortization in just ${paybackText}!`
+                : `DOSSIE FORENSE: Economia anual projetada de ${savingsText}. Amortizacao do hardware em apenas ${paybackText}!`;
+
+            showToast(msg, 'success', 4500);
             playHapticMechanicalClick();
         }
 
@@ -253,12 +273,16 @@
                 c.classList.remove('expanded');
                 const ind = c.querySelector('.objection-indicator');
                 if (ind) ind.textContent = '[+]';
+                const hdr = c.querySelector('.objection-header');
+                if (hdr) hdr.setAttribute('aria-expanded', 'false');
             });
 
             if (!isExpanded) {
                 card.classList.add('expanded');
                 const indicator = card.querySelector('.objection-indicator');
                 if (indicator) indicator.textContent = '[-]';
+                const header = card.querySelector('.objection-header');
+                if (header) header.setAttribute('aria-expanded', 'true');
             }
 
             playHapticMechanicalClick();
@@ -275,10 +299,15 @@
             if (drawer && drawer.classList.contains('open')) {
                 drawer.classList.remove('open');
                 if (backdrop) backdrop.classList.remove('open');
+                const btnManual = document.querySelector('.nav-btn-manual');
+                if (btnManual) btnManual.setAttribute('aria-expanded', 'false');
             }
 
             const willOpen = !panel.classList.contains('open');
             panel.classList.toggle('open', willOpen);
+
+            const btnMobile = document.querySelector('.nav-btn-mobile');
+            if (btnMobile) btnMobile.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
 
             if (window.ScrollLockManager) {
                 if (willOpen) {

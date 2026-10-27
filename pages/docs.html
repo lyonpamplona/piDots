@@ -128,7 +128,7 @@
             </button>
 
             <!-- Botao do Menu Drawer Retratil (Todos os Dispositivos: Desktop, Tablet e Mobile) -->
-            <button id="toggleDrawerBtn" class="pixel-btn btn-cyan" title="Abrir Índice de Navegação">
+            <button id="toggleDrawerBtn" class="pixel-btn btn-cyan" title="Abrir Índice de Navegação" aria-label="Abrir Índice de Navegação" aria-expanded="false" aria-controls="retractableDrawer">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 <span class="drawer-btn-label" data-i18n="nav.guide_index">Índice</span>
             </button>
@@ -2450,7 +2450,7 @@ sudo systemctl status cloudflared</code></pre>
     </div>
 
     <!-- BOTAO FLUTUANTE DE VOLTAR AO TOPO -->
-    <button id="btnBackToTop" class="btn-pixel-top" title="Voltar ao Topo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+    <button id="btnBackToTop" class="btn-pixel-top" title="Voltar ao Topo" aria-label="Voltar ao Topo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
         <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
     </button>
 
