@@ -1,10 +1,10 @@
-# piDots — Manual Operacional e Guia de Produção 24/7
+# piDots: Manual Operacional e Guia de Produção 24/7
 
 **Projeto:** piDots (Motor Otimizado de AI Coworkers Persistentes para Hardware de Borda)  
 **Autor e Criador:** lyon christopher  
 **Assistente:** Logger  
-**Ambiente Alvo:** Computacao de Borda e SBCs (Benchmark de Referencia: Raspberry Pi 4B 4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
-**Versão:** 1.5.5 (Produção Estável — Desacoplamento Multi-Porta Nginx, Cloudflare Tunnel Zero Trust, Padrão OpenDots Spatial, CoAgents Shared State e HITL HMAC-SHA256)  
+**Ambiente Alvo:** Computação de Borda e SBCs (Benchmark de Referência: Raspberry Pi 4B 4GB RAM, ARM64 Cortex-A72, Linux / Docker Compose)  
+**Versão:** 1.5.5 (Produção Estável: Desacoplamento Multi-Porta Nginx, Cloudflare Tunnel Zero Trust, Padrão OpenDots Spatial, CoAgents Shared State e HITL HMAC-SHA256)  
 
 ---
 
@@ -80,7 +80,7 @@ Isso elimina o silêncio aparente do chat e orienta o operador de forma transpar
 
 ### 3.3 Resolução de Solicitações HITL
 As solicitações podem ser resolvidas de três formas:
-1. **Pelo Console Web SPA:** No cartao interativo de governanca acessivel no Console Operacional (`GET /app`, `/workspace` ou pelo atalho `Alt+H`).
+1. **Pelo Console Web SPA:** No cartão interativo de governança acessível no Console Operacional (`GET /app`, `/workspace` ou pelo atalho `Alt+H`).
 2. **Via API REST:**
    ```bash
    curl -X POST http://localhost:8000/api/hitl/<APPROVAL_ID>/resolve \
@@ -98,7 +98,7 @@ As solicitações podem ser resolvidas de três formas:
 Para evitar retenção indefinida de recursos computacionais e travamento de threads operacionais:
 - **Time-to-Live (TTL):** Toda solicitação HITL gerada recebe automaticamente a coluna `expires_at` calibrada para 30 minutos a partir da criação (`requested_at + 30 min`).
 - **Purga Automática:** Solicitações não homologadas em até 30 minutos transicionam automaticamente para `EXPIRED`. O guardião HITL libera o status da thread associada de volta para `idle`, registra uma mensagem de cancelamento transparente no chat e grava o log de auditoria no SQLite WAL.
-- **Push Instantâneo:** Ao reter uma ação, o motor emite os eventos SSE `hitl:pending_approval` e `hitl:approval_required`, acionando a abertura automática do dossiê de governança (`Alt + H`) no console SPA ativo.
+- **Push Instantâneo:** Ao reter uma ação, o motor emite os eventos SSE `hitl:pending_approval` e `hitl:approval_required`, acionando a abertura automática da fila de governança (`Alt + H`) no console SPA ativo.
 
 ---
 
@@ -128,7 +128,7 @@ TELEGRAM_CHAT_ID=SEU_CHAT_ID_AQUI
 EVOLUTION_API_URL=http://host.docker.internal:8080
 EVOLUTION_API_KEY=SUA_APIKEY_AQUI
 
-# Governanca Estrita de Terminal Sandbox (true recusa shell se bwrap inexistir)
+# Governança Estrita de Terminal Sandbox (true recusa shell se bwrap inexistir)
 STRICT_SANDBOX=false
 ```
 
@@ -170,18 +170,18 @@ curl -X POST http://localhost:8000/api/settings/ai \
    - O retorno recebe o metadado `_served_by_fallback: true` para fins de auditoria e telemetria.
 3. **Circuito Aberto (`OPEN`):**
    - Caso o primário atinja o limite consecutivo de falhas (padrão: 3 falhas), o circuito primário abre (`OPEN`) por 60 segundos (`cooldown_seconds`).
-   - Durante essa janela, todas as novas requisições desviam imediatamente para o provedor secundário sem aguardar timeouts do primário, preservando o tempo de resposta do console.
+   - Durante essa janela, todas as novas requisições desviam imediatamente para o provedor secundário sem aguardar timeouts do primário; isso mantém o tempo de resposta do console.
 4. **Recuperação Gradual Canário (`HALF_OPEN`):**
    - Expirado o tempo de cooldown, o circuito transiciona para `HALF_OPEN`.
-   - A próxima chamada atua como teste canário no primário. Se responder com 200 OK, o circuito fecha (`CLOSED`) e o fluxo nominal é restabelecido. Se falhar, reabre por mais um ciclo de cooldown.
+   - A próxima chamada executa um teste canário no primário. Se responder com 200 OK, o circuito fecha (`CLOSED`) e o fluxo nominal é restabelecido. Se falhar, reabre por mais um ciclo de cooldown.
 5. **Comportamento Inócuo:**
    - Caso `AI_FALLBACK_URL` não esteja configurada no `.env` (padrão do sistema), o Circuit Breaker não altera o comportamento atual do sistema, levantando exceções transitórias normais conforme a diretriz soberana do operador.
 
 ---
 
-## 6. Operacao de Agendamentos Proativos (Dot Heartbeat)
+## 6. Operação de Agendamentos Proativos (Dot Heartbeat)
 
-O piDots possui um motor de agendamento em background (`pidots/core/scheduler.py`) que executa tarefas croniter a cada 15 segundos sem dependencias externas.
+O piDots possui um motor de agendamento em background (`pidots/core/scheduler.py`) que executa tarefas croniter a cada 15 segundos sem dependências externas.
 
 ### 6.1 Listar Tarefas Agendadas Ativas
 ```bash
@@ -189,13 +189,13 @@ curl -s http://localhost:8000/api/tasks | jq .
 ```
 
 ### 6.2 Cadastrar Nova Tarefa Proativa
-Exemplo de criacao de rotina de inspecao termica a cada 15 minutos:
+Exemplo de criação de rotina de inspeção térmica a cada 15 minutos:
 ```bash
 curl -X POST http://localhost:8000/api/tasks \
   -H "Content-Type: application/json" \
   -d '{
     "dot_id": "dot-auditor",
-    "task_name": "Inspecao Termica de Borda",
+    "task_name": "Inspeção Térmica de Borda",
     "cron_expr": "*/15 * * * *",
     "action_prompt": "Verificar temperatura do SoC e uso de RAM. Se normais, responder estritamente HEARTBEAT_OK.",
     "target_channel_type": "internal"
@@ -203,35 +203,35 @@ curl -X POST http://localhost:8000/api/tasks \
 ```
 
 ### 6.3 Monitoramento de Status Operacional e Circuit Breaker
-Os status registrados na tabela `scheduled_tasks` sao:
-- `IDLE`: Tarefa registrada aguardando o proximo horario de disparo (`next_run_at`).
-- `RUNNING`: Ciclo em execucao ativa pelo `DotAgent` com trava em memoria (`_running_tasks`). Se o ciclo demorar mais de 15 segundos, novas varreduras ignoram o disparo repetido ate a conclusao da execucao.
-- `SILENT`: A tarefa foi concluida com sucesso e emitiu `HEARTBEAT_OK`. Nenhuma notificacao externa foi disparada e o contador de falhas e zerado (`consecutive_failures = 0`).
-- `COMPLETED`: A tarefa detectou uma condicao relevante e gerou um relatorio textual ou alerta. O contador de falhas e zerado.
-- `FAILED`: Ocorreu uma excecao durante o ciclo cognitivo. O erro tecnico real e registrado em `last_result_summary`, `consecutive_failures` e incrementado e um retardo exponencial (`backoff_until`) entre 30s e 3600s e aplicado.
-- `CIRCUIT_OPEN`: O Circuit Breaker abriu na 5ª falha consecutiva. A tarefa e desativada (`is_active = 0`) para proteger a CPU ARM64 e conectividade do host contra sobrecarga continuada.
-- `AUTH_REQUIRED`: Pausa preventiva de 10 minutos acionada pelo Sanity Check quando a `AI_API_KEY` for vazia ou contiver texto placeholder, evitando chamadas de rede inuteis ao provedor.
+Os status registrados na tabela `scheduled_tasks` são:
+- `IDLE`: Tarefa registrada aguardando o próximo horário de disparo (`next_run_at`).
+- `RUNNING`: Ciclo em execução ativa pelo `DotAgent` com trava em memória (`_running_tasks`). Se o ciclo demorar mais de 15 segundos, novas varreduras ignoram o disparo repetido até a conclusão da execução.
+- `SILENT`: A tarefa foi concluída e emitiu `HEARTBEAT_OK`. Nenhuma notificação externa foi disparada e o contador de falhas é zerado (`consecutive_failures = 0`).
+- `COMPLETED`: A tarefa detectou uma condição relevante e gerou um relatório textual ou alerta. O contador de falhas é zerado.
+- `FAILED`: Ocorreu uma exceção durante o ciclo cognitivo. O erro técnico real é registrado em `last_result_summary`, `consecutive_failures` é incrementado e um retardo exponencial (`backoff_until`) entre 30s e 3600s é aplicado.
+- `CIRCUIT_OPEN`: O Circuit Breaker abriu na 5ª falha consecutiva. A tarefa é desativada (`is_active = 0`) para proteger a CPU ARM64 e conectividade do host contra sobrecarga contínua.
+- `AUTH_REQUIRED`: Pausa preventiva de 10 minutos acionada pelo Sanity Check quando a `AI_API_KEY` for vazia ou contiver texto placeholder, evitando chamadas de rede inúteis ao provedor.
 
 ---
 
-## 7. Operacao de Mensageria e Webhooks Externos
+## 7. Operação de Mensageria e Webhooks Externos
 
-### 7.1 Integracao com Telegram Bot API
+### 7.1 Integração com Telegram Bot API
 Para conectar um bot do Telegram diretamente ao piDots via webhook HTTP reverso:
-1. Registre o webhook na API oficial do Telegram apontando para o seu IP/dominio ou tunel Cloudflared:
+1. Registre o webhook na API oficial do Telegram apontando para o seu IP/domínio ou túnel Cloudflared:
 ```bash
 curl -X POST "https://api.telegram.org/bot<SEU_BOT_TOKEN>/setWebhook" \
   -d "url=https://seu-tunel.trycloudflare.com/api/webhooks/telegram/dot-supervisor"
 ```
-2. Toda mensagem enviada ao bot no Telegram sera automaticamente roteada para uma thread persistente correspondente no SQLite WAL.
+2. Toda mensagem enviada ao bot no Telegram será automaticamente roteada para uma thread persistente correspondente no SQLite WAL.
 
-### 7.2 Integracao com WhatsApp (Evolution API / Baileys)
-Configure o webhook da instancia da Evolution API para enviar eventos de mensagens para:
+### 7.2 Integração com WhatsApp (Evolution API / Baileys)
+Configure o webhook da instância da Evolution API para enviar eventos de mensagens para:
 - **URL do Webhook:** `http://localhost:8000/api/webhooks/whatsapp/dot-coder`
-- O piDots interceptara a mensagem, filtrara mensagens enviadas pelo proprio bot (`fromMe: true`) e processara a solicitacao.
+- O piDots interceptará a mensagem, filtrará mensagens enviadas pelo próprio bot (`fromMe: true`) e processará a solicitação.
 
-### 7.3 Disparo via Webhook Generico Universal
-Para integracao com scripts bash, cronjobs do host ou pipelines CI/CD:
+### 7.3 Disparo via Webhook Genérico Universal
+Para integração com scripts bash, cronjobs do host ou pipelines CI/CD:
 ```bash
 curl -X POST http://localhost:8000/api/webhooks/incoming/dot-supervisor \
   -H "Content-Type: application/json" \
@@ -244,55 +244,55 @@ curl -X POST http://localhost:8000/api/webhooks/incoming/dot-supervisor \
 
 ---
 
-## 8. Operacao de Salas Tematicas Colaborativas (#canais)
+## 8. Operação de Salas Temáticas Colaborativas (#canais)
 
-As salas tematicas permitem colaboracao multi-bot e participacao de operadores humanos em canais compartilhados.
+As salas temáticas permitem colaboração multi-bot e participação de operadores humanos em canais compartilhados.
 
-### 8.1 Criar uma Nova Sala Tematica
+### 8.1 Criar uma Nova Sala Temática
 ```bash
 curl -X POST http://localhost:8000/api/channels \
   -H "Content-Type: application/json" \
   -d '{
     "name": "devops",
-    "description": "Canal de operacoes de infraestrutura e monitoramento"
+    "description": "Canal de operações de infraestrutura e monitoramento"
   }'
 ```
 
 ### 8.2 Adicionar Membros ao Canal
 ```bash
-# Associar o dot-coder a sala
+# Associar o dot-coder à sala
 curl -X POST http://localhost:8000/api/channels/devops/members \
   -H "Content-Type: application/json" \
   -d '{"member_type": "dot", "member_id": "dot-coder"}'
 
-# Associar o dot-supervisor a sala
+# Associar o dot-supervisor à sala
 curl -X POST http://localhost:8000/api/channels/devops/members \
   -H "Content-Type: application/json" \
   -d '{"member_type": "dot", "member_id": "dot-supervisor"}'
 ```
 
-### 8.3 Postar Mensagem e Disparar Colaboracao Multi-Bot
+### 8.3 Postar Mensagem e Disparar Colaboração Multi-Bot
 ```bash
 curl -X POST http://localhost:8000/api/channels/devops/messages \
   -H "Content-Type: application/json" \
   -d '{
     "author_type": "user",
     "author_id": "operador-lyon",
-    "content": "Atenção @dot-coder favor verificar o status de memoria do Raspberry Pi"
+    "content": "Atenção @dot-coder favor verificar o status de memória do Raspberry Pi"
   }'
 ```
 
 ### 8.4 Salvaguarda Anti-Loop em Salas
-O orquestrador de canais (`ChannelOrchestrator`) monitora a propagacao de mensagens:
-- **Teto de Saltos:** O campo `hop_count` e incrementado a cada turno de bot. Atingindo `hop_count > 3`, a propagacao e interrompida.
-- **Mencao Explicita Entre Bots:** Um bot so responde a outro bot se for explicitamente citado pelo identificador `@nome_do_bot`.
-- **Silencio Deterministico:** Caso um bot nao tenha acoes relevantes, emite `NO_ACTION` e nao propaga nova mensagem para o canal.
+O orquestrador de canais (`ChannelOrchestrator`) monitora a propagação de mensagens:
+- **Teto de Saltos:** O campo `hop_count` é incrementado a cada turno de bot. Atingindo `hop_count > 3`, a propagação é interrompida.
+- **Menção Explícita Entre Bots:** Um bot só responde a outro bot se for explicitamente citado pelo identificador `@nome_do_bot`.
+- **Silêncio Determinístico:** Caso um bot não tenha ações relevantes, emite `NO_ACTION` e não propaga nova mensagem para o canal.
 
 ---
 
-## 9. Baterias de Testes e Validacao em Producao
+## 9. Baterias de Testes e Validação em Produção
 
-Para validar a integridade de todas as capacidades do piDots apos atualizacoes de codigo ou migracoes de hardware:
+Para validar a integridade de todas as capacidades do piDots após atualizações de código ou migrações de hardware:
 
 ```bash
 cd /mnt/storage/piDots
@@ -304,37 +304,37 @@ python3 scripts/test_phase3.py
 python3 scripts/test_phase4.py
 python3 scripts/test_phase5.py
 
-# 2. Validar orquestracao multi-bot, delegacao isolada e Dynamic Tool Pruning
+# 2. Validar orquestração multi-bot, delegação isolada e Dynamic Tool Pruning
 python3 scripts/test_phase6_multibot.py
 
 # 3. Validar agendamento proativo Dot Heartbeat e diretriz HEARTBEAT_OK
 python3 scripts/test_phase7_scheduler.py
 
-# 4. Validar gateway de mensageria, canais tematicos e trava anti-recursao
+# 4. Validar gateway de mensageria, canais temáticos e trava anti-recursão
 python3 scripts/test_phase8_messaging.py
 
-# 5. Validar Memoria Hierarquica MemGPT (Core Memory, Archival FTS5 + 64d Trigram)
+# 5. Validar Memória Hierárquica MemGPT (Core Memory, Archival FTS5 + 64d Trigram)
 python3 scripts/test_phase9_memory.py
 
 # 6. Validar Self-Healing Harness e Two-Stage Planning (Goals & Milestones)
 python3 scripts/test_phase10_self_healing_planner.py
 
-# 7. Validar Conselho Consultivo e Deliberacao Dialetica Tripartite
+# 7. Validar Conselho Consultivo e Deliberação Dialética Tripartite
 python3 scripts/test_phase11_council_debate.py
 
 # 8. Validar Shared Knowledge Space e Templates Dot Packs v1.0
 python3 scripts/test_phase12_shared_space_dot_packs.py
 
-# 9. Validar Triggers de Hardware Edge e Manutencao Noturna do MicroSD
+# 9. Validar Triggers de Hardware Edge e Manutenção Noturna do MicroSD
 python3 scripts/test_phase13_edge_triggers_maintenance.py
 
-# 10. Validar resiliencia integral (Tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
+# 10. Validar resiliência integral (Tipagem de erros, AG-UI v1.0, 3 consumidores, Circuit Breaker)
 python3 scripts/test_resilience_phases.py
 
-# 11. Teste de estresse concorrente sob condicoes extremas de borda
+# 11. Teste de estresse concorrente sob condições extremas de borda
 python3 scripts/stress_test.py
 ```
-Todos os scripts reportam o consumo real de memoria RSS (mantendo-se < 100 MB de RAM) e asseguram a integridade do banco SQLite WAL.
+Todos os scripts reportam o consumo real de memória RSS (mantendo-se < 100 MB de RAM) e asseguram a integridade do banco SQLite WAL.
 
 ---
 
@@ -398,7 +398,7 @@ O piDots implementa proteções ativas contra esse fenômeno:
 1. **Journal em Modo WAL:** Operações de escrita são gravadas de forma contínua e sequencial no arquivo journal, sem reescrever páginas inteiras na base principal a cada commit.
 2. **Sincronização em Modo NORMAL:** `PRAGMA synchronous = NORMAL;` reduz em mais de 85% as chamadas de sincronização forçada de blocos para o hardware do cartão MicroSD, mantendo total integridade contra falhas do processo da aplicação.
 3. **Diretório Temporário em Memória RAM (`tmpfs`):** O diretório `/tmp` do contêiner está montado como memória volátil (`tmpfs: size=64m`). Todas as operações efêmeras de arquivos transitórios ocorrem puramente na RAM.
-4. **Checkpointing Periódico Seguro:** Uma rotina assíncrona executa `PRAGMA wal_checkpoint(PASSIVE)` a cada 15 minutos em background, garantindo que o arquivo WAL nunca sofra inchaço acumulativo.
+4. **Checkpointing Periódico Seguro:** Uma rotina assíncrona executa `PRAGMA wal_checkpoint(PASSIVE)` a cada 15 minutos em background para impedir o inchaço do arquivo WAL.
 
 ---
 
@@ -426,20 +426,20 @@ O piDots separa erros de API em duas categorias claras para agir com rapidez e e
   sqlite3 /mnt/storage/piDots/data/pidots.db \
     "SELECT id, thread_id, content, created_at FROM messages WHERE visibility = 'internal' AND content LIKE '%[FALHA%' ORDER BY created_at DESC LIMIT 5;"
   ```
-- **Acao Corretiva:** Atualize a chave de API via hot-reload sem reiniciar o contêiner:
+- **Ação Corretiva:** Atualize a chave de API via hot-reload sem reiniciar o contêiner:
   ```bash
   curl -X POST http://localhost:8000/api/settings/ai \
     -H "Content-Type: application/json" \
     -d '{"api_key": "SUA_CHAVE_VALIDA_AQUI"}'
   ```
 
-#### B. Falhas Temporarias de Rede ou Gateway (ProviderTransientError - HTTP 503/429/502/504)
-- **Sintoma:** O provedor aplica retentativas assincronas com backoff exponencial e jitter (`[1.0, 2.0, 4.0]s`).
+#### B. Falhas Temporárias de Rede ou Gateway (ProviderTransientError - HTTP 503/429/502/504)
+- **Sintoma:** O provedor aplica retentativas assíncronas com backoff exponencial e jitter (`[1.0, 2.0, 4.0]s`).
 - **Log do Sistema:** `Falha temporária de rede (ConnectError). Aguardando...`
-- **Esgotamento:** Caso todas as tentativas falhem, o status `failed` e propagado para os consumidores e a falha e gravada com `[FALHA DE INFERÊNCIA]`.
+- **Esgotamento:** Caso todas as tentativas falhem, o status `failed` é propagado para os consumidores e a falha é gravada com `[FALHA DE INFERÊNCIA]`.
 
-### 13.3 Diagnostico e Rearme do Circuit Breaker em Tarefas Proativas
-Quando uma tarefa proativa agendada falha sucessivamente, o `EdgeScheduler` protege o hardware e a rede contra tempestades de requisicao.
+### 13.3 Diagnóstico e Rearme do Circuit Breaker em Tarefas Proativas
+Quando uma tarefa proativa agendada falha sucessivamente, o `EdgeScheduler` protege o hardware e a rede contra tempestades de requisições.
 
 #### Inspecionar Status de Tarefas Agendadas
 Via API REST:
@@ -452,25 +452,25 @@ sqlite3 /mnt/storage/piDots/data/pidots.db \
   "SELECT id, task_name, last_status, consecutive_failures, backoff_until, is_active FROM scheduled_tasks;"
 ```
 
-#### Estados de Protecao:
+#### Estados de Proteção:
 1. **`AUTH_REQUIRED` (Sanity Check de Chave Vazia/Placeholder):**
-   - Ocorre quando `AI_API_KEY` nao foi definida ou mantem valores padrao (`sua_chave_aqui`, `placeholder`).
-   - A tarefa pausa por 10 minutos. Para corrigir, configure uma chave valida no `.env` ou via `POST /api/settings/ai`.
+   - Ocorre quando `AI_API_KEY` não foi definida ou mantém valores padrão (`sua_chave_aqui`, `placeholder`).
+   - A tarefa pausa por 10 minutos. Para corrigir, configure uma chave válida no `.env` ou via `POST /api/settings/ai`.
 2. **`CIRCUIT_OPEN` (5 Falhas Consecutivas):**
    - Ocorre quando a tarefa atingiu 5 falhas consecutivas (`consecutive_failures = 5`). O escalonador desarma a tarefa (`is_active = 0`).
 
 #### Procedimento de Rearme Manual da Tarefa:
-Apos corrigir a conectividade ou a credencial, rearme o circuito e reative a tarefa executando:
+Após corrigir a conectividade ou a credencial, rearme o circuito e reative a tarefa executando:
 ```bash
 sqlite3 /mnt/storage/piDots/data/pidots.db \
   "UPDATE scheduled_tasks SET is_active = 1, consecutive_failures = 0, backoff_until = NULL, last_status = 'IDLE' WHERE id = 'ID_DA_TAREFA';"
 ```
 
-### 13.4 Diagnostico de Subtarefas e Handoffs Falhos no MultiBotOrchestrator
-Quando uma subtarefa delegada a um worker falha na inferencia:
+### 13.4 Diagnóstico de Subtarefas e Handoffs Falhos no MultiBotOrchestrator
+Quando uma subtarefa delegada a um worker falha na inferência:
 - O registro em `agent_handoffs` recebe `status = 'FAILED'` e o detalhe do erro em `result_summary`.
-- Uma fita de carbono interna e registrada na conversa do supervisor (`[FALHA NA SUBTAREFA DE @dot]`).
-- O supervisor recebe `{'success': False, 'error': ...}` e pode replanejar ou avisar o usuario.
+- Uma mensagem interna de depuração é registrada na conversa do supervisor (`[FALHA NA SUBTAREFA DE @dot]`).
+- O supervisor recebe `{'success': False, 'error': ...}` e pode replanejar ou avisar o usuário.
 
 #### Inspecionar Handoffs Falhos no SQLite:
 ```bash
@@ -479,10 +479,10 @@ sqlite3 /mnt/storage/piDots/data/pidots.db \
 ```
 
 ### 13.5 Resposta de Falha Operacional no Gateway de Mensageria
-Caso ocorra uma interrupcao no provedor durante o recebimento de mensagens de Telegram, WhatsApp ou Webhook:
+Caso ocorra uma interrupção no provedor durante o recebimento de mensagens de Telegram, WhatsApp ou Webhook:
 - O `MessagingGateway` intercepta a falha e despacha aviso com o prefixo `[FALHA OPERACIONAL]`:
   `[FALHA OPERACIONAL]: O agente encontrou uma falha de conexão com o provedor de IA e não pôde concluir o processamento da solicitação.`
-- O canal nao e corrompido e o interlocutor externo recebe feedback transparente imediato.
+- O canal não é corrompido e o interlocutor externo recebe feedback transparente imediato.
 
 ### 13.6 O Console PWA não atualiza dados
 - No navegador, execute a limpeza do cache de Service Worker (`Application > Service Workers > Unregister`) ou force o recarregamento com `Ctrl + Shift + R`.
@@ -509,9 +509,9 @@ unzip -l workspace_dot-dev-core.zip
 
 ---
 
-## 14. Console Web SPA Oficial, Topologia de Rotas e Operacao via Teclado
+## 14. Console Web SPA Oficial, Topologia de Rotas e Operação via Teclado
 
-O ecossistema piDots opera sob topologia de portas desacopladas com proxy reverso Nginx Alpine e fallback direto no FastAPI Core:
+A arquitetura do piDots opera com portas desacopladas sob proxy reverso Nginx Alpine e fallback direto no FastAPI Core:
 - **Porta 8082 (Workspace SPA/PWA):** `http://localhost:8082/` (ou `http://localhost:8088/app` no Gateway Unificado).
 - **Porta 8081 (Landing Page / Onboarding):** `http://localhost:8081/` (ou `http://localhost:8088/` no Gateway).
 - **Porta 8083 (Documentação Didática & Estudos):** `http://localhost:8083/` e `http://localhost:8083/relatorio`.
@@ -519,94 +519,94 @@ O ecossistema piDots opera sob topologia de portas desacopladas com proxy revers
 - **Porta 8000 (FastAPI Core):** Motor Uvicorn interno (`http://localhost:8000/app` e `http://localhost:8000/docs`).
 
 O console oficial oferece:
-- **Interface Tecnica Minimalista e Console Escuro Tatil:** Interface tatica minimalista com contraste marcante (Dark Noir e Blueprint), visual de matriz tecnica, tipografia crisp e estetica retro de 1-bit.
+- **Interface Técnica Minimalista e Console Escuro Tátil:** Interface tática minimalista com contraste marcante (Dark Noir e Blueprint), visual de matriz técnica, tipografia crisp e estética retrô de 1-bit.
 - **Identidade e Logotipo Oficial:** Logotipo vetorial servido via rota oficial `/icon.svg` com headers de cache HTTP de 24 horas (`Cache-Control: public, max-age=86400`).
-- **Telemetria de Hardware em Tempo Real:** Indicadores integrados de SoC/CPU, RAM, temperatura do silicio e status do SQLite WAL.
-- **Visualizador de Diffs Integrado:** Na aba SPACES, o botao `[VER DIFFS]` aciona a comparacao visual das revisoes armazenadas em `space_revisions` com carimbos analogicos de status.
-- **Governanca no Feed:** Alertas de solicitacoes pendentes de comandos de risco com botoes táteis de homologacao e veto de seguranca.
+- **Telemetria de Hardware em Tempo Real:** Indicadores integrados de SoC/CPU, RAM, temperatura do silício e status do SQLite WAL.
+- **Visualizador de Diffs Integrado:** Na aba SPACES, o botão `[VER DIFFS]` aciona a comparação visual das revisões armazenadas em `space_revisions` com carimbos analógicos de status.
+- **Governança no Feed:** Alertas de solicitações pendentes de comandos de risco com botões táteis de homologação e veto de segurança.
 - **Landing Page de Onboarding:** Servida na raiz `/`, com calculadora interativa de ROI e comparativo de custos Edge vs Nuvem.
-- **Guia Didatico do Operador:** Servido na rota canonica `/docs`, estruturado em estilo passo a passo com drawer lateral retratil, Omnisearch Ctrl+K e Mini API Tester.
+- **Guia Didático do Operador:** Servido na rota canônica `/docs`, estruturado em estilo passo a passo com drawer lateral retrátil, Omnisearch Ctrl+K e Mini API Tester.
 - **OpenAPI Swagger UI:** Interface nativa do FastAPI desacoplada em `/api/docs` com esquema bruto em `/api/openapi.json`.
 
-### 14.1 Navegacao Cruzada Rapida via Chords Globais
-Transicao instantanea sem necessidade de mouse a partir de qualquer superficie:
+### 14.1 Navegação Cruzada Rápida via Chords Globais
+Transição instantânea sem necessidade de mouse a partir de qualquer superfície:
 
-| Chord Sequencial | Destino | Descricao |
+| Chord Sequencial | Destino | Descrição |
 | :--- | :--- | :--- |
-| `g` seguido de `h` | `GET /` | Go Home: Landing Page de Apresentacao e Onboarding |
-| `g` seguido de `w` | `GET /app` | Go Workspace: Console Operacional SPA / Estacao de Trabalho |
-| `g` seguido de `d` | `GET /docs` | Go Docs: Guia Didatico e Referencia Tecnica |
+| `g` seguido de `h` | `GET /` | Go Home: Landing Page de Apresentação e Onboarding |
+| `g` seguido de `w` | `GET /app` | Go Workspace: Console Operacional SPA / Estação de Trabalho |
+| `g` seguido de `d` | `GET /docs` | Go Docs: Guia Didático e Referência Técnica |
 
-### 14.2 Atalhos de Alta Produtividade do Console SPA
-Para agilizar o fluxo operacional diario do operador:
+### 14.2 Atalhos de Produtividade do Console SPA
+Para agilizar o fluxo operacional diário do operador:
 
-| Atalho de Teclado | Acao Executada | Comportamento no Sistema |
+| Atalho de Teclado | Ação Executada | Comportamento no Sistema |
 | :--- | :--- | :--- |
 | `Tecla /` | Autocomplete Popover | Dispara menu suspenso de 30 Slash Commands com busca fuzzy no teletipo |
 | `Botão [/]` | Autocomplete Touch | Abre diretamente o popover de comandos no mobile sem abrir teclado |
 | `Bottom-Nav` | Comutação Mobile | Alterna entre visualizações [O] DOTS, [>] CHAT, [*] CANVAS e [?] GUIA em smartphones |
-| `Alt+B` | Sidebar Adaptativa | Alterna overlay sob demanda da barra lateral no Triptico (1024px-1440px) |
+| `Alt+B` | Sidebar Adaptativa | Alterna overlay sob demanda da barra lateral no Tríptico (1024px-1440px) |
 | `Alt+I` | Inspecionar Artefato | Foca e expande o artefato ativo no Live Canvas |
-| `Ctrl+S` / `Cmd+S` | Gravar Revisao | Grava revisao atomica do documento em Spaces no SQLite WAL |
-| `Alt+H` | Dossie HITL | Foca e abre o modal de governanca de aprovacao humana |
-| `F11` | Alternar Canvas | Alterna entre visualizacao dividida (split) e maximizada do canvas |
+| `Ctrl+S` / `Cmd+S` | Gravar Revisão | Grava revisão atômica do documento em Spaces no SQLite WAL |
+| `Alt+H` | Painel HITL | Abre a fila de governança para aprovação humana |
+| `F11` | Alternar Canvas | Alterna entre visualização dividida (split) e maximizada do canvas |
 | `Ctrl+L` | Limpar Teletipo | Limpa mensagens visuais da bobina do teletipo/chat local (/clear) |
-| `F1` | Manual Operacional | Abre a gaveta lateral retratil com o manual tecnico |
+| `F1` | Manual Operacional | Abre a gaveta lateral retrátil com o manual técnico |
 
-### 14.3 Guia Rapido dos 30 Slash Commands no Teletipo
+### 14.3 Guia Rápido dos 30 Slash Commands no Teletipo
 
-O operador de borda pode controlar o no diretamente pelo teletipo do console digitando comandos iniciados por barra (`/`):
+O operador de borda pode controlar o nó diretamente pelo teletipo do console digitando comandos iniciados por barra (`/`):
 
 #### 1. Sistema & UI
-- `/help [filtro]`: Exibe o catalogo completo de comandos em tabela formatada.
-- `/clear [chat|terminal|canvas|all]`: Limpa a bobina de teletipo ou o console sandbox mantendo a sessao ativa.
+- `/help [filtro]`: Exibe o catálogo completo de comandos em tabela formatada.
+- `/clear [chat|terminal|canvas|all]`: Limpa a bobina de teletipo ou o console sandbox mantendo a sessão ativa.
 - `/theme [noir|blueprint|toggle]`: Comuta a paleta de cores entre Dark Noir e Blueprint.
 - `/lang [pt|en]`: Comuta o idioma da interface em tempo real via micro-motor i18n.
-- `/info`: Consulta `/health` e renderiza o dossie de hardware ARM64 e do SQLite WAL.
+- `/info`: Consulta `/health` e renderiza o diagnóstico de hardware ARM64 e do SQLite WAL.
 - `/status`: Panorama operacional de coworkers instalados e coworker em foco.
 - `/telemetry`: Exibe barras em ASCII 1-bit de Temperatura SoC BCM2711, RAM, Disco e Load Avg.
 - `/pwa [status|update|cache-clear]`: Inspeciona modo standalone do PWA e atualiza o Service Worker.
 - `/tour [reset]`: Dispara o motor de Tour Spotlight interativo guiando as funções do cockpit passo a passo no primeiro acesso; com 'reset' reinicia a flag de FTUE.
 - `/onboarding`: Alias canônico para execução do tour guiado do sistema (/tour).
-- `/changelog [versao]`: Consulta `/api/changelog` e exibe notas da versao SemVer ativa.
+- `/changelog [versao]`: Consulta `/api/changelog` e exibe notas da versão SemVer ativa.
 
 #### 2. Agentes & Multi-Bot
-- `/dots [filtro]`: Lista coworkers registrados no no, arquetipos e estado de operacao.
-- `/handoff <dot_id> [contexto]`: Transfere a missao para outro coworker com slip de transicao.
-- `/council [tema]`: Executa sessao dialetica tripartite (Pragmatica, Inovadora e Auditor de Borda).
-- `/delegate <dot_id> <tarefa>`: Enfileira uma subtarefa assincrona em segundo plano para o coworker alvo.
-- `/archetype [dot_id]`: Exibe ficha tecnica da persona, modelo vinculado e isolamento sandbox.
-- `/tools [dot_id]`: Catalogo de 23 ferramentas registradas e ferramentas ativas pos-pruning.
+- `/dots [filtro]`: Lista coworkers registrados no nó, arquétipos e estado de operação.
+- `/handoff <dot_id> [contexto]`: Transfere a missão para outro coworker com slip de transição.
+- `/council [tema]`: Executa sessão dialética tripartite (Propositor, Crítico e Supervisor de Borda).
+- `/delegate <dot_id> <tarefa>`: Enfileira uma subtarefa assíncrona em segundo plano para o coworker alvo.
+- `/archetype [dot_id]`: Exibe ficha técnica da persona, modelo vinculado e isolamento sandbox.
+- `/tools [dot_id]`: Catálogo de 23 ferramentas registradas e ferramentas ativas pós-pruning.
 
-#### 3. Memoria, Tarefas, Governanca e Dados
-- `/memory [query]`: Inspeciona recibos na bobina local, estimativa de tokens e limite de 150 nos DOM.
-- `/archival <busca>`: Dispara busca semantica vetorial KNN na memoria persistente do SQLite WAL.
-- `/shared [key]`: Inspeciona chaves do Espaco Compartilhado (Shared Space) sincronizadas no cluster.
+#### 3. Memória, Tarefas, Governança e Dados
+- `/memory [query]`: Inspeciona recibos na bobina local, estimativa de tokens e limite de 150 nós DOM.
+- `/archival <busca>`: Dispara busca semântica vetorial KNN na memória persistente do SQLite WAL.
+- `/shared [key]`: Inspeciona chaves do Espaço Compartilhado (Shared Space) sincronizadas no cluster.
 - `/spaces [nome]`: Lista arquivos do workspace ou abre documento no Live Canvas.
-- `/diff [artefato]`: Alterna o modo de visualizacao diferencial (Diff) e historico de revisoes.
-- `/tasks [status]`: Tabela de tarefas e missoes agendadas com estado do EdgeScheduler.
-- `/cron [listar|status]`: Inspeciona as rotinas automaticas registradas no cron do uvloop.
-- `/run-task <task_id>`: Despacha ordem de execucao manual imediata para uma tarefa agendada.
-- `/hitl [status|logs|clear]`: Inspeciona ou homologa acoes retidas pelo guardrail Deny-by-Default.
-- `/triggers [status|check]`: Avalia sensores fisicos contra limiares de seguranca de silicio.
-- `/maintenance [status|run]`: Executa a triade de manutencao: WAL Checkpoint TRUNCATE, poda e VACUUM.
-- `/backup [download|status]`: Politica de snapshots rotativos ACID de 7 dias e download do banco.
-- `/export [chat|canvas|markdown]`: Exporta o historico do teletipo ou o artefato ativo em Markdown.
-- `/pack [dot_id]`: Gera e baixa pacote portatil estruturado DotPack v1.0 para distribuicao.
+- `/diff [artefato]`: Alterna o modo de visualização diferencial (Diff) e histórico de revisões.
+- `/tasks [status]`: Tabela de tarefas e missões agendadas com estado do EdgeScheduler.
+- `/cron [listar|status]`: Inspeciona as rotinas automáticas registradas no cron do uvloop.
+- `/run-task <task_id>`: Despacha ordem de execução manual imediata para uma tarefa agendada.
+- `/hitl [status|logs|clear]`: Inspeciona ou homologa ações retidas pelo guardrail Deny-by-Default.
+- `/triggers [status|check]`: Avalia sensores físicos contra limiares de segurança de silício.
+- `/maintenance [status|run]`: Executa a tríade de manutenção: WAL Checkpoint TRUNCATE, poda e VACUUM.
+- `/backup [download|status]`: Política de snapshots rotativos ACID de 7 dias e download do banco.
+- `/export [chat|canvas|markdown]`: Exporta o histórico do teletipo ou o artefato ativo em Markdown.
+- `/pack [dot_id]`: Gera e baixa pacote portátil estruturado DotPack v1.0 para distribuição.
 
 ---
 
-## 15. Operacao da Memoria Hierarquica (Padrao MemGPT / Letta)
+## 15. Operação da Memória Hierárquica (Padrão MemGPT / Letta)
 
 ### 15.1 Inspecionar Blocos de Core Memory no SQLite WAL
-A Core Memory mantem os blocos fixos residentes in-context para cada Dot:
+A Core Memory mantém os blocos fixos residentes in-context para cada Dot:
 ```bash
 sqlite3 /mnt/storage/piDots/data/pidots.db \
   "SELECT dot_id, block_name, length(content) as chars_used, max_chars, updated_at FROM agent_core_memory_blocks;"
 ```
 
 ### 15.2 Inspecionar Archival Memories com Busca FTS5
-Para consultar o acervo duradouro de memorias de um Dot via ranking BM25:
+Para consultar o acervo duradouro de memórias de um Dot via ranking BM25:
 ```bash
 sqlite3 /mnt/storage/piDots/data/pidots.db \
   "SELECT a.id, a.dot_id, a.content, f.rank FROM archival_memories a JOIN archival_memories_fts f ON a.id = f.id WHERE archival_memories_fts MATCH 'MicroSD OR thermal' ORDER BY f.rank LIMIT 5;"
@@ -620,23 +620,23 @@ Antes de gravar qualquer fato na memória duradoura via `archival_memory_insert`
 
 ---
 
-## 16. Exportacao e Importacao de Dot Packs Portaveis (v1.1) com Assinatura SHA-256
+## 16. Exportação e Importação de Dot Packs Portáteis (v1.1) com Assinatura SHA-256
 
 Os Dot Packs v1.1 permitem empacotar, assinar criptograficamente e instanciar agentes especialistas completos entre diferentes Raspberry Pis com garantia de integridade estrutural e defesa contra Prompt Injection.
 
 ### 16.1 Exportar Manifesto Dot Pack Assinado
 ```bash
-# Exporta manifesto JSON canonico com sha256_checksum integrado
+# Exporta manifesto JSON canônico com sha256_checksum integrado
 curl -s http://localhost:8000/api/dots/dot-coder/export-pack > /mnt/storage/piDots/dot_coder_pack.json
 
-# Inspeciona o cabecalho e a assinatura criptografica do manifesto
+# Inspeciona o cabeçalho e a assinatura criptográfica do manifesto
 head -n 25 /mnt/storage/piDots/dot_coder_pack.json
 ```
 
-### 16.2 Importar Dot Pack com Verificacao de Integridade e Auditoria
-Na rota de importacao, o sistema valida a correspondencia do hash `sha256_checksum` e submete os blocos de `core_memory` a uma varredura estatica contra padroes maliciosos de subversao de instrucao de sistema:
+### 16.2 Importar Dot Pack com Verificação de Integridade e Auditoria
+Na rota de importação, o sistema valida a correspondência do hash `sha256_checksum` e submete os blocos de `core_memory` a uma varredura estática contra padrões maliciosos de subversão de instrução de sistema:
 ```bash
-# Valida a assinatura, audita as memorias contra injection e instancia o agente atomicamente
+# Valida a assinatura, audita as memórias contra injection e instancia o agente atomicamente
 curl -s -X POST http://localhost:8000/api/dots/import-pack \
   -H "Content-Type: application/json" \
   -d @/mnt/storage/piDots/dot_coder_pack.json
@@ -646,7 +646,7 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
 
 ## 17. Monitoramento de Triggers de Hardware Edge (BCM2711)
 
-O piDots supervisiona ativamente a saude do silicio e do armazenamento flash para operacao Always-On estavel.
+O piDots supervisiona ativamente a saúde do silício e do armazenamento flash para operação Always-On estável.
 
 ### 17.1 Consultar Telemetria e Triggers em Tempo Real
 ```bash
@@ -686,11 +686,11 @@ Exemplo de resposta operacional:
 
 ---
 
-## 18. Rotina de Manutencao Noturna e Preservacao do MicroSD
+## 18. Rotina de Manutenção Noturna e Preservação do MicroSD
 
-A manutencao do SQLite WAL preserva as celulas de memoria flash do cartao MicroSD e mantem tempos de resposta estaveis.
+A manutenção do SQLite WAL preserva as células de memória flash do cartão MicroSD e mantém tempos de resposta estáveis.
 
-### 18.1 Disparar Manutencao Noturna Manual via API REST
+### 18.1 Disparar Manutenção Noturna Manual via API REST
 ```bash
 curl -s -X POST http://localhost:8000/api/edge/maintenance \
   -H "Content-Type: application/json" \
@@ -698,11 +698,11 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
 ```
 O retorno confirma:
 - Truncamento síncrono do WAL (`PRAGMA wal_checkpoint(TRUNCATE)`), zerando o arquivo `-wal`.
-- Consolidacao de turnos com mais de 7 dias na tabela `episodic_memories` e poda das mensagens brutas em `messages`.
-- Geracao de backup atomico consistente em `data/backups/pidots_backup_TIMESTAMP.db` via `VACUUM INTO`.
-- Atualizacao de estatisticas dos indices SQLite via `PRAGMA optimize` e `ANALYZE`.
+- Consolidação de turnos com mais de 7 dias na tabela `episodic_memories` e poda das mensagens brutas em `messages`.
+- Geração de backup atômico consistente em `data/backups/pidots_backup_TIMESTAMP.db` via `VACUUM INTO`.
+- Atualização de estatísticas dos índices SQLite via `PRAGMA optimize` e `ANALYZE`.
 
-### 18.2 Agendar Manutencao Noturna Diaria Autonoma (03:00 UTC)
+### 18.2 Agendar Manutenção Noturna Diária Autônoma (03:00 UTC)
 Cadastre a tarefa proativa no escalonador in-process do piDots:
 ```bash
 curl -s -X POST http://localhost:8000/api/tasks \
@@ -711,34 +711,35 @@ curl -s -X POST http://localhost:8000/api/tasks \
     "dot_id": "dot-auditor",
     "task_name": "Manutencao Noturna MicroSD",
     "cron_expr": "0 3 * * *",
-    "action_prompt": "Execute a ferramenta edge_maintenance_run com days_threshold=7 e create_backup=true para preservar a saude do cartao MicroSD.",
+    "action_prompt": "Execute a ferramenta edge_maintenance_run com days_threshold=7 e create_backup=true para preservar a saúde do cartão MicroSD.",
     "target_channel_type": "internal"
   }' | jq .
-Apos cadastrada, o `EdgeScheduler` executara a rotina de compactacao automaticamente todas as noites as 03:00 sem intervencao do operador.
+```
+Após cadastrada, o `EdgeScheduler` executará a rotina de compactação automaticamente todas as noites às 03:00 sem intervenção do operador.
 
 ---
 
-## 19. Homologacao Operacional de Internacionalizacao (i18n), Locales e Changelog
+## 19. Homologação Operacional de Internacionalização (i18n), Locales e Changelog
 
-Com o subsistema de internacionalizacao bilingue nativo (PT/EN) e versionamento SemVer v1.3.0 ativo, o operador pode validar a integridade dos dicionarios e dos endpoints de borda.
+Com o subsistema de internacionalização bilíngue nativo (PT/EN) e versionamento SemVer v1.3.0 ativo, o operador pode validar a integridade dos dicionários e dos endpoints de borda.
 
-### 19.1 Inspecao dos Endpoints de Traducao e Changelog via cURL
+### 19.1 Inspeção dos Endpoints de Tradução e Changelog via cURL
 ```bash
-# Validar endpoint de traducao em Portugues do Brasil (pt-BR)
+# Validar endpoint de tradução em Português do Brasil (pt-BR)
 curl -s -i http://localhost:8000/data/locales/pt.json | head -n 15
 
-# Validar endpoint de traducao em Ingles Tecnico (en-US)
+# Validar endpoint de tradução em Inglês Técnico (en-US)
 curl -s -i http://localhost:8000/data/locales/en.json | head -n 15
 
-# Validar cabecalhos de cache de borda do script i18n
+# Validar cabeçalhos de cache de borda do script i18n
 curl -s -i http://localhost:8000/static/pidots-i18n.js | grep -E "HTTP/|content-type|cache-control"
 
 # Validar integridade da API de Changelog e Patch Notes SemVer v1.5.2
 curl -s http://localhost:8000/api/changelog | jq '{version: .current_version, release_date: .release_date, patch_notes: .patch_notes.title}'
 ```
 
-### 19.2 Validacao Automatizada de Paridade Estrutural dos Dicionarios
-Execute o script em linha de comando no ambiente virtual para confirmar que 100% das chaves estao presentes em ambos os idiomas:
+### 19.2 Validação Automatizada de Paridade Estrutural dos Dicionários
+Execute o script em linha de comando no ambiente virtual para confirmar que 100% das chaves estão presentes em ambos os idiomas:
 ```bash
 python3 -c "
 import json
@@ -762,7 +763,7 @@ pt_flat = set(flatten(pt))
 en_flat = set(flatten(en))
 diff = pt_flat.symmetric_difference(en_flat)
 if diff:
-    print(f'[ALERTA] Divergencia de chaves detectada: {diff}')
+    print(f'[ALERTA] Divergência de chaves detectada: {diff}')
     exit(1)
 else:
     print(f'[OK] Paridade estrita confirmada: {len(pt_flat)} chaves folha sincronizadas entre PT e EN.')
@@ -771,30 +772,30 @@ else:
 
 ---
 
-## 20. Validacao Operacional da API de Spaces e do Triptico Adaptativo
+## 20. Validação Operacional da API de Spaces e do Tríptico Adaptativo
 
-Com o subsistema de Spaces conectado dinamicamente ao Live Canvas e o Triptico Adaptativo ativo no console SPA (`/app`), o operador pode validar a integridade dos endpoints de documentos versionados:
+Com o subsistema de Spaces conectado dinamicamente ao Live Canvas e o Tríptico Adaptativo ativo no console SPA (`/app`), o operador pode validar a integridade dos endpoints de documentos versionados:
 
-### 20.1 Inspecao da API de Spaces via cURL
+### 20.1 Inspeção da API de Spaces via cURL
 ```bash
 # Listar todos os documentos persistidos em Spaces
 curl -s http://localhost:8000/api/spaces | jq .
 
-# Gravar uma nova revisao de documento via API REST
+# Gravar uma nova revisão de documento via API REST
 curl -s -X POST http://localhost:8000/api/spaces \
   -H "Content-Type: application/json" \
-  -d '{"filename": "relatorio_termico.md", "content": "# Relatorio Termico Edge\nTemperatura nominal: 44.8 C"}' | jq .
+  -d '{"filename": "relatorio_termico.md", "content": "# Relatório Térmico Edge\nTemperatura nominal: 44.8 C"}' | jq .
 
-# Obter o historico de revisoes e calculo de diff unificado
+# Obter o histórico de revisões e cálculo de diff unificado
 curl -s http://localhost:8000/api/spaces/relatorio_termico.md/revisions | jq .
 ```
 
-### 20.2 Checklist de Verificacao da Interface Triptico e Mobile (v1.5.2)
-1. **Em Telas de 1024px a 1440px:** A coluna da esquerda colapsa automaticamente e pode ser expandida via `Alt+B` ou clique no botao `[PAINEL]`, sem espremer o teletipo.
-2. **Em Telas Mobile (<= 768px):** A barra inferior `.mobile-bottom-nav` permanece visivel com 4 botoes tateis (`[O] DOTS`, `[>] CHAT`, `[*] CANVAS`, `[?] GUIA`). A comutacao entre `dots`, `chat` e `canvas` comuta a visibilidade das colunas atraves de `setMobileView()`.
-3. **Comutacao de Abas e Modo Foco:** Ao alternar para DOTS ou CANVAS, a classe `mode-focus-zen` e removida compulsoriamente para impedir travamentos visuais.
-4. **Acionamento do Teclado Virtual (window.visualViewport):** Ao focar `#instructionInput`, a classe `keyboard-open` e ativada no body, a barra inferior e ocultada e a altura do body e fixada na altura visivel real, mantendo o scroll do chat no final.
-5. **Atalho Mecanico Touch [/]:** O clique em `#slashTriggerBtn` abre imediatamente o popover de comandos sem exigir a subida do teclado.
+### 20.2 Checklist de Verificação da Interface Tríptico e Mobile (v1.5.2)
+1. **Em Telas de 1024px a 1440px:** A coluna da esquerda colapsa automaticamente e pode ser expandida via `Alt+B` ou clique no botão `[PAINEL]`, sem espremer o teletipo.
+2. **Em Telas Mobile (<= 768px):** A barra inferior `.mobile-bottom-nav` permanece visível com 4 botões táteis (`[O] DOTS`, `[>] CHAT`, `[*] CANVAS`, `[?] GUIA`). A comutação entre `dots`, `chat` e `canvas` alterna a visibilidade das colunas através de `setMobileView()`.
+3. **Comutação de Abas e Modo Foco:** Ao alternar para DOTS ou CANVAS, a classe `mode-focus-zen` é removida compulsoriamente para impedir travamentos visuais.
+4. **Acionamento do Teclado Virtual (window.visualViewport):** Ao focar `#instructionInput`, a classe `keyboard-open` é ativada no body, a barra inferior é ocultada e a altura do body é fixada na altura visível real, mantendo o scroll do chat no final.
+5. **Atalho Mecânico Touch [/]:** O clique em `#slashTriggerBtn` abre imediatamente o popover de comandos sem exigir a subida do teclado.
 
 ---
 
@@ -862,7 +863,7 @@ Para consolidar uma deliberação técnica em um documento versionado:
 
 ### 23.3 Aprovação HITL com Edição de Argumentos (`modified_args`) e Retomada Automática
 Quando uma ferramenta de risco alto/crítico é interceptada:
-1. Um cartão **Generative UI HITL** é exibido inline no teletipo (além do dossiê `Alt+H`), contendo uma caixa de edição JSON com os argumentos propostos pelo agente.
+1. Um cartão **Generative UI HITL** é exibido inline no teletipo (além da janela `Alt+H`), contendo uma caixa de edição JSON com os argumentos propostos pelo agente.
 2. O operador pode ajustar parâmetros (ex: corrigir um caminho de arquivo ou flag de comando) e clicar em **`[HOMOLOGAR E RETOMAR]`**.
 3. O endpoint `POST /api/hitl/{approval_id}/resolve` recebe `modified_args` e dispara automaticamente `DotAgent.resume_after_hitl()` em background, retomando o raciocínio ReAct do ponto exato de parada.
 
@@ -988,7 +989,4 @@ curl -N -H "Accept: text/event-stream" \
   http://localhost:8082/api/threads/default/runs \
   -d '{"dot_id":"dev-assistant","prompt":"Teste de streaming SSE"}'
 ```
-
-
-
 

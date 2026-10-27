@@ -1,21 +1,21 @@
 # Arquitetura e Engenharia de Software do piDots
 
-Este documento detalha as decisoes de engenharia, padroes arquiteturais, modelos de concorrencia e otimizacoes de hardware adotadas no desenvolvimento do **piDots** para execucao persistente em ambientes de computacao de borda e dispositivos restritos (SBCs ARM64 / x86_64, tendo o Raspberry Pi 4B 4GB ARM64 como benchmark de referencia).
+Este documento detalha as decisões de engenharia, padrões arquiteturais, modelos de concorrência e otimizações de hardware adotadas no desenvolvimento do **piDots** para execução persistente em ambientes de computação de borda e dispositivos restritos (SBCs ARM64 / x86_64, tendo o Raspberry Pi 4B 4GB ARM64 como benchmark de referência).
 
 ---
 
-## 1. Visao Geral da Arquitetura
+## 1. Visão Geral da Arquitetura
 
-O piDots foi projetado sob o paradigma de **Monólito Modular Assincrono** (Single-Process, Event-Driven). Diferente de arquiteturas corporativas baseadas em microservicos orquestrados ou clusters de conteineres que demandam gigabytes de memoria apenas para overhead de rede e runtimes concorrentes, o piDots consolida todas as capacidades essenciais em um unico processo gerenciado pelo FastAPI e uvloop/AsyncIO.
+O piDots foi projetado sob o paradigma de **Monólito Modular Assíncrono** (Single-Process, Event-Driven). Diferente de arquiteturas corporativas baseadas em microsserviços orquestrados ou clusters de contêineres que demandam gigabytes de memória apenas para overhead de rede e runtimes concorrentes, o piDots consolida todas as capacidades essenciais em um único processo gerenciado pelo FastAPI e uvloop/AsyncIO.
 
-### Diagrama de Blocos do Sistema e Topologia de Superficies
+### Diagrama de Blocos do Sistema e Topologia de Superfícies
 
 ```mermaid
 flowchart TD
-    subgraph ClientSurfaces["Superficies Web Canonicas e Clientes"]
-        Landing["Landing Page (/)\n(Apresentacao e Onboarding)"]
-        Workspace["Console Operacional (/app, /workspace)\n(SPA/PWA, Console Escuro Tatil)"]
-        Docs["Guia Didatico (/docs)\n(Omnisearch Ctrl+K e API Tester)"]
+    subgraph ClientSurfaces["Superfícies Web Canônicas e Clientes"]
+        Landing["Landing Page (/)\n(Apresentação e Onboarding)"]
+        Workspace["Console Operacional (/app, /workspace)\n(SPA/PWA, Console Escuro Tátil)"]
+        Docs["Guia Didático (/docs)\n(Omnisearch Ctrl+K e API Tester)"]
         Swagger["OpenAPI Swagger UI (/api/docs)\n(Esquema /api/openapi.json)"]
         CLI["CLI Nativa (pidots)\n(Terminal Local)"]
         Webhooks["Mensageria Externa\n(Telegram, WhatsApp, Generic)"]
@@ -28,28 +28,28 @@ flowchart TD
         Scheduler["EdgeScheduler Proativo\n(croniter, Edge Triggers, Heartbeat)"]
         AgentEngine["Motor ReAct (DotAgent)\n(Tool Pruning, Self-Healing)"]
         Planner["Two-Stage Planner\n(Goals e Milestones)"]
-        HITL["Governanca HITL\n(Human-in-the-Loop Interceptor)"]
-        MemoryMgr["Memoria Hierarquica MemGPT\n(Core, Archival FTS5, Shared Space)"]
+        HITL["Governança HITL\n(Human-in-the-Loop Interceptor)"]
+        MemoryMgr["Memória Hierárquica MemGPT\n(Core, Archival FTS5, Shared Space)"]
         ToolReg["Registro de Ferramentas\n(23 Ferramentas Nativas)"]
-        Maintenance["Manutencao Noturna\n(WAL TRUNCATE, VACUUM INTO)"]
+        Maintenance["Manutenção Noturna\n(WAL TRUNCATE, VACUUM INTO)"]
     end
 
-    subgraph SecurityStorage["Isolamento e Persistencia SQLite WAL"]
+    subgraph SecurityStorage["Isolamento e Persistência SQLite WAL"]
         Bwrap["Sandbox Bubblewrap\n(Linux Namespaces & ro-bind)"]
         SQLite["SQLite WAL Mode Engine\n(synchronous=NORMAL, busy_timeout=5s)"]
         Spaces["Workspaces Isolados\n(/workspaces/dot_id)"]
     end
 
-    subgraph External["Inferencia e Rede Externa"]
-        LLM["Provedor OpenAI-Compativel\n(LiteLLM, vLLM, OpenAI)"]
-        WebTarget["Web Alvo HTTP/HTTPS\n(Extracao Trafilatura)"]
+    subgraph External["Inferência e Rede Externa"]
+        LLM["Provedor OpenAI-Compatível\n(LiteLLM, vLLM, OpenAI)"]
+        WebTarget["Web Alvo HTTP/HTTPS\n(Extração Trafilatura)"]
     end
 
-    Landing -->|Navegacao / Chords| API
+    Landing -->|Navegação / Chords| API
     Workspace -->|HTTP / SSE Stream| API
     Docs -->|Leitura e Mini API Tester| API
-    Swagger -->|Inspecao OpenAPI| API
-    CLI -->|Invocacao Local| API
+    Swagger -->|Inspeção OpenAPI| API
+    CLI -->|Invocação Local| API
     Webhooks -->|Webhooks HTTP POST| Gateway
 
     API --> AgentEngine
@@ -64,11 +64,11 @@ flowchart TD
     AgentEngine --> MemoryMgr
     AgentEngine --> LLM
 
-    HITL -->|Aprovacao Requerida| SQLite
+    HITL -->|Aprovação Requerida| SQLite
     ToolReg -->|Comando Shell| Bwrap
-    ToolReg -->|Leitura e Gravacao| Spaces
-    ToolReg -->|Extracao Web| WebTarget
-    ToolReg -->|Delegacao de Subtarefa| Orchestrator
+    ToolReg -->|Leitura e Gravação| Spaces
+    ToolReg -->|Extração Web| WebTarget
+    ToolReg -->|Delegação de Subtarefa| Orchestrator
 
     AgentEngine --> SQLite
     Scheduler --> SQLite
@@ -80,58 +80,58 @@ flowchart TD
 
 ---
 
-## 2. Ciclo de Vida Cognitivo ReAct e Intercepcao HITL
+## 2. Ciclo de Vida Cognitivo ReAct e Intercepção HITL
 
-O agente executa o padrao ReAct (*Reasoning and Acting*) em streaming contínuo. Toda intencao de execucao de ferramenta passa por um analisador de risco deterministico antes da invocacao.
+O agente executa o padrão ReAct (*Reasoning and Acting*) em streaming contínuo. Toda intenção de execução de ferramenta passa por um analisador de risco determinístico antes da invocação.
 
-### Fluxo de Execucao Sequencial
+### Fluxo de Execução Sequencial
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Operador as Operador / UI
     participant Agent as Motor ReAct (DotAgent)
-    participant LLM as Inferencia LLM (SSE)
+    participant LLM as Inferência LLM (SSE)
     participant HITL as Interceptor HITL
     participant Tool as Ferramenta (Bash/File)
     participant DB as SQLite WAL
 
     Operador->>Agent: Mensagem / Prompt da Tarefa
-    Agent->>DB: Carregar historico e memorias KNN
-    Agent->>LLM: Iniciar Requisicao com Streaming
-    LLM-->>Agent: Token Stream (Pensamento e Intencao de Tool)
+    Agent->>DB: Carregar histórico e memórias KNN
+    Agent->>LLM: Iniciar Requisição com Streaming
+    LLM-->>Agent: Token Stream (Pensamento e Intenção de Tool)
     Agent-->>Operador: SSE Tokens de Resposta
     
-    alt Invocacao de Ferramenta Segura (ex: read_file, search_memory)
-        Agent->>Tool: Executar acao diretamente
+    alt Invocação de Ferramenta Segura (ex: read_file, search_memory)
+        Agent->>Tool: Executar ação diretamente
         Tool-->>Agent: Retorno da ferramenta
-        Agent->>LLM: Enviar Tool Result para proxima reflexao
-    else Invocacao de Acao de Alto Risco (ex: rm -rf, sudo, chmod)
+        Agent->>LLM: Enviar Tool Result para próxima reflexão
+    else Invocação de Ação de Alto Risco (ex: rm -rf, sudo, chmod)
         Agent->>HITL: Avaliar comando
         HITL->>DB: Criar registro em pending_actions
-        HITL-->>Agent: Acao retida na fila de aprovacao
-        Agent-->>Operador: Notificacao HITL Pendente (ID da acao)
+        HITL-->>Agent: Ação retida na fila de aprovação
+        Agent-->>Operador: Notificação HITL Pendente (ID da ação)
         
-        Note over Operador,HITL: Aguarda intervencao humana
+        Note over Operador,HITL: Aguarda intervenção humana
         Operador->>HITL: POST /api/hitl/{id}/approve
         HITL->>Tool: Desbloquear e Executar comando
-        Tool-->>Agent: Retorno da execucao
-        Agent->>LLM: Continuar raciocinio com resultado
+        Tool-->>Agent: Retorno da execução
+        Agent->>LLM: Continuar raciocínio com resultado
     end
 
     Agent->>DB: Persistir mensagens e telemetria
-    Agent-->>Operador: Ciclo Concluido
+    Agent-->>Operador: Ciclo Concluído
 ```
 
 ---
 
-## 3. Maquina de Estados da Governanca Human-in-the-Loop
+## 3. Máquina de Estados da Governança Human-in-the-Loop
 
 ```mermaid
 stateDiagram-v2
-    [*] --> AvaliacaoRisco: Invocacao de Ferramenta
+    [*] --> AvaliacaoRisco: Invocação de Ferramenta
     
-    AvaliacaoRisco --> ExecucaoDireta: Comando Seguro (Leitura / Analise)
+    AvaliacaoRisco --> ExecucaoDireta: Comando Seguro (Leitura / Análise)
     AvaliacaoRisco --> RetidoHITL: Comando Perigoso Detectado
     
     RetidoHITL --> AguardandoAprovacao: Registrado em hitl_approvals com TTL (expires_at = now + 30m)
@@ -151,127 +151,127 @@ stateDiagram-v2
 
 ---
 
-## 4. Otimizacoes Extremas de I/O e SQLite para Edge (Cartao MicroSD / SSD)
+## 4. Otimizações Extremas de I/O e SQLite para Edge (Cartão MicroSD / SSD)
 
-O armazenamento em hardware como o Raspberry Pi 4B baseia-se em cartoes MicroSD (com barramento UHS-I de escrita sequencial lenta) ou discos SSD conectados via USB 3.0. Operacoes continuas de escrita com `fsync` sincrono destroem o desempenho de I/O e degradam prematuramente os blocos flash de memoria.
+O armazenamento em hardware como o Raspberry Pi 4B baseia-se em cartões MicroSD (com barramento UHS-I de escrita sequencial lenta) ou discos SSD conectados via USB 3.0. Operações contínuas de escrita com `fsync` síncrono degradam o desempenho de I/O e desgastam prematuramente os blocos flash de memória.
 
-Para contornar este gargalo, a camada de banco de dados do piDots implementa o SQLite em modo **Write-Ahead Logging (WAL)** com as seguintes diretivas de baixo nivel:
+Para contornar este gargalo, a camada de banco de dados do piDots implementa o SQLite em modo **Write-Ahead Logging (WAL)** com as seguintes diretivas de baixo nível:
 
 ```sql
--- Habilita escrita concorrente nao-bloqueante entre leitores e escritores
+-- Habilita escrita concorrente não-bloqueante entre leitores e escritores
 PRAGMA journal_mode = WAL;
 
 -- Substitui fsync total por sync seguro apenas nos checkpoints do WAL
--- Evita pausas de I/O no loop assincrono e reduz o desgaste da memoria flash
+-- Evita pausas de I/O no loop assíncrono e reduz o desgaste da memória flash
 PRAGMA synchronous = NORMAL;
 
--- Aloca 64 MB de memoria RAM do Raspberry Pi para cache de paginas
--- Leituras de historico e vetores ocorrem em RAM sem tocar no disco
+-- Aloca 64 MB de memória RAM do Raspberry Pi para cache de páginas
+-- Leituras de histórico e vetores ocorrem em RAM sem tocar no disco
 PRAGMA cache_size = -64000;
 
--- Define checkpoint automatico do WAL a cada 1.000 paginas (aprox. 4 MB)
+-- Define checkpoint automático do WAL a cada 1.000 páginas (aprox. 4 MB)
 -- Impede o crescimento descontrolado do arquivo .db-wal
 PRAGMA wal_autocheckpoint = 1000;
 
--- Define timeout de 5.000 ms para operacoes concorrentes antes de emitir erro de lock
+-- Define timeout de 5.000 ms para operações concorrentes antes de emitir erro de lock
 PRAGMA busy_timeout = 5000;
 
--- Armazena indices temporarios e tabelas transitórias em RAM (tmpfs)
+-- Armazena índices temporários e tabelas transitórias em RAM (tmpfs)
 PRAGMA temp_store = MEMORY;
 ```
 
 ---
 
-## 5. Modulos do Monolito Modular Expandido
+## 5. Módulos do Monólito Modular Expandido
 
-### 5.1 pidots/core/orchestrator.py (Orquestracao Multi-Bot)
-O modulo gerencia dialogos multi-ator em um unico processo assincrono:
-- **ThreadRouter:** Analisa mensagens com expressao regular (`@([a-zA-Z0-9_\-]+)`), valida se os agentes existem no SQLite WAL e define o destinatario principal e participantes citados.
-- **MultiBotOrchestrator.delegate_subtask():** Executa o padrao Supervisor-Worker. O supervisor invoca o worker em uma thread isolada (`subtask-{handoff_id}`), mantendo o historico principal despoluido. O resultado e sintetizado e registrado na conversa pai como fita de carbono (`visibility: 'internal'`).
-- **Tratamento Resiliente de Falhas em Subtarefas:** Caso o worker encontre falha na execucao ou inferencia (status `failed` no evento `run:finished`), o orchestrator intercepta o erro, atualiza a tabela `agent_handoffs` para `FAILED` com sumario tecnico, grava mensagem interna de diagnostico na thread pai (`[FALHA NA SUBTAREFA DE @dot]`) e devolve feedback estruturado (`{'success': False, 'worker_dot_id': ..., 'handoff_id': ..., 'error': ...}`), habilitando o supervisor a reavaliar sua estrategia cognitivamente.
-- **MultiBotOrchestrator.handoff_lead():** Realiza a transferencia formal de comando de uma thread para outro Dot especialista quando o dominio da tarefa exigir, atualizando o campo `dot_id` da thread e gerando registro na tabela `agent_handoffs`.
+### 5.1 pidots/core/orchestrator.py (Orquestração Multi-Bot)
+O módulo gerencia diálogos multi-ator em um único processo assíncrono:
+- **ThreadRouter:** Analisa mensagens com expressão regular (`@([a-zA-Z0-9_\-]+)`), valida se os agentes existem no SQLite WAL e define o destinatário principal e participantes citados.
+- **MultiBotOrchestrator.delegate_subtask():** Executa o padrão Supervisor-Worker. O supervisor invoca o worker em uma thread isolada (`subtask-{handoff_id}`), mantendo o histórico principal despoluído. O resultado é sintetizado e gravado na conversa pai com visibilidade interna de diagnóstico (`visibility: 'internal'`).
+- **Tratamento Resiliente de Falhas em Subtarefas:** Caso o worker encontre falha na execução ou inferência (status `failed` no evento `run:finished`), o orchestrator intercepta o erro, atualiza a tabela `agent_handoffs` para `FAILED` com sumário técnico, grava mensagem interna de diagnóstico na thread pai (`[FALHA NA SUBTAREFA DE @dot]`) e devolve feedback estruturado (`{'success': False, 'worker_dot_id': ..., 'handoff_id': ..., 'error': ...}`), habilitando o supervisor a reavaliar sua estratégia cognitivamente.
+- **MultiBotOrchestrator.handoff_lead():** Realiza a transferência formal de comando de uma thread para outro Dot especialista quando o domínio da tarefa exigir, atualizando o campo `dot_id` da thread e gerando registro na tabela `agent_handoffs`.
 
 ### 5.2 pidots/core/scheduler.py (Dot Heartbeat e Agendamento Proativo)
-Elimina a necessidade de filas externas (Celery/RabbitMQ) atraves de um loop in-process leve:
+Elimina a necessidade de filas externas (Celery/RabbitMQ) através de um loop in-process leve:
 - **EdgeScheduler:** Valida sintaxe croniter e calcula `next_run_at` em UTC no SQLite WAL.
-- **heartbeat_worker_loop():** Loop perpetuo (`asyncio.create_task`) disparado no lifespan do FastAPI, varrendo tarefas devidas a cada 15 segundos considerando `next_run_at` e a trava `backoff_until`.
-- **Diretriz de Silencio Operacional (HEARTBEAT_OK):** Injeta no prompt de acao a instrucao estrita para responder `HEARTBEAT_OK` caso as condicoes checadas estejam normais. Quando detectado, o status e marcado como `SILENT`, sem despachar notificacoes externas ou gerar lixo no historico.
-- **Trava de Exclusao Mutua In-Process:** Conjunto em memoria (`_running_tasks: set[str]`) que registra as tarefas em execucao ativa. Caso um ciclo de raciocinio com o LLM consuma mais de 15 segundos, as varreduras subsequentes ignoram tarefas ja em andamento, impedindo disparos duplicados em cascata e exaustao de memoria RAM.
-- **Circuit Breaker e Backoff Exponencial:** Ao detectar falha no ciclo cognitivo (`status == 'FAILED'`), o scheduler incrementa `consecutive_failures` e aplica retardo progressivo (`min(3600, 30 * 2^(n-1))`) persistido em `backoff_until`. Na 5ª falha consecutiva, o circuito abre (`CIRCUIT_OPEN`), desativando a tarefa (`is_active = 0`) para preservar a integridade do nó Edge. Em execucoes com sucesso (`COMPLETED` ou `SILENT`), o contador e zerado.
-- **Sanity Check Preventivo de Credenciais (AUTH_REQUIRED):** Caso `AI_API_KEY` esteja vazia ou contenha chaves placeholder, a tarefa e imediatamente pausada com status `AUTH_REQUIRED` e backoff de 10 minutos, sem emitir chamadas de rede inuteis ao gateway remoto.
+- **heartbeat_worker_loop():** Loop perpétuo (`asyncio.create_task`) disparado no lifespan do FastAPI, varrendo tarefas devidas a cada 15 segundos considerando `next_run_at` e a trava `backoff_until`.
+- **Diretriz de Silêncio Operacional (HEARTBEAT_OK):** Injeta no prompt de ação a instrução estrita para responder `HEARTBEAT_OK` caso as condições checadas estejam normais. Quando detectado, o status é marcado como `SILENT`, sem despachar notificações externas ou gerar lixo no histórico.
+- **Trava de Exclusão Mútua In-Process:** Conjunto em memória (`_running_tasks: set[str]`) que registra as tarefas em execução ativa. Caso um ciclo de raciocínio com o LLM consuma mais de 15 segundos, as varreduras subsequentes ignoram tarefas já em andamento, impedindo disparos duplicados em cascata e exaustão de memória RAM.
+- **Circuit Breaker e Backoff Exponencial:** Ao detectar falha no ciclo cognitivo (`status == 'FAILED'`), o scheduler incrementa `consecutive_failures` e aplica retardo progressivo (`min(3600, 30 * 2^(n-1))`) persistido em `backoff_until`. Na 5ª falha consecutiva, o circuito abre (`CIRCUIT_OPEN`), desativando a tarefa (`is_active = 0`) para preservar a integridade do nó Edge. Em execuções com sucesso (`COMPLETED` ou `SILENT`), o contador é zerado.
+- **Sanity Check Preventivo de Credenciais (AUTH_REQUIRED):** Caso `AI_API_KEY` esteja vazia ou contenha chaves placeholder, a tarefa é imediatamente pausada com status `AUTH_REQUIRED` e backoff de 10 minutos, sem emitir chamadas de rede inúteis ao gateway remoto.
 
-### 5.3 pidots/core/messaging_gateway.py (Gateway de Mensageria e Salas Tematicas)
+### 5.3 pidots/core/messaging_gateway.py (Gateway de Mensageria e Salas Temáticas)
 Centraliza a entrada de mensagens de plataformas terceiras:
 - **UnifiedIncomingMessage:** Modelo Pydantic normalizado com campos `platform`, `sender_id`, `sender_name`, `text`, `reply_target_id`.
-- **Adaptadores HTTP Stateless:** Processa requisicoes webhook do Telegram Bot API, Evolution API (WhatsApp) e endpoints genericos sem manter conexoes WebSocket ativas.
-- **Integracao Nativa com Evolution API:** Consome `evolution_api_url` e `evolution_api_key` validados pelo Pydantic, despachando mensagens de volta via endpoint `/message/sendText` com indicador de digitacao (`composing`) e delay humanizado sem bloquear a thread principal.
-- **ChannelOrchestrator:** Orquestra salas tematicas colaborativas (`channels`).
-- **Trava Anti-Recursao de Mensageria:** Bloqueia ciclos infinitos entre bots aplicando um teto estrito de saltos (`hop_count <= 3`), exigencia de mencao explicita entre bots para resposta e diretriz `NO_ACTION` para abster-se silenciosamente quando nao houver agregacao de valor.
-- **Resposta Operacional Clara em Falhas:** Se o ciclo de raciocinio falhar por indisponibilidade ou erro de credencial no provedor, o gateway captura o status terminal e envia resposta transparente (`[FALHA OPERACIONAL]: O agente encontrou uma falha de conexão...`) ao interlocutor no Telegram, WhatsApp ou webhook, garantindo que o canal permaneca integro.
+- **Adaptadores HTTP Stateless:** Processa requisições webhook do Telegram Bot API, Evolution API (WhatsApp) e endpoints genéricos sem manter conexões WebSocket ativas.
+- **Integração Nativa com Evolution API:** Consome `evolution_api_url` e `evolution_api_key` validados pelo Pydantic, despachando mensagens de volta via endpoint `/message/sendText` com indicador de digitação (`composing`) e delay humanizado sem bloquear a thread principal.
+- **ChannelOrchestrator:** Orquestra salas temáticas colaborativas (`channels`).
+- **Trava Anti-Recursão de Mensageria:** Bloqueia ciclos infinitos entre bots aplicando um teto estrito de saltos (`hop_count <= 3`), exigência de menção explícita entre bots para resposta e diretriz `NO_ACTION` para abster-se silenciosamente quando não houver agregação de valor.
+- **Resposta Operacional Clara em Falhas:** Se o ciclo de raciocínio falhar por indisponibilidade ou erro de credencial no provedor, o gateway captura o status terminal e envia resposta transparente (`[FALHA OPERACIONAL]: O agente encontrou uma falha de conexão...`) ao interlocutor no Telegram, WhatsApp ou webhook, garantindo que o canal permaneça íntegro.
 
-### 5.4 pidots/storage/spaces_manager.py (Exportacao Resiliente de Workspaces)
-Gerencia a persistencia de documentos, historico de revisoes e exportacao compactada:
-- **Agregacao Hibrida no Exportador ZIP:** Ao gerar o arquivo compactado em memoria (`export_workspace_zip`), o motor inspeciona tanto a arvore fisica de arquivos em disco (`workspaces/{dot_id}`) quanto a tabela relacional `spaces` do SQLite WAL.
-- **Mecanismo de Fallback:** Documentos salvos no banco que ainda nao tenham sido descarregados para o disco físico sao injetados dinamicamente no buffer ZIP via `zipfile.writestr`, prevenindo a geracao de arquivos ZIP vazios.
+### 5.4 pidots/storage/spaces_manager.py (Exportação Resiliente de Workspaces)
+Gerencia a persistência de documentos, histórico de revisões e exportação compactada:
+- **Agregação Híbrida no Exportador ZIP:** Ao gerar o arquivo compactado em memória (`export_workspace_zip`), o motor inspeciona tanto a árvore física de arquivos em disco (`workspaces/{dot_id}`) quanto a tabela relacional `spaces` do SQLite WAL.
+- **Mecanismo de Fallback:** Documentos salvos no banco que ainda não tenham sido descarregados para o disco físico são injetados dinamicamente no buffer ZIP via `zipfile.writestr`, prevenindo a geração de arquivos ZIP vazios.
 
 ### 5.5 pidots/core/notifier.py (Despachante HITL e Compatibilidade Retroativa)
-- **HITLNotifier:** Camada assincrona desacoplada de despacho de notificacoes de alto risco via Webhook HTTP e Telegram Bot.
-- **Camada de Compatibilidade Retroativa:** Fornece o alias `Notifier = HITLNotifier` e o metodo `notify_hitl_request`, garantindo que chamadas legadas e modulos de background operem sem falhas de importacao ou quebra de contrato.
+- **HITLNotifier:** Camada assíncrona desacoplada de despacho de notificações de alto risco via Webhook HTTP e Telegram Bot.
+- **Camada de Compatibilidade Retroativa:** Fornece o alias `Notifier = HITLNotifier` e o método `notify_hitl_request`, garantindo que chamadas legadas e módulos de background operem sem falhas de importação ou quebra de contrato.
 
-### 5.6 pidots/storage/memory_manager.py (Memoria Hierarquica MemGPT / Letta)
-- **Core Memory:** Blocos residentes in-context (`human`, `persona`, `active_context`) persistidos na tabela `agent_core_memory_blocks` com travas rigidas de caracteres por bloco.
-- **Archival Memory Hibrida:** Fatos de longo prazo na tabela `archival_memories` com indexacao automatica via triggers sincronos na Virtual Table SQLite FTS5 (`archival_memories_fts`). Combina BM25 com projecao vetorial esparsa 64d gerada por hashing de 3-gramas e ativacao semantica.
-- **Recall Memory:** Busca retrospectiva em mensagens com filtros semanticos in-thread.
+### 5.6 pidots/storage/memory_manager.py (Memória Hierárquica MemGPT / Letta)
+- **Core Memory:** Blocos residentes in-context (`human`, `persona`, `active_context`) persistidos na tabela `agent_core_memory_blocks` com travas rígidas de caracteres por bloco.
+- **Archival Memory Híbrida:** Fatos de longo prazo na tabela `archival_memories` com indexação automática via triggers síncronos na Virtual Table SQLite FTS5 (`archival_memories_fts`). Combina BM25 com projeção vetorial esparsa 64d gerada por hashing de 3-gramas e ativação semântica.
+- **Recall Memory:** Busca retrospectiva em mensagens com filtros semânticos in-thread.
 
 ### 5.7 pidots/core/self_healing.py (Self-Healing Harness)
-- **Extracao Cirurgica de Tracebacks:** Analisa saídas de subprocessos shell e scripts Python. Detecta blocos de traceback, identifica arquivo violado, linha exata e classe da excecao, retornando recomendacao de correcao para o motor cognitivo.
-- **Loop AG-UI:** Emite evento `self_healing:triggered` e instrui o ReAct a auto-reparar o codigo antes de responder.
+- **Extração de Tracebacks:** Analisa saídas de subprocessos shell e scripts Python. Detecta blocos de traceback, identifica arquivo violado, linha exata e classe da exceção, retornando recomendação técnica de correção para o motor cognitivo.
+- **Loop AG-UI:** Emite evento `self_healing:triggered` e instrui o ReAct a auto-reparar o código antes de responder.
 
-### 5.8 pidots/core/planner.py (Planejamento em Dois Estagios)
-- **Gestao de Metas e Marcos:** Persiste objetivos em `goals` e etapas em `milestones` no SQLite WAL.
-- **Rastreamento de Progresso:** Atualiza o estado de marcos (`PENDING`, `IN_PROGRESS`, `COMPLETED`, `FAILED`) com evidencias tecnicas objetivas, calculando o percentual de conclusao e gerando o bloco XML `<execution_plan>`.
+### 5.8 pidots/core/planner.py (Planejamento em Dois Estágios)
+- **Gestão de Metas e Marcos:** Persiste objetivos em `goals` e etapas em `milestones` no SQLite WAL.
+- **Rastreamento de Progresso:** Atualiza o estado de marcos (`PENDING`, `IN_PROGRESS`, `COMPLETED`, `FAILED`) com evidências técnicas objetivas, calculando o percentual de conclusão e gerando o bloco XML `<execution_plan>`.
 
 ### 5.9 pidots/core/council.py (Conselho Consultivo Multi-Bot)
-- **Deliberacao Dialetica Tripartite:** Orquestra debate formal entre Propositor (`@coder`), Auditor Critico (`@auditor`) e Supervisor Geral (`@supervisor`).
-- **Isolamento em Fitas de Carbono:** Mensagens intermediarias gravadas com `visibility: 'internal'`; veredito final publicado com cabecalho `[CONSELHO CONSULTIVO - RESOLUCAO FINAL]`. Limite estrito de 3 rodadas (`MAX_COUNCIL_ROUNDS = 3`) e footprint de RAM &lt; 53MB.
+- **Deliberação Dialética Tripartite:** Orquestra debate formal entre Propositor (`@coder`), Auditor Crítico (`@auditor`) e Supervisor Geral (`@supervisor`).
+- **Isolamento em Mensagens Internas:** Mensagens intermediárias gravadas com `visibility: 'internal'`; veredito final publicado com cabeçalho `[CONSELHO CONSULTIVO - RESOLUÇÃO FINAL]`. Limite estrito de 3 rodadas (`MAX_COUNCIL_ROUNDS = 3`) e footprint de RAM < 53MB.
 
 ### 5.10 pidots/storage/shared_space.py (Shared Knowledge Space)
-- **Quadro Colaborativo In-Thread:** Gerencia notas tecnicas comuns na tabela `thread_shared_notes` indexada por `(thread_id, topic_key)`.
-- **Injecao Multilateral:** Formata as notas no bloco XML `<shared_knowledge_space>`, sincronizando o entendimento entre todos os agentes participantes.
+- **Quadro Colaborativo In-Thread:** Gerencia notas técnicas comuns na tabela `thread_shared_notes` indexada por `(thread_id, topic_key)`.
+- **Injeção Multilateral:** Formata as notas no bloco XML `<shared_knowledge_space>`, sincronizando o entendimento entre todos os agentes participantes.
 
 ### 5.11 pidots/core/dot_pack.py (Templates e Dot Packs v1.1)
-- **Especificacao DotPack v1.1:** Empacota definicoes de Dot, arquivos de workspace, blocos de Core Memory e memorias arquivisticas em manifesto JSON portavel com hash de integridade `sha256_checksum`.
-- **Validacao Criptografica e Auditoria:** Valida o checksum SHA-256 antes da restauracao e aciona inspecao defensiva de seguranca contra Prompt Injection nos blocos de `system_prompt` e `core_memory` antes de autorizar a ativacao do agente.
+- **Especificação DotPack v1.1:** Empacota definições de Dot, arquivos de workspace, blocos de Core Memory e memórias arquivísticas em manifesto JSON portátil com hash de integridade `sha256_checksum`.
+- **Validação Criptográfica e Auditoria:** Valida o checksum SHA-256 antes da restauração e aciona inspeção defensiva de segurança contra Prompt Injection nos blocos de `system_prompt` e `core_memory` antes de autorizar a ativação do agente.
 
 ### 5.12 pidots/core/edge_triggers.py (Triggers de Hardware Edge, GPIO & MQTT)
-- **Leitura Direta de Sysfs:** Monitora a temperatura real do SoC Broadcom BCM2711 (`/sys/class/thermal/thermal_zone0/temp`), espaco livre no MicroSD e memoria RAM livre.
-- **Barramento Fisico GPIO:** Leitura e monitoramento de pinos digitais do Raspberry Pi 4B (via sysfs ou libgpiod) com disparos orientados a eventos (ex: botao de parada de emergencia no pino 17 ou sensor PIR no pino 27).
-- **Listener MQTT Assincrono:** Barramento de mensagens de sensores locais para disparo de rotinas no `EdgeScheduler` sem bloquear o uvloop.
-- **Avaliacao e Alertas Proativos:** Dispara throttle automatico e despacha notificacoes HITL caso a temperatura ultrapasse o teto ou limiares de hardware sejam violados.
+- **Leitura Direta de Sysfs:** Monitora a temperatura real do SoC Broadcom BCM2711 (`/sys/class/thermal/thermal_zone0/temp`), espaço livre no MicroSD e memória RAM livre.
+- **Barramento Físico GPIO:** Leitura e monitoramento de pinos digitais do Raspberry Pi 4B (via sysfs ou libgpiod) com disparos orientados a eventos (ex: botão de parada de emergência no pino 17 ou sensor PIR no pino 27).
+- **Listener MQTT Assíncrono:** Barramento de mensagens de sensores locais para disparo de rotinas no `EdgeScheduler` sem bloquear o uvloop.
+- **Avaliação e Alertas Proativos:** Dispara throttle automático e despacha notificações HITL caso a temperatura ultrapasse o teto ou limiares de hardware sejam violados.
 
 ### 5.14 pidots/api/ (Topologia de Rotas Modulares e APIRouters)
-- **Fatiamento Limpo do Entrypoint:** O arquivo central `main.py` atua exclusivamente no bootstrap do FastAPI, Lifespan e middlewares. As rotas estao distribuidas em sub-roteadores especializados sob `pidots/api/`:
-  - `routes_dots.py`: catalogo de Dots e importacao/exportacao de manifestos DotPacks v1.1.
-  - `routes_hitl.py`: governanca humana em fila, resolucao assinada via HMAC-SHA256 e retorno via webhook callback.
-  - `routes_threads.py`: criacao de threads duraveis, historico multi-ator e streaming SSE no protocolo AG-UI v1.0.
-  - `routes_tasks.py`: listagem e registro de rotinas cron proativas (Dot Heartbeat), gestao de Spaces e exportacao de workspaces em ZIP.
-  - `routes_channels.py`: criacao e orquestracao de salas tematicas colaborativas multi-bot.
-  - `routes_webhooks.py`: recepcao de eventos de plataformas externas (Telegram, WhatsApp / Evolution API com callbacks interativos assinados).
-  - `routes_edge.py`: telemetria de integridade (`/health`), telemetria fisica de hardware, configuracoes a quente e manutencao.
-  - `routes_pwa.py`: superficies HTML via `EdgeAssetManager` em RAM, manifesto PWA W3C, Service Worker v7 e redirecionamentos legados 308 com cabecalho `Sunset` (RFC 8594).
+- **Fatiamento Limpo do Entrypoint:** O arquivo central `main.py` executa o bootstrap do FastAPI, Lifespan e middlewares. As rotas estão distribuídas em sub-roteadores especializados sob `pidots/api/`:
+  - `routes_dots.py`: catálogo de Dots e importação/exportação de manifestos DotPacks v1.1.
+  - `routes_hitl.py`: governança humana em fila, resolução assinada via HMAC-SHA256 e retorno via webhook callback.
+  - `routes_threads.py`: criação de threads duráveis, histórico multi-ator e streaming SSE no protocolo AG-UI v1.0.
+  - `routes_tasks.py`: listagem e registro de rotinas cron proativas (Dot Heartbeat), gestão de Spaces e exportação de workspaces em ZIP.
+  - `routes_channels.py`: criação e orquestração de salas temáticas colaborativas multi-bot.
+  - `routes_webhooks.py`: recepção de eventos de plataformas externas (Telegram, WhatsApp / Evolution API com callbacks interativos assinados).
+  - `routes_edge.py`: telemetria de integridade (`/health`), telemetria física de hardware, configurações a quente e manutenção.
+  - `routes_pwa.py`: superfícies HTML via `EdgeAssetManager` em RAM, manifesto PWA W3C, Service Worker v7 e redirecionamentos legados 308 com cabeçalho `Sunset` (RFC 8594).
 
-### 5.15 pidots/tools/terminal.py (Isolamento Estrito Bubblewrap e Trava de Seguranca)
-- **Sandbox em Namespaces:** Execucao de comandos em ambiente estritamente isolado via Bubblewrap (`bwrap`) com montagem somente-leitura de `/usr`, `/bin` e `/lib`, tmpfs efemero e isolamento de arvore de processos (`--unshare-pid`).
-- **Trava STRICT_SANDBOX:** Se ativada no `.env` (`STRICT_SANDBOX=true`), a ferramenta recusa compulsoriamente a execucao caso o binario `bwrap` inexista no host, retornando codigo de saida 126 e registrando auditoria no SQLite WAL, eliminando riscos de escape em producao. Em modo relaxado (`false`), recorre ao subprocesso restrito com timeout.
-- **Truncamento Defensivo:** Teto maximo de 10KB em stdout e stderr com aviso explicito de truncamento para poupar a memoria RAM e o canal SSE.
+### 5.15 pidots/tools/terminal.py (Isolamento Estrito Bubblewrap e Trava de Segurança)
+- **Sandbox em Namespaces:** Execução de comandos em ambiente estritamente isolado via Bubblewrap (`bwrap`) com montagem somente-leitura de `/usr`, `/bin` e `/lib`, tmpfs efêmero e isolamento de árvore de processos (`--unshare-pid`).
+- **Trava STRICT_SANDBOX:** Se ativada no `.env` (`STRICT_SANDBOX=true`), a ferramenta recusa compulsoriamente a execução caso o binário `bwrap` inexista no host, retornando código de saída 126 e registrando auditoria no SQLite WAL, eliminando riscos de escape em produção. Em modo relaxado (`false`), recorre ao subprocesso restrito com timeout.
+- **Truncamento Defensivo:** Teto máximo de 10KB em stdout e stderr com aviso explícito de truncamento para poupar a memória RAM e o canal SSE.
 
 ### 5.16 pidots/tools/mcp_client.py (Cliente MCP Lite e Dynamic Tool Pruning)
-- **Cliente MCP Python Puro:** Conexao a servidores externos MCP (Model Context Protocol) via STDIO ou SSE/HTTP sem SDKs de terceiros (< 5MB RAM).
-- **Integracao ao ToolRegistry:** Mapeamento automatico das ferramentas MCP para a especificacao OpenAI function calling (`mcp_{server}_{tool}`).
-- **Zero Poluicao de Contexto:** Integracao estrita ao Dynamic Tool Pruning (`allowed_tools_json`), impedindo que agentes sem autorizacao vejam ferramentas MCP externas.
+- **Cliente MCP Python Puro:** Conexão a servidores externos MCP (Model Context Protocol) via STDIO ou SSE/HTTP sem SDKs de terceiros (< 5MB RAM).
+- **Integração ao ToolRegistry:** Mapeamento automático das ferramentas MCP para a especificação OpenAI function calling (`mcp_{server}_{tool}`).
+- **Zero Poluição de Contexto:** Integração estrita ao Dynamic Tool Pruning (`allowed_tools_json`), impedindo que agentes sem autorização visualizem ferramentas MCP externas.
 
-### 5.17 pidots/core/hitl_crypto.py (Assinatura Criptografica HMAC-SHA256)
-- **Governanca Remota Assinada:** Geracao e validacao de tokens HMAC-SHA256 em tempo constante (`compare_digest`) para botões de callback interativos no Telegram (`inline_keyboard`) e WhatsApp, garantindo nao-repudio e eliminando riscos de forjamento de aprovacoes.
+### 5.17 pidots/core/hitl_crypto.py (Assinatura Criptográfica HMAC-SHA256)
+- **Governança Remota Assinada:** Geração e validação de tokens HMAC-SHA256 em tempo constante (`compare_digest`) para botões de callback interativos no Telegram (`inline_keyboard`) e WhatsApp, garantindo não-repúdio e eliminando riscos de forjamento de aprovações.
 
 
 ---
@@ -282,18 +282,18 @@ O esquema do piDots foi enriquecido com 9 novas tabelas relacionais em modo Writ
 
 | Tabela | Finalidade Operacional | Chaves e Campos Principais |
 | :--- | :--- | :--- |
-| `thread_participants` | Rastreia associacao N:N de Dots presentes em cada thread | `thread_id`, `dot_id`, `joined_at`, `is_speaker`, `turn_order` |
-| `agent_handoffs` | Auditoria de delegacoes de subtarefas e transferencias de comando | `id`, `thread_id`, `source_dot_id`, `target_dot_id`, `task_goal`, `handoff_type`, `status`, `result_summary` |
-| `goals` | Metas persistentes do agente para conter dispersao (goal drift) | `id`, `dot_id`, `thread_id`, `title`, `description`, `status`, `priority` |
-| `milestones` | Marcos sequenciais verificaveis associados a cada meta | `id`, `goal_id`, `order_index`, `title`, `acceptance_criteria`, `status`, `evidence_summary` |
-| `episodic_memories` | Memoria episodica de medio prazo com sumarizacao estruturada | `id`, `dot_id`, `thread_id`, `summary`, `key_decisions`, `modified_artifacts` |
+| `thread_participants` | Rastreia associação N:N de Dots presentes em cada thread | `thread_id`, `dot_id`, `joined_at`, `is_speaker`, `turn_order` |
+| `agent_handoffs` | Auditoria de delegações de subtarefas e transferências de comando | `id`, `thread_id`, `source_dot_id`, `target_dot_id`, `task_goal`, `handoff_type`, `status`, `result_summary` |
+| `goals` | Metas persistentes do agente para conter dispersão (*goal drift*) | `id`, `dot_id`, `thread_id`, `title`, `description`, `status`, `priority` |
+| `milestones` | Marcos sequenciais verificáveis associados a cada meta | `id`, `goal_id`, `order_index`, `title`, `acceptance_criteria`, `status`, `evidence_summary` |
+| `episodic_memories` | Memória episódica de médio prazo com sumarização estruturada | `id`, `dot_id`, `thread_id`, `summary`, `key_decisions`, `modified_artifacts` |
 | `scheduled_tasks` | Registro de tarefas proativas cron executadas pelo Heartbeat | `id`, `dot_id`, `task_name`, `cron_expr`, `action_prompt`, `next_run_at`, `last_status`, `consecutive_failures`, `backoff_until`, `is_active` |
-| `channels` | Salas tematicas de equipe para colaboracao multi-bot e humana | `id`, `name`, `description`, `created_at` |
-| `channel_messages` | Mensagens trocadas nas salas tematicas com rastreio de saltos | `id`, `channel_id`, `author_type`, `author_id`, `content`, `hop_count` |
-| `channel_members` | Membros inscritos em cada sala tematica (Dots ou Usuarios) | `channel_id`, `member_type`, `member_id`, `joined_at` |
+| `channels` | Salas temáticas de equipe para colaboração multi-bot e humana | `id`, `name`, `description`, `created_at` |
+| `channel_messages` | Mensagens trocadas nas salas temáticas com rastreio de saltos | `id`, `channel_id`, `author_type`, `author_id`, `content`, `hop_count` |
+| `channel_members` | Membros inscritos em cada sala temática (Dots ou Usuários) | `channel_id`, `member_type`, `member_id`, `joined_at` |
 
-### Indices de Desempenho para MicroSD
-Para manter a latencia de consulta inferior a 5ms em hardware ARM64:
+### Índices de Desempenho para MicroSD
+Para manter a latência de consulta inferior a 5ms em hardware ARM64:
 ```sql
 CREATE INDEX IF NOT EXISTS idx_participants_thread ON thread_participants(thread_id);
 CREATE INDEX IF NOT EXISTS idx_handoffs_thread ON agent_handoffs(thread_id, status);
@@ -305,116 +305,116 @@ CREATE INDEX IF NOT EXISTS idx_channel_members ON channel_members(channel_id);
 
 ---
 
-## 7. Arquetipos Cognitivos e Dynamic Tool Pruning
+## 7. Arquétipos Cognitivos e Dynamic Tool Pruning
 
-### 7.1 Filosofia dos Arquetipos
-Os agentes cadastrados em `dots` possuem arquetipos cognitivos que guiam suas personas e comportamentos:
-- **`supervisor`:** Visao holistica, decomposicao de objetivos em marcos, gestao de estado e delegacao tecnica. Carimbo: `[SPV]`.
-- **`coder`:** Foco analitico-convergente, inspecao minuciosa de codigo linha a linha, deducao de causa raiz, execucao em terminal isolado e testes estritos. Carimbo: `[CDR]`.
-- **`arquiteto`:** Foco em sintese e modelagem, arquitetura de sistemas, estruturacao de documentos, design de interfaces e documentacao tecnica. Carimbo: `[ARC]`.
-- **`auditor`:** Validacao de integridade, telemetria termica e de memoria, verificacao de seguranca e conformidade HITL. Carimbo: `[AUD]`.
+### 7.1 Filosofia dos Arquétipos
+Os agentes cadastrados em `dots` possuem arquétipos cognitivos que guiam suas personas e comportamentos:
+- **`supervisor`:** Visão holística, decomposição de objetivos em marcos, gestão de estado e delegação técnica. Carimbo: `[SPV]`.
+- **`coder`:** Foco analítico-convergente, inspeção minuciosa de código linha a linha, dedução de causa raiz, execução em terminal isolado e testes estritos. Carimbo: `[CDR]`.
+- **`arquiteto`:** Foco em síntese e modelagem, arquitetura de sistemas, estruturação de documentos, design de interfaces e documentação técnica. Carimbo: `[ARC]`.
+- **`auditor`:** Validação de integridade, telemetria térmica e de memória, verificação de segurança e conformidade HITL. Carimbo: `[AUD]`.
 
-### 7.2 Dynamic Tool Pruning (Poda Dinamica de Ferramentas)
-No processamento de agentes de borda, transmitir a definicao JSON completa de dezenas de ferramentas a cada ciclo satura a janela de contexto dos modelos e consome banda desnecessaria.
-- O campo `allowed_tools_json` na tabela `dots` define o subconjunto estrito de ferramentas que o Dot tem permissao para usar (ex: `["delegate_task", "handoff_to_dot"]` para o supervisor; `["execute_shell_command", "workspace_read_file"]` para o coder).
+### 7.2 Dynamic Tool Pruning (Poda Dinâmica de Ferramentas)
+No processamento de agentes de borda, transmitir a definição JSON completa de dezenas de ferramentas a cada ciclo satura a janela de contexto dos modelos e consome banda desnecessária.
+- O campo `allowed_tools_json` na tabela `dots` define o subconjunto estrito de ferramentas que o Dot tem permissão para usar (ex: `["delegate_task", "handoff_to_dot"]` para o supervisor; `["execute_shell_command", "workspace_read_file"]` para o coder).
 - Durante o `DotAgent.run_thread()`, o motor consulta o `ToolRegistry` passando apenas as ferramentas permitidas.
-- **Resultado:** Reducao de mais de 75% na sobrecarga de tokens em cada requisicao e eliminacao completa de alucinacoes de ferramentas nao autorizadas.
+- **Resultado:** Redução de mais de 75% na sobrecarga de tokens em cada requisição e eliminação completa de alucinações de ferramentas não autorizadas.
 
 ---
 
 ## 8. Isolamento de Processos via Bubblewrap (`bwrap`)
 
-Para garantir a seguranca do host sem o consumo excessivo de memoria de maquinas virtuais ou conteineres aninhados (Docker-in-Docker), o piDots utiliza o utilitario de sandbox de baixo nivel do kernel Linux **Bubblewrap**:
+Para assegurar o isolamento do host sem o consumo de memória de máquinas virtuais ou contêineres aninhados (Docker-in-Docker), o piDots utiliza o utilitário de sandbox de baixo nível do kernel Linux **Bubblewrap**:
 
-1. **Isolamento de Namespaces:** O comando e executado em namespaces isolados de montagem de arquivos (`CLONE_NEWNS`), processos (`CLONE_NEWPID`), comunicacao entre processos (`CLONE_NEWIPC`) e hostname (`CLONE_NEWUTS`).
-2. **Sistema de Arquivos Read-Only:** Os diretorios criticos do sistema (`/bin`, `/usr`, `/lib`, `/etc`) sao montados no sandbox com permissao estrita de somente leitura (`--ro-bind`).
-3. **Workspace Estrito:** O unico diretorio com permissao de escrita e o workspace individual atribuido ao Dot (`--bind {workspaces_root}/{dot_id} /workspace`).
-4. **Protecao de Morte de Processo:** A flag `--die-with-parent` garante que processos orfaos ou bifurcacoes maliciosas sejam terminados imediatamente caso o processo principal encerre.
+1. **Isolamento de Namespaces:** O comando é executado em namespaces isolados de montagem de arquivos (`CLONE_NEWNS`), processos (`CLONE_NEWPID`), comunicação entre processos (`CLONE_NEWIPC`) e hostname (`CLONE_NEWUTS`).
+2. **Sistema de Arquivos Read-Only:** Os diretórios críticos do sistema (`/bin`, `/usr`, `/lib`, `/etc`) são montados no sandbox com permissão estrita de somente leitura (`--ro-bind`).
+3. **Workspace Estrito:** O único diretório com permissão de escrita é o workspace individual atribuído ao Dot (`--bind {workspaces_root}/{dot_id} /workspace`).
+4. **Proteção de Término de Processo:** O parâmetro `--die-with-parent` garante que processos órfãos ou bifurcações maliciosas sejam terminados imediatamente caso o processo principal encerre.
 
 ---
 
 ## 9. Motor Vetorial CRC32 KNN (Zero-RAM Overhead)
 
-Bancos vetoriais convencionais (ChromaDB, Weaviate, Milvus, Qdrant) dependem de runtime em C++/Rust, PyTorch ou JVM, consumindo entre 300 MB e 1,5 GB de RAM apenas em tempo de inicializacao.
+Bancos vetoriais convencionais (ChromaDB, Weaviate, Milvus, Qdrant) dependem de runtime em C++/Rust, PyTorch ou JVM, consumindo entre 300 MB e 1,5 GB de RAM apenas em tempo de inicialização.
 
-O piDots introduz uma solucao vetorial sob medida para borda:
-- **Hashing CRC32 de N-Gramas:** O texto de cada documento e decomposto em n-gramas e projetado em um espaco vetorial esparso de dimensionalidade deterministica usando funcoes de hashing de 32 bits (CPU nativa ARM64 em microssegundos).
-- **Similaridade de Cosseno com KNN Puro:** A comparacao semantica e calculada em tempo real diretamente sobre as representacoes armazenadas no banco SQLite.
-- **Overhead Operacional:** Menor que **5 MB de RAM**, eliminando completamente bibliotecas pesadas de tensores.
+O piDots introduz uma solução vetorial sob medida para borda:
+- **Hashing CRC32 de N-Gramas:** O texto de cada documento é decomposto em n-gramas e projetado em um espaço vetorial esparso de dimensionalidade determinística usando funções de hashing de 32 bits (CPU nativa ARM64 em microssegundos).
+- **Similaridade de Cosseno com KNN Puro:** A comparação semântica é calculada em tempo real diretamente sobre as representações armazenadas no banco SQLite.
+- **Overhead Operacional:** Menor que **5 MB de RAM**, eliminando bibliotecas pesadas de tensores.
 
 ---
 
-## 10. Extracao Semantica Web com Trafilatura
+## 10. Extração Semântica Web com Trafilatura
 
-Frameworks tradicionais de automacao utilizam Chromium headless ou Playwright para scraping e automacao web, demandando mais de 500 MB de RAM por instancia e consumo agressivo de CPU.
+Frameworks tradicionais de automação utilizam Chromium headless ou Playwright para raspagem e automação web, demandando mais de 500 MB de RAM por instância e consumo agressivo de CPU.
 
 No piDots:
-- As requisicoes sao executadas via cliente HTTP assincrono enxuto (`httpx`).
-- O parsing do DOM e a remocao de scripts, trackers, propagandas e estilos sao delegados ao **Trafilatura**, um extrator semantico baseado em heuristicas de NLP textual em Python puro.
-- **Resultado:** Reducao de consumo de memoria de ~500 MB para ~20 MB de RAM por extracao, mantendo alta fidelidade semantica para compreensao do LLM.
+- As requisições são executadas via cliente HTTP assíncrono enxuto (`httpx`).
+- A análise do DOM e a remoção de scripts, rastreadores, propagandas e estilos são delegadas ao **Trafilatura**, um extrator semântico baseado em heurísticas de processamento de texto em Python puro.
+- **Resultado:** Redução de consumo de memória de ~500 MB para ~20 MB de RAM por extração, mantendo alta fidelidade semântica para a compreensão do modelo.
 
 ---
 
-## 11. Concorrencia Assincrona e Gestao de Recursos
+## 11. Concorrência Assíncrona e Gestão de Recursos
 
-- **Processo Unico:** Todo o servidor opera em uma unica thread de loop de eventos (`asyncio` com politicas de `uvloop` quando disponivel).
-- **Sem Bloqueio de Thread:** Operacoes de I/O de disco (SQLite) e subprocessos (Bash Sandbox) sao executadas usando `asyncio.to_thread` ou `asyncio.create_subprocess_exec`, garantindo que o loop de eventos principal permaneca disponivel para servir requisicoes HTTP e streaming SSE.
-- **Coleta de Lixo e Monitoramento de Memoria:** Telemetria nativa via `psutil` reporta o uso de RSS (Resident Set Size) e porcentagem de CPU a cada ciclo de vida, permitindo auditoria em tempo real.
+- **Processo Único:** Todo o servidor opera em uma única thread de loop de eventos (`asyncio` com políticas de `uvloop` quando disponível).
+- **Sem Bloqueio de Thread:** Operações de I/O de disco (SQLite) e subprocessos (Bash Sandbox) rodam com `asyncio.to_thread` ou `asyncio.create_subprocess_exec` para manter o loop de eventos principal disponível para servir requisições HTTP e streaming SSE.
+- **Monitoramento de Memória e Recursos:** Telemetria nativa via `psutil` reporta o uso de RSS (Resident Set Size) e porcentagem de CPU a cada ciclo de vida, permitindo auditoria em tempo real.
 
 ---
 
-## 12. Interface Tecnica Minimalista, Roteamento Canonico e Ergonomia Mobile-First
+## 12. Interface Técnica Minimalista, Roteamento Canônico e Ergonomia Mobile-First
 
-O piDots implementa uma arquitetura de multiplas superficies desacopladas servidas pelo mesmo processo FastAPI, unificadas por uma interface tecnica escura de alta densidade:
+O piDots implementa uma arquitetura de múltiplas superfícies desacopladas servidas pelo mesmo processo FastAPI, unificadas por uma interface técnica escura de alta densidade:
 
-### 12.1 Topologia Canonica de Superficies e Desacoplamento de Rotas
-A informacao foi organizada para eliminar colisoes entre navegacao de produto, operacao tatica de agentes e documentacao tecnica:
+### 12.1 Topologia Canônica de Superfícies e Desacoplamento de Rotas
+A informação foi organizada para eliminar colisões entre navegação de produto, operação tática de agentes e documentação técnica:
 
-| Superficie Canonica | Rota HTTP | Finalidade Arquitetural |
+| Superfície Canônica | Rota HTTP | Finalidade Arquitetural |
 | :--- | :--- | :--- |
-| **Landing Page** | `GET /` | Apresentacao do produto, onboarding, calculadora interativa de ROI e demonstracao ReAct |
-| **Console Operacional** | `GET /app` | Estacao de trabalho SPA/PWA com os agentes (teletipo, chats, Live Canvas, telemetria) |
-| **Alias de Workspace** | `GET /workspace` | Apelido canonico para `/app`, facilitando a digitacao em terminais |
-| **Guia Didatico** | `GET /docs` | Documentacao operacional rica, esteira passo a passo, Omnisearch Ctrl+K e Mini API Tester |
-| **Relatorio Tecnico** | `GET /relatorio` | Relatorio historico de engenharia e homologacao tecnica |
+| **Landing Page** | `GET /` | Apresentação do produto, onboarding, calculadora interativa de ROI e demonstração ReAct |
+| **Console Operacional** | `GET /app` | Estação de trabalho SPA/PWA com os agentes (teletipo, chats, Live Canvas, telemetria) |
+| **Alias de Workspace** | `GET /workspace` | Apelido canônico para `/app`, facilitando a digitação em terminais |
+| **Guia Didático** | `GET /docs` | Documentação operacional rica, esteira passo a passo, Omnisearch Ctrl+K e Mini API Tester |
+| **Relatório Técnico** | `GET /relatorio` | Relatório histórico de engenharia e homologação técnica |
 | **OpenAPI Swagger UI** | `GET /api/docs` | Interface OpenAPI interativa nativa do FastAPI desacoplada de `/docs` |
 | **Esquema OpenAPI JSON** | `GET /api/openapi.json` | Contrato formal OpenAPI 3.0 estruturado em JSON |
-| **Dicionarios de Locale** | `GET /data/locales/{lang}.json` | Dicionarios atomicos de localizacao bilingue (PT/EN) com cache de borda |
-| **Micro-Motor i18n JS** | `GET /static/pidots-i18n.js` | Micro-motor Vanilla JS de traducao dinamica client-side |
-| **Changelog e Patch Notes** | `GET /api/changelog` | Historico SemVer e notas de atualizacao categorizadas (Patch Notes v1.5.3) |
-| **Service Worker PWA** | `GET /sw.js` | Service Worker com cache defensivo v7 para operacao offline |
+| **Dicionários de Locale** | `GET /data/locales/{lang}.json` | Dicionários atômicos de localização bilíngue (PT/EN) com cache de borda |
+| **Micro-Motor i18n JS** | `GET /static/pidots-i18n.js` | Micro-motor Vanilla JS de tradução dinâmica client-side |
+| **Changelog e Notas de Atualização** | `GET /api/changelog` | Histórico SemVer e notas de atualização categorizadas (Notas da Versão v1.5.3) |
+| **Service Worker PWA** | `GET /sw.js` | Service Worker com cache defensivo v7 para operação offline |
 
-### 12.2 Surface Switcher e Navegacao Cruzada via Chords Globais
+### 12.2 Surface Switcher e Navegação Cruzada via Chords Globais
 As interfaces integram o **Surface Switcher**, um cabeçalho técnico flutuante com telemetria do nó em tempo real e atalhos sequenciais (*chords*) sem teclas modificadoras:
 - **Atalhos Chords:**
-  - `g` seguido de `h` (*Go Home*): Transicao imediata para a Landing Page (`/`).
-  - `g` seguido de `w` (*Go Workspace*): Transicao para o Console Operacional (`/app`).
-  - `g` seguido de `d` (*Go Docs*): Transicao para a Documentacao Tecnica (`/docs`).
-- **Tratamento de Eventos e Supressao:**
-  O listener de teclado valida `event.target.matches('input, textarea, select, [contenteditable]')`. Se o operador estiver digitando no prompt de comando ou na busca, os chords sao desativados para evitar navegacao acidental. Um temporizador de 1.000ms reseta o estado caso a segunda tecla nao seja pressionada.
+  - `g` seguido de `h` (*Go Home*): Transição imediata para a Landing Page (`/`).
+  - `g` seguido de `w` (*Go Workspace*): Transição para o Console Operacional (`/app`).
+  - `g` seguido de `d` (*Go Docs*): Transição para a Documentação Técnica (`/docs`).
+- **Tratamento de Eventos e Supressão:**
+  O listener de teclado valida `event.target.matches('input, textarea, select, [contenteditable]')`. Se o operador estiver digitando no prompt de comando ou na busca, os chords são desativados para evitar navegação acidental. Um temporizador de 1.000ms reseta o estado caso a segunda tecla não seja pressionada.
 
 ### 12.3 Atalhos de Alta Produtividade do Console SPA
-Para operar 24/7 sem dependencia de mouse:
-- `Tecla /`: Disparar Autocomplete Popover com catalogo de 30 Slash Commands e busca fuzzy no teletipo.
-- `Botão [/]`: Disparar popover de comandos no mobile diretamente por toque sem ativar o teclado virtual.
-- `Bottom-Nav`: Comutar visoes taticas (`dots`, `chat`, `canvas`, `guia`) com Thumb Zone acessivel.
-- `Alt+B`: Alternar gaveta sob demanda da Sidebar no Triptico Adaptativo (1024px-1440px) com backdrop.
+Para operar 24/7 sem dependência de mouse:
+- `Tecla /`: Disparar autocomplete flutuante com catálogo de 30 Slash Commands e busca aproximada no teletipo.
+- `Botão [/]`: Disparar catálogo de comandos no mobile diretamente por toque sem ativar o teclado virtual.
+- `Bottom-Nav`: Alternar visualizações táticas (`dots`, `chat`, `canvas`, `guia`) com alcance ergonômico no polegar.
+- `Alt+B`: Alternar gaveta sob demanda da barra lateral no Tríptico Adaptativo (1024px-1440px) com camada de fundo.
 - `Alt+I`: Inspecionar artefato ativo no Live Canvas.
-- `Ctrl+S` / `Cmd+S`: Gravar revisao atomica do documento em Spaces no SQLite WAL (com `preventDefault` para interceptar a gravacao padrao do browser).
-- `Alt+H`: Abrir e focar o dossie de governanca HITL pendente.
-- `F11`: Alternar entre visualizacao dividida (split) e maximizada do canvas (com supressao do fullscreen nativo).
+- `Ctrl+S` / `Cmd+S`: Gravar revisão atômica do documento em Spaces no SQLite WAL (com `preventDefault` para interceptar a gravação padrão do navegador).
+- `Alt+H`: Abrir e focar o painel de governança HITL pendente.
+- `F11`: Alternar entre visualização dividida (split) e maximizada do canvas (com supressão da tela cheia nativa).
 - `Ctrl+L`: Limpar mensagens visuais da bobina do teletipo/chat local (/clear).
-- `F1`: Abrir gaveta retratil com o manual operacional tecnico.
+- `F1`: Abrir gaveta retrátil com o manual operacional técnico.
 
-### 12.4 Engenharia e Resiliencia Mobile-First para Hardware de Borda (v1.5.2)
-As interfaces foram calibradas para dispositivos moveis (iOS Safari e Android Chrome) operados remotamente via tuneis Cloudflared:
-1. **Controlador de Visualizacao Mobile (setMobileView):** Em telas <= 768px, as 3 colunas do triptico sao desacopladas em visualizacoes exclusivas (`dots`, `chat`, `canvas`). A funcao `setMobileView()` comuta a classe `.mobile-view-active` entre `#leftSidebar`, `.center-ticker-column` e `#rightCanvas`. Ao comutar para DOTS ou CANVAS, o modo Foco Zen e desengatado automaticamente (`triptych.classList.remove('mode-focus-zen')`), eliminando colisoes de layout e telas pretas.
-2. **Barra de Navegacao Inferior (.mobile-bottom-nav):** Fixada no rodape mobile respeitando `env(safe-area-inset-bottom)`, composta por 4 botoes tateis de 44x44pt: `[O] DOTS`, `[>] CHAT`, `[*] CANVAS` e `[?] GUIA` (que dispara a gaveta retratil tecnica `toggleDrawer()`).
-3. **Botao Mecanico de Barra [/] (#slashTriggerBtn):** Posicionado a esquerda da caixa de instrucoes, permite abrir o popover de Slash Commands por toque direto, sem a necessidade de acionar o teclado virtual do smartphone.
-4. **Engine window.visualViewport para Teclado Virtual:** O console monitora os eventos `resize` e `scroll` de `window.visualViewport`. Quando a altura visivel cai abaixo de 85% de `window.innerHeight`, a classe `keyboard-open` e injetada no body, ocultando compulsoriamente a barra inferior (`display: none !important`), fixando `document.body.style.height = ${vv.height}px` e rolando o teletipo (`#tickerScroll`) para o final apos 60ms, eliminando qualquer colisao de layout no iOS Safari e Android Chrome.
-5. **Protecao Anti-Zoom no iOS Safari:** Regra CSS global `font-size: 16px !important` e `touch-action: manipulation` em todos os inputs e textareas, neutralizando o zoom automatico do Apple WebKit.
-6. **Ancoragem Defensiva do Spotlight Tour:** Elementos de tour (`.pixel-tour-popover`) sao ancorados acima da barra inferior respeitando as safe areas, com inibicao de foco compulsorio em campos de texto no mobile.
-7. **Precedencia Soberana de mobile.css:** A folha `mobile.css` e carregada compulsoriamente por ultimo em todas as 4 paginas HTML, garantindo soberania das regras de tela pequena sobre tokens e componentes.
+### 12.4 Engenharia e Resiliência Mobile-First para Hardware de Borda (v1.5.2)
+As interfaces foram calibradas para dispositivos móveis (iOS Safari e Android Chrome) operados remotamente via túneis Cloudflared:
+1. **Controlador de Visualização Mobile (setMobileView):** Em telas <= 768px, as 3 colunas do tríptico são desacopladas em visualizações exclusivas (`dots`, `chat`, `canvas`). A função `setMobileView()` comuta a classe `.mobile-view-active` entre `#leftSidebar`, `.center-ticker-column` e `#rightCanvas`. Ao comutar para DOTS ou CANVAS, o modo Foco Zen é desativado automaticamente (`triptych.classList.remove('mode-focus-zen')`), o que elimina colisões de layout e telas escuras.
+2. **Barra de Navegação Inferior (.mobile-bottom-nav):** Fixada no rodapé mobile respeitando `env(safe-area-inset-bottom)`, composta por 4 botões táteis de 44x44pt: `[O] DOTS`, `[>] CHAT`, `[*] CANVAS` e `[?] GUIA` (que aciona a gaveta retrátil técnica `toggleDrawer()`).
+3. **Botão Mecânico de Barra [/] (#slashTriggerBtn):** Posicionado à esquerda da caixa de instruções, permite abrir o catálogo de Slash Commands por toque direto, sem acionar o teclado virtual do smartphone.
+4. **Mecanismo window.visualViewport para Teclado Virtual:** O console monitora os eventos `resize` e `scroll` de `window.visualViewport`. Quando a altura visível cai abaixo de 85% de `window.innerHeight`, a classe `keyboard-open` é injetada no body, ocultando compulsoriamente a barra inferior (`display: none !important`), fixando `document.body.style.height = ${vv.height}px` e rolando o teletipo (`#tickerScroll`) para o final após 60ms, o que elimina qualquer colisão de layout no iOS Safari e Android Chrome.
+5. **Proteção Anti-Zoom no iOS Safari:** Regra CSS global `font-size: 16px !important` e `touch-action: manipulation` em todos os campos de entrada e áreas de texto, neutralizando o zoom automático do Apple WebKit.
+6. **Ancoragem Defensiva do Spotlight Tour:** Elementos de tour (`.pixel-tour-popover`) são ancorados acima da barra inferior respeitando as áreas de resguardo, com inibição de foco compulsório em campos de texto no mobile.
+7. **Precedência Soberana de mobile.css:** A folha `mobile.css` é carregada compulsoriamente por último em todas as 4 páginas HTML, garantindo a prevalência das regras de tela pequena sobre tokens e componentes.
 
 ### 12.5 Arquitetura do Micro-Motor de Internacionalização (i18n) e Localização de Borda
 
@@ -422,21 +422,21 @@ Para oferecer suporte nativo bilíngue completo (Português do Brasil `pt-BR` e 
 
 ```mermaid
 flowchart TD
-    Init["Carregamento da Pagina (HTML DOM)"] --> Detect["Deteccao de Idioma\nlocalStorage.getItem('pidots_lang') || 'pt'"]
-    Detect --> Fetch["Requisicao Assincrona do Dicionario\nGET /data/locales/{lang}.json"]
-    Fetch --> Cache{"Verificacao de Cache de Borda\n(stale-while-revalidate)"}
-    Cache --> Load["Carga do Objeto JSON em Memoria (< 15KB)"]
+    Init["Carregamento da Página (HTML DOM)"] --> Detect["Detecção de Idioma\nlocalStorage.getItem('pidots_lang') || 'pt'"]
+    Detect --> Fetch["Requisição Assíncrona do Dicionário\nGET /data/locales/{lang}.json"]
+    Fetch --> Cache{"Verificação de Cache de Borda\n(stale-while-revalidate)"}
+    Cache --> Load["Carga do Objeto JSON em Memória (< 15KB)"]
     Load --> Mutate["Varredura Declarativa do DOM\n[data-i18n] e [data-i18n-attr]"]
-    Mutate --> StrictDOM["Mutacao Estrita via textContent\n(Imunidade a XSS)"]
-    StrictDOM --> Dispatch["Emissao de Evento Customizado\nwindow.dispatchEvent('languageChanged')"]
+    Mutate --> StrictDOM["Mutação Estrita via textContent\n(Imunidade a XSS)"]
+    StrictDOM --> Dispatch["Emissão de Evento Customizado\nwindow.dispatchEvent('languageChanged')"]
 ```
 
 #### Contrato Declarativo de Atributos HTML
 O micro-motor realiza a varredura e mutação segura do DOM através de atributos semânticos:
 
-| Atributo DOM | Mecanismo de Atualizacao | Exemplo de Uso |
+| Atributo DOM | Mecanismo de Atualização | Exemplo de Uso |
 | :--- | :--- | :--- |
-| `data-i18n="chave"` | Mutação estrita de texto via `node.textContent` | `<span data-i18n="nav.overview">VISAO GERAL</span>` |
+| `data-i18n="chave"` | Mutação estrita de texto via `node.textContent` | `<span data-i18n="nav.overview">VISÃO GERAL</span>` |
 | `data-i18n-placeholder="chave"` | Atualização segura do atributo `placeholder` | `<input data-i18n-placeholder="guide.search_placeholder" />` |
 | `data-i18n-title="chave"` | Atualização do atributo `title` de acessibilidade | `<button data-i18n-title="telemetry.node_title">...</button>` |
 | `data-i18n-attr="attr:chave"` | Mapeamento genérico de atributos HTML | `<button data-i18n-attr="aria-label:nav.manual">...</button>` |
@@ -448,7 +448,7 @@ O micro-motor realiza a varredura e mutação segura do DOM através de atributo
 
 ### 12.6 Arquitetura do Protocolo de Slash Commands (/) e Despacho de Borda
 
-O Console Operacional incorpora um motor lexico e despachador assincrono de comandos iniciados por barra (`/`) projetado sob os seguintes pilares tecnicos:
+O Console Operacional incorpora um motor léxico e despachador assíncrono de comandos iniciados por barra (`/`) projetado sob os seguintes pilares técnicos:
 
 ```
 +--------------------------------------------------------------------------+
@@ -483,46 +483,47 @@ O Console Operacional incorpora um motor lexico e despachador assincrono de coma
 |             |   (Recibo Tatil, SEQ#, Timestamp ISO, Picote Serrilhado)   |
 |             |   enforceDomCeiling() -> Teto estrito de 150 nos DOM       |
 |             |                                                            |
+|             |                                                            |
 |           [NAO]                                                          |
 |             v                                                            |
 |  Fluxo Padrao LLM / SSE (/api/threads/{id}/runs)                         |
 +--------------------------------------------------------------------------+
 ```
 
-1. **Interceptacao no Cliente (< 16ms):** Comandos locais nao realizam chamadas a provedores de LLM, eliminando latencia de rede e consumo de tokens para inspecao de telemetria, configuracao de interface e gerenciamento de sessao.
-2. **Buffer Circular de DOM (150 Nós):** A funcao `renderSlashReceiptSlip` integra-se a `enforceDomCeiling`, garantindo que recibos antigos sejam purgados do DOM de forma FIFO estrita, mantendo a pegada de memoria RAM estavel em hardware restrito.
-3. **Levenshtein Fault Tolerance:** Algoritmo de distancia de edicao com limite `max_distance <= 3` integrado, sugerindo correcoes imediatas quando erros tipograficos ocorrem.
-4. **Isolamento de Escopo e XSS:** Todo texto dinamico e parametro fornecido pelo operador passa por `escapeHtml()` antes da montagem estrutural dos recibos.
+1. **Interceptação no Cliente (< 16ms):** Comandos locais não realizam chamadas a provedores de LLM, o que elimina latência de rede e consumo de tokens para inspeção de telemetria, configuração de interface e gerenciamento de sessão.
+2. **Buffer Circular de DOM (150 Nós):** A função `renderSlashReceiptSlip` integra-se a `enforceDomCeiling`, garantindo que recibos antigos sejam purgados do DOM de forma FIFO estrita para manter a pegada de memória RAM estável em hardware restrito.
+3. **Tolerância a Falhas com Levenshtein:** Algoritmo de distância de edição com limite `max_distance <= 3` integrado, sugerindo correções imediatas quando erros tipográficos ocorrem.
+4. **Isolamento de Escopo e XSS:** Todo texto dinâmico e parâmetro fornecido pelo operador passa por `escapeHtml()` antes da montagem estrutural dos recibos.
 
-### 12.7 Triptico Adaptativo do Workspace (1024px-1440px) e Telemetria Edge Pulse
+### 12.7 Tríptico Adaptativo do Workspace (1024px-1440px) e Telemetria Edge Pulse
 
-Para solucionar a compressao lateral de interface em notebooks de resolucoes medias (1024px a 1440px), o Workspace adota uma topologia adaptativa de 3 colunas:
-1. **Colapso Sob Demanda da Sidebar:** Em telas entre 1024px e 1440px, a coluna esquerda (canais e Dots) colapsa automaticamente, funcionando como gaveta flutuante sob demanda de 260px com backdrop acionada via `Alt+B` ou clique no botao `[PAINEL]`. Isso eleva a largura util do teletipo de 202px para mais de 750px, mantendo o Live Canvas aberto lado a lado sem espremer a leitura do operador.
-2. **Edge Pulse Chip de Telemetria:** Substitui a multiplicidade de chips dispersos no cabecalho por uma pílula tecnica única de alta densidade (`[EDGE // 48.2 °C // 118 MB // WAL ATIVO // HITL 0]`), economizando mais de 360px de espaco horizontal no topo da tela.
-3. **Canvas Responsivo com Split Dinamico:** O editor de documentos Spaces ajusta sua largura em proporcao 50/50 em desktops e pode ser expandido em tela cheia com a tecla `F11`.
+Para solucionar a compressão lateral de interface em notebooks de resoluções médias (1024px a 1440px), o Workspace adota uma topologia adaptativa de 3 colunas:
+1. **Colapso Sob Demanda da Barra Lateral:** Em telas entre 1024px e 1440px, a coluna esquerda (canais e Dots) colapsa automaticamente, funcionando como gaveta flutuante sob demanda de 260px com camada de fundo acionada via `Alt+B` ou clique no botão `[PAINEL]`. Isso eleva a largura útil do teletipo de 202px para mais de 750px, mantendo o Live Canvas aberto lado a lado sem espremer a leitura do operador.
+2. **Edge Pulse Chip de Telemetria:** Substitui a multiplicidade de chips dispersos no cabeçalho por uma pílula técnica única de alta densidade (`[EDGE // 48.2 °C // 118 MB // WAL ATIVO // HITL 0]`), economizando mais de 360px de espaço horizontal no topo da tela.
+3. **Canvas Responsivo com Split Dinâmico:** O editor de documentos Spaces ajusta sua largura em proporção 50/50 em desktops e pode ser expandido em tela cheia com a tecla `F11`.
 
 ### 12.8 Arquitetura Frontend Modular Desacoplada e EdgeAssetManager
 
-A versao 1.5.0 do piDots consolidou o desacoplamento completo dos grandes monolitos de frontend, decompondo os documentos em camadas independentes de alta coesao e baixo acoplamento:
+A versão 1.5.0 do piDots consolidou o desacoplamento completo dos grandes monólitos de frontend, decompondo os documentos em camadas independentes de alta coesão e baixo acoplamento:
 
 ```
 frontend/
-├── pages/                           # Documentos HTML semanticos enxutos
-│   ├── app.html                     # Console operacional Workspace (/app) — reducao de 86%
-│   ├── landing.html                 # Landing page oficial de apresentacao (/) — reducao de 59%
-│   ├── docs.html                    # Guia didatico e manual de referencia (/docs) — reducao de 51%
-│   └── relatorio.html               # Relatorio historico de engenharia (/relatorio)
+├── pages/                           # Documentos HTML semânticos enxutos
+│   ├── app.html                     # Console operacional Workspace (/app) — redução de 86%
+│   ├── landing.html                 # Landing page oficial de apresentação (/) — redução de 59%
+│   ├── docs.html                    # Guia didático e manual de referência (/docs) — redução de 51%
+│   └── relatorio.html               # Relatório histórico de engenharia (/relatorio)
 ├── static/
 │   ├── css/                         # Folhas de estilo modulares segmentadas
 │   │   ├── tokens.css               # Design tokens, cores Noir/Blueprint e insets
 │   │   ├── reset.css                # Resets de caixa, tipografia e teletipo scrollbars
-│   │   ├── layout.css               # Casca triptica, header e barra de telemetria
-│   │   ├── components.css           # Botoes chanfrados, inputs, carimbos e catalogos SVG
-│   │   ├── mobile.css               # Ergonomia touch, safe areas e prevencao de zoom
-│   │   ├── spa.css                  # Estilos especificos do Console Workspace
+│   │   ├── layout.css               # Casca tríptica, header e barra de telemetria
+│   │   ├── components.css           # Botões chanfrados, inputs, carimbos e catálogos SVG
+│   │   ├── mobile.css               # Ergonomia touch, safe areas e prevenção de zoom
+│   │   ├── spa.css                  # Estilos específicos do Console Workspace
 │   │   ├── landing.css              # Estilos do Hero, calculadora ROI e ReAct simulator
-│   │   ├── docs.css                 # Estilos do Guia Didatico e blocos de codigo
-│   │   └── relatorio.css            # Estilos dedicados do relatorio de engenharia
+│   │   ├── docs.css                 # Estilos do Guia Didático e blocos de código
+│   │   └── relatorio.css            # Estilos dedicados do relatório de engenharia
 │   └── js/                          # Motores JavaScript desacoplados em Vanilla JS
 │       ├── core/                    # pidots-i18n.js, scroll-lock.js, pixel-system.js
 │       ├── spa/                     # pidots-api.js, slash-commands.js, tour-engine.js, pidots-ux.js, app-init.js
@@ -530,54 +531,54 @@ frontend/
 │       └── docs/                    # docs.js (Omnisearch Ctrl+K e mini API tester)
 ```
 
-#### Principios de Engenharia da Camada Desacoplada:
-1. **Zero-Build e Vanilla JS Puro:** Nao utiliza ferramentas de empacotamento pesadas no no de silicio (Node.js/Webpack/Vite), eliminando consumo de memoria RAM em segundo plano e preservando o hardware restrito ARM64 do Raspberry Pi 4B.
-2. **Encapsulamento IIFE com Exportacao Global:** Todos os modulos JavaScript sao estruturados com escopo fechado via IIFE e exportacao seletiva para o objeto `window`, mantendo compatibilidade de 100% com manipuladores de eventos declarativos (`onclick`, `onkeydown`).
-3. **`EdgeAssetManager` In-Memory Preload:** Todas as paginas HTML sao pré-carregadas na memoria RAM no momento do arranque da aplicacao FastAPI (`lifespan`), recebendo hash ETag SHA-256 e versao pré-comprimida em Gzip. Leituras consecutivas no cartao MicroSD sao zeradas.
-4. **Cache HTTP Condicional (ETag / HTTP 304):** Respostas validam o cabecalho `If-None-Match`, respondendo instantaneamente com `304 Not Modified` e 0 bytes de payload para clientes locais ou sob conexoes tuneis.
-5. **Service Worker v7 (`pidots-cache-v7`):** Atualizacao da esteira de cache offline do navegador com suporte integral aos 9 arquivos CSS e 11 arquivos JS modularizados, garantindo operacao continua mesmo com a rede desconectada.
+#### Princípios de Engenharia da Camada Desacoplada:
+1. **Zero-Build e Vanilla JS Puro:** Não utiliza ferramentas de empacotamento pesadas no nó de silício (Node.js/Webpack/Vite), o que elimina consumo de memória RAM em segundo plano e preserva o hardware ARM64 do Raspberry Pi 4B.
+2. **Encapsulamento IIFE com Exportação Global:** Todos os módulos JavaScript são estruturados com escopo fechado via IIFE e exportação seletiva para o objeto `window`, mantendo total compatibilidade com manipuladores de eventos declarativos (`onclick`, `onkeydown`).
+3. **`EdgeAssetManager` In-Memory Preload:** Todas as páginas HTML são pré-carregadas na memória RAM durante a inicialização da aplicação FastAPI (`lifespan`), recebendo hash ETag SHA-256 e versão pré-comprimida em Gzip. Leituras consecutivas no cartão MicroSD são zeradas.
+4. **Cache HTTP Condicional (ETag / HTTP 304):** As respostas validam o cabeçalho `If-None-Match` e devolvem `304 Not Modified` com 0 bytes de carga para clientes locais ou sob conexões em túnel.
+5. **Service Worker v7 (`pidots-cache-v7`):** Atualização da esteira de cache offline do navegador com suporte integral aos 9 arquivos CSS e 11 arquivos JS modularizados, o que mantém a operação contínua mesmo sem acesso à rede.
 
 ---
 
-## 13. Camada de Cabecalhos de Seguranca HTTP e Hardening de Rede de Borda
+## 13. Camada de Cabeçalhos de Segurança HTTP e Hardening de Rede de Borda
 
-Para proteger a estacao de trabalho de borda exposta na rede local ou via tuneis remotos (Cloudflared/Tailscale), a aplicacao FastAPI injeta cabecalhos defensivos de seguranca em todas as respostas HTTP processadas pelo middleware assincrono:
-1. **`X-Content-Type-Options: nosniff`:** Impede que navegadores realizem inferencia de tipos MIME em artefatos, respostas textuais ou scripts servidos, eliminando vetores de exploracao de conteudo estatico malicioso.
-2. **`X-Frame-Options: SAMEORIGIN`:** Impede que dominios de terceiros incorporem o console operacional SPA, o guia ou a landing page dentro de frames externos, neutralizando ataques de clickjacking.
-3. **`Referrer-Policy: strict-origin-when-cross-origin`:** Garante que dados de contexto, caminhos internos de rotas ou parametros de query nao vazem para servicos externos ao navegar a partir da aplicacao.
+Para proteger a estação de trabalho de borda exposta na rede local ou em túneis remotos (Cloudflared/Tailscale), a aplicação FastAPI injeta cabeçalhos defensivos de segurança em todas as respostas HTTP processadas pelo middleware assíncrono:
+1. **`X-Content-Type-Options: nosniff`:** Impede que navegadores adivinhem tipos MIME em artefatos, respostas textuais ou scripts servidos, o que fecha vetores de exploração estática.
+2. **`X-Frame-Options: SAMEORIGIN`:** Impede que domínios externos incorporem o console operacional SPA, o guia ou a landing page dentro de frames externos para bloquear ataques de clickjacking.
+3. **`Referrer-Policy: strict-origin-when-cross-origin`:** Garante que dados de contexto, caminhos internos de rotas ou parâmetros de busca não vazem para serviços externos ao navegar a partir da aplicação.
 
 ---
 
-## 14. Arquitetura de Resiliencia Cognitiva, Circuit Breaker e Contratos AG-UI v1.0
+## 14. Arquitetura de Resiliência Cognitiva, Circuit Breaker e Contratos AG-UI v1.0
 
-A operacao autonoma continua 24/7 em hardware de borda (Raspberry Pi 4B) impoe que falhas de rede, oscilacoes de latencia, limites de taxa ou credenciais invalidas no provedor remoto de LLM sejam tratadas de forma deterministica, sem travar o loop de eventos, sem corromper o estado do banco e sem gerar falsos positivos operacionais.
+A operação autônoma contínua 24/7 em hardware de borda (Raspberry Pi 4B) impõe que falhas de rede, oscilações de latência, limites de taxa ou credenciais inválidas no provedor remoto de LLM sejam tratadas de forma determinística, sem travar o loop de eventos, sem corromper o estado do banco e sem gerar falsos positivos operacionais.
 
-### 14.1 Hierarquia de Excecoes Tipadas e Short-Circuit
+### 14.1 Hierarquia de Exceções Tipadas e Short-Circuit
 
-O modulo `pidots/providers/openai_client.py` define uma taxonomia clara para diferenciar falhas recuperaveis de irrecuperaveis:
+O módulo `pidots/providers/openai_client.py` define uma taxonomia clara para diferenciar falhas recuperáveis de irrecuperáveis:
 
 ```mermaid
 flowchart TD
-    Req["Requisicao HTTP via httpx"] --> CodeCheck{"Avaliacao do HTTP Status"}
+    Req["Requisição HTTP via httpx"] --> CodeCheck{"Avaliação do HTTP Status"}
     
     CodeCheck -->|HTTP 200| OK["Sucesso (Payload JSON)"]
     CodeCheck -->|HTTP 401 / 403| AuthErr["ProviderAuthError\n(Short-circuit imediato)"]
     CodeCheck -->|HTTP 502 / 503 / 504 / 429| RetryCheck{"attempt < max_retries?"}
     CodeCheck -->|ConnectError / ReadTimeout| RetryCheck
     
-    RetryCheck -->|Sim| Backoff["Calculo Delay + Jitter\n(asyncio.sleep)"] --> Req
-    RetryCheck -->|Nao| TransErr["ProviderTransientError\n(Esgotamento de tentativas)"]
+    RetryCheck -->|Sim| Backoff["Cálculo Delay + Jitter\n(asyncio.sleep)"] --> Req
+    RetryCheck -->|Não| TransErr["ProviderTransientError\n(Esgotamento de tentativas)"]
 ```
 
-1. **`ProviderAuthError` (Irrecuperavel):** Disparado em respostas HTTP 401 (Unauthorized) ou HTTP 403 (Forbidden). Aplica **short-circuit imediato**, abortando o ciclo ReAct sem realizar retentativas inuteis que sobrecarregariam a CPU e consumiriam banda de rede.
-2. **`ProviderTransientError` (Recuperavel com Backoff):** Disparado em erros transitorios HTTP 503 (Service Unavailable), HTTP 429 (Rate Limit), HTTP 502/504 ou falhas de conexao/timeout de rede (`ConnectError`, `ReadTimeout`). Realiza retentativas controladas com backoff exponencial e jitter pseudo-aleatorio (`delays = [1.0, 2.0, 4.0] + random.uniform(0.1, 0.5)`). Caso as tentativas se esgotem, levanta `ProviderTransientError`.
+1. **`ProviderAuthError` (Irrecuperável):** Disparado em respostas HTTP 401 (Unauthorized) ou HTTP 403 (Forbidden). Aplica **short-circuit imediato**, o que encerra o ciclo ReAct sem retentativas inúteis que sobrecarregariam a CPU e consumiriam banda de rede.
+2. **`ProviderTransientError` (Recuperável com Backoff):** Disparado em erros transitórios HTTP 503 (Service Unavailable), HTTP 429 (Rate Limit), HTTP 502/504 ou falhas de conexão/tempo esgotado de rede (`ConnectError`, `ReadTimeout`). Executa retentativas controladas com backoff exponencial e jitter pseudo-aleatório (`delays = [1.0, 2.0, 4.0] + random.uniform(0.1, 0.5)`). Caso as tentativas se esgotem, levanta `ProviderTransientError`.
 
-### 14.2 Padronizacao do Contrato AG-UI v1.0 e Fita de Carbono Interna
+### 14.2 Padronização do Contrato AG-UI v1.0 e Registro Interno de Diagnóstico
 
-Durante a execucao de `DotAgent.run_thread()`, o ciclo ReAct assegura que falhas de inferencia emitam eventos estruturados e mensagens de rastreabilidade:
+Durante a execução de `DotAgent.run_thread()`, o ciclo ReAct assegura que falhas de inferência emitam eventos estruturados e mensagens de rastreabilidade:
 
-1. **Emissao Padronizada de `run:finished`:**
-   Ao capturar `ProviderAuthError` ou `ProviderTransientError`, o gerador assincrono emite:
+1. **Emissão Padronizada de `run:finished`:**
+   Ao capturar `ProviderAuthError` ou `ProviderTransientError`, o gerador assíncrono emite:
    ```json
    {
      "event": "run:finished",
@@ -585,39 +586,39 @@ Durante a execucao de `DotAgent.run_thread()`, o ciclo ReAct assegura que falhas
        "run_id": "uuid-da-execucao",
        "status": "failed",
        "final_response": "",
-       "error": "Descricao tecnica da falha",
+       "error": "Descrição técnica da falha",
        "error_type": "auth_error"
      }
    }
    ```
-2. **Fita Interna de Diagnostico (Carbon Tape):**
-   Antes de emitir o encerramento da thread, o agente insere uma mensagem de diagnostico no SQLite WAL com o campo `visibility = 'internal'`:
-   - Conteudo: `[FALHA DE AUTENTICAÇÃO]: ...` ou `[FALHA DE INFERÊNCIA]: ...`.
-   - Isso permite auditoria forense completa via painel administrativo ou CLI sem expor detalhes internos tecnicos no feed principal do usuario.
+2. **Registro Interno de Diagnóstico:**
+   Antes de emitir o encerramento da thread, o agente grava uma mensagem de diagnóstico no SQLite WAL com o campo `visibility = 'internal'`:
+   - Conteúdo: `[FALHA DE AUTENTICAÇÃO]: ...` ou `[FALHA DE INFERÊNCIA]: ...`.
+   - O registro permite auditoria técnica completa via console administrativo ou CLI, sem poluir o feed principal do usuário.
 
-### 14.3 Resiliencia dos Tres Consumidores Arquiteturais
+### 14.3 Resiliência dos Três Consumidores Arquiteturais
 
-Os tres componentes que orquestram a execucao do `DotAgent` consomem o evento `run:finished` com tratamento defensivo especializado:
+Os três componentes que orquestram a execução do `DotAgent` consomem o evento `run:finished` com tratamento defensivo especializado:
 
-| Consumidor | Modulo | Comportamento em Falha (`status == 'failed'`) | Impacto Arquitetural |
+| Consumidor | Módulo | Comportamento em Falha (`status == 'failed'`) | Impacto Arquitetural |
 | :--- | :--- | :--- | :--- |
-| **EdgeScheduler** | `pidots/core/scheduler.py` | Marca `last_status = 'FAILED'`, persiste sumario real do erro em `last_result_summary` e aciona o calculo de backoff. | Elimina falsos positivos de `COMPLETED` em tarefas cron. |
-| **MessagingGateway** | `pidots/core/messaging_gateway.py` | Detecta falha e despacha aviso amigavel `[FALHA OPERACIONAL]: O agente encontrou uma falha de conexao...` para o Telegram, WhatsApp ou webhook. | Evita silencio operacional ou mensagens vazias enviadas aos canais externos. |
-| **MultiBotOrchestrator** | `pidots/core/orchestrator.py` | Atualiza o registro em `agent_handoffs` para `status = 'FAILED'`, emite alerta interno `[FALHA NA SUBTAREFA DE @dot]` na thread principal e retorna `{'success': False, 'error': ...}`. | Notifica o supervisor programaticamente, permitindo replanejamento sem travar a thread. |
+| **EdgeScheduler** | `pidots/core/scheduler.py` | Marca `last_status = 'FAILED'`, persiste sumário real do erro em `last_result_summary` e aciona o cálculo de backoff. | Elimina falsos positivos de `COMPLETED` em tarefas cron. |
+| **MessagingGateway** | `pidots/core/messaging_gateway.py` | Detecta falha e despacha aviso técnico `[FALHA OPERACIONAL]: O agente encontrou uma falha de conexão...` para o Telegram, WhatsApp ou webhook. | Evita silêncio operacional ou mensagens vazias enviadas aos canais externos. |
+| **MultiBotOrchestrator** | `pidots/core/orchestrator.py` | Atualiza o registro em `agent_handoffs` para `status = 'FAILED'`, emite alerta interno `[FALHA NA SUBTAREFA DE @dot]` na thread principal e retorna `{'success': False, 'error': ...}`. | Notifica o supervisor programaticamente, o que permite replanejamento sem travar a thread. |
 
-### 14.4 Maquina de Estados do Circuit Breaker em Tarefas Proativas
+### 14.4 Máquina de Estados do Circuit Breaker em Tarefas Proativas
 
-Para impedir tempestades de reconexao (*retry storms*) em falhas continuas de infraestrutura ou chaves expiradas, o escalonador `EdgeScheduler` implementa um Circuit Breaker com as seguintes regras de transicao:
+Para impedir tempestades de reconexão (*retry storms*) em falhas contínuas de infraestrutura ou chaves expiradas, o escalonador `EdgeScheduler` implementa um Circuit Breaker com as seguintes regras de transição:
 
 ```mermaid
 stateDiagram-v2
     [*] --> IDLE: Tarefa agendada
-    IDLE --> RUNNING: Horario atingido (next_run_at <= now AND backoff_until <= now)
+    IDLE --> RUNNING: Horário atingido (next_run_at <= now AND backoff_until <= now)
     
-    RUNNING --> SILENT: Execucao OK com HEARTBEAT_OK (consecutive_failures = 0)
-    RUNNING --> COMPLETED: Execucao OK com relatorio (consecutive_failures = 0)
+    RUNNING --> SILENT: Execução OK com HEARTBEAT_OK (consecutive_failures = 0)
+    RUNNING --> COMPLETED: Execução OK com relatório (consecutive_failures = 0)
     
-    RUNNING --> FAILED: Erro cognitivo / inferencia (consecutive_failures < 5)
+    RUNNING --> FAILED: Erro cognitivo / inferência (consecutive_failures < 5)
     FAILED --> IDLE: Backoff exponencial calculado (30s a 3600s)
     
     RUNNING --> CIRCUIT_OPEN: 5a falha consecutiva (consecutive_failures >= 5)
@@ -627,17 +628,17 @@ stateDiagram-v2
     AUTH_REQUIRED --> IDLE: Backoff protetivo de 10 minutos
 ```
 
-1. **Calculo do Backoff Exponencial:**
-   Em cada falha consecutiva, o retardo de backoff e calculado deterministica e progressivamente atraves de `min(3600, 30 * 2^(n-1))`:
+1. **Cálculo do Backoff Exponencial:**
+   Em cada falha consecutiva, o retardo de backoff é calculado determinística e progressivamente através de `min(3600, 30 * 2^(n-1))`:
    - Falha 1: 30 segundos
    - Falha 2: 60 segundos
    - Falha 3: 120 segundos
    - Falha 4: 240 segundos
-   - O campo `backoff_until` e atualizado no SQLite WAL, impedindo execucoes antes do prazo.
+   - O campo `backoff_until` é atualizado no SQLite WAL para bloquear execuções antes do prazo.
 2. **Abertura do Circuito (`CIRCUIT_OPEN`):**
-   Na 5ª falha consecutiva, o circuito abre. O registro recebe `last_status = 'CIRCUIT_OPEN'` e `is_active = 0`. A tarefa e desativada de forma segura ate intervencao manual do operador.
-3. **Sanity Check Preventivo de Chaves (`AUTH_REQUIRED`):**
-   Antes de instanciar o agente, o scheduler verifica se a credencial do provedor e uma string vazia ou placeholder (`sua_chave_aqui`, `placeholder`). Se detectada, a tarefa recebe `last_status = 'AUTH_REQUIRED'`, `backoff_until = now + 10min` e nao realiza nenhuma chamada externa, poupando energia e recursos de rede do Raspberry Pi.
+   Na 5ª falha consecutiva, o circuito abre. O registro recebe `last_status = 'CIRCUIT_OPEN'` e `is_active = 0`. A tarefa é desativada de forma segura até intervenção manual do operador.
+3. **Verificação Preventiva de Chaves (`AUTH_REQUIRED`):**
+   Antes de instanciar o agente, o escalonador verifica se a credencial do provedor é uma string vazia ou placeholder (`sua_chave_aqui`, `placeholder`). Se detectada, a tarefa recebe `last_status = 'AUTH_REQUIRED'`, `backoff_until = now + 10min` e não realiza nenhuma chamada externa, o que preserva energia e ciclos de rede do Raspberry Pi.
 
 ### 14.5 Gateway Multi-Provedor com Circuit Breaker de 3 Estados (CLOSED, OPEN, HALF_OPEN)
 
@@ -645,16 +646,16 @@ O cliente universal de inferência (`pidots/providers/openai_client.py`) impleme
 
 ```mermaid
 stateDiagram-v2
-    [*] --> CLOSED: Inicializacao / Reset
+    [*] --> CLOSED: Inicialização / Reset
     
     CLOSED --> CLOSED: Resposta HTTP 200 OK (consecutive_failures = 0)
     CLOSED --> OPEN: Falhas consecutivas >= threshold (3x 5xx/timeout)
     
-    OPEN --> OPEN: Novas requisicoes desviam direto ao Fallback (sem timeout)
+    OPEN --> OPEN: Novas requisições desviam direto ao Fallback (sem timeout)
     OPEN --> HALF_OPEN: Cooldown expirado (tempo >= cooldown_seconds)
     
-    HALF_OPEN --> CLOSED: Requisicao Canario OK (200 no primario)
-    HALF_OPEN --> OPEN: Requisicao Canario Falhou (mantem fallback)
+    HALF_OPEN --> CLOSED: Requisição Canário OK (200 no primário)
+    HALF_OPEN --> OPEN: Requisição Canário Falhou (mantém fallback)
 ```
 
 1. **Estado `CLOSED` (Operação Nominal):**
@@ -663,18 +664,18 @@ stateDiagram-v2
    - Em caso de falha persistente: se `AI_FALLBACK_URL` estiver configurada, o failover secundário é acionado transparentemente sem erro para o agente, e o contador `consecutive_failures` é incrementado.
 2. **Estado `OPEN` (Isolamento de Falha Contínua):**
    - Ao atingir o limiar consecutivo de falhas (padrão: 3 falhas), o circuito primário abre.
-   - Durante o período de cooldown (padrão: 60 segundos), nenhuma requisição é enviada ao primário; as chamadas são despachadas imediatamente para o provedor secundário de failover, eliminando a penalidade de espera por timeouts no Raspberry Pi 4B.
+   - Durante o período de cooldown (padrão: 60 segundos), nenhuma requisição é enviada ao primário; as chamadas são despachadas imediatamente para o provedor secundário de failover, o que remove o atraso de timeouts sucessivos no Raspberry Pi 4B.
 3. **Estado `HALF_OPEN` (Teste Canário de Auto-Recuperação):**
-   - Após o término do cooldown, a próxima chamada de inferência atua como requisição canário no provedor primário.
+   - Após o término do cooldown, a próxima chamada de inferência executa um teste canário no provedor primário.
    - Se o primário responder com 200 OK, o circuito retorna a `CLOSED` e `consecutive_failures` é zerado. Se falhar, o circuito retorna a `OPEN` por mais um ciclo de cooldown e a requisição é atendida pelo fallback.
 4. **Comportamento Inócuo:**
-   - Se nenhuma `AI_FALLBACK_URL` estiver configurada, o sistema mantém o comportamento estritamente nominal e inócuo, garantindo a soberania do operador que opta por não utilizar provedores secundários.
+   - Se nenhuma `AI_FALLBACK_URL` estiver configurada, o sistema mantém o comportamento estritamente nominal e inócuo, preservando a escolha do operador que não utiliza provedores secundários.
 
 ---
 
-## 15. Subsistema de Memoria Hierarquica Autonoma (MemGPT / Letta)
+## 15. Subsistema de Memória Hierárquica Autônoma (MemGPT / Letta)
 
-Para superar a amnesia sem sobrecarregar a janela de contexto, o modulo `pidots/storage/memory_manager.py` implementa uma arquitetura de memoria em 3 camadas inspirada no MemGPT/Letta:
+Para superar a amnésia sem sobrecarregar a janela de contexto, o módulo `pidots/storage/memory_manager.py` implementa uma arquitetura de memória em 3 camadas inspirada no MemGPT/Letta:
 
 ```mermaid
 flowchart TD
@@ -684,44 +685,44 @@ flowchart TD
         ChatTurns["Turnos Recentes da Thread"]
     end
 
-    subgraph MemoryLayers["Camadas de Persistencia SQLite WAL"]
+    subgraph MemoryLayers["Camadas de Persistência SQLite WAL"]
         CoreTable["Tabela agent_core_memory_blocks\n(Teto estrito de 2000 chars/bloco)"]
         FTS["Virtual Table SQLite FTS5\n(archival_memories_fts, BM25)"]
-        ArchivalTable["Tabela archival_memories\n(Projecao 64d Trigram Hashing)"]
-        MessagesTable["Tabela messages\n(Recall Memory Indexada)"]
+        ArchivalTable["Tabela archival_memories\n(Projeção 64d Trigram Hashing)"]
+        MessagesTable["Tabela messages\n(Memória Episódica Indexada)"]
     end
 
     CoreMem <-->|core_memory_append / replace| CoreTable
     PromptContext -->|archival_memory_search| FTS
     PromptContext -->|archival_memory_insert| ArchivalTable
-    ArchivalTable -.->|Triggers Sincronos| FTS
+    ArchivalTable -.->|Triggers Síncronos| FTS
     PromptContext -->|recall_memory_search| MessagesTable
 ```
 
 1. **Core Memory In-Context:**
    - Injetada diretamente no system prompt sob o bloco XML `<core_memory>`.
-   - Limite por bloco (`max_chars = 2000`) impedindo extrapolacao de tokens.
-   - Ferramentas nativas `core_memory_append` e `core_memory_replace` que o proprio agente executa quando aprende preferencias do usuario ou atualiza seu foco operacional.
-2. **Archival Memory com Busca Hibrida BM25 + 64d e Deduplicacao Semantica:**
-   - Base duradoura de fatos e documentacoes indexada na Virtual Table `archival_memories_fts` via triggers SQL nativos (`trg_archival_insert`, `trg_archival_update`, `trg_archival_delete`).
-   - Algoritmo de projecao esparsa `compute_compact_embedding`: calcula um vetor de 64 dimensoes combinando hash de trigramas (3-grams) e ativacao semantica pura em CPU, com pontuacao hibrida `score = abs(rank) + similaridade * 0.5`.
-   - **Deduplicacao Semantica (> 0.92):** Avaliacao de similaridade por cosseno antes da gravacao. Se existir fato equivalente com similaridade `>= 0.92`, executa merge/update atomico de tags e conteudo sem duplicar linhas no SQLite WAL nem inflar a tabela virtual FTS5.
+   - Limite estrito por bloco (`max_chars = 2000`) para evitar extrapolação de tokens.
+   - Ferramentas nativas `core_memory_append` e `core_memory_replace` que o próprio agente executa quando aprende preferências do usuário ou atualiza seu foco operacional.
+2. **Archival Memory com Busca Híbrida BM25 + 64d e Deduplicação Semântica:**
+   - Base duradoura de fatos e documentações indexada na Virtual Table `archival_memories_fts` via triggers SQL nativos (`trg_archival_insert`, `trg_archival_update`, `trg_archival_delete`).
+   - Algoritmo de projeção esparsa `compute_compact_embedding`: calcula um vetor de 64 dimensões combinando hash de trigramas (3-grams) e ativação semântica pura em CPU, com pontuação híbrida `score = abs(rank) + similaridade * 0.5`.
+   - **Deduplicação Semântica (> 0.92):** Avaliação de similaridade por cosseno antes da gravação. Se existir fato equivalente com similaridade `>= 0.92`, executa merge/update atômico de tags e conteúdo sem duplicar linhas no SQLite WAL nem inflar a tabela virtual FTS5.
 3. **Recall Memory:**
-   - Ferramenta `recall_memory_search` que consulta turnos e decisoes anteriores da conversa diretamente na tabela `messages`.
+   - Ferramenta `recall_memory_search` que consulta turnos e decisões anteriores da conversa diretamente na tabela `messages`.
 
 ---
 
-## 16. Subsistema de Self-Healing Harness e Planejamento em Dois Estagios
+## 16. Subsistema de Self-Healing Harness e Planejamento em Dois Estágios
 
 ```mermaid
 flowchart LR
-    subgraph ExecutionLoop["Loop de Auto-Correcao (Self-Healing com Teto de 2 Tentativas)"]
-        Action["Acao Shell / Script Python"] --> Eval{"Sucesso na Verificacao?"}
+    subgraph ExecutionLoop["Loop de Correção Autônoma (Self-Healing com Teto de 2 Tentativas)"]
+        Action["Ação Shell / Script Python"] --> Eval{"Sucesso na Verificação?"}
         Eval -- "Sim" --> Deliver["Entrega Aprovada"]
-        Eval -- "Nao" --> CheckCeiling{"Tentativas >= 2?"}
-        CheckCeiling -- "Nao (1a tentativa)" --> ParseTraceback["Dissecador de Traceback\n(self_healing.py)"]
+        Eval -- "Não" --> CheckCeiling{"Tentativas >= 2?"}
+        CheckCeiling -- "Não (1a tentativa)" --> ParseTraceback["Dissecador de Traceback\n(self_healing.py)"]
         ParseTraceback --> EmitEvent["Evento AG-UI\nself_healing:triggered"]
-        EmitEvent --> Replan["Loop Interno de Reparo\n(Reatribuicao Cognitiva)"]
+        EmitEvent --> Replan["Loop Interno de Reparo\n(Reatribuição Cognitiva)"]
         Replan --> Action
         CheckCeiling -- "Sim (2a tentativa)" --> Escalate["Teto Excedido (MAX_HEAL_ATTEMPTS=2)\nEscalonamento para @dot-auditor"]
         Escalate --> DeliverFail["Retorno Estruturado ao Operador"]
@@ -729,43 +730,43 @@ flowchart LR
 ```
 
 1. **Self-Healing Harness (`pidots/core/self_healing.py`):**
-   - Ferramenta `execute_and_verify`: exige um comando principal e um comando de verificacao (ex: `pytest` ou `python3 -m py_compile`).
-   - Em caso de codigo de saida diferente de zero ou presenca de traceback, o analisador isola o arquivo, linha e nome da excecao, devolvendo recomendacao tecnica direta de correcao para o agente.
-   - **Teto Estrito de 2 Tentativas (`MAX_HEAL_ATTEMPTS = 2`):** Caso o erro persista na segunda tentativa de reparo, o ciclo e imediatamente interrompido, emitindo `self_healing:max_attempts_exceeded` e escalando o traceback ao `@dot-auditor` para evitar loops infinitos de tokens.
-2. **Two-Stage Planning (`pidots/core/planner.py`):**
+   - Ferramenta `execute_and_verify`: exige um comando principal e um comando de verificação (ex: `pytest` ou `python3 -m py_compile`).
+   - Em caso de código de saída diferente de zero ou presença de traceback, o analisador isola o arquivo, linha e nome da exceção, devolvendo recomendação técnica direta de correção para o agente.
+   - **Teto Estrito de 2 Tentativas (`MAX_HEAL_ATTEMPTS = 2`):** Caso o erro persista na segunda tentativa de reparo, o ciclo é imediatamente interrompido, emitindo `self_healing:max_attempts_exceeded` e escalando o traceback ao `@dot-auditor` para evitar loops infinitos de tokens.
+2. **Planejamento em Dois Estágios (`pidots/core/planner.py`):**
    - Tabela `goals` (metas gerais) e tabela `milestones` (marcos ordenados).
-   - O agente cria o plano com `plan_create`, avanca etapas com `plan_update_step` comprovando evidencias tecnicas (`evidence_summary`), e consulta o progresso com `plan_get_status`.
-   - O progresso percentual e recalculado atomicamente e injetado no prompt sob `<execution_plan>`.
+   - O agente cria o plano com `plan_create`, avança etapas com `plan_update_step` ao anexar evidências técnicas (`evidence_summary`), e consulta o progresso com `plan_get_status`.
+   - O progresso percentual é recalculado atomicamente e injetado no prompt sob `<execution_plan>`.
 
 ---
 
-## 17. Conselho Consultivo e Deliberacao Dialetica Multi-Bot
+## 17. Conselho Consultivo e Deliberação Dialética Multi-Bot
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant Supervisor as @supervisor
     participant Proponent as @coder (Propositor)
-    participant Critic as @auditor (Critico)
-    participant Thread as SQLite WAL (Fitas Internas)
+    participant Critic as @auditor (Crítico)
+    participant Thread as SQLite WAL (Mensagens Internas)
 
-    Supervisor->>Proponent: Solicitar formulacao de proposta tecnica
+    Supervisor->>Proponent: Solicitar formulação de proposta técnica
     Proponent->>Thread: Gravar Proposta (visibility='internal')
     Proponent-->>Critic: Encaminhar para auditoria adversarial
-    Critic->>Thread: Gravar Critica e Vulnerabilidades (visibility='internal')
+    Critic->>Thread: Gravar Crítica e Vulnerabilidades (visibility='internal')
     alt Early Consensus Exit (Parecer RISK_LOW / APPROVED)
         Critic-->>Supervisor: Consenso imediato na Rodada 2 (Poupando Rodada 3)
-    else Divergencia ou Ajuste Necessario
-        Critic-->>Proponent: Replica e Treplica Iterativas
+    else Divergência ou Ajuste Necessário
+        Critic-->>Proponent: Réplica e Tréplica Iterativas
     end
     Supervisor->>Thread: Sintetizar Veredito e Plano Executivo (visibility='public')
 ```
 
-- **Papéis Estritos:** Propositor formula o codigo ou arquitetura; Critico aponta brechas de seguranca, concorrencia e consumo de memoria; Supervisor sintetiza a versao definitiva.
-- **Fitas de Carbono:** Mensagens do debate possuem `visibility = 'internal'`, mantendo o feed publico conciso.
-- **Resolucao Publica:** O veredito executivo e gravado com cabecalho formal `[CONSELHO CONSULTIVO - RESOLUCAO FINAL]` e `visibility = 'public'`.
-- **Early Consensus Exit:** Se na Rodada 2 do debate tripartite o `@dot-auditor` classificar a proposta do `@dot-coder` como `RISK_LOW / APPROVED`, o orquestrador consolida a decisao antecipadamente (`early_consensus = True`), poupando a terceira rodada e economizando tokens de borda.
-- **Contencao de Hardware:** Trava rigida de no maximo 3 rodadas (`MAX_COUNCIL_ROUNDS = 3`), operando com consumo estritamente inferior a 53 MB de RAM.
+- **Papéis Estritos:** Propositor formula o código ou arquitetura; Crítico aponta brechas de segurança, concorrência e consumo de memória; Supervisor sintetiza a versão definitiva.
+- **Mensagens Internas:** As mensagens intermediárias do debate têm `visibility = 'internal'` para manter o feed público conciso.
+- **Resolução Pública:** O veredito executivo é gravado com cabeçalho formal `[CONSELHO CONSULTIVO - RESOLUÇÃO FINAL]` e `visibility = 'public'`.
+- **Early Consensus Exit:** Se na Rodada 2 do debate tripartite o `@dot-auditor` classificar a proposta do `@dot-coder` como `RISK_LOW / APPROVED`, o orquestrador consolida a decisão antecipadamente (`early_consensus = True`), o que dispensa a terceira rodada e economiza tokens de inferência na borda.
+- **Contenção de Hardware:** Trava rígida de no máximo 3 rodadas (`MAX_COUNCIL_ROUNDS = 3`), operando com consumo estritamente inferior a 53 MB de RAM.
 
 ---
 
@@ -773,35 +774,35 @@ sequenceDiagram
 
 1. **Shared Knowledge Space (`pidots/storage/shared_space.py`):**
    - Quadro colaborativo indexado por `(thread_id, topic_key)` na tabela `thread_shared_notes`.
-   - Permite que multiplos agentes gravem notas tecnicas com `shared_space_write` e consultem com `shared_space_read`.
-   - O conteudo e compilado no bloco XML `<shared_knowledge_space>` e entregue a todos os interlocutores da conversa.
+   - Permite que múltiplos agentes gravem notas técnicas com `shared_space_write` e consultem com `shared_space_read`.
+   - O conteúdo é compilado no bloco XML `<shared_knowledge_space>` e entregue a todos os interlocutores da conversa.
 2. **Dot Packs v1.1 (`pidots/core/dot_pack.py`):**
-   - Manifesto padronizado JSON contendo persona, arquetipo, ferramentas, blocos de Core Memory, memorias arquivisticas, snapshot de arquivos e assinatura criptografica `sha256_checksum`.
-   - Endpoints REST: `GET /api/dots/{dot_id}/export-pack` para geracao do manifesto assinado e `POST /api/dots/import-pack` para validacao de integridade, inspecao contra Prompt Injection e instanciacao atomica de novos agentes em qualquer Raspberry Pi.
+   - Manifesto padronizado JSON contendo persona, arquétipo, ferramentas, blocos de Core Memory, memórias arquivísticas, snapshot de arquivos e assinatura criptográfica `sha256_checksum`.
+   - Endpoints REST: `GET /api/dots/{dot_id}/export-pack` para geração do manifesto assinado e `POST /api/dots/import-pack` para validação de integridade, inspeção contra Prompt Injection e instanciação atômica de novos agentes em qualquer Raspberry Pi.
 
 ---
 
-## 19. Triggers de Hardware Edge e Manutencao Noturna do MicroSD
+## 19. Gatilhos de Hardware de Borda e Manutenção Noturna do MicroSD
 
 ```mermaid
 flowchart TD
-    subgraph HardwareSensors["Sensores Fisicos do Raspberry Pi 4B"]
+    subgraph HardwareSensors["Sensores Físicos do Raspberry Pi 4B"]
         Thermal["/sys/class/thermal/thermal_zone0/temp\n(SoC Broadcom BCM2711)"]
-        Disk["shutil.disk_usage\n(Cartao Flash MicroSD)"]
-        RAM["/proc/meminfo\n(RAM Disponivel)"]
+        Disk["shutil.disk_usage\n(Cartão Flash MicroSD)"]
+        RAM["/proc/meminfo\n(RAM Disponível)"]
     end
 
     subgraph Triggers["EdgeHardwareTriggers (edge_triggers.py)"]
         Check{"Verificar Limiares"}
-        Check -- "Temp >= 72 C" --> Throttling["Ativar Throttle & Alerta HITL"]
+        Check -- "Temp >= 72 C" --> Throttling["Ativar Limitação & Alerta HITL"]
         Check -- "Disco Livre < 10%" --> LowDisk["Alerta DISK_LOW_SPACE"]
-        Check -- "Condicoes OK" --> Normal["Status OK"]
+        Check -- "Condições OK" --> Normal["Status OK"]
     end
 
     subgraph NightlyMaintenance["EdgeMaintenanceManager (maintenance.py)"]
         Step1["1. PRAGMA wal_checkpoint(TRUNCATE)"]
-        Step2["2. Consolidacao Episodica de Mensagens > 7 dias"]
-        Step3["3. Backup Atomico VACUUM INTO"]
+        Step2["2. Consolidação Episódica de Mensagens > 7 dias"]
+        Step3["3. Backup Atômico VACUUM INTO"]
         Step4["4. PRAGMA optimize e ANALYZE"]
     end
 
@@ -809,43 +810,43 @@ flowchart TD
     NightlyMaintenance --> Step1 --> Step2 --> Step3 --> Step4
 ```
 
-1. **Event-Driven Hardware Triggers (`pidots/core/edge_triggers.py`):**
+1. **Gatilhos de Hardware Orientados a Eventos (`pidots/core/edge_triggers.py`):**
    - Leitura direta via sysfs de `/sys/class/thermal/thermal_zone0/temp`.
-   - Avaliacao a cada ~60s no loop proativo do `scheduler.py` ou sob demanda via `hardware_trigger_check` e rota `GET /api/edge/triggers`.
-   - Se temperatura $\ge 72°C$ (`settings.thermal_limit_celsius`), classifica como `WARNING` ou `CRITICAL` ($\ge 78°C$) e despacha alerta HITL imediato ao operador.
-2. **Preservacao Radical do MicroSD (`pidots/storage/maintenance.py`):**
-   - `PRAGMA wal_checkpoint(TRUNCATE)` sincroniza e esvazia o arquivo `-wal`, prevenindo desgaste de celulas flash.
-   - Consolida mensagens antigas (> 7 dias) na tabela `episodic_memories` e poda mensagens brutas para economizar blocos de armazenamento.
-   - Executa `VACUUM INTO` em conexao isolada com autocommit (`isolation_level=None`), gerando backups sem bloqueio concorrente.
+   - Avaliação a cada ~60s no loop proativo do `scheduler.py` ou sob demanda via `hardware_trigger_check` e rota `GET /api/edge/triggers`.
+   - Se a temperatura atingir SoC >= 72 °C (`settings.thermal_limit_celsius`), o sistema classifica o evento como `WARNING` ou `CRITICAL` (SoC >= 78 °C) e despacha alerta HITL imediato ao operador.
+2. **Preservação Rigorosa do MicroSD (`pidots/storage/maintenance.py`):**
+   - `PRAGMA wal_checkpoint(TRUNCATE)` sincroniza e esvazia o arquivo `-wal`, prevenindo desgaste de células flash.
+   - Consolida mensagens antigas (> 7 dias) na tabela `episodic_memories` e remove mensagens brutas para economizar blocos de armazenamento.
+   - Executa `VACUUM INTO` em conexão isolada com autocommit (`isolation_level=None`), gerando cópias de segurança sem bloqueio concorrente.
    - Endpoint: `POST /api/edge/maintenance`.
 
 ---
 
-## 20. Motor de Tour Spotlight Interativo e Experiencia de Primeiro Acesso (PiDotsTourEngine)
+## 20. Motor de Tour Spotlight Interativo e Experiência de Primeiro Acesso (PiDotsTourEngine)
 
-O **PiDotsTourEngine** e o modulo client-side em Vanilla JS puro (< 12KB) responsavel por guiar novos operadores pelo cockpit do piDots em seus primeiros acessos, eliminando modais estaticos ineficientes e adotando o padrao de **Spotlight Walkthrough in-context**.
+O **PiDotsTourEngine** é o módulo client-side em Vanilla JS puro (< 12KB) responsável por guiar novos operadores pelo cockpit do piDots em seus primeiros acessos, eliminando modais estáticos ineficientes e adotando o padrão de **Spotlight Walkthrough in-context**.
 
 ```mermaid
 flowchart TD
-    subgraph TriggerLayer["Gatilhos de Inicializacao"]
+    subgraph TriggerLayer["Gatilhos de Inicialização"]
         FTUE["Primeiro Acesso\n(localStorage: pidots_tour_completed != true)"]
         CmdTour["Comando /tour\n(ou /onboarding)"]
         MenuDrawer["Menu de Sistema (F1)\n[REVER GUIA OPERACIONAL]"]
     end
 
-    subgraph TourEngine["Motor de Execucao (PiDotsTourEngine)"]
-        CalcCoord["Calculo Dinamico de Viewport\n(getBoundingClientRect + Scroll)"]
-        PrepareDOM["Hook beforeStep()\n(Descolapsa Sidebar / Altera Aba Mobile)"]
-        SpotlightMask["Mascara Spotlight Monospace\n(box-shadow: 0 0 0 9999px rgba(0,0,0,0.82))"]
-        FloatingPopover["Balao Flutuante .pixel-tour-popover\n(Posicionamento Bottom/Top/Left com Clamp)"]
+    subgraph TourEngine["Motor de Execução (PiDotsTourEngine)"]
+        CalcCoord["Cálculo Dinâmico de Viewport\n(getBoundingClientRect + Scroll)"]
+        PrepareDOM["Hook beforeStep()\n(Descolapsa Barra Lateral / Altera Aba Mobile)"]
+        SpotlightMask["Máscara Spotlight Monospace\n(box-shadow: 0 0 0 9999px rgba(0,0,0,0.82))"]
+        FloatingPopover["Balão Flutuante .pixel-tour-popover\n(Posicionamento Inferior/Superior/Lateral com Clamp)"]
     end
 
-    subgraph Steps["Etapas Canonicas do Cockpit"]
+    subgraph Steps["Etapas Canônicas do Cockpit"]
         S1["Etapa 1: Squad de Especialistas\n(#dotsListContainer)"]
         S2["Etapa 2: Teletipo e Slash Commands\n(#instructionInput)"]
         S3["Etapa 3: Comutador de Modos (Foco/Zen)\n(#btnToggleMode)"]
-        S4["Etapa 4: Live Artifact Canvas & Diffs\n(#rightCanvas)"]
-        S5["Etapa 5: Gaveta Tecnica & Telemetria\n(#btn-system-drawer)"]
+        S4["Etapa 4: Live Artifact Canvas e Diffs\n(#rightCanvas)"]
+        S5["Etapa 5: Gaveta Técnica e Telemetria\n(#btn-system-drawer)"]
     end
 
     TriggerLayer --> TourEngine
@@ -853,55 +854,55 @@ flowchart TD
     FloatingPopover --> S1 --> S2 --> S3 --> S4 --> S5
 ```
 
-### Principios de Engenharia do PiDotsTourEngine:
-1. **Zero Dependencias Pesadas:** Nenhuma biblioteca de terceiros (como Intro.js ou Shepherd.js). Implementado diretamente em CSS custom properties e DOM API padrao, preservando RAM e processamento no cliente.
-2. **Preparacao Reativa do DOM (`beforeStep`):** Se um painel estiver colapsado (como o Live Canvas ou a Sidebar), o motor executa automaticamente a transicao de abertura antes de focar o elemento, recalculando coordenadas apos a animacao.
-3. **Persistencia Local Segura:** Utiliza `localStorage.getItem('pidots_tour_completed')`. O operador pode reiniciar o fluxo a qualquer momento com o comando `/tour reset`.
+### Princípios de Engenharia do PiDotsTourEngine:
+1. **Zero Dependências Pesadas:** Nenhuma biblioteca de terceiros (como Intro.js ou Shepherd.js). Implementado diretamente em propriedades customizadas CSS e DOM API padrão, preservando RAM e processamento no cliente.
+2. **Preparação Reativa do DOM (`beforeStep`):** Se um painel estiver recolhido (como o Live Canvas ou a barra lateral), o motor executa automaticamente a transição de abertura antes de focar o elemento, recalculando coordenadas após a animação.
+3. **Persistência Local Segura:** Utiliza `localStorage.getItem('pidots_tour_completed')`. O operador pode reiniciar o fluxo a qualquer momento com o comando `/tour reset`.
 
 ---
 
-## 21. Extensibilidade MCP Lite, Governanca Criptografica e Barramento Fisico Edge (v1.5.3)
+## 21. Extensibilidade MCP Lite, Governança Criptográfica e Barramento Físico de Borda (v1.5.3)
 
-A versao 1.5.3 consolida as novas capacidades operacionais de extensao e seguranca fisica do piDots:
+A versão 1.5.3 consolida as novas capacidades operacionais de extensão e segurança física do piDots:
 
 ### 21.1 Cliente MCP Lite (< 5MB RAM, STDIO/SSE, Dynamic Tool Pruning)
 - **Protocolo:** JSON-RPC 2.0 sobre transporte STDIO (via `asyncio.create_subprocess_exec`) e SSE/HTTP (via `httpx.AsyncClient`).
-- **Conversao para OpenAI:** Ferramentas retornadas por `tools/list` sao convertidas para a especificacao da OpenAI API com prefixo `mcp_{server}_{tool}`.
-- **Poda Dinamica (Tool Pruning):** O catalogo de ferramentas MCP registradas passa compulsoriamente pelo filtro `allowed_tools_json` de cada Dot, garantindo que agentes sem a permissao explicita nao recebam ferramentas externas no payload de inferencia.
+- **Conversão para OpenAI:** Ferramentas retornadas por `tools/list` são convertidas para a especificação da OpenAI API com prefixo `mcp_{server}_{tool}`.
+- **Poda Dinâmica (Tool Pruning):** O catálogo de ferramentas MCP registradas passa compulsoriamente pelo filtro `allowed_tools_json` de cada Dot, garantindo que agentes sem a permissão explícita não recebam ferramentas externas na carga de inferência.
 
-### 21.2 Governanca HITL Interativa via Telegram e WhatsApp com Assinatura HMAC-SHA256
-- **Assinatura HMAC:** Todo alerta de acao critica retida gera tokens de aprovacao e bloqueio assinados com chave secreta (`settings.hitl_hmac_secret`).
-- **Telegram Inline Keyboard:** Notificacoes despachadas ao bot do Telegram incluem botoes interativos `[Aprovar]` e `[Bloquear]` com callback data compacto assinado (`h:a:<id>:<hmac>`), cabendo com folga no teto de 64 bytes da API.
-- **Validacao em Tempo Constante:** A rota `/api/hitl/signed-resolve` e os webhooks validam a autenticidade usando `hmac.compare_digest` antes de autorizar a execucao da operacao.
+### 21.2 Governança HITL Interativa via Telegram e WhatsApp com Assinatura HMAC-SHA256
+- **Assinatura HMAC:** Todo alerta de ação crítica retida gera tokens de aprovação e bloqueio assinados com chave secreta (`settings.hitl_hmac_secret`).
+- **Telegram Inline Keyboard:** Notificações despachadas ao bot do Telegram incluem botões interativos `[Aprovar]` e `[Bloquear]` com callback data compacto assinado (`h:a:<id>:<hmac>`), cabendo com folga no teto de 64 bytes da API.
+- **Validação em Tempo Constante:** A rota `/api/hitl/signed-resolve` e os webhooks validam a autenticidade usando `hmac.compare_digest` antes de autorizar a execução da operação.
 
-### 21.3 Dot Packs v1.1 com Assinatura Criptografica SHA-256 e Defesa contra Prompt Injection
-- **Integridade Criptografica:** Manifestos exportados contem o campo `sha256_checksum` cobrindo o conteudo canonico do agente, blocos de Core Memory e memorias arquivisticas. Na importacao, divergencias no hash provocam recusa imediata.
-- **Inspecao Defensiva pelo @dot-auditor:** O motor inspeciona `system_prompt`, `core_memory` e memorias arquivisticas contra padroes maliciosos de Prompt Injection (ex: `ignore previous instructions`, `system override`, `exfiltrate keys`), recusando o pacote caso ameacas sejam detectadas.
+### 21.3 Dot Packs v1.1 com Assinatura Criptográfica SHA-256 e Defesa contra Injeção de Prompt
+- **Integridade Criptográfica:** Manifestos exportados contêm o campo `sha256_checksum` cobrindo o conteúdo canônico do agente, blocos de Core Memory e memórias arquivísticas. Na importação, divergências no hash provocam recusa imediata.
+- **Inspeção Defensiva pelo @dot-auditor:** O motor inspeciona `system_prompt`, `core_memory` e memórias arquivísticas contra padrões maliciosos de injeção de prompt (ex: `ignore previous instructions`, `system override`, `exfiltrate keys`), recusando o pacote caso ameaças sejam detectadas.
 
-### 21.4 Barramento Fisico GPIO & MQTT Edge Triggers
-- **Monitoramento de Hardware:** Leitura de pinos GPIO (via sysfs ou libgpiod) com disparos orientados a eventos (ex: botao fisico de emergencia no pino 17 com severidade `CRITICAL`).
-- **Listener MQTT Assincrono:** Receptor assincrono de telemetria de sensores locais conectado a rotinas do `EdgeScheduler` sem degradar o loop uvloop do FastAPI.
+### 21.4 Barramento Físico GPIO e Gatilhos de Borda MQTT
+- **Monitoramento de Hardware:** Leitura de pinos GPIO (via sysfs ou libgpiod) com disparos orientados a eventos (ex: botão físico de emergência no pino 17 com severidade `CRITICAL`).
+- **Listener MQTT Assíncrono:** Receptor assíncrono de telemetria de sensores locais conectado a rotinas do `EdgeScheduler` sem degradar o loop uvloop do FastAPI.
 
 ---
 
-## 22. Padrao OpenDots & CopilotKit CoAgents / AG-UI Protocol (v1.5.3)
+## 22. Padrão OpenDots e Protocolo CopilotKit CoAgents / AG-UI (v1.5.3)
 
-A versao 1.5.3 integra os paradigmas do ecossistema **CopilotKit/OpenDots** e do protocolo **AG-UI / CoAgents** diretamente no monólito modular do piDots e na estetica **Pixel Paper UI** do console `/app`:
+A versão 1.5.3 integra os paradigmas do projeto **CopilotKit/OpenDots** e do protocolo **AG-UI / CoAgents** diretamente no monólito modular do piDots e na estética **Pixel Paper UI** do console `/app`:
 
-### 22.1 Activity Rail Lateral e 4 Paineis Contextuais
-- **Activity Rail (48px):** Barra vertical esquerda inspirada no padrao OpenDots, permitindo alternancia instantanea entre 4 paineis operacionais sem recarregar a pagina:
-  1. `[SPACES]`: Canais multi-bot (`#channel`), topicos em arvore (`threads`) e documentos versionados (`Spaces`) com busca em tempo real.
-  2. `[DOTS]`: Squad de agentes especialistas com criacao e edicao ao vivo via modal `#pixelDotCreatorModal` e matriz visual de *Dynamic Tool Pruning* (`allowed_tools_json`).
-  3. `[TASKS]`: Rotinas autonomas agendadas (Cron / Heartbeat) com disparo imediato (`POST /api/tasks/{id}/run`) e toggle ativo/pausado (`PATCH /api/tasks/{id}/toggle`).
-  4. `[MEM/MCP]`: Busca Hibrida RRF (FTS5 BM25 + Vetor 64D) e gerenciamento de servidores MCP Lite (`GET/POST /api/edge/mcp/servers`).
+### 22.1 Activity Rail Lateral e 4 Painéis Contextuais
+- **Activity Rail (48px):** Barra vertical esquerda inspirada no padrão OpenDots, permitindo alternância instantânea entre 4 painéis operacionais sem recarregar a página:
+  1. `[SPACES]`: Canais multi-bot (`#channel`), tópicos em árvore (`threads`) e documentos versionados (`Spaces`) com busca em tempo real.
+  2. `[DOTS]`: Squad de agentes especialistas com criação e edição ao vivo via modal `#pixelDotCreatorModal` e matriz visual de *Dynamic Tool Pruning* (`allowed_tools_json`).
+  3. `[TASKS]`: Rotinas autônomas agendadas (Cron / Heartbeat) com disparo imediato (`POST /api/tasks/{id}/run`) e alternância ativo/pausado (`PATCH /api/tasks/{id}/toggle`).
+  4. `[MEM/MCP]`: Busca Híbrida RRF (FTS5 BM25 + Vetor 64D) e gerenciamento de servidores MCP Lite (`GET/POST /api/edge/mcp/servers`).
 
-### 22.2 Generative UI Inline e HITL com Edicao de Argumentos (`modified_args`)
-- **Generative UI Cards (`.gen-ui-card`):** Eventos SSE do protocolo AG-UI (`tool_call:start`, `tool_call:result`, `artifact:updated`) sao renderizados como fichas catalograficas colapsaveis diretamente na fita do teletipo, exibindo status `[EXECUTANDO...]`, tempo de execucao em milissegundos e payload formatado.
-- **Interrupt-Resume com `modified_args`:** Quando o guardiao HITL intercepta uma acao critica, o operador pode editar os argumentos JSON no cartao inline ou no dossie HITL e enviar `modified_args` para `POST /api/hitl/{id}/resolve`. O motor `DotAgent.resume_after_hitl()` injeta os argumentos corrigidos e retoma o loop ReAct sem perder o contexto da conversa.
+### 22.2 Generative UI Inline e HITL com Edição de Argumentos (`modified_args`)
+- **Generative UI Cards (`.gen-ui-card`):** Eventos SSE do protocolo AG-UI (`tool_call:start`, `tool_call:result`, `artifact:updated`) são renderizados como fichas catalográficas colapsáveis diretamente na fita do teletipo, exibindo status `[EXECUTANDO...]`, tempo de execução em milissegundos e carga útil formatada.
+- **Interrupt-Resume com `modified_args`:** Quando a governança HITL retém uma ação crítica, o operador pode editar os argumentos JSON no cartão inline ou na janela HITL e enviar `modified_args` para `POST /api/hitl/{id}/resolve`. O motor `DotAgent.resume_after_hitl()` injeta os argumentos corrigidos e retoma o loop ReAct sem perder o contexto da conversa.
 
 ### 22.3 CoAgents Shared State (`STATE_SNAPSHOT` e `STATE_DELTA`) e Computador do Dot
-- **Estado Compartilhado Bidirecional:** O motor emite `state:snapshot` no inicio de cada turno e `state:delta` a cada transicao de no cognitivo (`router -> thinker -> tool_executor -> verifier -> responder`), sincronizando a aba `[COAGENTS]` em tempo real e aceitando overrides manuais via `PATCH /api/threads/{id}/state`.
-- **Computador do Dot (`Dot's Computer`) e Modo Takeover:** O painel direito unifica terminal sandbox (`POST /api/edge/computer/exec`), navegador de arquivos de workspace (`GET /api/edge/computer/files`), editor de artefatos, CoAgents State e telemetria termica, contando com **Modo Takeover** para execucao manual direta pelo operador humano.
+- **Estado Compartilhado Bidirecional:** O motor emite `state:snapshot` no início de cada turno e `state:delta` a cada transição de nó cognitivo (`router -> thinker -> tool_executor -> verifier -> responder`), sincronizando a aba `[COAGENTS]` em tempo real e aceitando sobreposições manuais via `PATCH /api/threads/{id}/state`.
+- **Computador do Dot (`Dot's Computer`) e Modo Takeover:** O painel direito unifica terminal sandbox (`POST /api/edge/computer/exec`), navegador de arquivos de workspace (`GET /api/edge/computer/files`), editor de artefatos, CoAgents State e telemetria térmica, contando com **Modo Takeover** para execução manual direta pelo operador humano.
 
 ---
 
@@ -1006,7 +1007,4 @@ flowchart LR
 
 ### 26.3 Roteamento Cruzado Inteligente (`CrossSurfaceRouter`)
 O script `cross-surface-router.js` atua na camada do navegador identificando se a conexão provém de portas locais (`:8081`, `:8082`, `:8083`), de endereços IP de rede local ou de subdomínios Cloudflare (`app.*`, `docs.*`, `pidots.*`), reescrevendo os elementos de navegação e atalhos de teclado sequenciais (`g h`, `g w`, `g d`) para garantir alternância instantânea entre superfícies sem requisições 404.
-
-
-
 
