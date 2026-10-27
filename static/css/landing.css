@@ -50,9 +50,9 @@ body {
 header.landing-header {
     position: sticky;
     top: 0;
-    z-index: 120;
-    background: var(--paper-sheet, #11171a);
-    border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.12));
+    z-index: 100;
+    background: var(--paper-sheet);
+    border-bottom: 1px solid var(--border-default);
     height: calc(var(--header-height, 48px) + max(0px, var(--safe-top, 0px)));
     display: flex;
     align-items: center;
@@ -205,12 +205,17 @@ header.landing-header {
     top: calc(var(--header-height, 48px) + max(0px, var(--safe-top, 0px)));
     left: 0;
     right: 0;
-    background: var(--paper-sheet, #11171a);
-    border-bottom: 2px solid var(--accent-mint, #7cd9c6);
+    max-height: calc(100dvh - var(--header-height, 48px) - max(0px, var(--safe-top, 0px)));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    background: var(--paper-sheet);
+    border-bottom: 2px solid var(--accent-mint);
     box-shadow: var(--shadow-lg);
-    z-index: 110;
+    z-index: 150;
     flex-direction: column;
     padding: 16px 20px;
+    padding-bottom: max(16px, calc(16px + var(--safe-bottom, 0px)));
     gap: 12px;
     box-sizing: border-box;
 }
@@ -1409,6 +1414,19 @@ header.landing-header {
     font-weight: 600;
     color: var(--ink-main);
     width: 24%;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--paper-sheet);
+    border-right: 1px solid var(--border-default);
+}
+
+.comparison-table th.col-dimension {
+    background: var(--paper-surface-recessed);
+}
+
+.comparison-table tr:hover td.col-dimension {
+    background: var(--paper-surface-elevated, var(--paper-sheet));
 }
 
 .comparison-table .col-cloud {
@@ -2145,7 +2163,7 @@ footer.landing-footer {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.72);
-    z-index: 190;
+    z-index: 140;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
@@ -2163,9 +2181,10 @@ aside.retractable-drawer,
     right: 0;
     width: min(440px, 90vw);
     height: 100%;
+    height: 100dvh;
     background: var(--paper-sheet);
     border-left: 1px solid var(--border-default);
-    z-index: 200;
+    z-index: 150;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
@@ -2419,5 +2438,38 @@ aside.retractable-drawer.open,
     .rubber-stamps-arena {
         flex-direction: column;
         gap: 12px;
+    }
+}
+
+/* ---------------------------------------------------------------------
+   15. PREVENCAO DE AUTO-ZOOM NO APPLE IOS SAFARI & TOUCH (LANDING)
+   --------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    /* Prevencao de zoom automatico indesejado no Safari mobile */
+    input[type="text"],
+    input[type="search"],
+    input[type="number"],
+    textarea,
+    select,
+    .hero-sim-input,
+    .sim-input-field,
+    .drawer-search-input {
+        font-size: 16px !important;
+    }
+
+    /* Tap targets minimos para botoes criticos em telas touch */
+    .sim-quick-cmd-btn,
+    .sim-chip,
+    .btn-sim-send,
+    .sim-btn-send {
+        min-height: 38px;
+    }
+
+    .btn-duty-chip,
+    .calc-mode-btn {
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }
