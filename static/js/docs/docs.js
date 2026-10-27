@@ -52,34 +52,56 @@
             desbloquear() {}
         };
 
-        // 2. Controle do Drawer Retratil a Direita
+        // 2. Controle do Drawer Retratil a Direita (Menu Lateral Direito Abre/Fecha)
         function openDrawer() {
             if (!drawer) return;
-            drawer.classList.add('is-open');
-            if (drawerBackdrop) drawerBackdrop.classList.add('is-active');
+            drawer.classList.add('is-open', 'open');
+            if (drawerBackdrop) drawerBackdrop.classList.add('is-active', 'open');
             document.body.classList.add('drawer-open');
+            if (toggleDrawerBtn) {
+                toggleDrawerBtn.setAttribute('aria-expanded', 'true');
+            }
             if (window.innerWidth <= 1024) {
                 ScrollLockManager.bloquear();
             }
-            if (drawerSearch) drawerSearch.focus();
+            if (drawerSearch) {
+                setTimeout(() => drawerSearch.focus(), 50);
+            }
         }
 
         function closeDrawer(restoreScroll = true) {
-            if (drawer) drawer.classList.remove('is-open');
-            if (drawerBackdrop) drawerBackdrop.classList.remove('is-active');
+            if (drawer) drawer.classList.remove('is-open', 'open');
+            if (drawerBackdrop) drawerBackdrop.classList.remove('is-active', 'open');
             document.body.classList.remove('drawer-open');
+            if (toggleDrawerBtn) {
+                toggleDrawerBtn.setAttribute('aria-expanded', 'false');
+            }
             ScrollLockManager.desbloquear(false, restoreScroll);
         }
 
         if (toggleDrawerBtn) {
             toggleDrawerBtn.addEventListener('click', () => {
-                if (drawer && drawer.classList.contains('is-open')) {
+                if (drawer && (drawer.classList.contains('is-open') || drawer.classList.contains('open'))) {
                     closeDrawer();
                 } else {
                     openDrawer();
                 }
             });
         }
+
+        // Fechamento da Gaveta via Tecla Escape e Atalho Global Alt+I
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && drawer && (drawer.classList.contains('is-open') || drawer.classList.contains('open'))) {
+                closeDrawer();
+            } else if ((e.altKey && (e.key === 'i' || e.key === 'I')) && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                if (drawer && (drawer.classList.contains('is-open') || drawer.classList.contains('open'))) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+            }
+        });
 
         // 3. Navegacao Suave para Passos
         function scrollToStep(stepId) {
@@ -91,26 +113,16 @@
 
         function handleDrawerNav(e, stepId) {
             if (e) e.preventDefault();
-            if (window.innerWidth <= 1024) {
-                closeDrawer(false);
-            }
+            closeDrawer(false);
             requestAnimationFrame(() => {
                 scrollToStep(stepId);
             });
         }
 
-        // Destaque Ativo Resiliente (ScrollSpy Híbrido para Seções Curtas e Longas como #passo-13)
-        const tocLinks = document.querySelectorAll('.docs-toc-link');
+        // Destaque Ativo Resiliente (ScrollSpy Híbrido para Seções do Manual)
         function setActiveStepHighlight(id) {
             if (!id) return;
             drawerLinks.forEach(link => {
-                if (link.getAttribute('href') === '#' + id) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-            tocLinks.forEach(link => {
                 if (link.getAttribute('href') === '#' + id) {
                     link.classList.add('active');
                 } else {

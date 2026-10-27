@@ -127,25 +127,25 @@
                 <span class="theme-btn-label" data-i18n="nav.theme">Tema</span>
             </button>
 
-            <!-- Botao do Menu Drawer Retratil (Mobile/Tablet) -->
-            <button id="toggleDrawerBtn" class="pixel-btn btn-cyan mobile-drawer-trigger" title="Abrir Índice de Navegação">
+            <!-- Botao do Menu Drawer Retratil (Todos os Dispositivos: Desktop, Tablet e Mobile) -->
+            <button id="toggleDrawerBtn" class="pixel-btn btn-cyan" title="Abrir Índice de Navegação">
                 <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 <span class="drawer-btn-label" data-i18n="nav.guide_index">Índice</span>
             </button>
         </div>
     </header>
 
-    <!-- SHELL PRINCIPAL COM ARQUITETURA 3 COLUNAS (PADRAO OURO) -->
-    <div class="guide-shell docs-3col-layout">
+    <!-- SHELL PRINCIPAL EM LARGURA TOTAL COM GAVETA LATERAL DIREITA RETRATIL -->
+    <div class="guide-shell">
 
-        <!-- COLUNA 1: SIDEBAR DE NAVEGACAO (FIXA EM DESKTOP >= 1024PX, RETRATIL NO MOBILE) -->
-        <aside class="retractable-drawer docs-sidebar" id="retractableDrawer">
+        <!-- GAVETA RETRATIL DIREITA (MENU LATERAL DIREITO ABRE/FECHA COM ESTILO PASSO A PASSO E BUSCA) -->
+        <aside class="retractable-drawer" id="retractableDrawer" aria-label="Índice retrátil do manual">
             <div class="drawer-top-bar">
                 <span class="drawer-top-title">
                     <svg class="ui-icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                     <span>Índice do Manual</span>
                 </span>
-                <button class="pixel-btn mobile-only-btn" onclick="closeDrawer()" aria-label="Fechar Menu">Fechar</button>
+                <button class="pixel-btn btn-close-drawer" onclick="closeDrawer()" aria-label="Fechar Menu" title="Fechar Índice">Fechar [X]</button>
             </div>
 
             <!-- Campo de Busca no Drawer -->
@@ -262,8 +262,8 @@
         <!-- BACKDROP PARA DISPOSITIVOS MOVEIS -->
         <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
 
-        <!-- COLUNA 2: PROSA TECNICA CENTRAL -->
-        <main class="guide-viewport docs-main-prose" id="mainContent">
+        <!-- CONTEUDO PRINCIPAL EM LARGURA TOTAL (SEM CENTRALIZACAO) -->
+        <main class="guide-viewport" id="mainContent">
 
             <!-- FICHA CATALOGRAFICA HERO / BOAS-VINDAS -->
             <section class="guide-catalog-hero">
@@ -2436,38 +2436,6 @@ sudo systemctl status cloudflared</code></pre>
             </section>
 
         </main>
-
-        <!-- COLUNA 3: NESTA PAGINA (TOC FLUTUANTE DIREITO NO DESKTOP) -->
-        <aside class="docs-toc-col" id="docsToc">
-            <div class="docs-toc-card">
-                <div class="docs-toc-header">
-                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="14" y2="12"></line><line x1="4" y1="18" x2="18" y2="18"></line></svg>
-                    <span>NESTA PAGINA</span>
-                </div>
-                <nav class="docs-toc-nav" id="docsTocNav">
-                    <a href="#passo-1" class="docs-toc-link active">01. Arquitetura de Borda</a>
-                    <a href="#passo-2" class="docs-toc-link">02. Chat Multi-Bot</a>
-                    <a href="#passo-3" class="docs-toc-link">03. Dot Heartbeat 24/7</a>
-                    <a href="#passo-4" class="docs-toc-link">04. Gateway de Mensageria</a>
-                    <a href="#passo-5" class="docs-toc-link">05. Tool Pruning</a>
-                    <a href="#passo-6" class="docs-toc-link">06. Deploy &amp; MicroSD</a>
-                    <a href="#passo-7" class="docs-toc-link">07. Memória Hierárquica</a>
-                    <a href="#passo-8" class="docs-toc-link">08. Self-Healing Harness</a>
-                    <a href="#passo-9" class="docs-toc-link">09. Conselho Consultivo</a>
-                    <a href="#passo-10" class="docs-toc-link">10. Shared Space &amp; Packs</a>
-                    <a href="#passo-11" class="docs-toc-link">11. Triggers de Hardware</a>
-                    <a href="#passo-12" class="docs-toc-link">12. Micro-Motor i18n</a>
-                    <a href="#passo-13" class="docs-toc-link">13. Slash Commands</a>
-                    <a href="#passo-14" class="docs-toc-link">14. Desacoplamento &amp; Tunnel</a>
-                </nav>
-                <div class="docs-toc-footer">
-                    <a href="#top" class="docs-toc-backtop" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
-                        <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                        <span>Voltar ao Topo</span>
-                    </a>
-                </div>
-            </div>
-        </aside>
 
     </div>
 

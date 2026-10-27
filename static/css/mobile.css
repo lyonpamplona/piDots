@@ -420,7 +420,7 @@ nav.mobile-bottom-nav {
     }
 
     /* Gaveta Retratil em Tela Cheia no Smartphone (abaixo da bottom-nav para manter navegacao ativa) */
-    aside.retractable-drawer:not(.docs-sidebar) {
+    aside.retractable-drawer {
         width: 100vw !important;
         max-width: 100vw !important;
         right: 0 !important;
@@ -431,9 +431,9 @@ nav.mobile-bottom-nav {
         z-index: 9990 !important;
     }
 
-    aside.retractable-drawer:not(.docs-sidebar).open,
-    aside.retractable-drawer:not(.docs-sidebar).is-open,
-    body.drawer-open aside.retractable-drawer:not(.docs-sidebar) {
+    aside.retractable-drawer.open,
+    aside.retractable-drawer.is-open,
+    body.drawer-open aside.retractable-drawer {
         transform: translateX(0) !important;
         right: 0 !important;
     }

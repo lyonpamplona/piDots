@@ -121,152 +121,79 @@ header.guide-header::-webkit-scrollbar {
 }
 
 /* ---------------------------------------------------------------------
-   ESTRUTURA GERAL DA PAGINA COM ARQUITETURA 3 COLUNAS (PADRAO OURO)
+   ESTRUTURA GERAL DA PAGINA // PRANCHETA EM LARGURA TOTAL
+   Menu lateral direito retratil (abre/fecha), estilo passo a passo,
+   campo de pesquisa, layout responsivo, conteudo em largura total (sem centralizacao).
    --------------------------------------------------------------------- */
-.guide-shell,
-.docs-3col-layout {
+.guide-shell {
     width: 100%;
-    display: flex;
-    align-items: flex-start;
     position: relative;
     min-height: calc(100vh - var(--header-height, 48px));
     background: var(--paper-base, #0c1012);
+    display: block;
 }
 
-/* Coluna 1: Sidebar de Navegacao (Fixa em Desktop > 1024px) */
-aside.retractable-drawer,
-aside.docs-sidebar {
-    width: 270px;
-    min-width: 270px;
-    flex-shrink: 0;
-    position: sticky;
-    top: var(--header-height, 48px);
-    left: auto;
-    right: auto;
-    height: calc(100vh - var(--header-height, 48px));
-    background: var(--paper-surface, #11171a);
-    border-right: 1px solid var(--border-default, rgba(255, 255, 255, 0.12));
-    border-left: none;
+/* Gaveta Retratil Lateral Direita (Abre e Fecha em Qualquer Resolucao) */
+aside.retractable-drawer {
+    position: fixed;
+    top: 0;
+    right: calc(-1 * var(--drawer-width, 380px));
+    width: var(--drawer-width, 380px);
+    max-width: 90vw;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--paper-sheet, #0a0f0d);
+    border-left: 2px solid var(--border-strong, #24362f);
+    border-right: none;
+    z-index: 130;
     display: flex;
     flex-direction: column;
-    z-index: 80;
-    transform: none;
-    box-shadow: none;
+    transition: right 0.2s steps(4), transform 0.2s steps(4);
+    box-shadow: -6px 0px 0px #000000;
 }
 
-.mobile-only-btn {
+aside.retractable-drawer.open,
+aside.retractable-drawer.is-open {
+    right: 0;
+    transform: translateX(0);
+}
+
+.btn-close-drawer {
+    font-family: var(--font-pixel, monospace);
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    padding: 4px 8px;
+}
+
+/* Backdrop da Gaveta Retratil com Dithering Conico Procedural */
+.drawer-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(0, 0, 0, 0.7);
+    background-image: repeating-conic-gradient(var(--border-subtle, rgba(255, 255, 255, 0.08)) 0% 25%, transparent 0% 50%);
+    background-size: 4px 4px;
+    z-index: 120;
     display: none;
 }
 
-.mobile-drawer-trigger {
-    display: none;
+.drawer-backdrop.is-active,
+.drawer-backdrop.open,
+body.drawer-open .drawer-backdrop {
+    display: block;
 }
 
-/* Coluna 2: Prosa Central Continua em Largura Total */
-main.guide-viewport,
-main.docs-main-prose {
-    flex: 1;
-    min-width: 0;
+/* Conteudo Principal em Largura Total (Sem Centralizacao, Prancheta Tecnica) */
+main.guide-viewport {
+    width: 100%;
     max-width: 100%;
     margin: 0;
-    padding: 32px 40px 96px;
+    padding: 24px 32px 96px;
     box-sizing: border-box;
     transition: none;
-}
-
-body.drawer-open main.guide-viewport {
-    margin-right: 0;
-}
-
-/* Coluna 3: Nesta Pagina (TOC Sticky a Direita no Desktop) */
-aside.docs-toc-col {
-    width: 240px;
-    min-width: 240px;
-    flex-shrink: 0;
-    position: sticky;
-    top: calc(var(--header-height, 48px) + 24px);
-    max-height: calc(100vh - var(--header-height, 48px) - 48px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    padding: 12px 16px 24px;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    z-index: 70;
-}
-
-.docs-toc-card {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.docs-toc-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: var(--ink-muted);
-    text-transform: uppercase;
-}
-
-.docs-toc-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    border-left: 1px solid var(--border-subtle);
-    padding-left: 12px;
-}
-
-.docs-toc-link {
-    font-family: var(--font-sans);
-    font-size: 12px;
-    color: var(--ink-secondary);
-    text-decoration: none;
-    line-height: 1.45;
-    padding: 3px 0;
-    transition: all 0.15s ease;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.docs-toc-link:hover {
-    color: var(--accent-mint, #7cd9c6);
-    padding-left: 2px;
-}
-
-.docs-toc-link.active {
-    color: var(--accent-mint, #7cd9c6);
-    font-weight: 600;
-    border-left: 2px solid var(--accent-mint, #7cd9c6);
-    margin-left: -13px;
-    padding-left: 11px;
-}
-
-.docs-toc-footer {
-    margin-top: 14px;
-    padding-top: 10px;
-    border-top: 1px solid var(--border-subtle);
-}
-
-.docs-toc-backtop {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--ink-muted);
-    text-decoration: none;
-    transition: color 0.15s ease;
-}
-
-.docs-toc-backtop:hover {
-    color: var(--accent-mint);
 }
 
 /* ---------------------------------------------------------------------
@@ -1529,68 +1456,19 @@ footer.guide-paper-footer {
    RESPONSIVIDADE MODERNA (TABLETS & SMARTPHONES)
    --------------------------------------------------------------------- */
 @media (max-width: 1200px) {
-    aside.docs-toc-col {
-        display: none !important;
-    }
-    main.guide-viewport,
-    main.docs-main-prose {
-        max-width: 100%;
-        padding: 28px 36px 80px;
+    main.guide-viewport {
+        padding: 24px 28px 80px;
     }
 }
 
 @media (max-width: 1024px) {
-    aside.retractable-drawer,
-    aside.docs-sidebar {
-        position: fixed !important;
-        top: var(--header-height, 48px) !important;
-        right: 0 !important;
-        left: auto !important;
-        width: 340px !important;
-        max-width: 88vw !important;
-        height: calc(100vh - var(--header-height, 48px)) !important;
-        border-left: 1px solid var(--border-default) !important;
-        border-right: none !important;
-        transform: translateX(100%) !important;
-        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        z-index: 100 !important;
-        box-shadow: -4px 0 0px #000000 !important;
+    aside.retractable-drawer {
+        width: 340px;
+        max-width: 88vw;
     }
 
-    aside.retractable-drawer.is-open,
-    aside.docs-sidebar.is-open {
-        transform: translateX(0) !important;
-    }
-
-    .mobile-only-btn {
-        display: inline-flex !important;
-    }
-
-    .mobile-drawer-trigger {
-        display: inline-flex !important;
-    }
-
-    .drawer-backdrop {
-        position: fixed;
-        top: var(--header-height, 48px);
-        left: 0;
-        width: 100vw;
-        height: calc(100vh - var(--header-height, 48px));
-        background: rgba(0, 0, 0, 0.75);
-        background-image: repeating-conic-gradient(var(--border-subtle) 0% 25%, transparent 0% 50%);
-        background-size: 4px 4px;
-        z-index: 95;
-        display: none;
-    }
-
-    .drawer-backdrop.is-active {
-        display: block !important;
-    }
-
-    main.guide-viewport,
-    main.docs-main-prose {
+    main.guide-viewport {
         padding: 20px 20px 60px;
-        max-width: 100%;
     }
 
     .header-search-box {
@@ -1614,17 +1492,22 @@ footer.guide-paper-footer {
         padding: 0 12px;
     }
 
-    aside.retractable-drawer,
-    aside.docs-sidebar {
-        width: 100vw !important;
-        max-width: 100vw !important;
-        height: 100dvh !important;
-        top: 0 !important;
-        right: 0 !important;
-        left: auto !important;
+    aside.retractable-drawer {
+        width: 100vw;
+        max-width: 100vw;
+        height: 100dvh;
+        top: 0;
+        right: -100vw;
+        border-left: none;
         padding-top: var(--safe-top, 0px);
         padding-bottom: var(--safe-bottom, 0px);
-        z-index: 1000 !important;
+        z-index: 1000;
+    }
+
+    aside.retractable-drawer.open,
+    aside.retractable-drawer.is-open {
+        right: 0;
+        transform: translateX(0);
     }
 
     .drawer-top-bar {
