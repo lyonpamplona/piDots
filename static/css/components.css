@@ -36,7 +36,7 @@
     background: var(--paper-surface);
     color: var(--ink-main);
     border: 1px solid var(--border-default);
-    border-radius: var(--radius-sm, 3px);
+    border-radius: 0;
     box-shadow: var(--shadow-sm);
     cursor: pointer;
     user-select: none;
@@ -44,7 +44,7 @@
     align-items: center;
     gap: 6px;
     white-space: nowrap;
-    transition: all 0.12s ease;
+    transition: transform 0.05s steps(1), box-shadow 0.05s steps(1), background 0.05s steps(1), color 0.05s steps(1), border-color 0.05s steps(1);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     position: relative;
@@ -66,19 +66,20 @@
 .pixel-btn:hover {
     border-color: var(--border-accent);
     color: var(--ink-main);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #000000;
 }
 
 .pixel-btn:active {
-    transform: translateY(1px);
-    box-shadow: none;
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #000000;
 }
 
 .pixel-btn:focus-visible {
-    outline: none;
+    outline: 2px solid var(--blueprint-cyan);
+    outline-offset: 1px;
     border-color: var(--blueprint-cyan);
-    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+    box-shadow: none;
 }
 
 .pixel-btn.btn-cyan {
@@ -149,13 +150,13 @@
     padding: 10px 18px;
     font-size: 13px;
     font-weight: 600;
-    border-radius: var(--radius-sm, 3px);
+    border-radius: 0;
 }
 
 .pixel-btn.btn-sm {
     padding: 4px 8px;
     font-size: 10px;
-    border-radius: var(--radius-xs, 2px);
+    border-radius: 0;
 }
 
 /* =====================================================================
@@ -170,12 +171,14 @@
     font-size: 12px;
     padding: 8px 10px;
     outline: none;
+    border-radius: 0;
     box-shadow: inset 1px 1px 0px #000;
 }
 
 .pixel-input:focus, .pixel-textarea:focus {
     border-color: var(--border-accent);
-    box-shadow: 0 0 0 1px var(--border-accent);
+    outline: 1px solid var(--border-accent);
+    box-shadow: none;
 }
 
 /* =====================================================================
@@ -666,7 +669,7 @@
 .empty-chat-persona {
     background: var(--paper-surface-sheet);
     border: 1px solid var(--border-default);
-    border-radius: var(--radius-sm, 3px);
+    border-radius: 0;
     padding: 20px 24px;
     margin: 16px 0 24px 0;
     box-shadow: var(--shadow-sm);
@@ -688,11 +691,11 @@
 }
 
 .empty-chat-persona-name {
-    font-family: var(--font-sans);
-    font-size: 15px;
+    font-family: var(--font-pixel-head, var(--font-mono));
+    font-size: 13px;
     font-weight: 700;
     color: var(--ink-main);
-    letter-spacing: -0.01em;
+    letter-spacing: 0.02em;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -703,7 +706,7 @@
     font-size: 9px;
     font-weight: 600;
     padding: 1px 6px;
-    border-radius: var(--radius-xs, 2px);
+    border-radius: 0;
     background: rgba(56, 189, 248, 0.10);
     border: 1px solid var(--blueprint-cyan);
     color: var(--blueprint-cyan);
@@ -711,8 +714,8 @@
 }
 
 .empty-chat-persona-desc {
-    font-family: var(--font-sans);
-    font-size: 12px;
+    font-family: var(--font-mono-data, var(--font-mono));
+    font-size: 11.5px;
     color: var(--ink-secondary);
     line-height: 1.5;
 }
@@ -723,7 +726,7 @@
     height: 32px;
     background: var(--paper-surface-recessed);
     border: 1px solid var(--border-default);
-    border-radius: var(--radius-sm, 3px);
+    border-radius: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -764,19 +767,20 @@
 .dot-pulse-dot {
     width: 6px;
     height: 6px;
-    border-radius: 50%;
+    border-radius: 0;
     background: var(--phosphor-green);
     display: inline-block;
     flex-shrink: 0;
+    box-shadow: 1px 1px 0px #000000;
 }
 
 .dot-pulse-dot.status-idle { background: var(--phosphor-green); }
 .dot-pulse-dot.status-busy { background: var(--thermal-amber); }
-.dot-pulse-dot.status-thinking { background: var(--blueprint-cyan); animation: pulse-glow 1.2s infinite ease-in-out; }
+.dot-pulse-dot.status-thinking { background: var(--blueprint-cyan); animation: pixelBlink 1s steps(1) infinite; }
 
-@keyframes pulse-glow {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1.15); }
+@keyframes pixelBlink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
 }
 
 /* Pilulas de Sugestao Inicial (Starter Suggestions) */
@@ -805,10 +809,10 @@
 .starter-pill {
     background: var(--paper-surface);
     border: 1px solid var(--border-default);
-    border-radius: var(--radius-sm, 3px);
+    border-radius: 0;
     padding: 7px 12px;
-    font-family: var(--font-sans);
-    font-size: 11.5px;
+    font-family: var(--font-mono-data, var(--font-mono));
+    font-size: 11px;
     font-weight: 500;
     color: var(--ink-secondary);
     cursor: pointer;
@@ -816,7 +820,7 @@
     align-items: center;
     gap: 6px;
     box-shadow: var(--shadow-sm);
-    transition: all 0.12s ease;
+    transition: transform 0.05s steps(1), box-shadow 0.05s steps(1), background 0.05s steps(1), color 0.05s steps(1);
     user-select: none;
     touch-action: manipulation;
 }
@@ -825,13 +829,13 @@
     background: var(--paper-surface-elevated);
     border-color: var(--border-accent);
     color: var(--ink-main);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #000000;
 }
 
 .starter-pill:active {
-    transform: translateY(1px);
-    box-shadow: none;
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #000000;
 }
 
 .starter-pill .pill-icon {
@@ -847,7 +851,7 @@
     gap: 8px;
     background: var(--paper-surface-recessed);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm, 3px);
+    border-radius: 0;
     padding: 6px 10px;
     margin-top: 6px;
 }
@@ -872,7 +876,7 @@
     background: var(--paper-surface-recessed);
     border: 1px solid var(--border-default);
     border-left: 3px solid var(--blueprint-cyan);
-    border-radius: var(--radius-sm, 3px);
+    border-radius: 0;
     padding: 10px 12px;
     margin: 8px 0;
     box-shadow: var(--shadow-sm);
@@ -903,7 +907,7 @@
     font-family: var(--font-mono);
     font-size: 9px;
     padding: 1px 5px;
-    border-radius: var(--radius-xs, 2px);
+    border-radius: 0;
     background: var(--paper-surface);
     border: 1px solid var(--border-subtle);
     color: var(--phosphor-green);
@@ -912,7 +916,7 @@
 .inline-tool-code {
     background: var(--paper-surface);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xs, 2px);
+    border-radius: 0;
     padding: 8px 10px;
     font-family: var(--font-mono);
     font-size: 11px;
@@ -936,7 +940,7 @@
 .inline-hitl-card {
     background: rgba(245, 158, 11, 0.04);
     border: 1.5px solid var(--thermal-amber);
-    border-radius: var(--radius-sm, 3px);
+    border-radius: 0;
     padding: 12px 14px;
     margin: 10px 0;
     box-shadow: var(--shadow-md);
@@ -960,7 +964,7 @@
 .inline-hitl-risk-tag {
     font-size: 9px;
     padding: 2px 6px;
-    border-radius: var(--radius-xs, 2px);
+    border-radius: 0;
     background: rgba(244, 63, 94, 0.15);
     border: 1px solid var(--stamp-danger);
     color: var(--stamp-danger);
@@ -970,7 +974,7 @@
 .inline-hitl-code {
     background: #020305;
     border: 1px solid rgba(245, 158, 11, 0.25);
-    border-radius: var(--radius-xs, 2px);
+    border-radius: 0;
     padding: 8px 10px;
     font-family: var(--font-mono);
     font-size: 11.5px;
@@ -986,4 +990,236 @@
     gap: 8px;
     flex-wrap: wrap;
     margin-top: 4px;
+}
+
+/* =====================================================================
+   15. UTILITARIOS CENTRAIS DO DESIGN SYSTEM PIXEL PAPER UI
+   ===================================================================== */
+
+/* Involucro Estanque de Pixel Art (Pixel Box) */
+.pixel-box {
+    background: var(--paper-surface-sheet);
+    border: 2px solid var(--border-pixel-default);
+    box-shadow: var(--shadow-pixel-sm);
+    padding: 12px 16px;
+    border-radius: 0;
+    position: relative;
+}
+
+/* Abas Chanfradas em Degrau de Pixel Art (Polygon Clip-Path) */
+.pixel-tab {
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: 9px;
+    padding: 4px 10px;
+    background: var(--paper-surface-card);
+    border: 1px solid var(--border-pixel-default);
+    border-radius: 0;
+    color: var(--ink-paper-bright);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+    transition: background 0.05s steps(1), color 0.05s steps(1);
+}
+
+.pixel-tab.active,
+.pixel-tab:hover {
+    background: var(--paper-surface-elevated);
+    border-color: var(--border-pixel-accent);
+    color: var(--ink-cyan-blueprint);
+}
+
+/* Fichas Catalograficas Centrais (Pixel Card) */
+.pixel-card {
+    background: var(--paper-surface-card);
+    border: 1px solid var(--border-pixel-default);
+    box-shadow: var(--shadow-pixel-sm);
+    padding: 16px;
+    border-radius: 0;
+    position: relative;
+}
+
+.pixel-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border-pixel-subtle);
+}
+
+.pixel-card-title {
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: 11px;
+    color: var(--ink-paper-bright);
+    letter-spacing: 0.03em;
+}
+
+.pixel-card-body {
+    font-family: var(--font-mono-data, var(--font-mono));
+    font-size: 11.5px;
+    color: var(--ink-paper-secondary);
+    line-height: 1.5;
+}
+
+/* Tabelas com Celulas Estanques e Numeracao Tabular */
+table.pixel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono-data, var(--font-mono));
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    border: 1px solid var(--border-pixel-default);
+    background: var(--paper-surface-sheet);
+}
+
+table.pixel-table th {
+    background: var(--paper-surface-recessed);
+    color: var(--ink-cyan-blueprint);
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 10px;
+    border: 1px solid var(--border-pixel-default);
+    text-align: left;
+}
+
+table.pixel-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--border-pixel-subtle);
+    color: var(--ink-paper-bright);
+    font-family: var(--font-mono-data, var(--font-mono));
+    font-variant-numeric: tabular-nums;
+}
+
+table.pixel-table tr:hover td {
+    background: var(--paper-surface-card);
+}
+
+/* Carimbos e Selos Oficiais de Governanca */
+.pixel-stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: 8px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border: 1px solid var(--border-pixel-default);
+    border-radius: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    user-select: none;
+    background: var(--paper-surface-recessed);
+    color: var(--ink-paper-bright);
+}
+
+.pixel-stamp.stamp-approved,
+.pixel-stamp.stamp-green {
+    color: var(--ink-green-phosphor);
+    border-color: var(--ink-green-phosphor);
+    background: rgba(51, 255, 102, 0.08);
+}
+
+.pixel-stamp.stamp-amber,
+.pixel-stamp.stamp-warning {
+    color: var(--ink-amber-thermal);
+    border-color: var(--ink-amber-thermal);
+    background: rgba(255, 184, 48, 0.08);
+}
+
+.pixel-stamp.stamp-rejected,
+.pixel-stamp.stamp-danger,
+.pixel-stamp.stamp-critical {
+    color: var(--ink-stamp-danger);
+    border-color: var(--ink-stamp-danger);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.pixel-stamp.stamp-cyan,
+.pixel-stamp.stamp-blueprint {
+    color: var(--ink-cyan-blueprint);
+    border-color: var(--ink-cyan-blueprint);
+    background: rgba(56, 189, 248, 0.08);
+}
+
+/* Carimbo de Borracha Analogico com Textura Dithered */
+.pixel-rubber-stamp {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border: 3px double currentColor;
+    box-shadow: 2px 2px 0px #000000;
+    user-select: none;
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: transform 0.05s steps(1), opacity 0.05s steps(1);
+}
+
+.pixel-rubber-stamp.stamp-approve,
+.rubber-stamp.stamp-approved {
+    color: var(--ink-green-phosphor);
+    border-color: var(--ink-green-phosphor);
+    transform: rotate(2deg);
+    background-image: radial-gradient(var(--ink-green-phosphor) 15%, transparent 16%);
+    background-size: 4px 4px;
+}
+
+.pixel-rubber-stamp.stamp-reject,
+.rubber-stamp.stamp-rejected {
+    color: var(--ink-stamp-danger);
+    border-color: var(--ink-stamp-danger);
+    transform: rotate(-2.5deg);
+    background-image: radial-gradient(var(--ink-stamp-danger) 15%, transparent 16%);
+    background-size: 4px 4px;
+}
+
+/* Fita de Papel Continuo: Perfuracoes de Trator Lateral & Picotes de Destaque */
+.tractor-feed,
+.tractor-feed.feed-left {
+    background-color: var(--paper-surface-recessed);
+    border-right: 1px solid var(--border-pixel-subtle);
+    background-image: radial-gradient(var(--border-pixel-default) 38%, transparent 39%);
+    background-size: 20px 24px;
+    background-repeat: repeat-y;
+    background-position: center;
+    width: 24px;
+    flex-shrink: 0;
+}
+
+.tractor-feed.feed-right {
+    border-right: none;
+    border-left: 1px solid var(--border-pixel-subtle);
+}
+
+.tear-off,
+.slip-perforation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    user-select: none;
+}
+
+.perforation-line {
+    flex: 1;
+    height: 0;
+    border-top: 1px dashed var(--ink-paper-carbon);
+}
+
+.perforation-tag {
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: 7.5px;
+    color: var(--ink-paper-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1px 4px;
+    background: var(--paper-surface-recessed);
+    border: 1px solid var(--border-pixel-subtle);
 }

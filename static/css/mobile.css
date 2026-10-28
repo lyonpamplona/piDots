@@ -102,6 +102,22 @@ nav.mobile-bottom-nav {
    2. REGRAS RESPONSIVAS PARA TABLETS E SMARTPHONES (< 768px)
    ===================================================================== */
 @media (max-width: 768px) {
+    /* Blindagem Ortogonal Estrita Pixel Paper UI (Neutralizacao de Raio Mobile) */
+    .pixel-btn,
+    .pixel-dialog-box,
+    .inline-hitl-card,
+    .empty-chat-persona,
+    .starter-pill,
+    .surface-tab,
+    .source-input-bar,
+    .inline-tool-card,
+    .inline-tool-code,
+    .inline-hitl-code,
+    .pixel-box,
+    .pixel-card {
+        border-radius: 0 !important;
+    }
+
     /* Oculta rodape desktop e telemetria expandida */
     footer.mission-footer,
     .header-telemetry {
@@ -425,7 +441,7 @@ nav.mobile-bottom-nav {
         max-width: 100vw !important;
         right: 0 !important;
         transform: translateX(100%) !important;
-        transition: transform 0.2s steps(4) !important;
+        transition: transform 0.1s steps(2) !important;
         padding-top: max(8px, var(--safe-top)) !important;
         padding-bottom: calc(var(--bottom-nav-height, 58px) + var(--safe-bottom) + 16px) !important;
         z-index: 9990 !important;
