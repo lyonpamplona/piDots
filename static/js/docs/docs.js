@@ -283,7 +283,7 @@
             const outputElem = document.getElementById('apiTestJsonOutput');
             const runBtn = document.getElementById('btnRunApiTest');
             const runBtnLabel = runBtn ? runBtn.querySelector('span') : null;
-            const originalLabel = runBtnLabel ? runBtnLabel.textContent : 'Disparar Requisição REST';
+            const originalLabel = runBtnLabel ? runBtnLabel.textContent : 'Testar Rota HTTP';
 
             const metodo = methodBadge ? methodBadge.innerText.trim() : 'GET';
             const rota = urlInput ? urlInput.value.trim() : '/health';
@@ -329,7 +329,7 @@
                     statusBadge.className = 'api-status-badge ' + (resp.ok ? 'status-200' : 'status-err');
                 }
                 if (latencyBadge) latencyBadge.innerText = latency + ' ms';
-                if (titleElem) titleElem.innerText = 'RESPOSTA JSON DO SERVIDOR // HTTP ' + resp.status;
+                if (titleElem) titleElem.innerText = 'RESPOSTA DO SERVIDOR // HTTP ' + resp.status;
                 if (outputElem) outputElem.innerText = JSON.stringify(json, null, 2);
 
             } catch (err) {
@@ -342,7 +342,7 @@
                     statusBadge.className = 'api-status-badge status-200';
                 }
                 if (latencyBadge) latencyBadge.innerText = latency + ' ms';
-                if (titleElem) titleElem.innerText = 'RESPOSTA JSON DO SERVIDOR // ENDPOINT VALIDO ' + rota;
+                if (titleElem) titleElem.innerText = 'RESPOSTA SIMULADA // ' + rota;
                 
                 let fallbackPayload = {
                     endpoint: rota,
@@ -765,7 +765,15 @@
                     if (btn) {
                         btn.style.display = 'inline-flex';
                         btn.onclick = () => {
-                            alert('Instalacao no iOS Safari:\n1. Toque no botao Compartilhar (icone de quadrado com seta para cima)\n2. Selecione "Adicionar a Tela de Inicio"');
+                            const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
+                            const msg = isEn
+                                ? 'To install on iOS Safari: tap the Share button and select "Add to Home Screen".'
+                                : 'Instalação no iOS Safari: toque no botão Compartilhar e selecione "Adicionar à Tela de Início".';
+                            if (window.PixelSystem && window.PixelSystem.toast) {
+                                window.PixelSystem.toast(msg, 'info', 5000);
+                            } else {
+                                console.info(msg);
+                            }
                         };
                     }
                 }

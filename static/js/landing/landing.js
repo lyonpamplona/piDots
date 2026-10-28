@@ -245,7 +245,7 @@
             if (elCo2) elCo2.textContent = `${co2AvoidedKg.toLocaleString('pt-BR')} KG`;
         }
 
-        // Emissao do Dossie de Economia Forense em Toast Termico
+        // Notificação de resumo da estimativa de economia
         function generateRoiSummaryToast() {
             const elBRL = document.getElementById('resAnnualSavingsBRL');
             const elPayback = document.getElementById('resPaybackDays');
@@ -640,7 +640,8 @@
                 if (status) status.innerText = 'STATUS: CONCLUIDO (RODADA 3/3)';
                 appendSimLine(feed, `<div class="council-bubble supervisor"><strong>[@dot-supervisor // VEREDITO]:</strong> Aprovado com a restricao do auditor. Registrando resolucao na tabela agent_handoffs como COMPLETED.</div>`);
                 feed.scrollTop = feed.scrollHeight;
-                showToast('Conselho Consultivo: Deliberação tripartite concluída.', 'success');
+                const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
+                showToast(isEn ? 'Deliberation concluded among coworkers.' : 'Deliberação entre coworkers concluída.', 'success');
             }, 1200);
         }
 
@@ -701,7 +702,11 @@
             if (tempPolyline) tempPolyline.setAttribute('points', '0,52 50,52 50,30 110,30 110,22 170,22 170,18 230,18 230,15 290,15 290,14 310,14');
             if (tempPolygon) tempPolygon.setAttribute('points', '0,80 0,52 50,52 50,30 110,30 110,22 170,22 170,18 230,18 230,15 290,15 290,14 310,14 310,80');
 
-            showToast('ALERTA TÉRMICO: Temperatura acima de 72 °C. EdgeHardwareTriggers ativou desaceleração de polling.', 'danger', 4500);
+            const isEn = window.PiDotsI18n && window.PiDotsI18n.getLanguage() === 'en';
+            const thermalMsg = isEn
+                ? 'THERMAL ALERT: Temperature above 72 °C. Polling interval throttled to protect hardware.'
+                : 'ALERTA TÉRMICO: Temperatura acima de 72 °C. Intervalo de checagem reduzido para proteger o processador.';
+            showToast(thermalMsg, 'danger', 4500);
 
             registerSimTimer(() => {
                 if (tempDisplay) tempDisplay.innerHTML = '<span>48.2 C (NOMINAL)</span>';

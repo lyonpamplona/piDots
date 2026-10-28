@@ -32,12 +32,12 @@
             steps: [
                 {
                     elementSelector: '.opendots-sidebar-layout, #leftSidebar',
-                    title: 'ACTIVITY RAIL E COORDENACAO SPACES',
-                    badge: '// NAVEGACAO & SPACES',
+                    title: 'BARRA LATERAL E BIBLIOTECA DE SPACES',
+                    badge: '// NAVEGAÇÃO & ARQUIVOS',
                     placement: 'right',
-                    what: 'Trilho de atividades vertical de 48px com 5 contextos operacionais (Spaces, Dots, Tasks, Memoria e Configs) e diretorio de artefatos persistidos no SQLite WAL.',
-                    how: 'Clique nos icones do trilho para chavear contextos ou selecione um Space para abrir arquivos, documentos e especificacoes na prancheta.',
-                    tip: 'Use <kbd>Alt+1</kbd> a <kbd>Alt+5</kbd> para alternar os paineis contextuais ou <kbd>Ctrl+B</kbd> para recolher a barra lateral.',
+                    what: 'Aqui ficam seus arquivos, agentes e rotinas salvas no SQLite local. Cada Space é um documento vivo que você edita em conjunto com os bots.',
+                    how: 'Clique nos ícones para navegar ou selecione um Space para abrir o código na prancheta de trabalho.',
+                    tip: 'Atalhos: <kbd>Alt+1</kbd> a <kbd>Alt+5</kbd> trocam de painel; <kbd>Ctrl+B</kbd> esconde a barra lateral para ganhar espaço na tela.',
                     beforeStep: function() {
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile && typeof setMobileView === 'function') {
@@ -58,12 +58,12 @@
                 },
                 {
                     elementSelector: '.ticker-input-bar, #instructionInput',
-                    title: 'TELETIPO REACT E TERMINAL DE COMANDO',
-                    badge: '// TELETIPO & COMANDOS',
+                    title: 'TELETIPO: TERMINAL DE COMANDO DOS AGENTES',
+                    badge: '// CHAT & ORDENS',
                     placement: 'top',
-                    what: 'Console conversacional de emissao de missoes com bobina continua matricial, Source Input Bar com indicador de canal e agente ativo, e caderno ReAct.',
-                    how: 'Digite <kbd>/</kbd> ou clique no botao <kbd>/</kbd> para abrir o catalogo de comandos rapidos; digite <kbd>@</kbd> para convocar especialistas autonomos.',
-                    tip: 'Pressione <kbd>Enter</kbd> para transmitir a instrucao, <kbd>Shift+Enter</kbd> para quebrar linha ou <kbd>Ctrl+L</kbd> para limpar a bobina de papel.',
+                    what: 'O feed principal funciona como uma fita contínua de teletipo. Todas as respostas, raciocínios dos bots e saídas de ferramentas são impressas aqui em tempo real.',
+                    how: 'Envie sua mensagem diretamente, use <kbd>@nome</kbd> para falar com um bot específico ou <kbd>/</kbd> para abrir os 34 comandos rápidos.',
+                    tip: '<kbd>Enter</kbd> transmite a instrução, <kbd>Shift+Enter</kbd> pula linha e <kbd>Ctrl+L</kbd> limpa a bobina sem apagar o histórico do banco.',
                     beforeStep: function() {
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile && typeof setMobileView === 'function') {
@@ -77,12 +77,12 @@
                 },
                 {
                     elementSelector: '#computerConsoleBanner, #rightCanvas',
-                    title: 'COMPUTADOR DO DOT E SANDBOX BWRAP',
-                    badge: '// ISOLAMENTO & SILICIO',
+                    title: 'COMPUTADOR DO DOT: SANDBOX LINUX BWRAP',
+                    badge: '// ISOLAMENTO LOCAL',
                     placement: 'bottom',
-                    what: 'Ambiente de execucao local isolado por Linux Bubblewrap (bwrap) em /workspace, garantindo que o agente manipule arquivos sem risco ao no host.',
-                    how: 'Inspecione o diretorio do Dot pelo banner superior e clique em <kbd>[Modo Observacao]</kbd> para assumir o controle interativo via terminal (Takeover).',
-                    tip: 'O Sandbox roda em processo nativo ARM64 com restricao estrita de leitura/escrita e isolamento total de rede para operacoes nao autorizadas.',
+                    what: 'Cada agente roda em uma jaula Linux isolada via Bubblewrap (/workspace). O bot compila, edita e testa código sem tocar nos seus arquivos do sistema host.',
+                    how: 'Veja a pasta ativa no topo do Canvas. Clique em <kbd>[Modo Observação]</kbd> para abrir um terminal interativo e assumir o controle dos comandos.',
+                    tip: 'Processo nativo em ARM64 com permissões mínimas: sem Docker dentro de Docker e sem consumo inútil de memória.',
                     beforeStep: function() {
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile && typeof setMobileView === 'function') {
@@ -105,12 +105,12 @@
                 },
                 {
                     elementSelector: '.canvas-tab-bar, #rightCanvas',
-                    title: 'LIVE CANVAS E AS 4 ABAS OPERACIONAIS',
-                    badge: '// ARTEFATOS, COAGENTS & HITL',
+                    title: 'LIVE CANVAS: SUA PRANCHETA DE TRABALHO',
+                    badge: '// CÓDIGO, TERMINAL & SEGURANÇA',
                     placement: 'left',
-                    what: 'Prancheta tecnica de alto rendimento organizada em 4 abas estritas: Artefato (Spaces e Diffs), CoAgents (Shared State), Terminal e Governanca HITL.',
-                    how: 'Alterne entre as abas para verificar o plano dos agentes, inspecionar logs de execução e homologar comandos retidos na fila HITL.',
-                    tip: 'Use <kbd>Alt+I</kbd> para focar no artefato ativo, <kbd>Alt+H</kbd> para abrir a fila de governança HITL ou <kbd>Ctrl+S</kbd> para gravar revisões no banco WAL.',
+                    what: 'Aqui o código e os documentos tomam forma ao vivo. O painel se divide em 4 abas: Artefato (código e diffs), CoAgents (estado dos bots), Terminal interativo e Governança HITL.',
+                    how: 'Alterne as abas para inspecionar planos de execução, ver logs brutos e aprovar comandos arriscados retidos na fila de segurança.',
+                    tip: '<kbd>Alt+I</kbd> foca no artefato atual, <kbd>Alt+H</kbd> abre a fila de segurança e <kbd>Ctrl+S</kbd> salva a revisão no SQLite.',
                     beforeStep: function() {
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile && typeof setMobileView === 'function') {
@@ -133,12 +133,12 @@
                 },
                 {
                     elementSelector: '#sidebarCtxConfigs, #sidebarHardwareFooter, #edgePulseSummaryBtn',
-                    title: 'TELEMETRIA ARM64 E HOT-RELOAD DE IA',
-                    badge: '// SILICIO & PROVEDORES',
+                    title: 'TELEMETRIA ARM64 E CONFIGURAÇÕES',
+                    badge: '// HARDWARE & MODELOS',
                     placement: 'right',
-                    what: 'Central de controle operacional de hardware e modelos. Permite atualizar chaves e endpoints de IA a quente sem reiniciar o no de borda.',
-                    how: 'Monitore os graficos vetoriais em tempo real de RAM RSS (teto de 300MB) e temperatura do SoC, ajuste o provedor de IA e teste a conexao imediatamente.',
-                    tip: 'Pressione <kbd>Alt+5</kbd> ou clique no rodape de telemetria ASCII para acessar o painel de configuracoes; pressione <kbd>F1</kbd> para o Manual Tecnico.',
+                    what: 'Monitore o silício em tempo real: temperatura da placa, memória RAM física em uso e estado do banco SQLite. Troque o modelo de IA e as chaves de API a quente sem reiniciar o servidor.',
+                    how: 'Clique no rodapé de telemetria ou use <kbd>Alt+5</kbd> para abrir o painel de configurações e testar a conexão com o provedor de IA.',
+                    tip: 'Dúvidas sobre alguma rota ou ferramenta? Aperte <kbd>F1</kbd> para abrir o Manual Técnico completo.',
                     beforeStep: function() {
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile && typeof setMobileView === 'function') {
@@ -328,7 +328,7 @@
                 if (completed) {
                     localStorage.setItem(STORAGE_KEY, 'true');
                     const t = (k, fallback) => (window.PiDotsI18n && typeof window.PiDotsI18n.t === 'function' ? window.PiDotsI18n.t(k) : fallback);
-                    const msg = t('onboarding.toast_completed', 'Tour operacional concluído. Interface técnica liberada para comandos.');
+                    const msg = t('onboarding.toast_completed', 'Tour operacional concluído. O terminal está livre para suas instruções.');
                     if (window.PixelSystem && typeof window.PixelSystem.toast === 'function') {
                         window.PixelSystem.toast(msg, 'success');
                     }

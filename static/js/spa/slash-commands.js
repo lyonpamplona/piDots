@@ -25,49 +25,49 @@
                 // [SISTEMA & UI]
                 { cmd: '/help', cat: 'sistema', args: '[filtro]', exec: 'client', desc: 'Exibe catalogo operacional e atalhos tecnicos do console.' },
                 { cmd: '/clear', cat: 'sistema', args: '[chat|terminal|canvas|all]', exec: 'client', desc: 'Limpa a bobina de papel ou buffers de visualizacao.' },
-                { cmd: '/theme', cat: 'sistema', args: '[noir|blueprint|toggle]', exec: 'client', desc: 'Alterna os pigmentos graficos entre Dark Noir e Blueprint.' },
-                { cmd: '/lang', cat: 'sistema', args: '[pt|en]', exec: 'client', desc: 'Comuta a quente o dicionario de internacionalizacao.' },
-                { cmd: '/info', cat: 'sistema', args: '', exec: 'rest', desc: 'Exibe telemetria de hardware, modelo e status do SQLite WAL.' },
+                { cmd: '/theme', cat: 'sistema', args: '[noir|blueprint|toggle]', exec: 'client', desc: 'Alterna o tema visual entre Dark Noir e Blueprint.' },
+                { cmd: '/lang', cat: 'sistema', args: '[pt|en]', exec: 'client', desc: 'Troca o idioma da interface (pt/en) sem recarregar.' },
+                { cmd: '/info', cat: 'sistema', args: '', exec: 'rest', desc: 'Exibe uso de CPU, RAM, modelo de IA e status do SQLite.' },
                 { cmd: '/status', cat: 'sistema', args: '', exec: 'rest', desc: 'Apresenta resumo executivo dos coworkers ativos e conexoes.' },
                 { cmd: '/telemetry', cat: 'sistema', args: '', exec: 'rest', desc: 'Mede temperatura do SoC Broadcom, memoria RAM e carga.' },
                 { cmd: '/pwa', cat: 'sistema', args: '[status|update|cache-clear]', exec: 'client', desc: 'Inspeciona Service Worker e conformidade de cache offline.' },
-                { cmd: '/tour', cat: 'sistema', args: '[reset]', exec: 'client', desc: 'Dispara o tour spotlight interativo do console operacional.' },
-                { cmd: '/onboarding', cat: 'sistema', args: '[reset]', exec: 'client', desc: 'Alias para o tour spotlight interativo de primeiro acesso.' },
+                { cmd: '/tour', cat: 'sistema', args: '[reset]', exec: 'client', desc: 'Inicia o tour guiado pelo console do piDots.' },
+                { cmd: '/onboarding', cat: 'sistema', args: '[reset]', exec: 'client', desc: 'Inicia o tour guiado pelo console do piDots.' },
                 { cmd: '/changelog', cat: 'sistema', args: '[versao]', exec: 'rest', desc: 'Consulta as notas oficiais de atualizacao do sistema.' },
 
                 // [AGENTES & MULTI-BOT]
-                { cmd: '/dots', cat: 'agentes', args: '[list|switch <id>]', exec: 'hybrid', desc: 'Lista coworkers ou chaveia imediatamente a sessao ativa.' },
-                { cmd: '/handoff', cat: 'agentes', args: '<target_dot_id> [motivo]', exec: 'rest', desc: 'Transfere titularidade da thread para outro especialista.' },
-                { cmd: '/council', cat: 'agentes', args: '<topico> [rounds]', exec: 'stream', desc: 'Inicia debate dialetico Propositor vs Auditor vs Supervisor.' },
-                { cmd: '/delegate', cat: 'agentes', args: '<target_dot_id> <tarefa>', exec: 'rest', desc: 'Despacha subtarefa isolada em topologia Supervisor-Worker.' },
-                { cmd: '/archetype', cat: 'agentes', args: '[supervisor|coder|arquiteto|auditor]', exec: 'rest', desc: 'Configura o perfil de especialidade do agente atual.' },
-                { cmd: '/tools', cat: 'agentes', args: '[dot_id]', exec: 'rest', desc: 'Catalogo de ferramentas ativas com Dynamic Tool Pruning.' },
+                { cmd: '/dots', cat: 'agentes', args: '[list|switch <id>]', exec: 'hybrid', desc: 'Lista coworkers ou troca o coworker em foco.' },
+                { cmd: '/handoff', cat: 'agentes', args: '<target_dot_id> [motivo]', exec: 'rest', desc: 'Transfere a conversa para outro coworker especialista.' },
+                { cmd: '/council', cat: 'agentes', args: '<topico> [rounds]', exec: 'stream', desc: 'Inicia deliberação conjunta entre os coworkers.' },
+                { cmd: '/delegate', cat: 'agentes', args: '<target_dot_id> <tarefa>', exec: 'rest', desc: 'Delega subtarefa específica para outro coworker.' },
+                { cmd: '/archetype', cat: 'agentes', args: '[supervisor|coder|arquiteto|auditor]', exec: 'rest', desc: 'Altera a especialidade do coworker atual.' },
+                { cmd: '/tools', cat: 'agentes', args: '[dot_id]', exec: 'rest', desc: 'Lista ferramentas ativas disponíveis para o coworker.' },
 
                 // [MEMORIA & CONHECIMENTO]
-                { cmd: '/memory', cat: 'memoria', args: '[show|append|replace] [sec] [txt]', exec: 'hybrid', desc: 'Inspeciona ou atualiza blocos da Core Memory in-context.' },
-                { cmd: '/archival', cat: 'memoria', args: '<termo> [limite]', exec: 'rest', desc: 'Busca hibrida duradoura com FTS5 BM25 e Projecao 64d.' },
+                { cmd: '/memory', cat: 'memoria', args: '[show|append|replace] [sec] [txt]', exec: 'hybrid', desc: 'Exibe ou atualiza a memória permanente do coworker.' },
+                { cmd: '/archival', cat: 'memoria', args: '<termo> [limite]', exec: 'rest', desc: 'Busca por palavras-chave e similaridade na memória histórica.' },
                 { cmd: '/shared', cat: 'memoria', args: '[read|write] <chave> [txt]', exec: 'rest', desc: 'Quadro de notas tecnicas compartilhado entre bots.' },
-                { cmd: '/spaces', cat: 'memoria', args: '[list|create <arq>|open <id>]', exec: 'rest', desc: 'Gestao da biblioteca de artefatos vivos e versionamento.' },
+                { cmd: '/spaces', cat: 'memoria', args: '[list|create <arq>|open <id>]', exec: 'rest', desc: 'Gerencia documentos, notas e código nos Spaces.' },
                 { cmd: '/diff', cat: 'memoria', args: '[space_id]', exec: 'client', desc: 'Alterna inspecao de diferencas incrementais no Canvas.' },
 
                 // [TAREFAS & HEARTBEAT]
-                { cmd: '/tasks', cat: 'tarefas', args: '[list|toggle <id>]', exec: 'rest', desc: 'Lista e gerencia rotinas agendadas (Dot Heartbeats).' },
+                { cmd: '/tasks', cat: 'tarefas', args: '[list|toggle <id>]', exec: 'rest', desc: 'Lista e gerencia tarefas em segundo plano (Heartbeats).' },
                 { cmd: '/cron', cat: 'tarefas', args: '<expressao_cron> <prompt>', exec: 'rest', desc: 'Agenda nova rotina proativa no agendador SQLite WAL.' },
                 { cmd: '/run-task', cat: 'tarefas', args: '<task_id>', exec: 'rest', desc: 'Forca o disparo imediato de uma tarefa agendada.' },
 
                 // [GOVERNANCA & BORDA]
-                { cmd: '/hitl', cat: 'governanca', args: '[list|approve <id>|reject <id>]', exec: 'rest', desc: 'Audita e resolve aprovacoes da fila de governanca.' },
+                { cmd: '/hitl', cat: 'governanca', args: '[list|approve <id>|reject <id>]', exec: 'rest', desc: 'Lista, aprova ou rejeita comandos retidos na fila HITL.' },
                 { cmd: '/triggers', cat: 'governanca', args: '[check|evaluate]', exec: 'rest', desc: 'Avalia limites de temperatura, disco e memoria RAM.' },
-                { cmd: '/maintenance', cat: 'governanca', args: '[checkpoint|optimize|full]', exec: 'rest', desc: 'Preserva MicroSD com truncamento WAL e otimizacao.' },
-                { cmd: '/backup', cat: 'governanca', args: '[caminho_destino]', exec: 'rest', desc: 'Snapshot atomico do banco de dados via VACUUM INTO.' },
+                { cmd: '/maintenance', cat: 'governanca', args: '[checkpoint|optimize|full]', exec: 'rest', desc: 'Executa checkpoint do SQLite e otimização para poupar o MicroSD.' },
+                { cmd: '/backup', cat: 'governanca', args: '[caminho_destino]', exec: 'rest', desc: 'Gera cópia de segurança pontual do banco SQLite.' },
 
                 // [EXPORTACAO & DADOS]
                 { cmd: '/export', cat: 'dados', args: '[zip|workspace] [dot_id]', exec: 'rest', desc: 'Compacta e descarrega o workspace do Dot em arquivo ZIP.' },
-                { cmd: '/pack', cat: 'dados', args: '[export|import] [dot_id]', exec: 'rest', desc: 'Serializa ou restaura manifesto portavel DotPack v1.1.' },
+                { cmd: '/pack', cat: 'dados', args: '[export|import] [dot_id]', exec: 'rest', desc: 'Exporta ou importa configurações completas de coworkers.' },
                 { cmd: '/save-space', cat: 'memoria', args: '[nome_arquivo.md]', exec: 'rest', desc: 'Salva a conversa da thread ativa como documento Markdown em Spaces.' },
-                { cmd: '/computer', cat: 'sistema', args: '[comando_bwrap]', exec: 'rest', desc: 'Abre o Computador do Dot ou executa comando no Sandbox Bubblewrap.' },
-                { cmd: '/mcp', cat: 'agentes', args: '[list]', exec: 'rest', desc: 'Inspeciona servidores Model Context Protocol (MCP Lite) acoplados.' },
-                { cmd: '/coagents', cat: 'agentes', args: '', exec: 'client', desc: 'Abre e sincroniza o inspetor de CoAgents Shared State no Canvas.' }
+                { cmd: '/computer', cat: 'sistema', args: '[comando_bwrap]', exec: 'rest', desc: 'Abre o terminal ou executa comando no sandbox isolado.' },
+                { cmd: '/mcp', cat: 'agentes', args: '[list]', exec: 'rest', desc: 'Lista servidores MCP conectados ao sistema.' },
+                { cmd: '/coagents', cat: 'agentes', args: '', exec: 'client', desc: 'Abre o painel de estado compartilhado entre os coworkers.' }
             ],
 
             setCategory(cat) {
@@ -545,7 +545,7 @@
                         const art = document.getElementById('artifactContent');
                         if (art) art.value = '# Documento limpo\n\nPronto para edicao no Live Canvas.';
                     }
-                    renderSlashReceiptSlip('/clear', `ALVO: ${target.toUpperCase()}`, `Area visual [${escapeHtml(target.toUpperCase())}] reiniciada com sucesso. Memoria de sessao preservada.`, '[OK]');
+                    renderSlashReceiptSlip('/clear', `ALVO: ${target.toUpperCase()}`, `Painel [${escapeHtml(target.toUpperCase())}] limpo. O histórico do banco foi mantido.`, '[OK]');
                     break;
                 }
 
@@ -568,7 +568,7 @@
                     const spanTheme = btnTheme ? btnTheme.querySelector('span') : null;
                     if (spanTheme) spanTheme.textContent = isBpNow ? 'Blueprint' : 'Dark Noir';
                     const activeTheme = isBpNow ? 'BLUEPRINT (AZUL CIANO)' : 'DARK NOIR (VERDE FOSFORO)';
-                    renderSlashReceiptSlip('/theme', 'PIGMENTACAO VISUAL', `Tema de interface atualizado para: <strong>${activeTheme}</strong>.`, '[OK]');
+                    renderSlashReceiptSlip('/theme', 'TEMA VISUAL', `Tema alterado para: <strong>${activeTheme}</strong>.`, '[OK]');
                     break;
                 }
 
@@ -578,7 +578,7 @@
                     if (lang === 'pt' || lang === 'en') {
                         if (window.PiDotsI18n && PiDotsI18n.setLanguage) {
                             PiDotsI18n.setLanguage(lang);
-                            renderSlashReceiptSlip('/lang', 'INTERNACIONALIZACAO', `Dicionario comutado com sucesso para: <strong>${lang.toUpperCase()}</strong>.`, '[OK]');
+                            renderSlashReceiptSlip('/lang', 'IDIOMA', `Idioma alterado com sucesso para: <strong>${lang.toUpperCase()}</strong>.`, '[OK]');
                         } else {
                             renderSlashReceiptSlip('/lang', 'AVISO', 'Micro-motor PiDotsI18n nao carregado na sessao.', '[AVISO]');
                         }
@@ -875,7 +875,7 @@
                             <strong style="color: var(--phosphor-green);">SINTESE CONSENSUAL:</strong> Execucao aprovada em ambiente restrito com checkpoints e revisao previa no Live Canvas.
                         </div>
                     `;
-                    renderSlashReceiptSlip('/council', 'DELIBERACAO TRIPARTITE', out, '[CONSELHO OK]');
+                    renderSlashReceiptSlip('/council', 'DELIBERAÇÃO DE COWORKERS', out, '[CONSELHO OK]');
                     break;
                 }
 
@@ -1199,7 +1199,7 @@
                         if (window.PiDotsAPI && PiDotsAPI.resolveHitl) {
                             const targetApprovalId = args[1] || null;
                             PiDotsAPI.resolveHitl(true, 'Resolvido via comando /hitl', targetApprovalId);
-                            renderSlashReceiptSlip('/hitl', 'RESOLUCAO HITL', `Pendencia humana ${targetApprovalId ? `(${targetApprovalId}) ` : ''}resolvida pelo operador via linha de comando.`, '[HOMOLOGADO]');
+                            renderSlashReceiptSlip('/hitl', 'RESOLUÇÃO HITL', `Ordem ${targetApprovalId ? `(${targetApprovalId}) ` : ''}resolvida pelo operador no terminal.`, '[HOMOLOGADO]');
                         }
                     } else {
                         try {
@@ -1312,7 +1312,7 @@
                             });
                             const rep = res.ok ? await res.json() : {};
                             const filename = rep.backup?.backup_file ? rep.backup.backup_file.split('/').pop() : 'snapshot.db';
-                            renderSlashReceiptSlip('/backup', 'SNAPSHOT ACID CRIADO', `Backup fisico gerado no disco: <code>${escapeHtml(filename)}</code> (${rep.backup?.backup_size_mb || '0.8'} MB)`, '[BACKUP OK]');
+                            renderSlashReceiptSlip('/backup', 'BACKUP CONCLUÍDO', `Cópia do banco salva em: <code>${escapeHtml(filename)}</code> (${rep.backup?.backup_size_mb || '0.8'} MB)`, '[BACKUP OK]');
                         } catch (e) {
                             renderSlashReceiptSlip('/backup', 'FALHA', `Erro ao gerar backup: ${escapeHtml(e.message)}`, '[ERRO]');
                         }
@@ -1417,7 +1417,7 @@
                     }
                     if (cmdArg && window.PiDotsAPI && typeof PiDotsAPI.executeInDotComputer === 'function') {
                         await PiDotsAPI.executeInDotComputer(cmdArg);
-                        renderSlashReceiptSlip('/computer', `SANDBOX EXEC: ${cmdArg}`, `Comando despachado para o Computador de Borda do Dot. Verifique a aba [TERMINAL] no Canvas.`, '[BWRAP OK]');
+                        renderSlashReceiptSlip('/computer', `SANDBOX EXEC: ${cmdArg}`, `Comando enviado para o sandbox isolado. Saída disponível na aba Terminal.`, '[BWRAP OK]');
                     } else {
                         if (typeof window.toggleComputerTakeoverMode === 'function') {
                             window.toggleComputerTakeoverMode();
@@ -1461,7 +1461,7 @@
                     if (window.PiDotsAPI && typeof PiDotsAPI.loadActiveThreadState === 'function') {
                         await PiDotsAPI.loadActiveThreadState();
                     }
-                    renderSlashReceiptSlip('/coagents', 'COAGENTS SHARED STATE', 'Inspetor de Estado Compartilhado CoAgents (Plano de 2 Estagios, Quadro Negro, Handoffs e Tool Runs) aberto e sincronizado no Canvas Direito.', '[SINCRONIZADO]');
+                    renderSlashReceiptSlip('/coagents', 'ESTADO COMPARTILHADO', 'Painel de estado compartilhado (plano, quadro conjunto e ferramentas) aberto no painel lateral.', '[SINCRONIZADO]');
                     break;
                 }
 

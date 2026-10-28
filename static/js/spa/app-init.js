@@ -59,7 +59,7 @@
                 if (res.ok) {
                     const data = await res.json();
                     if (data.reachable || data.status === 'ok') {
-                        PixelSystem.toast(`Provedor alcancavel (${data.latency_ms || 0}ms) // Modelo: ${data.model || payload.model}`, 'success');
+                        PixelSystem.toast(`Provedor online (${data.latency_ms || 0} ms) · Modelo: ${data.model || payload.model}`, 'success');
                     } else {
                         PixelSystem.toast(`Aviso do provedor: ${data.detail || 'Verifique URL/Chave'}`, 'warning');
                     }
@@ -86,8 +86,8 @@
         function resolveHitlQuick(decision) {
             if (decision === 'HOMOLOGADO') {
                 PixelSystem.confirm(
-                    'Homologar Acao Critica',
-                    'Deseja autorizar o despacho do comando de seguranca para o sandbox Bubblewrap?',
+                    'Liberar Comando de Segurança',
+                    'Confirma o envio deste comando para execução no sandbox Bubblewrap?',
                     () => {
                         openHitlCanvas();
                         PiDotsAPI.resolveHitl(true);
@@ -95,8 +95,8 @@
                 );
             } else {
                 PixelSystem.confirm(
-                    'Vetar Acao Critica',
-                    'Confirma o veto e cancelamento desta solicitacao na fila de governanca?',
+                    'Bloquear Comando',
+                    'Confirma o bloqueio e cancelamento desta ordem retida?',
                     () => {
                         openHitlCanvas();
                         PiDotsAPI.resolveHitl(false);
@@ -336,7 +336,7 @@
             if (isComputerTakeoverActive) {
                 if (btn) {
                     const span = btn.querySelector('span');
-                    if (span) span.textContent = 'Modo Controle Ativo';
+                    if (span) span.textContent = 'Modo Interativo Ativo';
                     btn.classList.add('btn-amber');
                 }
                 switchCanvasTab('canvas-terminal', tabTerminal);
@@ -346,7 +346,7 @@
                     PiDotsAPI.refreshComputerWorkspaceFiles();
                 }
                 if (window.PixelSystem && PixelSystem.toast) {
-                    PixelSystem.toast('Modo Takeover ativado: controle interativo do Sandbox Bubblewrap assumido pelo operador.', 'warning');
+                    PixelSystem.toast('Modo Interativo ativo: você assumiu o controle direto do terminal.', 'warning');
                 }
             } else {
                 if (btn) {
@@ -355,7 +355,7 @@
                     btn.classList.remove('btn-amber');
                 }
                 if (window.PixelSystem && PixelSystem.toast) {
-                    PixelSystem.toast('Modo Observação restaurado: execução devolvida ao Dot autônomo.', 'info');
+                    PixelSystem.toast('Modo Observação ativo: controle devolvido ao coworker.', 'info');
                 }
             }
         }
@@ -601,7 +601,7 @@
             }
         }
 
-        // Alternância da Trava Mecânica Personalizada
+        // Alternância da Trava de Segurança Manual
         let isSafetyUnlocked = false;
         function toggleSafetySwitch(el) {
             const switchEl = document.getElementById('safetySwitchMechanical');

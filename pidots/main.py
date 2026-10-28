@@ -29,6 +29,43 @@ logger = logging.getLogger("pidots.main")
 APP_VERSION = "1.5.2"
 
 
+HTML_404_PAGE = """<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>piDots // 404 Não Encontrado</title>
+<style>
+  :root { --bg: #0c0d0e; --ink: #c9cbcf; --green: #33ff66; --amber: #f59e0b; --border: #26292d; }
+  body { background: var(--bg); color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; margin: 0; padding: 24px; display: flex; align-items: center; justify-content: center; min-height: 100vh; box-sizing: border-box; }
+  .box { max-width: 520px; width: 100%; border: 1px solid var(--border); padding: 24px; background: #121316; }
+  .tag { color: var(--amber); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-size: 18px; margin: 0 0 12px 0; color: #fff; font-weight: 600; }
+  p { font-size: 13px; line-height: 1.5; color: var(--ink); margin: 0 0 16px 0; }
+  ul { list-style: none; padding: 0; margin: 0 0 16px 0; font-size: 12px; }
+  li { padding: 4px 0; }
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .foot { font-size: 11px; color: #6b7280; border-top: 1px dashed var(--border); padding-top: 12px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="tag">[erro 404 // recurso inexistente]</div>
+  <h1>Página não encontrada</h1>
+  <p>O arquivo ou rota solicitada não existe neste nó de borda.</p>
+  <ul>
+    <li>-> <a href="/">/ (Apresentação do piDots)</a></li>
+    <li>-> <a href="/app">/app (Console Operacional)</a></li>
+    <li>-> <a href="/docs">/docs (Manual Técnico)</a></li>
+    <li>-> <a href="/relatorio">/relatorio (Auditoria Técnica)</a></li>
+  </ul>
+  <div class="foot">piDots Edge Core // Nó ARM64</div>
+</div>
+</body>
+</html>"""
+
+
 class StaticPageManager:
     """
     Gerenciador de páginas HTML e assets estáticos residentes em memória RAM.
@@ -76,7 +113,7 @@ class StaticPageManager:
         if raw_data is None:
             if not self.preload(filename):
                 return Response(
-                    content=f"<h1>Recurso '{filename}' não encontrado</h1>",
+                    content=HTML_404_PAGE,
                     status_code=status.HTTP_404_NOT_FOUND,
                     media_type="text/html; charset=utf-8"
                 )
@@ -189,12 +226,11 @@ async def lifespan(app: FastAPI):
     # Sanity check preventivo de credenciais de inferência no arranque do nó Edge
     if settings.ai_api_key in ("", "sua_chave_aqui", "placeholder"):
         logger.warning(
-            "AVISO DE CONFIGURAÇÃO EDGE: AI_API_KEY não configurada ou com valor placeholder ('%s'). "
-            "Requisições de inferência que dependem do provedor remoto falharão até que uma chave válida seja configurada no .env.",
+            "AI_API_KEY vazia ou placeholder ('%s'). O nó subiu em modo offline: inferências remotas falharão até você definir a chave no .env ou no painel /settings.",
             settings.ai_api_key
         )
     else:
-        logger.info("Credencial de inferência carregada com sucesso para o modelo: %s", settings.ai_model)
+        logger.info("motor de inferência pronto -> modelo '%s'", settings.ai_model)
 
     # Inicia rotina periódica de proteção contra inchaço do MicroSD (a cada 15 min)
     checkpoint_task = asyncio.create_task(periodic_wal_checkpoint(interval_seconds=900))
