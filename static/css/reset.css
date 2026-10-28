@@ -14,7 +14,7 @@
 }
 
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     touch-action: manipulation;
     -webkit-text-size-adjust: 100%;
 }

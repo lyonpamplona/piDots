@@ -9,6 +9,10 @@
 /* ---------------------------------------------------------------------
    1. RESET ESPECIFICO & CONTAINER GLOBAL
    --------------------------------------------------------------------- */
+html {
+    scroll-behavior: auto !important;
+}
+
 body {
     background-color: var(--paper-base, #0c1012);
     background-image: 
@@ -269,7 +273,7 @@ header.landing-header {
     background: var(--paper-surface);
     border: 1px solid var(--border-subtle);
     border-radius: 0;
-    transition: all 0.15s ease;
+    transition: all 0.05s steps(1);
     display: block;
 }
 
@@ -787,7 +791,7 @@ header.landing-header {
     font-weight: 600;
     border-radius: 0;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.05s steps(1);
     border: 1px solid transparent;
 }
 
@@ -964,7 +968,7 @@ header.landing-header {
     padding: 4px 8px;
     white-space: nowrap;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.05s steps(1);
     flex-shrink: 0;
 }
 
@@ -2213,7 +2217,7 @@ footer.landing-footer {
 .footer-link {
     color: var(--ink-secondary);
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: color 0.05s steps(1);
 }
 
 .footer-link:hover {
@@ -2233,7 +2237,7 @@ footer.landing-footer {
     z-index: 140;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.08s steps(2);
 }
 
 .drawer-backdrop.open {
@@ -2323,7 +2327,7 @@ aside.retractable-drawer.open,
     display: flex;
     flex-direction: column;
     gap: 6px;
-    transition: all 0.15s ease;
+    transition: all 0.05s steps(1);
 }
 
 .guide-step:hover {

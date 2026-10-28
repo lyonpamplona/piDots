@@ -138,6 +138,21 @@ def test_global_cross_surface_integrity():
                 matches = emoji_pattern.findall(content)
                 assert len(matches) == 0, f"Emojis encontrados em {fpath}: {matches}"
 
+    # 4.3 Varredura de Rolagem Mecânica Instantânea e Ausência de Desfoque/Blur
+    for rel_path in ["pages/landing.html", "pages/docs.html", "static/js/landing/landing.js", "static/js/docs/docs.js"]:
+        fpath = os.path.join(BASE_DIR, rel_path)
+        with open(fpath, "r", encoding="utf-8") as f:
+            c = f.read()
+        assert "behavior: 'smooth'" not in c and 'behavior: "smooth"' not in c, f"Smooth scroll detectado em {rel_path}"
+
+    for rel_path in ui_css_files:
+        fpath = os.path.join(BASE_DIR, rel_path)
+        with open(fpath, "r", encoding="utf-8") as f:
+            c = f.read()
+        assert "filter: blur" not in c, f"filter: blur detectado em {rel_path}"
+        assert "backdrop-filter: blur" not in c, f"backdrop-filter: blur detectado em {rel_path}"
+        assert "scroll-behavior: smooth" not in c, f"scroll-behavior: smooth detectado em {rel_path}"
+
     print(" -> [OK] Integridade Global e Zero Emojis 100% HOMOLOGADOS")
 
 def main():

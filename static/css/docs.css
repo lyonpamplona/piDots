@@ -7,6 +7,13 @@
    ===================================================================== */
 
 /* ---------------------------------------------------------------------
+   DIRETRIZ PIXEL PAPER // ROLAGEM MECANICA INSTANTANEA
+   --------------------------------------------------------------------- */
+html {
+    scroll-behavior: auto !important;
+}
+
+/* ---------------------------------------------------------------------
    CABECALHO FIXO TECNICO (STICKY HEADER 48px)
    --------------------------------------------------------------------- */
 header.guide-header {
@@ -101,7 +108,7 @@ header.guide-header::-webkit-scrollbar {
     width: clamp(160px, 16vw, 240px);
     outline: none;
     border-radius: 0;
-    transition: all 0.15s ease;
+    transition: all 0.05s steps(1);
 }
 
 .pixel-search-input:focus {
@@ -955,7 +962,7 @@ code.inline-pixel {
     line-height: 1.4;
     text-decoration: none;
     border-radius: 0;
-    transition: all 0.15s ease;
+    transition: all 0.05s steps(1);
 }
 
 .drawer-link:hover {
@@ -1141,7 +1148,7 @@ code.inline-pixel {
     text-decoration: none;
     color: var(--ink-main);
     cursor: pointer;
-    transition: all 0.1s ease;
+    transition: all 0.05s steps(1);
 }
 
 .omnisearch-item:hover,
@@ -1236,7 +1243,7 @@ code.inline-pixel {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: all 0.15s ease;
+    transition: all 0.05s steps(1);
 }
 
 .api-chip-btn:hover,
