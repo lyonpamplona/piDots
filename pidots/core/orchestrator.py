@@ -176,7 +176,7 @@ class MultiBotOrchestrator:
         # Garante que o worker esteja registrado na thread
         await cls.record_participant(thread_id, target_dot_id)
 
-        # Registra a solicitação como Fita de Carbono (mensagem interna)
+        # Registra a solicitação como mensagem interna na thread
         internal_prompt = f"[DELEGAÇÃO DE SUBTAREFA DE @{source_dot_id}]: {task_goal}"
         if context_snippet:
             internal_prompt += f"\n\nContexto Fornecido:\n{context_snippet}"
@@ -259,7 +259,7 @@ class MultiBotOrchestrator:
                     )
                     await db.commit()
 
-                # Registra o alerta de falha como fita de carbono na thread principal
+                # Registra o alerta de falha como mensagem interna na thread principal
                 await cls.record_message(
                     thread_id=thread_id,
                     actor_id=target_dot_id,
@@ -307,7 +307,7 @@ class MultiBotOrchestrator:
                 )
                 await db.commit()
 
-            # Registra o resultado do worker como fita de carbono na thread principal
+            # Registra o resultado do worker como mensagem interna na thread principal
             await cls.record_message(
                 thread_id=thread_id,
                 actor_id=target_dot_id,

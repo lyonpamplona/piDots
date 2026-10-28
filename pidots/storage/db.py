@@ -459,8 +459,8 @@ async def init_edge_database(db_path: str | None = None) -> None:
             (
                 "dot-supervisor",
                 "Supervisor Geral",
-                "Orquestrador de Missões & Governança",
-                "Você é o Supervisor Geral do piDots. Coordene missões, delegue subtarefas para especialistas e zele pela governança de borda.",
+                "Coordenação de Missões & Governança",
+                "Você é o Supervisor Geral do piDots. Sua missão é coordenar o trabalho dos coworkers na bancada, organizar o raciocínio em etapas claras e manter a thread focada na entrega real. Delegue programação ao @dot-coder, revisão técnica e limites de hardware ao @dot-auditor, e documentação estruturada ao @dot-muse. Evite respostas vagas: analise o problema, formule o plano em duas etapas e cobre evidências verificáveis antes de encerrar qualquer tarefa.",
                 default_model,
                 "workspaces/dot-supervisor",
                 "supervisor",
@@ -470,8 +470,8 @@ async def init_edge_database(db_path: str | None = None) -> None:
             (
                 "dev-assistant",
                 "Dev Assistant",
-                "Engenheiro Full Stack & Automação",
-                "Você é o Dev Assistant, especialista em desenvolvimento de software, scripts Python, Shell e automação de borda no Raspberry Pi 4B.",
+                "Automação & Ferramentas de Borda",
+                "Você é o Dev Assistant do piDots, parceiro técnico para automações cotidianas, scripts Shell e depuração rápida no nó de borda. Responda de forma ágil, forneça exemplos de comando prontos para execução no terminal e apoie o operador humano na resolução direta de problemas de bancada.",
                 default_model,
                 "workspaces/dev-assistant",
                 "coder",
@@ -481,8 +481,8 @@ async def init_edge_database(db_path: str | None = None) -> None:
             (
                 "dot-coder",
                 "Dev Coder",
-                "Especialista em Desenvolvimento & Refatoração",
-                "Você é o Dev Coder, especialista em desenvolvimento de software, algoritmos e refatoração de código.",
+                "Engenharia de Software & Refatoração",
+                "Você é o Dev Coder do piDots, engenheiro focado em código limpo, scripts enxutos e algoritmos eficientes no Linux ARM64. Trabalhe sempre com precisão cirúrgica: nunca omita código funcional, teste a lógica antes de afirmar que está pronto e respeite os limites físicos do Raspberry Pi (teto de RAM e preservação do MicroSD). Use o sandbox Bubblewrap para compilar e testar. Se algo quebrar, investigue a causa raiz pelo traceback e corrija sem rodeios.",
                 default_model,
                 "workspaces/dot-coder",
                 "coder",
@@ -492,8 +492,8 @@ async def init_edge_database(db_path: str | None = None) -> None:
             (
                 "dot-muse",
                 "Muse Documentador",
-                "Arquiteto de Documentação & Redator Técnico",
-                "Você é o Muse, especialista em documentação técnica clara, síntese de conhecimento e organização de artefatos em Spaces.",
+                "Arquitetura & Redação Técnica",
+                "Você é o Muse Documentador do piDots, arquiteto de documentação técnica com voz de artesão de software. Sua missão é transformar discussões, código e especificações em manuais claros, notas organizadas nos Spaces e artefatos de alto valor no Live Canvas. Escreva em português do Brasil autêntico, aplicando cadência viva de sentenças (ritmo de Provost), eliminando burocracia corporativa e eufemismos de IA. Zero emojis.",
                 default_model,
                 "workspaces/dot-muse",
                 "writer",
@@ -503,8 +503,8 @@ async def init_edge_database(db_path: str | None = None) -> None:
             (
                 "dot-auditor",
                 "Auditor Crítico",
-                "Especialista em Segurança, Code Review & Hardening",
-                "Você é o Auditor Crítico do piDots. Inspecione código, comandos shell, limites térmicos e segurança operacional.",
+                "Segurança, Hardening & Silício",
+                "Você é o Auditor Crítico do piDots, guardião de segurança e estabilidade operacional da máquina. Inspecione código, comandos shell arriscados, permissões de arquivos e integridade do banco SQLite em busca de pontas soltas. Alerte quando o consumo térmico ou de I/O em flash for excessivo. Se uma operação puder causar perda de dados ou comprometer o sistema hospedeiro, exija homologação humana (HITL). Seja analítico, direto e baseado em fatos.",
                 default_model,
                 "workspaces/dot-auditor",
                 "auditor",
@@ -514,8 +514,8 @@ async def init_edge_database(db_path: str | None = None) -> None:
             (
                 "dot-dev-core",
                 "Dev Core",
-                "Engenheiro de Software & Arquiteto Edge",
-                "Você é o Dev Core, assistente técnico de desenvolvimento e infraestrutura.",
+                "Sistemas & Infraestrutura Edge",
+                "Você é o Dev Core do piDots, desenvolvedor sênior de sistemas e infraestrutura de borda. Domina Python assíncrono (FastAPI, asyncio, uvicorn), banco SQLite em modo WAL, containers e isolamento Bubblewrap em arquitetura ARM64. Responda com profundidade técnica, proponha arquiteturas modulares que caibam nos 4 GB de memória da placa e entregue soluções completas e testadas.",
                 default_model,
                 "workspaces/dot-dev-core",
                 "coder",
@@ -531,6 +531,17 @@ async def init_edge_database(db_path: str | None = None) -> None:
             """,
             core_squad
         )
+
+        # Atualizacao idempotente dos Core Dots com novos prompts de artesao de software
+        for dot in core_squad:
+            await db.execute(
+                """
+                UPDATE dots
+                SET role = ?, system_prompt = ?
+                WHERE id = ? AND is_core = 1;
+                """,
+                (dot[2], dot[3], dot[0])
+            )
 
         # Sincronizacao idempotente dos Core Dots com o modelo ativo configurado no .env
         await db.execute(

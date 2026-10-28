@@ -17,7 +17,7 @@ MAX_COUNCIL_ROUNDS = 3
 
 
 class CouncilOrchestrator:
-    """Orquestrador de deliberação dialética e consenso entre múltiplos Dots."""
+    """Orquestrador de alinhamento técnico e consenso entre múltiplos Dots."""
 
     @classmethod
     async def _execute_turn(
@@ -205,7 +205,7 @@ class CouncilOrchestrator:
                 subthreads=[prop_subthread]
             )
 
-        # Registra a proposta como Fita de Carbono (mensagem interna) na thread principal
+        # Registra a proposta como mensagem interna na thread principal
         await MultiBotOrchestrator.record_message(
             thread_id=thread_id,
             actor_id=resolved_proponent,
@@ -249,7 +249,7 @@ class CouncilOrchestrator:
                 subthreads=[prop_subthread, critic_subthread]
             )
 
-        # Registra a crítica como Fita de Carbono interna
+        # Registra a avaliação como mensagem interna
         await MultiBotOrchestrator.record_message(
             thread_id=thread_id,
             actor_id=resolved_critic,
@@ -311,7 +311,7 @@ class CouncilOrchestrator:
                     content=f"[CONSELHO - RÉPLICA DE @{resolved_proponent} (RODADA {round_idx})]:\n{proponent_output}"
                 )
 
-                # Tréplica do Crítico para fechamento do ciclo dialético simétrico
+                # Tréplica do Crítico para fechamento da revisão conjunta
                 treplica_prompt = (
                     f"[CONSELHO CONSULTIVO - TRÉPLICA DO AUDITOR CRÍTICO (RODADA {round_idx}/{total_rounds})]\n"
                     f"O propositor @{resolved_proponent} apresentou a seguinte réplica/ajuste:\n"

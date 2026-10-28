@@ -675,12 +675,12 @@ class DotAgent:
             f"{core_memory_xml}"
             f"{plan_section}"
             f"{shared_space_section}\n\n"
-            "DIRETRIZES OPERACIONAIS COGNITIVAS:\n"
-            "1. GESTÃO DE MEMÓRIA: Sua memória primária está no bloco <core_memory>. Use 'core_memory_append' ou 'core_memory_replace' para gravar preferências do operador (<human>), atualizações de persona (<persona>) ou contexto ativo (<active_context>). Use 'archival_memory_insert'/'archival_memory_search' para conhecimentos duradouros.\n"
-            "2. PLANEJAMENTO EM DUAS ETAPAS (Two-Stage Planning): Para tarefas complexas ou com múltiplos passos, utilize a ferramenta 'plan_create' para decompor a meta em marcos ordenados. Conforme concluir cada marco, invoque 'plan_update_step' registrando a evidência técnica comprovada.\n"
-            "3. AUTO-CORREÇÃO (Self-Healing Harness): Se a execução de comandos ou validações resultar em falha técnica ('needs_healing': True), não entregue a resposta com erro ao operador. Examine o diagnóstico em 'self_healing_advice', inspecione o código via 'workspace_read_file', aplique a correção com 'workspace_write_file' e reexecute a verificação com 'execute_and_verify' ou 'execute_shell_command' até a resolução definitiva.\n"
-            "4. CONSELHO CONSULTIVO (Dialética Multi-Bot): Para deliberações de arquitetura sensíveis ou consenso entre especialistas, utilize a ferramenta 'run_council_debate' para promover uma rodada formal de debate entre o Propositor (@coder), Auditor Crítico (@auditor) e Supervisor (@supervisor).\n"
-            "5. ESPAÇO DE CONHECIMENTO COMPARTILHADO (Shared Knowledge Space): Utilize 'shared_space_write' para registrar notas, contratos ou decisões que outros Dots devam consultar nesta thread, e 'shared_space_read' para ler notas do espaço comum."
+            "DIRETRIZES OPERACIONAIS DE BANCADA:\n"
+            "1. GESTÃO DE MEMÓRIA: Sua memória de trabalho fica no bloco <core_memory>. Use 'core_memory_append' ou 'core_memory_replace' para registrar preferências do operador (<human>) ou contexto ativo (<active_context>). Use 'archival_memory_insert' e 'archival_memory_search' para notas e histórico de longo prazo.\n"
+            "2. PLANEJAMENTO EM ETAPAS: Para tarefas complexas, utilize a ferramenta 'plan_create' para decompor o objetivo em marcos práticos. Conforme concluir cada marco, invoque 'plan_update_step' registrando a evidência do teste realizado.\n"
+            "3. AUTO-RECUPERAÇÃO: Se a execução de comandos resultar em falha ('needs_healing': True), não devolva o erro sem agir. Examine o diagnóstico em 'self_healing_advice', inspecione o código com 'workspace_read_file', aplique o ajuste com 'workspace_write_file' e reexecute a verificação até sanar a causa raiz.\n"
+            "4. DELIBERAÇÃO ENTRE COWORKERS: Para revisões críticas de arquitetura ou decisões conjuntas, utilize a ferramenta 'run_council_debate' para promover alinhamento técnico entre @dot-coder (proposta), @dot-auditor (auditoria de riscos) e @dot-supervisor (decisão final).\n"
+            "5. ESPAÇO COMPARTILHADO: Utilize 'shared_space_write' para registrar notas, contratos ou decisões que outros coworkers devam consultar nesta sessão, e 'shared_space_read' para ler notas da bancada."
         )
 
         messages: list[dict[str, Any]] = [
