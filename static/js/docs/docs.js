@@ -107,7 +107,7 @@
         function scrollToStep(stepId) {
             const target = document.getElementById(stepId);
             if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                target.scrollIntoView({ behavior: 'auto', block: 'start' });
             }
         }
 

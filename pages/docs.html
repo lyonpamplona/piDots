@@ -56,11 +56,11 @@
     <header class="top-deck guide-header">
         <div class="top-deck-left">
             <a href="/" class="brand-unit" aria-label="Ir para Apresentacao Oficial piDots">
-                <svg width="24" height="24" viewBox="0 0 28 28" fill="none" class="ui-icon" style="width: 24px; height: 24px;">
-                    <rect width="28" height="28" rx="4" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
+                <svg width="24" height="24" viewBox="0 0 28 28" fill="none" class="ui-icon" style="width: 24px; height: 24px;" shape-rendering="crispEdges">
+                    <rect width="28" height="28" rx="0" ry="0" fill="#0b0e12" stroke="#283340" stroke-width="1.5"/>
                     <circle cx="8.5" cy="14" r="3.5" fill="#33ff66"/>
                     <circle cx="19.5" cy="14" r="3.5" fill="#38bdf8"/>
-                    <path d="M12 14h4" stroke="#f1f5f9" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 14h4" stroke="#f1f5f9" stroke-width="2" stroke-linecap="square"/>
                 </svg>
                 <span class="brand-badge">PIDOTS</span>
                 <span class="brand-title">MANUAL OPERACIONAL // GUIA</span>
@@ -94,7 +94,7 @@
         <div class="top-deck-right header-actions">
             <!-- Campo de Busca Rapida no Cabecalho / Gatilho Omnisearch (Desktop) -->
             <div class="header-search-box" onclick="abrirOmnisearch()" style="cursor: pointer;" title="Abrir Omnisearch (Atalho: Ctrl+K ou /)">
-                <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg class="ui-icon search-icon-pos" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <input type="text" id="globalSearchInput" class="pixel-search-input" placeholder="BUSCAR GUIA (CTRL+K OU /)..." data-i18n-placeholder="guide.search_placeholder" aria-label="Buscar Guia" data-i18n-aria="guide.search_placeholder" readonly style="cursor: pointer;">
                 <kbd class="kbd-badge">CTRL+K</kbd>
             </div>
@@ -106,7 +106,7 @@
 
             <!-- Botao de Busca Touch Exclusivo Mobile (Omnisearch) -->
             <button class="pixel-btn btn-search-mobile" id="btnDocsSearchMobile" onclick="abrirOmnisearch()" title="Buscar no Guia (Ctrl+K)" aria-label="Buscar Guia">
-                <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </button>
 
             <!-- Botao de Instalacao PWA -->
@@ -116,20 +116,20 @@
 
             <!-- Comutador Bilíngue de Idioma PT | EN -->
             <button class="pixel-btn lang-toggle-btn desktop-only-btn" onclick="PiDotsI18n.toggleLanguage()" id="btn-lang-toggle" title="Alternar idioma PT | EN">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                 <span class="lang-text-full" data-i18n="nav.lang_toggle">PT | EN</span>
                 <span class="lang-text-short">PT</span>
             </button>
 
             <!-- Alternador de Tema Dark Noir vs Blueprint -->
             <button class="pixel-btn desktop-only-btn" onclick="toggleTheme()" id="btnThemeToggle" title="Alternar entre Dark Noir e Blueprint">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 <span class="theme-btn-label" data-i18n="nav.theme">Tema</span>
             </button>
 
             <!-- Botao do Menu Drawer Retratil (Todos os Dispositivos: Desktop, Tablet e Mobile) -->
             <button id="toggleDrawerBtn" class="pixel-btn btn-cyan" title="Abrir Índice de Navegação" aria-label="Abrir Índice de Navegação" aria-expanded="false" aria-controls="retractableDrawer">
-                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" shape-rendering="crispEdges"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 <span class="drawer-btn-label" data-i18n="nav.guide_index">Índice</span>
             </button>
         </div>
@@ -142,7 +142,7 @@
         <aside class="retractable-drawer" id="retractableDrawer" aria-label="Índice retrátil do manual">
             <div class="drawer-top-bar">
                 <span class="drawer-top-title">
-                    <svg class="ui-icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                     <span>Índice do Manual</span>
                 </span>
                 <button class="pixel-btn btn-close-drawer" onclick="closeDrawer()" aria-label="Fechar Menu" title="Fechar Índice">Fechar [X]</button>
@@ -449,7 +449,7 @@
 
                     <div class="pixel-callout tip">
                         <div class="pixel-callout-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                             VANTAGEM DA ESPECIALIZACAO NO RASPBERRY PI 4B
                         </div>
                         <div class="pixel-callout-text">
@@ -461,7 +461,7 @@
                     <span class="step-counter-tag">PASSO 01 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-2')">
                         <span>AVANCAR: CHAT MULTI-BOT &amp; CADERNO DE RACIOCINIO</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -534,7 +534,7 @@
                         <div class="code-paper-top">
                             <span>PAYLOAD DA FERRAMENTA: delegate_task (CHAMADA PELO SUPERVISOR)</span>
                             <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar código">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -547,7 +547,7 @@
 
                     <div class="pixel-callout info">
                         <div class="pixel-callout-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                             TRANSAÇÃO NO BANCO DE DADOS DURANTE O HANDOFF
                         </div>
                         <div class="pixel-callout-text">
@@ -557,13 +557,13 @@
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-1')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 02 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-3')">
                         <span>AVANCAR: DOT HEARTBEAT &amp; SILENCIO</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -614,7 +614,7 @@
 
                     <div class="pixel-callout tip">
                         <div class="pixel-callout-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                             COMO A REGRA HEARTBEAT_OK POUPA SUA COTA
                         </div>
                         <div class="pixel-callout-text">
@@ -636,7 +636,7 @@
                         <div class="code-paper-top">
                             <span>EXEMPLO CURL // AGENDAMENTO PROATIVO DE MONITORAMENTO TERMICO</span>
                             <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar comando">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -654,13 +654,13 @@
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-2')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 03 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-4')">
                         <span>AVANCAR: GATEWAY DE MENSAGERIA &amp; SALAS</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -743,7 +743,7 @@
 
                     <div class="pixel-callout warning">
                         <div class="pixel-callout-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                             COMO FUNCIONA O CONTROLE DE SALTOS (HOP_COUNT &lt;= 3)
                         </div>
                         <div class="pixel-callout-text">
@@ -763,7 +763,7 @@
                         <div class="code-paper-top">
                             <span>POST /api/channels/devops/messages // DISPARANDO AGENTES NA SALA</span>
                             <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar comando">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -778,13 +778,13 @@
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-3')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 04 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-5')">
                         <span>AVANCAR: ARSENAL DE TOOLS &amp; TOOL PRUNING</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -972,7 +972,7 @@
                     <div class="hitl-arena-box">
                         <div class="hitl-arena-top">
                             <span class="hitl-arena-title">
-                                <svg class="ui-icon" style="color: var(--blueprint-cyan);" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                <svg class="ui-icon" style="color: var(--blueprint-cyan);" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                                 SIMULADOR DO CLASSIFICADOR HITL
                             </span>
                             <span class="brand-badge">MOTOR DE ANALISE EM TEMPO REAL</span>
@@ -981,7 +981,7 @@
                         <div class="hitl-input-group">
                             <input type="text" id="hitlTestInput" class="hitl-input-field" value="rm -rf /var/log &amp;&amp; sudo reboot" placeholder="DIGITE UM COMANDO BASH PARA CLASSIFICAR O RISCO..." aria-label="Comando Bash para classificar o risco">
                             <button class="pixel-btn btn-cyan" onclick="analisarComandoHITL()">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                                 <span>Analisar Comando</span>
                             </button>
                         </div>
@@ -1000,13 +1000,13 @@
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-4')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 05 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-6')">
                         <span>AVANCAR: OPERACIONAL &amp; PRESERVACAO FLASH</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -1031,7 +1031,7 @@
                         <div class="code-paper-top">
                             <span>ARQUIVO DE CONFIGURACAO: .env</span>
                             <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar configuração">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -1059,7 +1059,7 @@ TELEGRAM_CHAT_ID=</pre>
                         <div class="code-paper-top">
                             <span>COMANDOS DE DEPLOY E GERENCIAMENTO BASH</span>
                             <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar comandos">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -1086,7 +1086,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                     <div class="api-tester-container" id="miniApiTester">
                         <div class="api-tester-header">
                             <span class="api-tester-title">
-                                <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                 CONSOLE INTERATIVO // MINI API TESTER (CLIENT-SIDE)
                             </span>
                             <div class="api-telemetry-strip">
@@ -1123,7 +1123,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             <span class="api-method-badge" id="apiTestMethod">GET</span>
                             <input type="text" id="apiTestUrlInput" class="api-url-input" value="/health" placeholder="/api/endpoint..." aria-label="URL do endpoint de API para testar">
                             <button class="pixel-btn btn-green" id="btnRunApiTest" onclick="executarTesteApi()">
-                                <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                 <span>Disparar Requisição REST</span>
                             </button>
                         </div>
@@ -1254,7 +1254,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
 
                     <div class="pixel-callout info">
                         <div class="pixel-callout-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                             ACESSO REMOTO SEGURO COM CLOUDFLARE TUNNEL &amp; PORTAS DESACOPLADAS
                         </div>
                         <div class="pixel-callout-text">
@@ -1264,13 +1264,13 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-5')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 06 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-7')">
                         <span>AVANCAR: MEMORIA HIERARQUICA (MEMGPT)</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -1338,7 +1338,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             <span class="terminal-prompt-badge">pi@edge:~#</span>
                             <span class="terminal-title">TERMINAL // INJECAO ATOMICA DE CORE MEMORY NO MOTOR REACT</span>
                             <button class="pixel-btn btn-sm" style="margin-left: auto;" onclick="copiarTextoPixel(this)" title="Copiar bloco">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -1356,7 +1356,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
 
                     <div class="pixel-callout info">
                         <div class="pixel-callout-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                             FERRAMENTAS DE AUTO-EDICAO DE MEMORIA
                         </div>
                         <div class="pixel-callout-text">
@@ -1366,13 +1366,13 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-6')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 07 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-8')">
                         <span>AVANCAR: SELF-HEALING &amp; TWO-STAGE PLANNER</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -1418,10 +1418,10 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                     <!-- DIAGRAMA CRISPEDGES: LOOP DE AUTO-RECUPERACAO (SELF-HEALING HARNESS) -->
                     <div class="crisp-diagram-box">
                         <div class="crisp-diagram-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                             <span>FLUXOGRAMA TECNICO CRISPEDGES // CICLO FECHADO DE SELF-HEALING HARNESS</span>
                         </div>
-                        <svg viewBox="0 0 840 140" fill="none" class="crisp-diagram-svg" style="width: 100%; height: auto; display: block; shape-rendering: crispEdges;">
+                        <svg viewBox="0 0 840 140" fill="none" class="crisp-diagram-svg" style="width: 100%; height: auto; display: block; shape-rendering: crispEdges;" shape-rendering="crispEdges">
                             <!-- Background Grid Minimal -->
                             <rect width="840" height="140" fill="#07090c" stroke="#1c2633" stroke-width="1"/>
                             
@@ -1488,7 +1488,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                             <span class="terminal-prompt-badge">pi@edge:~#</span>
                             <span class="terminal-title">EXEMPLO // XML DO PLANO DE EXECUCAO EM DOIS ESTAGIOS</span>
                             <button class="pixel-btn btn-sm" style="margin-left: auto;" onclick="copiarTextoPixel(this)" title="Copiar bloco">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -1502,13 +1502,13 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-7')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 08 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-9')">
                         <span>AVANCAR: CONSELHO CONSULTIVO MULTI-BOT</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -1556,10 +1556,10 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                     <!-- DIAGRAMA CRISPEDGES: REVISÃO EM 3 VIAS ENTRE AGENTES -->
                     <div class="crisp-diagram-box">
                         <div class="crisp-diagram-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                             <span>FLUXOGRAMA TECNICO CRISPEDGES // PROTOCOLO DE CONSELHO CONSULTIVO</span>
                         </div>
-                        <svg viewBox="0 0 840 150" fill="none" class="crisp-diagram-svg" style="width: 100%; height: auto; display: block; shape-rendering: crispEdges;">
+                        <svg viewBox="0 0 840 150" fill="none" class="crisp-diagram-svg" style="width: 100%; height: auto; display: block; shape-rendering: crispEdges;" shape-rendering="crispEdges">
                             <rect width="840" height="150" fill="#07090c" stroke="#1c2633" stroke-width="1"/>
 
                             <!-- Coluna 1: Propositor -->
@@ -1602,7 +1602,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
 
                     <div class="pixel-callout info">
                         <div class="pixel-callout-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                             ISOLAMENTO DE FITAS E SAIDA ANTECIPADA POR CONSENSO
                         </div>
                         <div class="pixel-callout-text">
@@ -1612,13 +1612,13 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-8')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 09 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-10')">
                         <span>AVANCAR: SHARED SPACE &amp; DOT PACKS</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -1666,7 +1666,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                             <span class="terminal-prompt-badge">pi@edge:~#</span>
                             <span class="terminal-title">EXEMPLO // CATALOGO E INSTALACAO DE DOT PACKS ASSINADOS (SHA-256)</span>
                             <button class="pixel-btn btn-sm" style="margin-left: auto;" onclick="copiarTextoPixel(this)" title="Copiar bloco">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -1689,13 +1689,13 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-9')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 10 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-11')">
                         <span>AVANCAR: TRIGGERS &amp; MANUTENCAO MICROSD</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -1793,10 +1793,10 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                     <!-- DIAGRAMA CRISPEDGES: PROTECAO TERMICA & ROTINA NOTURNA MICROSD -->
                     <div class="crisp-diagram-box">
                         <div class="crisp-diagram-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
                             <span>FLUXOGRAMA TECNICO CRISPEDGES // PROTECAO DE SILICIO BROADCOM &amp; ROTINA NOTURNA DE PRESERVACAO FLASH</span>
                         </div>
-                        <svg viewBox="0 0 840 150" fill="none" class="crisp-diagram-svg" style="width: 100%; height: auto; display: block; shape-rendering: crispEdges;">
+                        <svg viewBox="0 0 840 150" fill="none" class="crisp-diagram-svg" style="width: 100%; height: auto; display: block; shape-rendering: crispEdges;" shape-rendering="crispEdges">
                             <rect width="840" height="150" fill="#07090c" stroke="#1c2633" stroke-width="1"/>
 
                             <!-- Coluna Esquerda: Protecao Termica Broadcom -->
@@ -1845,7 +1845,7 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                             <span class="terminal-prompt-badge">pi@edge:~#</span>
                             <span class="terminal-title">EXEMPLO // ENDPOINTS REST DE HARDWARE E MANUTENCAO</span>
                             <button class="pixel-btn btn-sm" style="margin-left: auto;" onclick="copiarTextoPixel(this)" title="Copiar comandos">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -1868,13 +1868,13 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-10')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 11 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-12')">
                         <span>AVANCAR: MOTOR I18N &amp; DICIONARIOS JSON</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -1932,7 +1932,7 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
                             <span class="terminal-prompt-badge">pi@edge:~#</span>
                             <span class="terminal-title">EXEMPLO // ATRIBUTOS DOM &amp; DISPARO DE TESTES CURL</span>
                             <button class="pixel-btn btn-sm" style="margin-left: auto;" onclick="copiarTextoPixel(this)" title="Copiar comandos">
-                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                 <span>Copiar</span>
                             </button>
                         </div>
@@ -1953,13 +1953,13 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                 </div>
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-11')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 12 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-green" onclick="scrollToStep('passo-13')">
                         <span>PROXIMO PASSO</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -1979,7 +1979,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                 <div class="step-module-body">
                     <div class="callout-box">
                         <div class="callout-header">
-                            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                             <span>PRINCIPIO DE EXECUCAO LOCAL // ZERO CONSUMO DE TOKENS</span>
                         </div>
                         <p>
@@ -2255,7 +2255,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span class="terminal-tag">SESSAO INTERATIVA</span>
                                 <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar exemplo">
-                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                     <span>Copiar</span>
                                 </button>
                             </div>
@@ -2285,13 +2285,13 @@ Throttle Automatico     : DESATIVADO (NORMAL)
 
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-12')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">PASSO 13 DE 14</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-14')">
                         <span>PROXIMO PASSO</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
@@ -2372,7 +2372,7 @@ Throttle Automatico     : DESATIVADO (NORMAL)
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span class="terminal-tag">BASH LINUX</span>
                                 <button class="pixel-btn btn-sm" onclick="copiarTextoPixel(this)" title="Copiar comandos">
-                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" shape-rendering="crispEdges"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H3V3h12v2"></path></svg>
                                     <span>Copiar</span>
                                 </button>
                             </div>
@@ -2412,13 +2412,13 @@ sudo systemctl status cloudflared</code></pre>
 
                 <div class="step-module-footer">
                     <button class="pixel-btn" onclick="scrollToStep('passo-13')">
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>PASSO ANTERIOR</span>
                     </button>
                     <span class="step-counter-tag">CONCLUSAO DO GUIA (14 DE 14)</span>
                     <a href="/app" data-surface="workspace" class="pixel-btn btn-green">
                         <span>ABRIR CONSOLE OPERACIONAL SPA</span>
-                        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </a>
                 </div>
             </section>
@@ -2433,7 +2433,7 @@ sudo systemctl status cloudflared</code></pre>
     <div id="omnisearchBackdrop" class="omnisearch-backdrop" onclick="fecharOmnisearch()"></div>
     <div id="omnisearchModal" class="omnisearch-modal" role="dialog" aria-modal="true" aria-label="Omnisearch do Guia piDots">
         <div class="omnisearch-header">
-            <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input type="text" id="omnisearchInput" class="omnisearch-input" placeholder="DIGITE TERMO DE BUSCA (EX: HITL, SPACES, DOCKER, WAL)..." aria-label="Digite termo de busca no guia" autocomplete="off">
             <span class="omnisearch-counter" id="omnisearchCounter">14 PASSOS</span>
             <button class="pixel-btn" onclick="fecharOmnisearch()" style="padding: 3px 6px;"><kbd>Esc</kbd></button>
@@ -2451,7 +2451,7 @@ sudo systemctl status cloudflared</code></pre>
 
     <!-- BOTAO FLUTUANTE DE VOLTAR AO TOPO -->
     <button id="btnBackToTop" class="btn-pixel-top" title="Voltar ao Topo" aria-label="Voltar ao Topo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-        <svg class="ui-icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+        <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="18 15 12 9 6 15"></polyline></svg>
     </button>
 
     <!-- RODAPE OFICIAL INTERFACE TECNICA -->

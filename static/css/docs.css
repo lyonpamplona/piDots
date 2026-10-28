@@ -23,7 +23,7 @@ header.guide-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 0px #000000;
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -245,7 +245,7 @@ main.guide-viewport {
 .guide-catalog-hero {
     background: var(--paper-surface);
     border: 1px solid var(--border-default);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 3px 3px 0px #000000;
     padding: 28px 32px;
     margin-bottom: 32px;
     position: relative;
@@ -271,11 +271,11 @@ main.guide-viewport {
 }
 
 .catalog-title {
-    font-family: var(--font-sans);
-    font-size: 24px;
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: clamp(20px, 2.2vw, 24px);
     font-weight: 700;
     line-height: 1.3;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.02em;
     color: var(--ink-main);
     margin-bottom: 10px;
 }
@@ -367,11 +367,11 @@ main.guide-viewport {
 .track-divider.track-amber .track-tag { color: var(--thermal-amber); }
 
 .track-title {
-    font-family: var(--font-sans);
-    font-size: 20px;
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: 16px;
     font-weight: 700;
     color: var(--ink-main);
-    letter-spacing: -0.01em;
+    letter-spacing: 0.02em;
     margin: 0;
 }
 
@@ -449,11 +449,11 @@ main.guide-viewport {
 
 .step-heading,
 .step-title {
-    font-family: var(--font-sans);
-    font-size: 22px;
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: clamp(17px, 2vw, 20px);
     font-weight: 700;
     color: var(--ink-main);
-    letter-spacing: -0.02em;
+    letter-spacing: 0.02em;
     margin: 0;
     line-height: 1.3;
 }
@@ -527,7 +527,7 @@ main.guide-viewport {
     border: 1px solid var(--border-default);
     padding: 16px;
     border-radius: 0;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 2px 2px 0px #000000;
     position: relative;
 }
 
@@ -543,10 +543,11 @@ main.guide-viewport {
 }
 
 .pixel-card-title {
-    font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 600;
+    font-family: var(--font-pixel-head, var(--font-pixel));
+    font-size: 12px;
+    font-weight: 700;
     color: var(--ink-main);
+    letter-spacing: 0.02em;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -571,7 +572,7 @@ main.guide-viewport {
     background: var(--paper-sheet);
     border-radius: 0;
     position: relative;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 2px 2px 0px #000000;
 }
 
 .callout-box p {
@@ -630,14 +631,16 @@ main.guide-viewport {
     border: 1px solid var(--border-default);
     background: var(--paper-sheet);
     border-radius: 0;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 3px 3px 0px #000000;
 }
 
 table.pixel-table {
     width: 100%;
     border-collapse: collapse;
+    font-family: var(--font-mono-data, var(--font-mono));
     font-size: 13px;
     text-align: left;
+    font-variant-numeric: tabular-nums;
 }
 
 table.pixel-table th {
@@ -650,13 +653,15 @@ table.pixel-table th {
     text-transform: uppercase;
     padding: 10px 14px;
     border-bottom: 1px solid var(--border-default);
+    font-variant-numeric: tabular-nums;
 }
 
 table.pixel-table td {
     padding: 10px 14px;
     border-bottom: 1px solid var(--border-subtle);
     color: var(--ink-secondary);
-    font-family: var(--font-sans);
+    font-family: var(--font-mono-data, var(--font-mono));
+    font-variant-numeric: tabular-nums;
 }
 
 table.pixel-table td:first-child code,
@@ -723,7 +728,7 @@ code.inline-pixel {
     background: var(--paper-surface-recessed);
     border: 1px solid var(--border-default);
     border-radius: 0;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 3px 3px 0px #000000;
     margin: 16px 0;
     max-width: 100%;
     overflow: hidden;
@@ -798,7 +803,7 @@ code.inline-pixel {
     background: var(--paper-sheet);
     border: 1px solid var(--border-default);
     border-radius: 0;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 3px 3px 0px #000000;
     padding: 20px;
     margin: 24px 0;
 }
@@ -813,10 +818,11 @@ code.inline-pixel {
 }
 
 .hitl-arena-title {
-    font-family: var(--font-sans);
+    font-family: var(--font-pixel-head, var(--font-pixel));
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--ink-main);
+    letter-spacing: 0.02em;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1061,7 +1067,7 @@ code.inline-pixel {
     max-height: 70vh;
     background: var(--paper-sheet);
     border: 1px solid var(--border-accent);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 4px 4px 0px #000000;
     border-radius: 0;
     z-index: 910;
     flex-direction: column;
@@ -1372,7 +1378,7 @@ footer.guide-paper-footer {
     right: max(20px, calc(16px + var(--safe-right)));
     background: var(--paper-surface);
     border: 1px solid var(--border-default);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 2px 2px 0px #000000;
     color: var(--blueprint-cyan);
     width: 44px;
     height: 44px;
@@ -1382,12 +1388,19 @@ footer.guide-paper-footer {
     justify-content: center;
     cursor: pointer;
     z-index: 85;
-    transition: all 0.15s ease;
+    transition: background 0.05s steps(1), border-color 0.05s steps(1), transform 0.05s steps(1), box-shadow 0.05s steps(1);
 }
 
 .btn-pixel-top:hover {
     border-color: var(--blueprint-cyan);
     background: var(--paper-surface-elevated);
+    box-shadow: 3px 3px 0px #000000;
+    transform: translate(-1px, -1px);
+}
+
+.btn-pixel-top:active {
+    box-shadow: 0px 0px 0px #000000;
+    transform: translate(1px, 1px);
 }
 
 /* ---------------------------------------------------------------------
@@ -1572,4 +1585,22 @@ footer.guide-paper-footer {
     table.pixel-table tr:hover td:first-child {
         background: var(--paper-surface-elevated);
     }
+}
+
+/* ---------------------------------------------------------------------
+   PADRONIZACAO NUMERICA TABULAR (PIXEL PAPER DOCS DATA DISPLAY)
+   --------------------------------------------------------------------- */
+.catalog-telemetry-val,
+.api-telemetry-strip,
+.api-status-badge,
+.omnisearch-counter,
+.step-index-badge,
+.step-badge,
+.node-telemetry-badge,
+.terminal-pre,
+pre.code-paper-content,
+table.pixel-table th,
+table.pixel-table td {
+    font-family: var(--font-mono-data, var(--font-mono));
+    font-variant-numeric: tabular-nums;
 }
