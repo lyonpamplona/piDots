@@ -137,7 +137,7 @@
 
             if (approveStamp) {
                 approveStamp.style.opacity = '1';
-                approveStamp.style.transform = 'rotate(2.5deg) scale(1.15)';
+                approveStamp.style.transform = 'rotate(2deg)';
             }
             if (rejectStamp) rejectStamp.style.opacity = '0.25';
 
@@ -150,8 +150,7 @@
 
             setTimeout(() => {
                 showToast(msg, 'success');
-                if (approveStamp) approveStamp.style.transform = 'rotate(2deg) scale(1.0)';
-            }, 180);
+            }, 100);
         }
 
         function triggerDemoVeto() {
@@ -160,7 +159,7 @@
 
             if (rejectStamp) {
                 rejectStamp.style.opacity = '1';
-                rejectStamp.style.transform = 'rotate(-3deg) scale(1.15)';
+                rejectStamp.style.transform = 'rotate(-2.5deg)';
             }
             if (approveStamp) approveStamp.style.opacity = '0.25';
 
@@ -173,8 +172,7 @@
 
             setTimeout(() => {
                 showToast(msg, 'danger');
-                if (rejectStamp) rejectStamp.style.transform = 'rotate(-3deg) scale(1.0)';
-            }, 180);
+            }, 100);
         }
 
         // Controle de Ciclo de Trabalho Diario da Calculadora
@@ -822,7 +820,7 @@
                     if (btn) {
                         btn.style.display = 'inline-flex';
                         btn.onclick = () => {
-                            alert('Instalacao no iOS Safari:\n1. Toque no botao Compartilhar (icone de quadrado com seta para cima)\n2. Selecione "Adicionar a Tela de Inicio"');
+                            showToast('Instalacao no iOS Safari: toque em Compartilhar e selecione "Adicionar a Tela de Inicio".', 'info');
                         };
                     }
                 }
@@ -855,16 +853,16 @@
 
             if (action === 'approve') {
                 hitlBox.style.borderColor = 'var(--phosphor-green)';
-                actionsContainer.innerHTML = '<span class="silicon-badge badge-green" style="font-size: 10px; padding: 4px 8px; border-radius: 2px;">HOMOLOGADO // EXECUCAO LIBERADA VIA HMAC-SHA256</span>';
+                actionsContainer.innerHTML = '<span class="silicon-badge badge-green" style="font-size: 10px; padding: 4px 8px; border-radius: 0;">HOMOLOGADO // EXECUCAO LIBERADA VIA HMAC-SHA256</span>';
                 showToast('Aprovacao HITL concedida para bwrap. Retomando agente autonomo.', 'success');
             } else if (action === 'reject') {
                 hitlBox.style.borderColor = 'var(--stamp-danger)';
-                actionsContainer.innerHTML = '<span class="silicon-badge badge-red" style="font-size: 10px; padding: 4px 8px; border-radius: 2px;">VETADO // EXECUCAO RECUSADA POR GOVERNANCA</span>';
+                actionsContainer.innerHTML = '<span class="silicon-badge badge-red" style="font-size: 10px; padding: 4px 8px; border-radius: 0;">VETADO // EXECUCAO RECUSADA POR GOVERNANCA</span>';
                 showToast('Comando de sandbox vetado por governanca Deny-by-Default.', 'warning');
             } else if (action === 'inspect') {
                 const arena = document.getElementById('arena-hitl');
                 if (arena) {
-                    arena.scrollIntoView({ behavior: 'smooth' });
+                    arena.scrollIntoView({ behavior: 'auto' });
                 }
                 showToast('Abrindo auditoria de governança e arena interativa de segurança.', 'info');
             }
