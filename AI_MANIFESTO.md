@@ -8,39 +8,39 @@
 
 ## 1. Por Que Este Documento Existe
 
-Software sério exige autoria transparente. O piDots não nasceu de prompts aleatórios jogados contra uma caixa-preta, nem foi escrito sob a ilusão de que modelos de linguagem substituem o discernimento de um engenheiro de sistemas. Projetamos e construímos o sistema sob a **Engenharia Centauro**: uma divisão clara entre direção arquitetural humana e síntese tática assistida por inteligência artificial.
+Software sério exige autoria transparente. O piDots não nasceu de prompts aleatórios jogados contra uma caixa-preta, nem foi escrito sob a ilusão de que modelos de linguagem substituem o discernimento de um engenheiro de sistemas. Construímos o projeto sob o princípio da **Engenharia Centauro**: uma fronteira nítida entre direção arquitetural humana e síntese tática assistida por máquina.
 
-No xadrez avançado introduzido por Garry Kasparov após 1997, o jogador mais forte do mundo não é o grande mestre isolado, nem o supercomputador sozinho. É o centauro, o operador humano que define a estratégia posicional, poda ramos de decisão estéreis e utiliza o motor computacional para explorar variações táticas com velocidade. Trouxemos exatamente esse princípio para a engenharia de sistemas em hardware restrito.
+No xadrez avançado introduzido por Garry Kasparov após 1997, o competidor mais formidável do mundo não era o grande mestre isolado, nem o supercomputador sozinho. Era o centauro. O operador humano definia o plano posicional, podava ramos de cálculo estéreis e usava o motor computacional para explorar variações táticas em segundos. Trouxemos esse mesmo rigor para a engenharia de sistemas em hardware restrito.
 
 ---
 
 ## 2. A Divisão de Responsabilidades (Humano vs. Máquina)
 
-Um modelo de linguagem não sente o cheiro de um regulador de tensão aquecendo a 80 °C numa placa sem cooler. Ele não paga a fatura de um cartão MicroSD corrompido por chamadas `fsync()` excessivas a cada segundo, nem sofre quando um contêiner Node.js ou Chromium devora 2 GB de RAM e aciona o `OOM Killer` do kernel Linux no meio da madrugada.
+Um modelo de linguagem não sente o cheiro de um regulador de tensão aquecendo a 80 °C em uma placa sem ventoinha. Ele não paga a fatura de um cartão MicroSD corrompido por escritas síncronas a cada segundo, nem acorda de madrugada quando um contêiner Node.js ou Chromium devora 2 GB de RAM e aciona o `OOM Killer` do Linux.
 
 Por isso, a fronteira de autoridade no piDots é inegociável:
 
 ### O Que É Exclusivamente Humano (Lyon Christopher)
-1. **Orçamento Físico e Restrições de Silício:** A decisão de fixar o teto operacional em `< 300 MB RSS` (com operação nominal entre `50 MB` e `80 MB`), rodar sobre um único worker assíncrono `FastAPI + uvloop` e banir dependências pesadas de runtime (zero PyTorch, zero LangChain, zero bancos vetoriais externos em contêiner).
-2. **Arquitetura de Persistência Flash-Safe:** A escolha do SQLite 3 em modo `WAL` (`Write-Ahead Logging`) com `synchronous=NORMAL`, `wal_autocheckpoint=1000` e `cache_size=-64000`. Essa configuração protege a vida útil da mídia Flash e mantém a latência abaixo de um milissegundo.
-3. **Topologia de Segurança e Soberania:** A regra de que nenhum agente executa código fora de um namespace Linux isolado (`Bubblewrap / bwrap`) com raiz somente-leitura, e que toda operação destrutiva exige homologação humana (`Human-in-the-Loop`) assinada criptograficamente com `HMAC-SHA256` e tempo de vida (`TTL`) de 30 minutos.
-4. **Identidade Visual e Ergonomia:** A recusa deliberada de interfaces genéricas geradas por IA. O design tático do console (`/app`), da apresentação (`/`) e do manual (`/docs`) combina a precisão de terminais técnicos de 1-bit com fichas catalográficas de alta densidade e suporte nativo à zona do polegar em smartphones.
+1. **Orçamento Físico e Limites de Silício:** A decisão de travar o consumo nominal entre 50 MB e 80 MB de RAM, rodar sobre um único worker assíncrono `FastAPI + uvloop` e banir bibliotecas desnecessárias (zero PyTorch, zero LangChain, zero bancos vetoriais externos em contêineres separados).
+2. **Arquitetura de Dados Flash-Safe:** A escolha do SQLite em modo `WAL` (`Write-Ahead Logging`) com `synchronous=NORMAL`, `wal_autocheckpoint=1000` e `cache_size=-64000`. Essa configuração preserva a integridade das células Flash e mantém a latência abaixo de um milissegundo.
+3. **Segurança e Soberania Local:** A regra de que nenhum agente executa código fora de uma jaula isolada via Linux Bubblewrap (`bwrap`), e que toda operação com risco destrutivo exige aprovação humana em tempo real (`Human-in-the-Loop`), assinada com HMAC-SHA256 e prazo de expiração de 30 minutos.
+4. **Identidade Visual e Ergonomia:** A recusa categórica de interfaces genéricas geradas por IA. O console operacional (`/app`), a apresentação (`/`) e o manual (`/docs`) combinam a precisão de matrizes técnicas de 1-bit com alta densidade de informação e alcance tátil para o polegar em smartphones.
 
 ### O Que Foi Acelerado por Agentes de IA
-1. **Desacoplamento Sistemático e Fatiamento Modular:** A refatoração de controladores monolíticos para roteadores modulares (`pidots/api/routes_*.py`) e motores Vanilla JS independentes (`static/js/spa/*.js`), sem alterar contratos de API.
-2. **Implementação de Protocolos Determinísticos:** A codificação de algoritmos de projeção vetorial compacta em 64 dimensões (Feature Hashing + L2 em Python puro), parsers JSON-RPC 2.0 sobre STDIO/SSE para o cliente `MCP Lite` e máquinas de estado do `Circuit Breaker` multi-provedor.
-3. **Auditoria Linha a Linha e Suítes de Regressão:** A geração e execução contínua de mais de 20 suítes de testes automatizados (`scripts/test_*.py`) que verificam cada rota HTTP, cada migração SQLite, cada trava de segurança e a ausência absoluta de emojis ou código morto antes de qualquer commit.
+1. **Modularização e Fatiamento de Código:** A refatoração de controladores extensos para sub-roteadores modulares (`pidots/api/routes_*.py`) e motores independentes em Vanilla JS (`static/js/spa/*.js`), preservando contratos e rotas ativas.
+2. **Implementação de Protocolos e Parsers:** O desenvolvimento de algoritmos de projeção vetorial compacta em 64 dimensões na CPU, parsers JSON-RPC 2.0 sobre STDIO/SSE para o cliente MCP Lite e máquinas de estado de Circuit Breaker.
+3. **Auditoria Linha por Linha e Suítes de Teste:** A criação e execução contínua de baterias de testes automatizados (`scripts/test_*.py`) que validam cada rota HTTP, migrações de banco e a ausência absoluta de emojis antes de cada commit.
 
 ---
 
 ## 3. Nossos Quatro Compromissos de Engenharia
 
-Para qualquer desenvolvedor, auditor de segurança ou operador de homelab que inspecione ou contribua com este repositório, definimos quatro regras permanentes:
+Para qualquer desenvolvedor, auditor de segurança ou operador de homelab que inspecione ou contribua com este projeto, estabelecemos quatro regras permanentes:
 
-1. **Zero Código Fantasma:** Nenhuma linha gerada por assistentes entra na árvore principal sem ser lida, compreendida e submetida a testes determinísticos que rodam localmente em segundos. Se um módulo não pode ser explicado de ponta a ponta ou se adiciona complexidade acidental sem ganho mensurável de latência ou memória, ele é descartado.
-2. **Contenção Determinística Acima de Promessas de Prompt:** Nunca confiamos apenas em instruções textuais (`system_prompt`) para impedir que um modelo apague arquivos ou exfiltre segredos. A contenção ocorre no nível do sistema operacional (`bwrap --unshare-all`), na validação de expressões regulares do `@dot-auditor`, no checksum `SHA-256` dos pacotes `DotPack v1.1` e na confirmação manual da governança humana.
-3. **Respeito Radical pelo Hardware do Usuário:** Todo recurso novo é medido pelo impacto em memória residente (`VmRSS`), ciclos de CPU ARM64 e operações de escrita em bloco. Se uma funcionalidade funciona em uma estação de trabalho de 64 GB mas degrada um Raspberry Pi 4B de 4 GB, ela é considerada defeituosa.
-4. **Linguagem Técnica Direta:** Nossa documentação, nossos relatórios e nossos comentários de código são escritos para engenheiros humanos. Não usamos jargões corporativos vazios, adjetivos inflados ou ornamentos visuais desnecessários.
+1. **Zero Código Fantasma:** Nenhuma linha de código entra no repositório sem ser lida, compreendida e submetida a testes automatizados que rodam localmente em segundos. Se um módulo não pode ser explicado com clareza ou adiciona complexidade acidental sem ganho mensurável de latência ou memória, ele é descartado.
+2. **Contenção no Sistema Operacional Acima de Promessas de Prompt:** Nunca confiamos apenas em instruções de texto para impedir que um modelo apague arquivos ou exfiltre dados. A contenção ocorre no kernel do Linux (`bwrap --unshare-all`), nas validações de segurança do `@dot-auditor`, nas assinaturas `SHA-256` dos pacotes de agentes e na confirmação manual do operador.
+3. **Respeito pelo Hardware do Usuário:** Todo recurso novo é medido pelo impacto real em memória RAM, ciclos de CPU ARM64 e ciclos de escrita em disco. Se uma funcionalidade roda bem em um servidor de 64 GB mas degrada um Raspberry Pi 4B de 4 GB, ela é considerada um defeito de engenharia.
+4. **Linguagem Direta de Bancada:** Nossa documentação, nossos relatórios e nossos comentários de código são escritos para desenvolvedores reais. Não usamos jargões vazios, adjetivos inflados ou ornamentos visuais desnecessários.
 
 ---
 
