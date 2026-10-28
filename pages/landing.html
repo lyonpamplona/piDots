@@ -401,11 +401,11 @@
                             <span class="card-tag tag-cyan">ORQUESTRADOR</span>
                         </div>
                         <p class="card-desc">
-                            Coordenador executivo do squad. Gerencia o desdobramento de tarefas, handoffs entre dots, resolução tripartite do Conselho e despachos de cronograma.
+                            Coordenador executivo do squad. Gerencia o desdobramento de tarefas, handoffs entre dots, resolução conjunta do Conselho e despachos de cronograma.
                         </p>
                         <div class="card-meta-list">
                             <div class="card-meta-item"><span>Permissões:</span> <strong>Memória Central · Spaces · Handoffs</strong></div>
-                            <div class="card-meta-item"><span>Isolamento:</span> <strong>Loop Cognitivo AG-UI</strong></div>
+                            <div class="card-meta-item"><span>Isolamento:</span> <strong>Loop de Agentes AG-UI</strong></div>
                         </div>
                     </div>
                 </div>
@@ -612,7 +612,7 @@
                             <td class="col-pidots"><strong>Dot Heartbeat 24/7 com HEARTBEAT_OK</strong></td>
                         </tr>
                         <tr>
-                            <td class="col-dimension">Memória Cognitiva</td>
+                            <td class="col-dimension">Memória de Longo Prazo</td>
                             <td class="col-cloud">Bancos vetoriais em nuvem ou efêmera</td>
                             <td class="col-heavy">Context window truncado sem persistência</td>
                             <td class="col-pidots"><strong>MemGPT 3 Camadas + Archival FTS5</strong></td>
@@ -621,7 +621,7 @@
                             <td class="col-dimension">Resolução de Conflitos</td>
                             <td class="col-cloud">Falha exposta ao usuário final</td>
                             <td class="col-heavy">Tentativas cegas de retry síncrono</td>
-                            <td class="col-pidots"><strong>Debate Tripartite do Conselho</strong></td>
+                            <td class="col-pidots"><strong>Revisão em 3 Vias do Conselho</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Resiliência de Código</td>
@@ -651,15 +651,15 @@
              =============================================================== -->
         <section class="arena-section" id="arena-hitl">
             <div class="section-head">
-                <span class="section-tag" data-i18n="landing.sec7_tag">GOVERNANCA, DIALETICA E RESILIENCIA AO VIVO</span>
-                <h2 class="section-title" data-i18n="landing.sec7_title">Arena de Execucao: Auditoria de Borda em Silicio</h2>
+                <span class="section-tag" data-i18n="landing.sec7_tag">GOVERNANÇA, REVISÃO EM 3 VIAS E RESILIÊNCIA</span>
+                <h2 class="section-title" data-i18n="landing.sec7_title">Arena de Execução: Testes Reais na Bancada</h2>
                 <p class="section-lead" data-i18n="landing.sec7_lead">
-                    Simule os mecanismos criticos que impedem execucoes nao autorizadas, resolvem conflitos de agentes via dialetica tripartite e aplicam auto-cura com parser AST.
+                    Simule as travas que impedem comandos não autorizados, veja os agentes revisando código em equipe e confira o auto-reparo de scripts com falha.
                 </p>
             </div>
 
             <div class="arena-grid">
-                <!-- Painel 1: Trava Mecanica e Carimbos HITL -->
+                <!-- Painel 1: Trava de Seguranca e Carimbos HITL -->
                 <article class="arena-panel" id="hitl-forensics">
                     <div class="feature-top">
                         <span class="feature-num">PAINEL 01 // GOVERNANCA</span>
@@ -671,7 +671,7 @@
                         Ative a confirmação manual de segurança para homologar ou vetar a ordem retida na fila transacional do SQLite WAL:
                     </p>
 
-                    <!-- Trava Mecanica -->
+                    <!-- Trava de Seguranca -->
                     <div class="safety-lock-row" onclick="toggleMechanicalSafetyLock()">
                         <div class="safety-lock-content">
                             <div class="mechanical-switch" id="demoSafetySwitch">
@@ -708,16 +708,16 @@
                     </div>
                 </article>
 
-                <!-- Painel 2: Conselho Tripartite -->
+                <!-- Painel 2: Conselho de Agentes -->
                 <article class="arena-panel" id="conselho-live">
                     <div class="feature-top">
-                        <span class="feature-num">PAINEL 02 // DIALETICA</span>
-                        <span class="feature-badge" style="color: var(--blueprint-cyan);">CONSELHO TRIPARTITE</span>
+                        <span class="feature-num">PAINEL 02 // REVISAO</span>
+                        <span class="feature-badge" style="color: var(--blueprint-cyan);">CONSELHO DE AGENTES</span>
                     </div>
 
                     <h3 class="feature-title">Deliberacao Multi-Bot em 3 Rodadas</h3>
                     <p class="feature-desc">
-                        Simule a dialetica entre Propositor (@dot-coder), Auditor (@dot-auditor) e Supervisor (@dot-supervisor):
+                        Simule a revisão entre Propositor (@dot-coder), Auditor (@dot-auditor) e Supervisor (@dot-supervisor):
                     </p>
 
                     <div class="arena-council-feed" id="councilDemoFeed">
@@ -986,7 +986,7 @@
             </div>
 
             <div class="guide-step">
-                <div class="step-num">PASSO 01 // ARQUETIPOS COGNITIVOS</div>
+                <div class="step-num">PASSO 01 // ARQUÉTIPOS DE ESPECIALISTAS</div>
                 <div class="step-heading">Autonomia Operacional em Hardware de Borda</div>
                 <div class="step-body">Conceito do piDots, equipe de coworkers essenciais (Supervisor, Coder, Arquiteto e Auditor) e governança em nós de 4GB.</div>
             </div>
@@ -999,7 +999,7 @@
 
             <div class="guide-step">
                 <div class="step-num">PASSO 03 // DOT HEARTBEAT 24/7</div>
-                <div class="step-heading">Autonomia Proativa e Silêncio Inteligente</div>
+                <div class="step-heading">Autonomia Proativa e Operação Silenciosa</div>
                 <div class="step-body">Tarefas agendadas via croniter despertam o Dot periodicamente com descarte de respostas triviais via HEARTBEAT_OK.</div>
             </div>
 
@@ -1035,8 +1035,8 @@
 
             <div class="guide-step">
                 <div class="step-num">PASSO 09 // CONSELHO CONSULTIVO</div>
-                <div class="step-heading">Deliberação Tripartite em 3 Rodadas</div>
-                <div class="step-body">Dialética colaborativa entre Propositor, Auditor e Supervisor gerando resolução executiva consolidada.</div>
+                <div class="step-heading">Revisão Conjunta em 3 Rodadas</div>
+                <div class="step-body">Debate colaborativo entre Propositor, Auditor e Supervisor gerando resolução executiva consolidada.</div>
             </div>
 
             <div class="guide-step">
