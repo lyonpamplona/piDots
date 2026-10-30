@@ -22,7 +22,7 @@ Por isso, a fronteira de autoridade no piDots é inegociável:
 
 ### O Que É Exclusivamente Humano (Lyon Christopher)
 1. **Orçamento Físico e Limites de Silício:** A decisão de travar o consumo nominal entre 50 MB e 80 MB de RAM, rodar sobre um único worker assíncrono `FastAPI + uvloop` e banir bibliotecas desnecessárias (zero PyTorch, zero LangChain, zero bancos vetoriais externos em contêineres separados).
-2. **Arquitetura de Dados Flash-Safe:** A escolha do SQLite em modo `WAL` (`Write-Ahead Logging`) com `synchronous=NORMAL`, `wal_autocheckpoint=1000` e `cache_size=-64000`. Essa configuração preserva a integridade das células Flash e mantém a latência abaixo de um milissegundo.
+2. **Arquitetura de Dados Flash-Safe:** A escolha do SQLite em modo `WAL` (`Write-Ahead Logging`) com `synchronous=NORMAL`, `wal_autocheckpoint=1000` e `cache_size=-16000` (16 MB de cache em RAM). Essa configuração preserva a integridade das células Flash e mantém a latência abaixo de um milissegundo.
 3. **Segurança e Soberania Local:** A regra de que nenhum agente executa código fora de uma jaula isolada via Linux Bubblewrap (`bwrap`), e que toda operação com risco destrutivo exige aprovação humana em tempo real (`Human-in-the-Loop`), assinada com HMAC-SHA256 e prazo de expiração de 30 minutos.
 4. **Identidade Visual e Ergonomia:** A recusa categórica de interfaces genéricas geradas por IA. O console operacional (`/app`), a apresentação (`/`) e o manual (`/docs`) combinam a precisão de matrizes técnicas de 1-bit com alta densidade de informação e alcance tátil para o polegar em smartphones.
 

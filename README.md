@@ -4,12 +4,7 @@
 
 [Português](README.md) | [English](README_EN.md)
 
-![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-3776AB?style=flat&logo=python&logoColor=white)
-![Arch](https://img.shields.io/badge/Architecture-ARM64%20%7C%20x86__64-informational?style=flat&logo=arm&logoColor=white)
-![Hardware](https://img.shields.io/badge/Target-Edge%20SBCs%20%7C%20ARM64%20%7C%20x86__64-C51A4A?style=flat&logo=raspberrypi&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose%20v2-2496ED?style=flat&logo=docker&logoColor=white)
-![Storage](https://img.shields.io/badge/Storage-SQLite%20WAL-003B57?style=flat&logo=sqlite&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat)
+`PYTHON: 3.11 | 3.12 | 3.13` | `ARCH: ARM64 | x86_64` | `HARDWARE: RASPBERRY PI 4B` | `STORAGE: SQLITE WAL` | `SANDBOX: BWRAP` | `LICENSE: MIT`
 
 ---
 
@@ -54,14 +49,15 @@ pidots/
 ├── main.py              # Bootstrap FastAPI, ciclo de vida Lifespan e middlewares
 ├── api/                 # Sub-roteadores modulares desacoplados (APIRouters)
 │   ├── __init__.py      # Agregador central de rotas da aplicação
+│   ├── deps.py          # Injeção de dependências compartilhadas e PageManager
+│   ├── routes_channels.py # Salas temáticas de discussão e canais colaborativos
 │   ├── routes_dots.py   # Gerenciamento de agentes e Dot Packs v1.1
-│   ├── routes_threads.py # Sessões de conversa, canais e streaming SSE
-│   ├── routes_tasks.py  # Agendamentos proativos e rotinas de manutenção
-│   ├── routes_webhooks.py # Webhooks Telegram, WhatsApp e incoming
-│   ├── routes_edge.py   # Telemetria térmica do SoC, triggers e changelog
+│   ├── routes_edge.py   # Telemetria térmica do SoC, triggers e servidores MCP
 │   ├── routes_hitl.py   # Fila de segurança e resolução remota HMAC-SHA256
-│   ├── routes_mcp.py    # Descoberta e gestão de servidores MCP Lite
-│   └── routes_static.py # Entrega estática de assets com EdgeAssetManager
+│   ├── routes_pwa.py    # Superfícies HTML, manifesto PWA e Service Worker
+│   ├── routes_tasks.py  # Agendamentos proativos e rotinas de manutenção
+│   ├── routes_threads.py # Sessões de conversa e streaming SSE (AG-UI v1.0)
+│   └── routes_webhooks.py # Webhooks Telegram, WhatsApp e endpoints incoming
 ├── core/
 │   ├── __init__.py
 │   ├── agent.py         # Motor ReAct assíncrono com poda dinâmica de ferramentas (AG-UI)
@@ -184,11 +180,27 @@ A manutenção noturna (`maintenance.py`) cuida da integridade da mídia Flash. 
 
 ### 10. Suporte Bilíngue Nativo (PT/EN)
 
-O micro-motor de internacionalização (`static/pidots-i18n.js`) é escrito em JavaScript puro (< 10 KB). Ele alterna entre Português e Inglês em menos de 10 milissegundos sem recarregar a página e sem depender de bibliotecas externas.
+O micro-motor de internacionalização (`static/js/core/pidots-i18n.js`) é escrito em JavaScript puro (< 10 KB). Ele alterna entre Português e Inglês em menos de 10 milissegundos sem recarregar a página e sem depender de bibliotecas externas.
 
 As traduções ficam organizadas em arquivos JSON (`data/locales/pt.json` e `data/locales/en.json`). A renderização usa estritamente `textContent` em elementos com atributos `data-i18n`, eliminando qualquer risco de injeção de scripts (XSS).
 
-### 11. Terminal com 34 Slash Commands e Console Mobile
+### 11. Design System: Pixel Paper UI (Dark Paper Noir)
+
+A interface do piDots foi desenhada especificamente para computadores de placa única e telas operacionais de alta densidade. Rejeitamos intencionalmente bibliotecas pesadas de terceiros (Tailwind, React, Electron ou frameworks de componentes inflados) em favor de CSS nativo modular desacoplado em 8 folhas estilísticas (`static/css/*.css`), garantindo carregamento inicial abaixo de 100 milissegundos e consumo nulo de CPU na renderização:
+
+1. **Materialidade de Papel Técnico & Alto Contraste:** Inspirado em teletipos, carimbos de controle de qualidade, fichas catalográficas e grafite técnico sobre papel escuro.
+   - Fundo base Dark Paper (`#07090c` e `#0c0d0e`).
+   - Tinta fosforosa verde para sucesso e prontidão (`#33ff66`).
+   - Tinta azul blueprint para enlaces técnicos (`#38bdf8`).
+   - Âmbar de alerta para ordens retidas em segurança (`#f59e0b`).
+2. **Geometria Ortogonal Estrita:** Bordas retas com `border-radius: 0px`. Ausência de cantos arredondados genéricos. Cada painel delimita fronteiras cartesianas precisas com bordas de 1 pixel (`1px solid var(--border)`).
+3. **Sombras Cartesianas Mecânicas:** Toda elevação utiliza sombras sem desfoque (zero blur radius): `box-shadow: 2px 2px 0px #000000;`, `3px 3px 0px #000000;` ou `4px 4px 0px #000000;`. Isso simula relevo mecânico tátil sem exigir esforço de composição de sombras na GPU integrada da placa.
+4. **Dupla Tipografia Técnica:**
+   - **Silkscreen:** Tipografia bitmap crisp aplicada estritamente em títulos, identificadores, tags de estado e carimbos de auditoria.
+   - **JetBrains Mono:** Tipografia monoespaçada legível aplicada ao corpo de texto, teletipo de execução, tabelas e janelas de código (com `font-variant-numeric: tabular-nums`).
+5. **Ergonomia Mobile-First (Thumb Zone):** Em smartphones, o console ativa uma barra inferior ancorada na zona confortável do polegar, botões com alvos de toque mínimos de 44x44 pontos e compensação dinâmica de altura útil via `window.visualViewport` para evitar oclusão pelo teclado virtual.
+
+### 12. Terminal com 35 Slash Commands e Console Mobile
 
 O console SPA traz um catálogo completo de comandos rápidos acionados pela barra (`/`):
 - Comandos operacionais locais (`/clear`, `/theme`, `/lang`, `/status`, `/telemetry`) respondem em menos de 16 milissegundos no próprio navegador, sem consumir tokens.
@@ -197,7 +209,7 @@ O console SPA traz um catálogo completo de comandos rápidos acionados pela bar
 
 Em telas menores de smartphones (<= 768px), uma barra inferior dedicada organiza o acesso com botões dimensionados para toque confortável (mínimo de 44x44 pontos). A altura útil se adapta à abertura do teclado virtual via `window.visualViewport`, evitando que o campo de digitação fique escondido atrás do teclado.
 
-### 12. Tour de Onboarding no Console Real
+### 13. Tour de Onboarding no Console Real
 
 O motor de tour (`tour-engine.js`) guia novos operadores diretamente na interface ativa, sem usar modais estáticos. Ele aplica sombras calculadas na GPU para destacar os elementos reais na tela:
 1. Barra lateral e biblioteca de arquivos/spaces.
@@ -208,32 +220,32 @@ O motor de tour (`tour-engine.js`) guia novos operadores diretamente na interfac
 
 O tour pode ser revisto a qualquer momento digitando `/tour` no teletipo ou pressionando a tecla `F1`.
 
-### 13. Conexão Externa via Protocolo MCP Lite
+### 14. Conexão Externa via Protocolo MCP Lite
 
 O piDots integra servidores MCP externos através de conexões assíncronas por STDIO ou Server-Sent Events (SSE) escritas em Python puro (`pidots/tools/mcp_client.py`). O cliente consome menos de 5 MB de RAM.
 
 Ferramentas importadas via protocolo JSON-RPC 2.0 são registradas diretamente no catálogo do piDots. Elas respeitam a lista de ferramentas permitidas de cada agente, impedindo que ferramentas não utilizadas poluam o contexto do modelo.
 
-### 14. Aprovações de Segurança Remotas (HMAC-SHA256)
+### 15. Aprovações de Segurança Remotas (HMAC-SHA256)
 
 Comandos arriscados podem ser aprovados diretamente pelo celular via links ou botões seguros enviados para o Telegram ou WhatsApp. Cada ordem recebe uma assinatura HMAC-SHA256 validada em tempo constante.
 
 Toda solicitação retida possui um prazo de validade de 30 minutos. Se o operador não aprovar o comando dentro desse período, a ordem expira por segurança, liberando o agente de volta para o estado ocioso sem executar nada arriscado.
 
-### 15. Pinos GPIO Físicos e Sensores MQTT
+### 16. Pinos GPIO Físicos e Sensores MQTT
 
 O piDots lê diretamente os pinos GPIO do Raspberry Pi 4B para capturar eventos de botões físicos ou sensores locais. Caso o sistema esteja rodando em computadores x86_64 ou contêineres sem acesso direto aos pinos, o driver ativa um modo de contingência seguro.
 
 Um cliente MQTT assíncrono permite que sensores da rede local enviem dados diretamente para a estação, disparando rotinas dos agentes sem travar o processamento principal.
 
-### 16. Catálogo de Pacotes de Agentes
+### 17. Catálogo de Pacotes de Agentes
 
 O diretório `data/packs/` reúne três agentes especializados com instalação em um clique:
 - **`@dot-secops`:** Auditor de segurança focado em portas abertas, acessos SSH e integridade do Linux.
 - **`@dot-homelab`:** Cuida da saúde de contêineres Docker, sensores físicos e armazenamento.
 - **`@dot-finops`:** Analisa uso de tokens, ciclos de CPU e eficiência energética das chamadas de IA.
 
-### 17. Proxy Reverso Nginx com Entrega em Quatro Portas
+### 18. Proxy Reverso Nginx com Entrega em Quatro Portas
 
 Um contêiner Nginx Alpine leve (< 6 MB de RAM) assume a entrega dos arquivos estáticos (`/static/` e `/data/locales/`) com cache estrito. Ele gerencia as quatro superfícies do sistema em portas separadas:
 - Porta `8081`: Apresentação e introdução ao sistema.
@@ -243,11 +255,11 @@ Um contêiner Nginx Alpine leve (< 6 MB de RAM) assume a entrega dos arquivos es
 
 Essa divisão libera 100% dos recursos do FastAPI para processar a lógica dos agentes e as transações no banco SQLite.
 
-### 18. Sandbox Estrito com Bubblewrap
+### 19. Sandbox Estrito com Bubblewrap
 
 Quando a variável `STRICT_SANDBOX=true` está ativa no arquivo `.env`, o piDots recusa a execução de qualquer comando shell caso o utilitário Bubblewrap (`bwrap`) não esteja instalado no sistema hospedeiro. O comando retorna erro com código de saída 126, impedindo que scripts executem sem o devido isolamento de namespaces.
 
-### 19. Acesso Remoto Seguro com Cloudflare Tunnel
+### 20. Acesso Remoto Seguro com Cloudflare Tunnel
 
 O diretório `cloudflared/` traz scripts prontos para publicar as portas locais na internet de forma segura, utilizando túneis criptografados via protocolo QUIC. A conexão não exige abertura de portas no roteador doméstico nem liberação de IP público, permitindo proteger o console com políticas de acesso Zero Trust.
 
@@ -260,6 +272,7 @@ O diretório `cloudflared/` traz scripts prontos para publicar as portas locais 
 - **Python:** Versão 3.11, 3.12 ou 3.13.
 - **Docker (Opcional):** Docker Engine 24+ e Docker Compose v2.
 - **Bubblewrap (Recomendado):** Pacote `bubblewrap` para isolamento de comandos (`sudo apt install bubblewrap`).
+- **Node.js (Opcional):** Necessário apenas para validar a suíte client-side de testes de roteamento cruzado (`node scripts/test_cross_surface_router.js`).
 
 ---
 
@@ -338,6 +351,15 @@ pidots init
 pidots serve --host 0.0.0.0 --port 8000
 ```
 
+Após iniciar o servidor (`pidots serve --host 0.0.0.0 --port 8000`), todas as superfícies estarão centralizadas na porta `8000`:
+- **Apresentação:** `http://localhost:8000/`
+- **Console Operacional:** `http://localhost:8000/app` (ou `http://localhost:8000/workspace`)
+- **Manual Técnico:** `http://localhost:8000/docs`
+- **Relatório de Engenharia:** `http://localhost:8000/relatorio`
+- **Verificação de Saúde:** `http://localhost:8000/health`
+
+*Nota sobre a Arquitetura Multi-Porta:* O desacoplamento por portas distintas (8081 Landing, 8082 Workspace, 8083 Docs, 8088 Gateway) é ativado automaticamente ao executar o sistema via **Docker Compose**, através do proxy reverso Nginx Alpine integrado. Na execução nativa direta via Python, o servidor FastAPI gerencia todas as rotas canonicamente na porta 8000.
+
 ---
 
 ## Interface de Linha de Comando (CLI)
@@ -354,8 +376,8 @@ pidots status
 # Listar agentes cadastrados na bancada
 pidots dots list
 
-# Subir o servidor com reload automático para desenvolvimento
-pidots serve --host 127.0.0.1 --port 8000 --reload
+# Subir o servidor para desenvolvimento
+pidots serve --host 127.0.0.1 --port 8000
 
 # Inspecionar e resolver ações retidas na fila de segurança
 pidots hitl list
@@ -449,7 +471,7 @@ if __name__ == "__main__":
 | `GET` | `/manifest.json` | Manifesto PWA para instalação no celular e desktop |
 | `GET` | `/sw.js` | Service Worker com cache para carregamento instantâneo |
 | `GET` | `/icon.svg` | Logotipo vetorial oficial da plataforma |
-| `GET` | `/static/pidots-i18n.js` | Micro-motor JavaScript de tradução no navegador |
+| `GET` | `/static/js/core/pidots-i18n.js` | Micro-motor JavaScript de tradução no navegador |
 | `GET` | `/data/locales/{lang}.json` | Dicionários de termos em Português e Inglês |
 | `GET` | `/api/changelog` | Histórico de atualizações e notas de versão |
 | `GET` | `/api/dots` | Lista de agentes cadastrados com papéis e status |
@@ -503,9 +525,9 @@ Pressione a tecla `g` seguida da letra de destino:
 
 | Atalho | Ação | Descrição |
 | :--- | :--- | :--- |
-| `Barra /` | Comandos Rápidos | Abre o menu flutuante com 34 comandos rápidos |
+| `Barra /` | Comandos Rápidos | Abre o menu flutuante com 35 comandos rápidos |
 | `Botão [/]` | Menu Touch | Abre o menu de comandos em telas de toque sem abrir o teclado |
-| `Alt+1` a `Alt+4` | Barra Lateral | Alterna entre painéis (Spaces, Agentes, Tarefas, Memória) |
+| `Alt+1` a `Alt+4` | Activity Rail | Alterna entre painéis contextuais do Activity Rail (Spaces, Agentes, Tarefas, Memória) |
 | `Alt+B` / `Ctrl+B` | Ocultar Barra | Oculta ou exibe a barra lateral para ganhar espaço |
 | `Alt+I` | Focar Artefato | Foca no documento ativo no Live Canvas |
 | `Ctrl+S` | Salvar Versão | Salva uma nova revisão do documento ativo no SQLite |
@@ -579,7 +601,7 @@ python3 scripts/test_phase12_shared_space_dot_packs.py
 # Sensores térmicos e manutenção noturna do banco
 python3 scripts/test_phase13_edge_triggers_maintenance.py
 
-# Protocolo AG-UI e eventos de interface
+# Protocolo AG-UI, CoAgents Shared State, Generative UI Inline e eventos de interface
 python3 scripts/test_phase1_opendots_agui.py
 python3 scripts/test_phase2_opendots_layout.py
 python3 scripts/test_phase3_opendots_dynamic_js.py

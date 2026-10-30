@@ -13,15 +13,22 @@ O resultado é previsível e econômico: o sistema sobe em menos de dois segundo
 ```mermaid
 flowchart TD
     subgraph ClientSurfaces["Superfícies Web e Clientes Locais"]
-        Landing["Landing Page (/)\n(Apresentação e Início Rápido)"]
-        Workspace["Console Operacional (/app, /workspace)\n(SPA/PWA, Teletipo e Live Canvas)"]
-        Docs["Manual Técnico (/docs)\n(Omnisearch Ctrl+K e Testador de API)"]
-        Swagger["OpenAPI Swagger UI (/api/docs)\n(Esquema /api/openapi.json)"]
+        LandingClient["Landing Page Client"]
+        WorkspaceClient["Console SPA/PWA Client"]
+        DocsClient["Guia Técnico & Relatório Client"]
+        GatewayClient["Acessos Canônicos Legados / Redirecionamentos"]
         CLI["CLI Nativa (pidots)\n(Terminal Local)"]
         Webhooks["Mensageria Externa\n(Telegram, WhatsApp, Webhooks)"]
     end
 
-    subgraph CoreEngine["Motor Principal piDots (FastAPI + uvloop)"]
+    subgraph EdgeProxy["Proxy Reverso Nginx Alpine (< 6 MB RAM)"]
+        P8081["Porta 8081\n(Apresentação & Simulador)"]
+        P8082["Porta 8082\n(Console Workspace SPA)"]
+        P8083["Porta 8083\n(Documentação Técnica)"]
+        P8088["Porta 8088\n(Gateway Canônico 308)"]
+    end
+
+    subgraph CoreEngine["Motor Principal piDots (FastAPI Core:8000 + uvloop)"]
         API["Camada API REST & SSE Stream\n(/api/dots, /api/threads, /api/edge/*)"]
         Gateway["Gateway de Mensagens\n(UnifiedIncomingMessage, Channels)"]
         Orchestrator["Orquestrador Multi-Bot\n(ThreadRouter, Council, Handoff)"]
@@ -36,7 +43,7 @@ flowchart TD
 
     subgraph SecurityStorage["Isolamento e Persistência SQLite WAL"]
         Bwrap["Sandbox Bubblewrap\n(Linux Namespaces & ro-bind)"]
-        SQLite["Motor SQLite WAL\n(synchronous=NORMAL, busy_timeout=5s)"]
+        SQLite["Motor SQLite WAL\n(synchronous=NORMAL, busy_timeout=30s, cache=16MB)"]
         Spaces["Workspaces Isolados\n(/workspaces/dot_id)"]
     end
 
@@ -45,12 +52,17 @@ flowchart TD
         WebTarget["Web Alvo HTTP/HTTPS\n(Extração Leve Trafilatura)"]
     end
 
-    Landing -->|Navegação e Atalhos| API
-    Workspace -->|HTTP / SSE Stream| API
-    Docs -->|Consulta e Testes de API| API
-    Swagger -->|Inspeção OpenAPI| API
-    CLI -->|Invocação Local| API
-    Webhooks -->|Webhooks HTTP POST| Gateway
+    LandingClient --> P8081
+    WorkspaceClient --> P8082
+    DocsClient --> P8083
+    GatewayClient --> P8088
+    CLI --> API
+    Webhooks --> P8088
+
+    P8081 -->|Proxy /api/ & /health| API
+    P8082 -->|Proxy SSE AG-UI & /api/| API
+    P8083 -->|Proxy /api/ & /health| API
+    P8088 -->|Proxy Completo & Redirects 308| API
 
     API --> AgentEngine
     API --> Maintenance
@@ -167,19 +179,26 @@ PRAGMA journal_mode = WAL;
 -- Poupa a vida útil do cartão MicroSD sem comprometer a integridade dos dados
 PRAGMA synchronous = NORMAL;
 
--- Aloca 64 MB de memória RAM para cache de páginas
+-- Aloca 16 MB de memória RAM para cache de páginas (calibrado para o teto de 384 MB de RAM)
 -- Consultas frequentes a mensagens e índices rodam direto na memória
-PRAGMA cache_size = -64000;
+PRAGMA cache_size = -16000;
+
+-- Habilita memória mapeada (mmap) de até 64 MB para leituras ultra-rápidas no kernel Linux ARM64
+PRAGMA mmap_size = 67108864;
 
 -- Dispara checkpoint automático do WAL a cada 1.000 páginas escritas (aprox. 4 MB)
 -- Evita o crescimento descontrolado do arquivo .db-wal no disco
 PRAGMA wal_autocheckpoint = 1000;
 
--- Aguarda até 5.000 ms em transações concorrentes antes de acusar erro de lock
-PRAGMA busy_timeout = 5000;
+-- Aguarda até 30.000 ms em transações concorrentes antes de acusar erro de lock
+-- Absorve picos de latência de escrita no barramento do cartão MicroSD
+PRAGMA busy_timeout = 30000;
 
 -- Mantém tabelas temporárias e ordenações transitórias na memória RAM (tmpfs)
 PRAGMA temp_store = MEMORY;
+
+-- Enforça integridade referencial nas tabelas relacionais do SQLite
+PRAGMA foreign_keys = ON;
 ```
 
 ---
@@ -250,7 +269,7 @@ O arquivo `main.py` gerencia o ciclo de vida e middlewares da aplicação. As ro
 - `routes_channels.py`: salas temáticas de discussão colaborativa.
 - `routes_webhooks.py`: recepção de mensagens externas do Telegram e WhatsApp.
 - `routes_edge.py`: telemetria de hardware (`/health`), sensores térmicos e configurações a quente.
-- `routes_static.py`: entrega de assets estáticos e manifesto PWA em memória RAM.
+- `routes_pwa.py`: entrega de assets estáticos, manifesto PWA, ícones em memória RAM e service worker.
 
 ### 5.14 Isolamento com Bubblewrap (`pidots/tools/terminal.py`)
 Executa comandos em sandbox Linux Bubblewrap (`bwrap`), montando `/usr`, `/bin` e `/lib` em modo somente leitura e isolando a árvore de processos. Se a variável `STRICT_SANDBOX=true` estiver definida e o binário `bwrap` não for encontrado, o comando é bloqueado com erro 126. A saída de texto tem um teto de 10 KB para proteger a memória RAM.
@@ -296,10 +315,10 @@ CREATE INDEX IF NOT EXISTS idx_channel_members ON channel_members(channel_id);
 
 ### Perfis de Atuação
 Os coworkers cadastrados seguem especializações bem definidas:
-- **`supervisor`:** Visão estratégica, organização de etapas de trabalho e síntese executiva. Identificador: `[SPV]`.
-- **`coder`:** Engenharia de software, depuração de erros, execução de comandos no sandbox e validação de testes. Identificador: `[CDR]`.
-- **`arquiteto`:** Modelagem de sistemas, documentação técnica, especificação de APIs e síntese estrutural. Identificador: `[ARC]`.
-- **`auditor`:** Segurança operacional, integridade de comandos shell, controle térmico e conformidade de governança. Identificador: `[AUD]`.
+- **`dot-supervisor`:** Visão estratégica, organização de etapas de trabalho e síntese executiva. Identificador: `[SPV]`.
+- **`dot-coder`:** Engenharia de software, depuração de erros, execução de comandos no sandbox e validação de testes. Identificador: `[CDR]`.
+- **`dot-muse`:** Modelagem de sistemas, documentação técnica estruturada, especificação de APIs e síntese criativa. Identificador: `[MUS]`.
+- **`dot-auditor`:** Segurança operacional, integridade de comandos shell, controle térmico e conformidade de governança. Identificador: `[AUD]`.
 
 ### Poda Dinâmica de Ferramentas (Dynamic Tool Pruning)
 Enviar dezenas de definições de ferramentas JSON a cada chamada desperdiça tokens e causa lentidão na borda. No piDots, cada agente carrega apenas as ferramentas autorizadas na coluna `allowed_tools_json`. O Coder recebe ferramentas de terminal e arquivos; o Supervisor recebe ferramentas de planejamento e delegação. Essa restrição reduz em mais de 75% o volume de tokens e impede que o agente invente comandos inexistentes.
@@ -313,6 +332,17 @@ Para garantir segurança sem o peso de máquinas virtuais ou contêineres aninha
 2. **Sistema de Arquivos em Modo Leitura:** Pastas críticas do sistema (`/bin`, `/usr`, `/lib`, `/etc`) são montadas como somente leitura (`--ro-bind`).
 3. **Pasta de Trabalho Restrita:** O único local com permissão de escrita é o diretório atribuído ao agente (`--bind {workspaces_root}/{dot_id} /workspace`).
 4. **Encerramento Automático:** A flag `--die-with-parent` assegura que processos filhos sejam finalizados imediatamente caso o processo principal seja interrompido.
+
+### 8.1 Orçamento de Silício e Limites de Contêineres (Docker Compose)
+
+Além do sandbox de processos isolados Bubblewrap, a infraestrutura define tetos rígidos via cgroups para impedir que o processo consuma todo o Raspberry Pi 4B:
+
+| Serviço | Contêiner | Limite CPU | Reserva CPU | Limite RAM | Reserva RAM | Montagens Especiais |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **FastAPI Core** | `pidots-core` | `1.2 cores` | `0.2 cores` | `384 MB` | `64 MB` | `tmpfs: /tmp (64 MB, nosuid)` |
+| **Nginx Proxy** | `pidots-nginx` | `0.25 cores` | `0.05 cores` | `32 MB` | `8 MB` | `volumes: estáticos ro` |
+
+A montagem do `/tmp` em memória volátil (`tmpfs: size=64m, nosuid`) assegura que arquivos transitórios e escritas temporárias nunca degradem as células flash do cartão MicroSD.
 
 ---
 
@@ -349,19 +379,21 @@ As telas do piDots combinam a alta densidade de consoles técnicos clássicos co
 
 ### Roteamento entre Superfícies
 
-| Superfície | Rota HTTP | Finalidade |
-| :--- | :--- | :--- |
-| **Landing Page** | `GET /` | Apresentação da estação, simulador ReAct e calculadora de silício |
-| **Console Operacional** | `GET /app` | Estação de trabalho SPA/PWA com teletipo e Live Canvas |
-| **Alias de Trabalho** | `GET /workspace` | Apelido direto para o console operacional `/app` |
-| **Manual Técnico** | `GET /docs` | Documentação técnica com busca Ctrl+K e testador de API |
-| **Relatório Técnico** | `GET /relatorio` | Relatório de testes de carga e validação técnica |
-| **OpenAPI Swagger UI** | `GET /api/docs` | Interface Swagger nativa para desenvolvedores |
-| **Esquema OpenAPI JSON** | `GET /api/openapi.json` | Contrato OpenAPI 3.0 estruturado |
-| **Dicionários i18n** | `GET /data/locales/{lang}.json` | Termos traduzidos em Português e Inglês |
-| **Micro-Motor de Tradução** | `GET /static/pidots-i18n.js` | Motor de tradução client-side em JavaScript puro |
-| **Changelog** | `GET /api/changelog` | Notas de atualização SemVer da plataforma |
-| **Service Worker** | `GET /sw.js` | Cache defensivo para carregamento imediato |
+| Superfície | Porta Nginx | Rota Canônica | Finalidade |
+| :--- | :--- | :--- | :--- |
+| **Landing Page** | `8081` | `GET /` | Apresentação da estação, simulador ReAct e calculadora de silício |
+| **Console Operacional** | `8082` | `GET /app` | Estação de trabalho SPA/PWA com teletipo e Live Canvas |
+| **Alias de Trabalho** | `8082` | `GET /workspace` | Apelido direto para o console operacional `/app` |
+| **Manual Técnico** | `8083` | `GET /docs` | Documentação técnica com busca Ctrl+K e testador de API |
+| **Relatório Técnico** | `8083` | `GET /relatorio` | Relatório de testes de carga e validação técnica |
+| **Gateway Unificado** | `8088` | `GET /*` | Roteador canônico retrocompatível com redirecionamentos HTTP 308 |
+| **Backend Core** | `8000` | `GET /api/*` | API REST e SSE assíncrono interno FastAPI |
+| **OpenAPI Swagger UI** | `8088` / `8000` | `GET /api/docs` | Interface Swagger nativa para desenvolvedores |
+| **Esquema OpenAPI JSON** | `8088` / `8000` | `GET /api/openapi.json` | Contrato OpenAPI 3.0 estruturado |
+| **Dicionários i18n** | Todas | `GET /data/locales/{lang}.json` | Termos traduzidos em Português e Inglês |
+| **Micro-Motor Tradução** | Todas | `GET /static/js/core/pidots-i18n.js` | Motor de tradução client-side em JavaScript puro |
+| **Changelog** | `8088` / `8000` | `GET /api/changelog` | Notas de atualização SemVer da plataforma |
+| **Service Worker** | `8082` | `GET /sw.js` | Cache defensivo para carregamento imediato |
 
 ### Navegação por Teclado e Atalhos Rápidos
 - Pressionar `g` seguido de `h` abre a página inicial (`/`).
@@ -376,6 +408,37 @@ Em telas com largura igual ou inferior a 768px:
 - O botão físico touch `[/]` permite abrir o catálogo de comandos sem precisar subir o teclado virtual.
 - O sistema escuta a API `window.visualViewport`. Quando o teclado virtual abre, a barra inferior é recolhida e a caixa de digitação se ajusta na tela, impedindo que o campo fique escondido.
 - Os campos de texto utilizam tamanho fixo de 16px para evitar que o navegador Safari execute zoom compulsório na tela.
+
+### 12.4 Especificação Arquitetural: Design System Pixel Paper UI
+
+O visual do piDots adota o paradigma **Pixel Paper UI**, unindo a materialidade tátil de relatórios de teletipo e papel milimetrado com a precisão geométrica do retro-computing de 1-bit. A interface foi calibrada para renderização imediata sem repaints dispendiosos no hardware modesto do Raspberry Pi 4B:
+
+1. **Paleta Dark Paper Noir:**
+   - Superfície base: `--paper-noir-base: #07090c` (preto carvão fosco de teletipo).
+   - Superfície contínua: `--paper-surface-sheet: #0b0e12` (folha de formulário contínuo).
+   - Superfície de cartões: `--paper-surface-card: #11161d` (fichas catalográficas).
+   - Superfície elevada: `--paper-surface-elevated: #182029` (modais e gavetas).
+   - Superfície rebaixada: `--paper-surface-recessed: #040608` (terminais afundados).
+2. **Geometria Ortogonal Estrita (0px Border Radius):**
+   - Todos os componentes utilizam raio de curvatura nulo (`--radius-xs: 0px`, `--radius-sm: 0px`, `--radius-md: 0px`, `--radius-lg: 0px`).
+   - Eliminação total de cantos arredondados para garantir estética de fichas catalográficas e economizar ciclos de rasterização da GPU.
+3. **Sombras Cartesianas sem Difusão (Blur-Free):**
+   - Proibição de sombras gaussianas difusas (`var(--shadow*)`).
+   - Sombras puramente projetadas com deslocamento cartesiano rígido: `box-shadow: 2px 2px 0px #000000;`, `3px 3px 0px #000000;` e `4px 4px 0px #000000;`.
+4. **Dual-Typography de Baixa Latência:**
+   - **Cabeçalhos e Rótulos Retro-Técnicos:** Tipografia pixelada monoespaçada `Silkscreen` (`--font-pixel-head`).
+   - **Dados, Código e Fluxo de Teletipo:** `JetBrains Mono` (`--font-mono-data`) com `font-variant-numeric: tabular-nums` para alinhamento perfeito de colunas numéricas e barras ASCII de telemetria.
+5. **Renderização Vetorial 1-Bit Crisp e Dither Procedural:**
+   - Todos os elementos SVG contêm a diretiva compulsória `shape-rendering="crispEdges"`.
+   - Elementos gráficos de hardware empregam textura pontilhada matricial gerada via SVG procedural (`#bayerRamPattern`).
+6. **Microinterações Mecânicas em Degraus:**
+   - Animações fluidas `ease-in-out` e transformações de escala `scale()` são banidas.
+   - Transições de estado operam em degraus rígidos via `steps(1)` ou `steps(2)`, reproduzindo o comportamento mecânico de relés físicos e impressoras de impacto.
+7. **Artefatos de Papel Técnico:**
+   - `.paper-slip`: Ficha catalográfica de mensagem com chanfro técnico (`clip-path: polygon`).
+   - `.tractor-holes` / `.tractor-feed`: Fita perfurada de margem contínua na bobina de teletipo.
+   - `.picote-line`: Separador serrilhado para destacar blocos de execução.
+   - `.pixel-rubber-stamp`: Carimbo analógico com textura radial para status de governança HITL.
 
 ---
 
@@ -451,3 +514,25 @@ As portas locais se dividem de forma clara:
 - Porta `8000`: Backend FastAPI interno dedicado.
 
 O script `cross-surface-router.js` detecta se o acesso vem de portas locais, da rede LAN ou de subdomínios externos, garantindo que os links e atalhos de navegação funcionem de forma transparente em qualquer ambiente.
+
+---
+
+## 22. Padrao OpenDots & CopilotKit CoAgents / AG-UI Protocol (v1.5.3)
+
+A arquitetura do piDots integra os paradigmas do ecossistema **CopilotKit/OpenDots** e do protocolo **AG-UI / CoAgents** diretamente no monolito modular e na estetica **Pixel Paper UI** do console `/app`:
+
+### 22.1 Activity Rail Lateral e 4 Paineis Contextuais
+- **Activity Rail (48px):** Barra vertical esquerda inspirada no padrao OpenDots, permitindo alternancia instantanea entre 4 paineis operacionais sem recarregar a pagina:
+  1. `[SPACES]`: Canais multi-bot (`#channel`), topicos em arvore (`threads`) e documentos versionados (`Spaces`) com busca em tempo real.
+  2. `[DOTS]`: Squad de agentes especialistas com criacao e edicao ao vivo via modal `#pixelDotCreatorModal` e matriz visual de *Dynamic Tool Pruning* (`allowed_tools_json`).
+  3. `[TASKS]`: Rotinas autonomas agendadas (Cron / Heartbeat) com disparo imediato (`POST /api/tasks/{id}/run`) e toggle ativo/pausado (`PATCH /api/tasks/{id}/toggle`).
+  4. `[MEM/MCP]`: Busca Hibrida RRF (FTS5 BM25 + Vetor 64D) e gerenciamento de servidores MCP Lite (`GET/POST /api/edge/mcp/servers`).
+
+### 22.2 Generative UI Inline e HITL com Edicao de Argumentos (`modified_args`)
+- **Generative UI Cards (`.gen-ui-card`):** Eventos SSE do protocolo AG-UI (`tool_call:start`, `tool_call:result`, `artifact:updated`) sao renderizados como fichas catalograficas colapsaveis diretamente na fita do teletipo, exibindo status `[EXECUTANDO...]`, tempo de execucao em milissegundos e payload formatado.
+- **Interrupt-Resume com `modified_args`:** Quando o guardiao HITL intercepta uma acao critica, o operador pode editar os argumentos JSON no cartao inline ou no dossie HITL e enviar `modified_args` para `POST /api/hitl/{id}/resolve`. O motor `DotAgent.resume_after_hitl()` injeta os argumentos corrigidos e retoma o loop ReAct sem perder o contexto da conversa.
+
+### 22.3 CoAgents Shared State (`STATE_SNAPSHOT` e `STATE_DELTA`) e Computador do Dot
+- **Estado Compartilhado Bidirecional:** O motor emite `state:snapshot` no inicio de cada turno e `state:delta` a cada transicao de no cognitivo (`router -> thinker -> tool_executor -> verifier -> responder`), sincronizando a aba `[COAGENTS]` em tempo real e aceitando overrides manuais via `PATCH /api/threads/{id}/state`.
+- **Computador do Dot (`Dot's Computer`) e Modo Takeover:** O painel direito unifica terminal sandbox (`POST /api/edge/computer/exec`), navegador de arquivos de workspace (`GET /api/edge/computer/files`), editor de artefatos, CoAgents State e telemetria termica, contando com **Modo Takeover** para execucao manual direta pelo operador humano.
+

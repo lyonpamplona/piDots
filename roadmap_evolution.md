@@ -46,7 +46,7 @@ Todas as entregas abaixo ja estao implementadas no codigo-fonte e validadas pela
 ## 3. Fase 17 — Infraestrutura de Borda, Nginx e Remoções de Legado [CONCLUIDA]
 
 - [x] **3.1. Desoneracao de Arquivos Estaticos via Nginx (`nginx/nginx.conf` e `docker-compose.yml`):**
-  * Servico `pidots-nginx` (`nginx:1.27-alpine`, porta `8080:80`, limite de memoria `32M`) com entrega direta em C de `/static/` e `/data/locales/` com `Cache-Control: immutable` e SSE streaming com `proxy_buffering off`.
+  * Servico `pidots-nginx` (`nginx:1.27-alpine`, multi-porta `8081/8082/8083/8088`, limite de memoria `32M`) com entrega direta em C de `/static/` e `/data/locales/` com `Cache-Control: immutable` e SSE streaming com `proxy_buffering off`.
 - [x] **3.2. Limpeza de Redirecionamentos e Fallbacks (`pidots/api/routes_pwa.py`, `pidots/config.py` e `terminal.py`):**
   * Flag configuravel `ENABLE_LEGACY_REDIRECTS` (padrao `True` retornando `308 Permanent Redirect` para preservar retrocompatibilidade, ou `410 Gone` quando delegada ao Nginx).
   * Trava `STRICT_SANDBOX`: Quando `True` e o `bwrap` nao esta presente, o terminal recusa execucao com `exit_code: 126` impedindo subprocessos abertos sem isolamento.
@@ -74,8 +74,23 @@ Todas as entregas abaixo ja estao implementadas no codigo-fonte e validadas pela
 
 ---
 
-## 6. Homologacao e Status dos Testes
+## 6. Fase 20 — Desacoplamento de Portas e Nginx Multi-Porta [CONCLUIDA]
 
-Todas as entregas das Fases 16 a 19 foram verificadas pela suite integrada de testes:
-* **Script:** `scripts/test_phase16_19_roadmap_evolution.py` (4/4 suites aprovadas com 100% de sucesso).
-* **Regressao:** Suites `test_phase15_llm_failover.py` e `test_phase4_opendots_homologation.py` validadas com 100% de exito.
+- [x] **Topologia Multi-Porta Isolada (`nginx/nginx.conf`):** Quatro blocos de servidor independentes rodando sob Nginx Alpine (consumo total < 6 MB RAM):
+  * **8081:** Landing Page (`X-Edge-Service: pidots-landing`).
+  * **8082:** Workspace SPA / PWA (`X-Edge-Service: pidots-workspace`).
+  * **8083:** Documentação Técnica Diataxis (`X-Edge-Service: pidots-docs`).
+  * **8088:** Gateway Central de Acesso Agregado (`X-Edge-Service: pidots-gateway`).
+- [x] **Roteador Cross-Surface (`static/js/core/pidots-router.js`):** Navegação transparente entre superfícies com suporte a hotkeys globais (Alt+1 Landing, Alt+2 App, Alt+3 Docs, Alt+4 Gateway) e resolução de URLs em ambientes desacoplados ou unificados.
+- [x] **Suíte de Testes Automatizada (`scripts/test_phase20_port_decoupling_nginx.py`):** Cobertura completa de conformidade HTTP, cabeçalhos de serviço e roteamento reverso.
+
+---
+
+## 7. Homologacao e Status dos Testes
+
+Todas as entregas das Fases 16 a 20 e o Design System Pixel Paper UI foram verificados e aprovados:
+* **Fases 16-19:** `scripts/test_phase16_19_roadmap_evolution.py` (4/4 suítes aprovadas, 100% de sucesso).
+* **Fase 20 (Nginx Multi-Porta):** `scripts/test_phase20_port_decoupling_nginx.py` (100% de êxito).
+* **Roteador Cross-Surface:** `scripts/test_cross_surface_router.js` (100% de êxito via Node.js).
+* **Pixel Paper UI (Fases 1-4):** `scripts/test_pixel_paper_phase4_global_homologation.py` (100% aprovado).
+* **Regressão Global:** Suítes `test_phase15_llm_failover.py` e `test_phase4_opendots_homologation.py` validadas com 100% de êxito.

@@ -267,11 +267,16 @@ O sistema impede conversas infinitas entre bots com regras rígidas: limite de 3
 
 ## 9. Manutenção Noturna e Cuidados com a Mídia Flash
 
-Cartões MicroSD sofrem desgaste quando submetidos a escritas contínuas de disco. O piDots aplica proteções em várias camadas:
-1. **Modo WAL:** Escritas sequenciais contínuas que evitam reescrever setores inteiros a cada transação.
+Cartões MicroSD sofrem desgaste quando submetidos a escritas contínuas de disco. O piDots aplica proteções em várias camadas de engenharia:
+1. **Modo WAL (`PRAGMA journal_mode = WAL;`):** Escritas sequenciais contínuas que evitam reescrever setores inteiros a cada transação.
 2. **`PRAGMA synchronous = NORMAL;`:** Reduz drasticamente as chamadas de bloqueio `fsync` no hardware sem risco de corrupção do banco.
-3. **Pasta `/tmp` em Memória (tmpfs):** Arquivos temporários residem na RAM, poupando o cartão de memória.
-4. **Checkpoint Noturno:** Rotina que consolida o log de transações, arquiva mensagens antigas (> 7 dias) e cria cópias de segurança consistentes.
+3. **`PRAGMA cache_size = -16000;`:** Aloca 16 MB de cache em memória RAM para aceleração de consultas e redução de leituras no cartão.
+4. **`PRAGMA busy_timeout = 30000;`:** Aguarda até 30 segundos em concorrência pesada para eliminar erros de `database is locked`.
+5. **`PRAGMA mmap_size = 67108864;`:** Habilita 64 MB de memory-mapped I/O no kernel Linux ARM64 para leitura de alta densidade.
+6. **`PRAGMA temp_store = MEMORY;`:** Processa ordenações e tabelas temporárias inteiramente em RAM.
+7. **`PRAGMA foreign_keys = ON;`:** Garante integridade referencial rigorosa em todas as relações de dados.
+8. **Pasta `/tmp` em Memória (`tmpfs` de 64 MB):** Arquivos temporários residem na RAM, poupando o cartão de memória MicroSD contra degradação precoce de células.
+9. **Checkpoint Noturno:** Rotina que consolida o log de transações, arquiva mensagens antigas (> 7 dias) e cria cópias de segurança consistentes.
 
 ### 9.1 Disparar Manutenção Manualmente
 ```bash
@@ -317,20 +322,30 @@ Se o processador Broadcom passar dos 72 °C, o sistema desacelera o polling de s
 
 ## 11. Estrutura de Portas do Proxy Reverso Nginx
 
-O Nginx Alpine (`pidots-nginx`) gerencia a entrega estática e o proxy reverso em quatro portas separadas, consumindo menos de 6 MB de RAM:
+O Nginx Alpine (`pidots-nginx`) gerencia a entrega estática e o proxy reverso em quatro portas públicas dedicadas e isoladas, conectando-se internamente ao `pidots-core` na porta 8000, consumindo menos de 6 MB de RAM total:
 
-- **Porta 8081:** Apresentação e simulador ReAct.
-- **Porta 8082:** Console operacional Workspace SPA/PWA.
-- **Porta 8083:** Manual técnico e relatórios.
-- **Porta 8088:** Gateway unificado de rotas.
-- **Porta 8000:** Servidor FastAPI interno.
+- **Porta 8081 (Landing Page):** Apresentação, simulador ReAct e benchmarks (`X-Edge-Service: landing-surface`).
+- **Porta 8082 (Workspace SPA/PWA):** Console operacional, chat multi-bot e workspaces (`X-Edge-Service: app-console-root`).
+- **Porta 8083 (Docs):** Manual técnico, relatórios e Mini API Tester (`X-Edge-Service: docs-guide-root`).
+- **Porta 8088 (Gateway Unificado):** Roteamento reverso canônico e acesso agregado multi-superfície.
+- **Porta 8000 (FastAPI Core):** Runtime assíncrono interno da API REST e WebSockets.
 
-Para testar a resposta das portas:
+Para testar a resposta e os cabeçalhos das 5 portas operacionais:
 ```bash
-curl -I http://localhost:8081/static/css/landing.css
-curl -s http://localhost:8082/health | jq .
-curl -s http://localhost:8083/health | jq .
-curl -s http://localhost:8088/health | jq .
+# 1. Landing Page (Porta 8081)
+curl -s -I http://localhost:8081/ | grep -E "HTTP/|X-Edge-Service"
+
+# 2. Workspace SPA (Porta 8082)
+curl -s -I http://localhost:8082/ | grep -E "HTTP/|X-Edge-Service"
+
+# 3. Documentação Técnica (Porta 8083)
+curl -s -I http://localhost:8083/ | grep -E "HTTP/|X-Edge-Service"
+
+# 4. Gateway Central (Porta 8088)
+curl -s -I http://localhost:8088/ | grep -E "HTTP/|X-Edge-Service"
+
+# 5. Core FastAPI Interno (Porta 8000)
+curl -s http://localhost:8000/health | jq .
 ```
 
 ---
@@ -365,3 +380,20 @@ ingress:
 sudo systemctl enable --now cloudflared
 sudo systemctl status cloudflared
 ```
+
+---
+
+## 23. Operação do Console `/app` Padrão OpenDots & CoAgents AG-UI (v1.6.0)
+
+### 23.1 Navegação pela Activity Rail e 4 Painéis Laterais
+Na lateral esquerda do Console `/app` (ou na visão `[O] DOTS` em dispositivos móveis), o operador dispõe da **Activity Rail** com 4 botões contextuais:
+- **`[S] SPACES`:** Filtra e alterna entre Canais Multi-Bot (`#devops`, `#dot-dev`, `#council-room`), Threads de Conversa e Documentos persistidos em Spaces.
+- **`[D] DOTS`:** Lista os coworkers ativos (`@dot-supervisor`, `@dot-coder`, `@dot-muse`, `@dot-auditor`), permite invocar o modal **Dots Studio** (`[+ CRIAR DOT]`) para cadastrar ou editar agentes com matriz visual de *Dynamic Tool Pruning*, e acionar **Handoff** ou **Conselho Tripartite**.
+- **`[T] TASKS`:** Gerencia tarefas periódicas em segundo plano, disparos imediatos e monitoramento de logs de execução.
+- **`[M] MEM/MCP`:** Inspeciona Core Memory, memórias arquivísticas FTS5 e gerencia ferramentas MCP Lite externas conectadas.
+
+### 23.2 Tríptico Espacial e Modos de Operação
+- **Modo 1 (Criação 50/50):** Teletipo à esquerda e Live Canvas à direita para codificação e visualização simultânea de diffs.
+- **Modo 2 (Foco Teletipo):** Canvas recolhido via `Ctrl+B` ou `F11` para foco estrito em diálogo e comandos de terminal.
+- **Modo 3 (Foco Canvas):** Área de artefato expandida para leitura imersiva de documentos longos e inspeção forense de governança HITL.
+

@@ -4,12 +4,7 @@
 
 [Português](README.md) | [English](README_EN.md)
 
-![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-3776AB?style=flat&logo=python&logoColor=white)
-![Arch](https://img.shields.io/badge/Architecture-ARM64%20%7C%20x86__64-informational?style=flat&logo=arm&logoColor=white)
-![Hardware](https://img.shields.io/badge/Target-Edge%20SBCs%20%7C%20ARM64%20%7C%20x86__64-C51A4A?style=flat&logo=raspberrypi&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose%20v2-2496ED?style=flat&logo=docker&logoColor=white)
-![Storage](https://img.shields.io/badge/Storage-SQLite%20WAL-003B57?style=flat&logo=sqlite&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat)
+`PYTHON: 3.11 | 3.12 | 3.13` | `ARCH: ARM64 | x86_64` | `HARDWARE: RASPBERRY PI 4B` | `STORAGE: SQLITE WAL` | `SANDBOX: BWRAP` | `LICENSE: MIT`
 
 ---
 
@@ -54,14 +49,15 @@ pidots/
 ├── main.py              # FastAPI bootstrap, Lifespan manager, and middlewares
 ├── api/                 # Decoupled modular sub-routers (APIRouters)
 │   ├── __init__.py      # Central route aggregator
+│   ├── deps.py          # Shared dependency injection and PageManager
+│   ├── routes_channels.py # Collaborative discussion channels and topic rooms
 │   ├── routes_dots.py   # Agent management and Dot Packs v1.1
-│   ├── routes_threads.py # Conversation sessions, channels, and SSE streaming
-│   ├── routes_tasks.py  # Proactive schedules and maintenance routines
-│   ├── routes_webhooks.py # Telegram, WhatsApp, and incoming webhooks
-│   ├── routes_edge.py   # SoC thermal telemetry, triggers, and changelog
+│   ├── routes_edge.py   # SoC thermals, hardware triggers, and MCP servers
 │   ├── routes_hitl.py   # Safety queue and HMAC-SHA256 remote resolution
-│   ├── routes_mcp.py    # MCP Lite server discovery and management
-│   └── routes_static.py # Static asset delivery via EdgeAssetManager
+│   ├── routes_pwa.py    # HTML surfaces, PWA manifest, and Service Worker
+│   ├── routes_tasks.py  # Proactive schedules and maintenance routines
+│   ├── routes_threads.py # Conversation sessions and SSE streaming (AG-UI v1.0)
+│   └── routes_webhooks.py # Telegram, WhatsApp, and incoming webhooks
 ├── core/
 │   ├── __init__.py
 │   ├── agent.py         # Async ReAct loop with dynamic tool pruning (AG-UI)
@@ -184,11 +180,27 @@ Nightly maintenance (`maintenance.py`) protects the MicroSD card. It runs `PRAGM
 
 ### 10. Native Bilingual Support (PT/EN)
 
-The client-side internationalization engine (`static/pidots-i18n.js`) is written in vanilla JavaScript (< 10 KB). It swaps between Portuguese and English in under 10 milliseconds without reloading the page or requiring large frontend frameworks.
+The client-side internationalization engine (`static/js/core/pidots-i18n.js`) is written in vanilla JavaScript (< 10 KB). It swaps between Portuguese and English in under 10 milliseconds without reloading the page or requiring large frontend frameworks.
 
 Translations are stored in clean JSON files (`data/locales/pt.json` and `data/locales/en.json`). UI updates strictly use `textContent` on elements carrying `data-i18n` attributes, eliminating cross-site scripting (XSS) risks.
 
-### 11. Command Palette with 34 Slash Commands and Mobile Console
+### 11. Design System: Pixel Paper UI (Dark Paper Noir)
+
+The piDots interface is crafted specifically for single-board computers and high-density tactical displays. We intentionally reject heavy third-party UI frameworks (Tailwind, React, Electron, or bloated component packs) in favor of decoupled modular native CSS across 8 dedicated stylesheets (`static/css/*.css`), ensuring initial load times below 100 milliseconds and zero GPU render lag:
+
+1. **Technical Paper Materiality & High Contrast:** Inspired by physical teletypes, quality control stamps, catalog cards, and technical graphite on deep dark slate.
+   - Dark Paper Noir base (`#07090c` and `#0c0d0e`).
+   - Phosphor green ink for health and readiness (`#33ff66`).
+   - Blueprint cyan ink for technical links and routers (`#38bdf8`).
+   - Thermal amber for approvals held in safety queues (`#f59e0b`).
+2. **Strict Orthogonal Geometry:** Zero border radius (`border-radius: 0px`). No generic rounded corners. Every panel and card defines clean, crisp cartesian boundaries with 1-pixel borders (`1px solid var(--border)`).
+3. **Mechanical Cartesian Shadows:** All surface elevation relies on zero-blur projection shadows: `box-shadow: 2px 2px 0px #000000;`, `3px 3px 0px #000000;`, or `4px 4px 0px #000000;`. This produces tactile mechanical relief without taxing the integrated SBC GPU.
+4. **Dual Technical Typography:**
+   - **Silkscreen:** Crisp bitmap font strictly applied to headings, identifiers, status badges, and audit stamps.
+   - **JetBrains Mono:** Highly legible monospace font applied to body text, teletipo streams, tables, and code viewers (with `font-variant-numeric: tabular-nums`).
+5. **Mobile-First Ergonomics (Thumb Zone):** On mobile displays, the workstation pins an accessible bottom navigation bar to the natural thumb reach area, features touch targets of at least 44x44 points, and smoothly adapts viewport heights via `window.visualViewport` to avoid virtual keyboard occlusion.
+
+### 12. Command Palette with 35 Slash Commands and Mobile Console
 
 The SPA console provides a complete catalog of slash commands triggered by typing `/`:
 - Local utility commands (`/clear`, `/theme`, `/lang`, `/status`, `/telemetry`) execute in under 16 milliseconds in the browser without consuming LLM tokens.
@@ -197,7 +209,7 @@ The SPA console provides a complete catalog of slash commands triggered by typin
 
 On screens 768px wide or smaller, a dedicated bottom navigation bar organizes controls with comfortable touch targets (at least 44x44 points). Layout heights adjust smoothly to the virtual keyboard using `window.visualViewport`, preventing text boxes from being hidden while typing.
 
-### 12. In-Context Guided Tour
+### 13. In-Context Guided Tour
 
 The onboarding engine (`tour-engine.js`) walks new operators through the live interface without modal popups. It uses GPU-accelerated shadows to highlight active controls directly on screen:
 1. Sidebar and spaces library.
@@ -208,32 +220,32 @@ The onboarding engine (`tour-engine.js`) walks new operators through the live in
 
 The walkthrough can be relaunched at any time with the `/tour` slash command or by pressing `F1`.
 
-### 13. External Tools via MCP Lite Protocol
+### 14. External Tools via MCP Lite Protocol
 
 piDots connects external Model Context Protocol servers over async STDIO or Server-Sent Events (SSE) using pure Python (`pidots/tools/mcp_client.py`). The MCP client consumes less than 5 MB RAM.
 
 Imported JSON-RPC 2.0 tools register directly in the piDots tool catalog. They adhere to each agent's allowed-tools whitelist, keeping prompts free of unneeded schemas.
 
-### 14. Remote Security Approvals (HMAC-SHA256)
+### 15. Remote Security Approvals (HMAC-SHA256)
 
 Risky commands can be authorized directly from a phone using signed links or buttons sent to Telegram or WhatsApp. Every request carries a constant-time HMAC-SHA256 signature.
 
 All pending approvals include a 30-minute time-to-live. If an operator does not authorize a pending command before it expires, the request is canceled automatically and the agent returns to idle without executing anything dangerous.
 
-### 15. Physical GPIO Pins and MQTT Sensors
+### 16. Physical GPIO Pins and MQTT Sensors
 
 piDots interacts directly with physical GPIO pins on the Raspberry Pi 4B to capture hardware button presses and sensor signals. When running on standard x86_64 machines or containers without hardware access, the driver falls back safely without throwing errors.
 
 An asynchronous MQTT client enables local IoT sensors to stream readings straight to the station, triggering agent workflows without blocking the primary event loop.
 
-### 16. Official Agent Pack Catalog
+### 17. Official Agent Pack Catalog
 
 The `data/packs/` directory provides pre-configured specialist agents ready to install with a single click:
 - **`@dot-secops`:** Security auditor focused on open network ports, SSH logs, and Linux system hardening.
 - **`@dot-homelab`:** Monitors Docker container health, physical sensors, and flash drive wear.
 - **`@dot-finops`:** Tracks token consumption, CPU cycles, and energy efficiency across inference calls.
 
-### 17. Nginx Alpine Reverse Proxy on Four Ports
+### 18. Nginx Alpine Reverse Proxy on Four Ports
 
 A lightweight Nginx Alpine container (< 6 MB RAM) delivers static files (`/static/` and `/data/locales/`) with strict caching headers. It routes four distinct surfaces across separate local ports:
 - Port `8081`: Overview and landing page.
@@ -243,11 +255,11 @@ A lightweight Nginx Alpine container (< 6 MB RAM) delivers static files (`/stati
 
 This offloads static file delivery from the Python process, leaving 100% of FastAPI CPU cycles available for agent execution and SQLite transactions.
 
-### 18. Strict Bubblewrap Sandboxing
+### 19. Strict Bubblewrap Sandboxing
 
 When `STRICT_SANDBOX=true` is set in your `.env` file, piDots refuses to execute any shell command if the Linux Bubblewrap (`bwrap`) utility is missing on the host. Blocked commands exit with code 126, ensuring that scripts never run without namespace containment.
 
-### 19. Remote Access with Cloudflare Tunnels
+### 20. Remote Access with Cloudflare Tunnels
 
 The `cloudflared/` directory provides scripts to publish local ports securely across the web using encrypted QUIC tunnels. Setup requires no open router ports and no public IP addresses, allowing you to protect the console with Cloudflare Zero Trust policies.
 
@@ -260,6 +272,7 @@ The `cloudflared/` directory provides scripts to publish local ports securely ac
 - **Python:** Version 3.11, 3.12, or 3.13.
 - **Docker (Optional):** Docker Engine 24+ and Docker Compose v2.
 - **Bubblewrap (Recommended):** Linux `bubblewrap` package for command sandboxing (`sudo apt install bubblewrap`).
+- **Node.js (Optional):** Required only to run the client-side cross-surface routing test suite (`node scripts/test_cross_surface_router.js`).
 
 ---
 
@@ -338,6 +351,15 @@ pidots init
 pidots serve --host 0.0.0.0 --port 8000
 ```
 
+Once running (`pidots serve --host 0.0.0.0 --port 8000`), all surfaces are reachable centrally on port `8000`:
+- **Landing Page:** `http://localhost:8000/`
+- **Operational Console:** `http://localhost:8000/app` (or `http://localhost:8000/workspace`)
+- **Technical Manual:** `http://localhost:8000/docs`
+- **Engineering Report:** `http://localhost:8000/relatorio`
+- **Health Check:** `http://localhost:8000/health`
+
+*Note on Multi-Port Architecture:* Port decoupling (8081 Landing, 8082 Workspace, 8083 Docs, 8088 Gateway) is automatically activated when running through **Docker Compose**, handled by the integrated Nginx Alpine reverse proxy. When running natively in Python, the FastAPI server manages all canonical routes directly on port 8000.
+
 ---
 
 ## Command-Line Interface (CLI)
@@ -354,8 +376,8 @@ pidots status
 # List active agents on the bench
 pidots dots list
 
-# Start the development server with auto-reload
-pidots serve --host 127.0.0.1 --port 8000 --reload
+# Start the development server
+pidots serve --host 127.0.0.1 --port 8000
 
 # Inspect and resolve pending security actions
 pidots hitl list
@@ -449,7 +471,7 @@ if __name__ == "__main__":
 | `GET` | `/manifest.json` | PWA manifest for desktop and mobile installation |
 | `GET` | `/sw.js` | Service Worker with offline caching logic |
 | `GET` | `/icon.svg` | Official vector brand mark |
-| `GET` | `/static/pidots-i18n.js` | Client-side vanilla JavaScript translation engine |
+| `GET` | `/static/js/core/pidots-i18n.js` | Client-side vanilla JavaScript translation engine |
 | `GET` | `/data/locales/{lang}.json` | Localization dictionaries in Portuguese and English |
 | `GET` | `/api/changelog` | Release history and SemVer patch notes |
 | `GET` | `/api/dots` | List registered agents and operational roles |
@@ -503,7 +525,7 @@ Press `g` followed by the destination letter:
 
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
-| `Slash /` | Slash Palette | Opens floating command menu with 34 quick actions |
+| `Slash /` | Slash Palette | Opens floating command menu with 35 quick actions |
 | `Button [/]` | Touch Menu | Opens command palette on mobile devices without opening keyboard |
 | `Alt+1` to `Alt+4` | Activity Rail | Cycles panels (Spaces, Agents, Tasks, Memory) |
 | `Alt+B` / `Ctrl+B` | Toggle Sidebar | Shows or hides the left activity sidebar |
@@ -579,7 +601,7 @@ python3 scripts/test_phase12_shared_space_dot_packs.py
 # Thermal triggers and flash storage maintenance
 python3 scripts/test_phase13_edge_triggers_maintenance.py
 
-# AG-UI protocol and UI state events
+# AG-UI protocol, CoAgents Shared State, Generative UI Inline and UI state events
 python3 scripts/test_phase1_opendots_agui.py
 python3 scripts/test_phase2_opendots_layout.py
 python3 scripts/test_phase3_opendots_dynamic_js.py

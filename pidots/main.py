@@ -26,7 +26,7 @@ from .storage.db import get_db, init_edge_database
 
 logger = logging.getLogger("pidots.main")
 
-APP_VERSION = "1.5.2"
+APP_VERSION = "1.5.5"
 
 
 HTML_404_PAGE = """<!DOCTYPE html>

@@ -103,3 +103,9 @@ Thumbs.db
 .vscode/
 *.sublime-project
 *.sublime-workspace
+
+# 9. Metadados Locais de Agentes de IA e CLI
+.agents/
+.hermes/
+skills-lock.json
+

@@ -473,7 +473,7 @@
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 02</span>
-                        <h2 class="step-heading">CHAT MULTI-BOT COLABORATIVO E CADERNO DE RACIOCINIO</h2>
+                        <h2 class="step-heading" data-i18n="guide.step2_title">CHAT MULTI-BOT COLABORATIVO E CADERNO DE RACIOCINIO</h2>
                     </div>
                     <span class="pixel-stamp stamp-notice">INTERACAO INTER-AGENTE</span>
                 </div>
@@ -575,7 +575,7 @@
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 03</span>
-                        <h2 class="step-heading">AUTONOMIA PROATIVA, DOT HEARTBEAT E HEARTBEAT_OK</h2>
+                        <h2 class="step-heading" data-i18n="guide.step3_title">AUTONOMIA PROATIVA, DOT HEARTBEAT E HEARTBEAT_OK</h2>
                     </div>
                     <span class="pixel-stamp stamp-notice">ROTINAS ALWAYS-ON</span>
                 </div>
@@ -684,7 +684,7 @@
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 04</span>
-                        <h2 class="step-heading">GATEWAY DE MENSAGERIA UNIFICADA E SALAS TEMATICAS</h2>
+                        <h2 class="step-heading" data-i18n="guide.step4_title">GATEWAY DE MENSAGERIA UNIFICADA E SALAS TEMATICAS</h2>
                     </div>
                     <span class="pixel-stamp stamp-notice">CANAIS EXTERNOS &amp; RECURSAO</span>
                 </div>
@@ -767,7 +767,13 @@
                                 <span>Copiar</span>
                             </button>
                         </div>
-                        <pre class="code-paper-content">curl -X POST http://127.0.0.1:8000/api/channels/devops/messages \
+                        <pre class="code-paper-content"># 1. Garantir criacao previa da sala (idempotente)
+curl -s -X POST http://127.0.0.1:8000/api/channels \
+  -H "Content-Type: application/json" \
+  -d '{"id": "devops", "name": "Operacoes DevOps", "description": "Canal de infraestrutura de borda"}'
+
+# 2. Enviar mensagem disparando agentes na sala
+curl -s -X POST http://127.0.0.1:8000/api/channels/devops/messages \
   -H "Content-Type: application/json" \
   -d '{
     "author_type": "user",
@@ -796,7 +802,7 @@
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 05</span>
-                        <h2 class="step-heading">ARSENAL DE FERRAMENTAS E PODA DINAMICA (TOOL PRUNING)</h2>
+                        <h2 class="step-heading" data-i18n="guide.step5_title">ARSENAL DE FERRAMENTAS E PODA DINAMICA (TOOL PRUNING)</h2>
                     </div>
                     <span class="pixel-stamp stamp-approved">EFICIENCIA EXTREMA</span>
                 </div>
@@ -1018,7 +1024,7 @@
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 06</span>
-                        <h2 class="step-heading">PASSO A PASSO OPERACIONAL, ENDPOINTS REST E PRESERVACAO DO MICROSD</h2>
+                        <h2 class="step-heading" data-i18n="guide.step6_title">PASSO A PASSO OPERACIONAL, ENDPOINTS REST E PRESERVACAO DO MICROSD</h2>
                     </div>
                     <span class="pixel-stamp stamp-approved">GUIA DE PRODUCAO 24/7</span>
                 </div>
@@ -1045,6 +1051,10 @@ AI_TIMEOUT_SECONDS=60.0
 # Parametros de Servidor e Persistencia Edge
 HOST=0.0.0.0
 PORT=8000
+PORT_LANDING=8081
+PORT_APP=8082
+PORT_DOCS=8083
+PORT_GATEWAY=8088
 SQLITE_DB_PATH=/app/data/pidots.db
 WORKSPACES_ROOT=/app/workspaces
 
@@ -1103,19 +1113,19 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots', '')">GET /api/dots</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tools', '')">GET /api/tools</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/mcp/servers', '')">GET /api/mcp/servers</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/computer/files', '')">GET /computer/files</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/computer/exec', '{\x22dot_id\x22: \x22dot-coder\x22, \x22command\x22: \x22uname -a && ls -la\x22}')">POST /computer/exec</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/computer/files', '')">GET /api/edge/computer/files</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/computer/exec', '{\x22dot_id\x22: \x22dot-coder\x22, \x22command\x22: \x22uname -a && ls -la\x22}')">POST /api/edge/computer/exec</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/tasks', '')">GET /api/tasks</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/channels', '')">GET /api/channels</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/data/locales/pt.json', '')">GET /data/locales/pt.json</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/changelog', '')">GET /api/changelog</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/edge/triggers', '')">GET /api/edge/triggers</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/packs/catalog', '')">GET /packs/catalog</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/dots/packs/install/dot-secops', '')">POST /install/dot-secops</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/expire-stale', '')">POST /hitl/expire-stale</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/triggers/simulate', '{\x22gpio_pin\x22: 17, \x22gpio_value\x22: 1, \x22wake_supervisor\x22: true}')">POST /triggers/simulate</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/signed-resolve', '{\x22action_id\x22: \x22demo_1\x22, \x22approved\x22: true, \x22token\x22: \x22demo_hmac\x22}')">POST /hitl/signed-resolve</button>
-                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/maintenance', '{\x22days_threshold\x22: 7, \x22create_backup\x22: true}')">POST /maintenance</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('GET', '/api/dots/packs/catalog', '')">GET /api/dots/packs/catalog</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/dots/packs/install/dot-secops', '')">POST /api/dots/packs/install/dot-secops</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/expire-stale', '')">POST /api/hitl/expire-stale</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/triggers/simulate', '{\x22gpio_pin\x22: 17, \x22gpio_value\x22: 1, \x22wake_supervisor\x22: true}')">POST /api/edge/triggers/simulate</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/hitl/signed-resolve', '{\x22approval_id\x22: \x22demo_1\x22, \x22action\x22: \x22approve\x22, \x22hmac_token\x22: \x22demo_hmac\x22}')">POST /api/hitl/signed-resolve</button>
+                            <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/edge/maintenance', '{\x22days_threshold\x22: 7, \x22create_backup\x22: true}')">POST /api/edge/maintenance</button>
                             <button class="api-chip-btn" onclick="selecionarEndpointApi('POST', '/api/threads', '{\x22dot_id\x22: \x22dot-supervisor\x22, \x22title\x22: \x22Sessao Auditoria Edge\x22}')">POST /api/threads</button>
                         </div>
 
@@ -1294,7 +1304,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 07</span>
-                        <h2 class="step-heading">MEMORIA HIERARQUICA AUTONOMA (PADRAO MEMGPT / LETTA)</h2>
+                        <h2 class="step-heading" data-i18n="guide.step7_title">MEMORIA HIERARQUICA AUTONOMA (PADRAO MEMGPT / LETTA)</h2>
                     </div>
                     <span class="pixel-stamp stamp-approved">MEMORIA 3-CAMADAS</span>
                 </div>
@@ -1384,7 +1394,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 08</span>
-                        <h2 class="step-heading">SELF-HEALING HARNESS E PLANEJAMENTO EM DOIS ESTAGIOS</h2>
+                        <h2 class="step-heading" data-i18n="guide.step8_title">SELF-HEALING HARNESS E PLANEJAMENTO EM DOIS ESTAGIOS</h2>
                     </div>
                     <span class="pixel-stamp stamp-approved">AUTO-CORRECAO &amp; METAS</span>
                 </div>
@@ -1520,7 +1530,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 09</span>
-                        <h2 class="step-heading">CONSELHO CONSULTIVO E REVISÃO ENTRE AGENTES</h2>
+                        <h2 class="step-heading" data-i18n="guide.step9_title">CONSELHO CONSULTIVO E REVISÃO ENTRE AGENTES</h2>
                     </div>
                     <span class="pixel-stamp stamp-approved">REVISÃO EM 3 VIAS</span>
                 </div>
@@ -1630,7 +1640,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 10</span>
-                        <h2 class="step-heading">ESPACO DE CONHECIMENTO COMPARTILHADO E DOT PACKS</h2>
+                        <h2 class="step-heading" data-i18n="guide.step10_title">ESPACO DE CONHECIMENTO COMPARTILHADO E DOT PACKS</h2>
                     </div>
                     <span class="pixel-stamp stamp-approved">PORTABILIDADE TOTAL</span>
                 </div>
@@ -1719,7 +1729,7 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 11</span>
-                        <h2 class="step-heading">TRIGGERS DE HARDWARE EDGE E MANUTENCAO DO MICROSD</h2>
+                        <h2 class="step-heading" data-i18n="guide.step11_title">TRIGGERS DE HARDWARE EDGE E MANUTENCAO DO MICROSD</h2>
                     </div>
                     <span class="pixel-stamp stamp-approved">PRESERVACAO FISICA</span>
                 </div>
@@ -1886,13 +1896,13 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
                 <div class="step-module-header">
                     <div class="step-header-title-box">
                         <span class="step-index-badge">PASSO 12</span>
-                        <h2 class="step-heading">MICRO-MOTOR DE INTERNACIONALIZACAO (I18N) &amp; DICIONARIOS JSON DE BORDA</h2>
+                        <h2 class="step-heading" data-i18n="guide.step12_title">MICRO-MOTOR DE INTERNACIONALIZACAO (I18N) &amp; DICIONARIOS JSON DE BORDA</h2>
                     </div>
                     <span class="pixel-stamp stamp-approved">ARQUITETURA BILINGUE PT/EN</span>
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Para viabilizar adocao global sem onerar o hardware de borda com bibliotecas pesadas de terceiros (como i18next ou vue-i18n), o piDots adota um <strong>micro-motor nativo de internacionalizacao Vanilla JS</strong> (<code>/static/pidots-i18n.js</code>) de menos de 1.5 KB gzipped, acompanhado de dicionarios JSON desacoplados (<code>data/locales/pt.json</code> e <code>en.json</code>):
+                        Para viabilizar adocao global sem onerar o hardware de borda com bibliotecas pesadas de terceiros (como i18next ou vue-i18n), o piDots adota um <strong>micro-motor nativo de internacionalizacao Vanilla JS</strong> (<code>/static/js/core/pidots-i18n.js</code>) de menos de 1.5 KB gzipped, acompanhado de dicionarios JSON desacoplados (<code>data/locales/pt.json</code> e <code>en.json</code>):
                     </p>
 
                     <div class="pixel-card-grid">
@@ -1943,7 +1953,7 @@ curl -s http://localhost:8000/data/locales/pt.json | jq .nav
 curl -s http://localhost:8000/data/locales/en.json | jq .nav
 
 # 3. Micro-motor Vanilla JS com politicas de cache
-curl -s -I http://localhost:8000/static/pidots-i18n.js
+curl -s -I http://localhost:8000/static/js/core/pidots-i18n.js
 
 # 4. Atributos declarativos no HTML:
 # &lt;span data-i18n="nav.workspace"&gt;WORKSPACE&lt;/span&gt;
@@ -1970,7 +1980,7 @@ curl -s -I http://localhost:8000/static/pidots-i18n.js
             <section class="step-module" id="passo-13">
                 <header class="step-module-header">
                     <span class="step-badge">PASSO 13 // CONTROLE OPERACIONAL DE ALTA VELOCIDADE</span>
-                    <h2 class="step-heading">CATALOGO COMPLETO DE SLASH COMMANDS (/), PARSER LEXICO E RECIBOS TATIS</h2>
+                    <h2 class="step-heading" data-i18n="guide.step13_title">CATALOGO COMPLETO DE SLASH COMMANDS (/), PARSER LEXICO E RECIBOS TATIS</h2>
                     <p class="step-summary">
                         O piDots incorpora uma central unificada de comandos iniciados por barra (<code>/</code>), permitindo operacao cirurgica de baixa latencia sem consumo de tokens de LLM para tarefas locais. O subsistema conta com menu flutuante de autocompletar em Vanilla JS (< 10KB), navegacao completa por teclado, tolerancia a falhas via Levenshtein e emissao de recibos tatis na bobina de teletipo com teto circular de 150 nos DOM.
                     </p>
@@ -2301,8 +2311,11 @@ Throttle Automatico     : DESATIVADO (NORMAL)
                  =============================================================== -->
             <section class="step-module" id="passo-14">
                 <div class="step-module-header">
-                    <span class="step-badge">PASSO 14 // REDE &amp; BORDA</span>
-                    <h2 class="step-title">Desacoplamento por Portas &amp; Cloudflare Tunnel</h2>
+                    <div class="step-header-title-box">
+                        <span class="step-index-badge">PASSO 14</span>
+                        <h2 class="step-heading" data-i18n="guide.step14_title">DESACOPLAMENTO POR PORTAS &amp; CLOUDFLARE TUNNEL</h2>
+                    </div>
+                    <span class="pixel-stamp stamp-approved">TOPOLOGIA MULTI-PORTA NGINX</span>
                 </div>
 
                 <div class="step-module-body">
@@ -2355,6 +2368,20 @@ Throttle Automatico     : DESATIVADO (NORMAL)
                                 <strong>Funcao:</strong> Acesso direto ao Manual Operacional de 14 passos e ao Relatorio de Engenharia Reversa (<code>/relatorio</code>). Navegacao client-side otimizada sem recargas pesadas.
                             </p>
                         </article>
+
+                        <article class="pixel-card">
+                            <div class="pixel-card-header">
+                                <span class="pixel-card-title">
+                                    <span class="brand-badge" style="color: var(--phosphor-green); border-color: var(--phosphor-green);">8088</span>
+                                    GATEWAY UNIFICADO
+                                </span>
+                                <span class="pixel-stamp stamp-approved" style="font-size: 9px; padding: 2px 6px;">PORTA REVERSA</span>
+                            </div>
+                            <p class="pixel-card-body">
+                                <strong>Rota Raiz:</strong> <code>/</code> | <strong>Subdominio Sugerido:</strong> <code>api.seudominio.com</code><br>
+                                <strong>Funcao:</strong> Ponto de entrada unificado com roteamento automatico e acesso a todas as superficies e APIs com cabecalhos customizados <code>X-Edge-Service</code>.
+                            </p>
+                        </article>
                     </div>
 
                     <div class="slip-perforation">
@@ -2390,6 +2417,7 @@ cloudflared tunnel create pidots-edge
 cloudflared tunnel route dns pidots-edge pidots.seudominio.com
 cloudflared tunnel route dns pidots-edge app.seudominio.com
 cloudflared tunnel route dns pidots-edge docs.seudominio.com
+cloudflared tunnel route dns pidots-edge api.seudominio.com
 
 # 5. Instalar o arquivo de configuracao oficial:
 sudo cp cloudflared/config.yml.example /etc/cloudflared/config.yml

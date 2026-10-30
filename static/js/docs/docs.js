@@ -39,10 +39,12 @@
             }
 
             // Controle do botao voltar ao topo
-            if (winScroll > 300) {
-                btnBackToTop.style.display = 'flex';
-            } else {
-                btnBackToTop.style.display = 'none';
+            if (btnBackToTop) {
+                if (winScroll > 300) {
+                    btnBackToTop.style.display = 'flex';
+                } else {
+                    btnBackToTop.style.display = 'none';
+                }
             }
         });
 
@@ -263,8 +265,13 @@
             if (target && target.classList) {
                 target.classList.add('active');
             } else {
+                let matched = false;
                 chips.forEach(c => {
-                    if (c.textContent.includes(rota)) c.classList.add('active');
+                    const text = c.textContent.trim();
+                    if (!matched && (text === `${metodo} ${rota}` || text === rota || text.endsWith(rota))) {
+                        c.classList.add('active');
+                        matched = true;
+                    }
                 });
             }
 

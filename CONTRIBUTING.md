@@ -26,6 +26,14 @@ Ao propor alterações no piDots, mantenha em mente os seguintes requisitos:
 4. **Regra de Estilo: Zero Emojis:**
    - É proibido o uso de emojis no código-fonte, nomes de variáveis, logs, documentação técnica, mensagens de commit e interfaces.
 
+5. **Padrão Visual: Design System Pixel Paper UI:**
+   - Toda alteração em interfaces web (HTML/CSS) deve obedecer estritamente ao **Pixel Paper UI** (Dark Paper Noir).
+   - É proibido introduzir frameworks de estilização pesados (Tailwind, Bootstrap) ou bibliotecas de componentes externas.
+   - Rigor geométrico ortogonal absoluto (`border-radius: 0px`).
+   - Sombras puramente cartesianas sem desfoque gaussiano (`box-shadow: 2px 2px 0px #000000;`, etc.).
+   - Dupla tipografia técnica: `Silkscreen` para displays, títulos e carimbos; `JetBrains Mono` (com `font-variant-numeric: tabular-nums`) para dados, telemetria e teletipo.
+   - Todos os ícones vetoriais SVG devem conter a diretiva `shape-rendering="crispEdges"`.
+
 ---
 
 ## 2. Padrão de Commits Semânticos (Conventional Commits)
@@ -74,8 +82,10 @@ Adotamos a convenção de [Conventional Commits](https://www.conventionalcommits
    ```
 
 4. **Validação e Testes:**
-   Antes de submeter o Pull Request, execute toda a suíte de testes de regressão e o teste de estresse de concorrência:
+   Antes de submeter o Pull Request, execute toda a suíte de testes de regressão, testes de homologação do Pixel Paper UI e o teste de estresse de concorrência:
    ```bash
+   python3 scripts/test_pixel_paper_phase4_global_homologation.py
+   python3 scripts/test_phase20_port_decoupling_nginx.py
    python3 scripts/test_phase1.py
    python3 scripts/test_phase2.py
    python3 scripts/test_phase3.py
