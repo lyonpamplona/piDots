@@ -12,9 +12,9 @@
 
 O piDots transforma um computador de placa única em uma estação de trabalho para agentes de inteligência artificial. Ele roda localmente, sem depender de nuvens externas para orquestrar o código. O benchmark físico do projeto é o **Raspberry Pi 4B com 4 GB de memória RAM (ARM64)**.
 
-Projetamos o piDots para o silício real. Frameworks corporativos tradicionais assumem servidores com gigabytes de memória sobrando, navegadores headless pesados e bancos vetoriais em contêineres separados. Na bancada física, essa conta não fecha. A placa aquece, o cartão MicroSD sofre desgaste precoce por escritas síncronas e o consumo de energia dispara.
+O piDots foi projetado para rodar em hardware de placa única. Frameworks convencionais assumem servidores com 64 GB de RAM, navegadores headless pesados e bancos vetoriais em contêineres separados. Em uma placa única, essa conta não fecha: a placa aquece, o cartão MicroSD sofre desgaste por escritas constantes e o consumo de energia sobe.
 
-Resolvemos esse gargalo com um monólito modular assíncrono em Python (`FastAPI + uvloop`). Eliminamos runtimes desnecessários para entregar um sistema enxuto: **menos de 50 MB de RAM em repouso** e **menos de 80 MB durante a execução simultânea de agentes**.
+A solução: um único processo assíncrono em Python (`FastAPI + uvloop`), sem camadas extras de orquestração. O resultado: **menos de 50 MB de RAM em repouso** e **menos de 80 MB durante a execução simultânea de agentes**.
 
 O sistema disponibiliza especialistas para tarefas reais: programação, arquitetura de software, auditoria técnica e manutenção preventiva. Toda a operação conta com persistência em SQLite WAL, isolamento de comandos em sandbox Linux Bubblewrap, aprovações Human-in-the-Loop em tempo real e console web tático em modo escuro.
 
@@ -109,7 +109,7 @@ O sistema traz quatro perfis calibrados de fábrica:
 - **Arquiteto (`@muse`):** Modela dados, estrutura fluxos de software e organiza documentos técnicos.
 - **Auditor (`@auditor`):** Inspeciona segurança de comandos, checa consumo térmico e valida integridade.
 
-Cada agente carrega apenas as ferramentas autorizadas em sua configuração (`allowed_tools_json`). Essa poda dinâmica economiza até 75% dos tokens de contexto e impede que os agentes tentem usar ferramentas fora de seu escopo.
+Cada agente carrega apenas as ferramentas permitidas (`allowed_tools_json`), economizando até 75% do contexto e evitando que o modelo invente ferramentas inexistentes.
 
 ### 2. Automações Proativas: Padrão Dot Heartbeat e Circuit Breaker
 
@@ -148,7 +148,7 @@ Essa proteção se estende aos três serviços consumidores:
 O módulo de memória (`pidots/storage/memory_manager.py`) dá autonomia para o agente gerenciar seu próprio contexto através de ferramentas nativas:
 
 - **Memória de Trabalho (`<core_memory>`):** Blocos fixos injetados diretamente no prompt inicial, divididos em dados do usuário, persona do agente e objetivo ativo da missão. O agente pode editar essas seções com `core_memory_append` e `core_memory_replace` conforme aprende novas preferências.
-- **Memória Arquival com Busca Híbrida:** Notas, códigos e referências gravados na tabela `archival_memories`. A busca combina o índice SQLite FTS5 (BM25 em texto puro) com projeção vetorial compacta de 64 dimensões baseada em hashing de n-gramas. A busca roda inteiramente na CPU local via `archival_memory_search`, sem exigir bibliotecas de machine learning pesadas.
+- **Memória Arquival com Busca Híbrida:** Notas, códigos e referências gravados na tabela `archival_memories`. A busca combina índice de texto (SQLite FTS5) com projeção vetorial de 64 dimensões (n-gramas + hash CRC32). A busca roda inteiramente na CPU local via `archival_memory_search`, sem exigir bibliotecas de machine learning pesadas.
 - **Memória de Retrospectiva (`recall_memory_search`):** Permite vasculhar conversas anteriores na mesma thread sem precisar carregar centenas de mensagens brutas no contexto ativo.
 
 ### 6. Auto-Reparo e Planejamento em Dois Estágios
@@ -170,7 +170,7 @@ O debate intermediário é registrado internamente para auditoria. Apenas o pare
 
 O `shared_space.py` funciona como um quadro compartilhado entre os agentes de uma mesma thread, permitindo escrita, leitura e revisão mútua de notas técnicas sob chaves temáticas.
 
-Para transportar configurações de agentes entre diferentes máquinas, o sistema utiliza o padrão Dot Pack v1.1 (`data/packs/`). Trata-se de um manifesto JSON com assinatura criptográfica `SHA-256`. Ao importar um pacote (`POST /api/dots/import-pack`), o sistema confere a integridade do hash e inspeciona a memória inicial contra tentativas de prompt injection antes de cadastrar o agente no banco.
+Para transportar configurações de agentes entre diferentes máquinas, o sistema utiliza o padrão Dot Pack v1.1 (`data/packs/`). É um arquivo JSON com hash `SHA-256` que comprova a integridade do pacote. Ao importar um pacote (`POST /api/dots/import-pack`), o sistema confere a integridade do hash e inspeciona a memória inicial contra tentativas de prompt injection antes de cadastrar o agente no banco.
 
 ### 9. Triggers de Hardware e Cuidados com o MicroSD
 
@@ -225,7 +225,7 @@ O tour pode ser revisto a qualquer momento digitando `/tour` no teletipo ou pres
 
 O piDots integra servidores MCP externos através de conexões assíncronas por STDIO ou Server-Sent Events (SSE) escritas em Python puro (`pidots/tools/mcp_client.py`). O cliente consome menos de 5 MB de RAM.
 
-Ferramentas importadas via protocolo JSON-RPC 2.0 são registradas diretamente no catálogo do piDots. Elas respeitam a lista de ferramentas permitidas de cada agente, impedindo que ferramentas não utilizadas poluam o contexto do modelo.
+Ferramentas importadas via JSON-RPC 2.0 entram direto no catálogo do piDots, respeitando a lista de ferramentas permitidas de cada agente.
 
 ### 15. Aprovações de Segurança Remotas (HMAC-SHA256)
 
@@ -279,10 +279,10 @@ A página de documentação técnica (`/docs` na porta 8083) foi desenhada sob o
 
 Inspirado na dinâmica de bancada do projeto OpenBot (`nightly-labs/openbot` / OpenDots), o piDots transforma os agentes em colegas de equipe vivos e acessíveis:
 
-- **Fast-Path Conversacional com Limites de Palavra:** Mensagens curtas de saudação, apresentação ou dúvidas introdutórias (como "oi", "olá", "quem é você?", "por onde começo?") ativam a heurística `is_conversational_fast_path`. Essa rotina suprime o envio do catálogo pesado de ferramentas, economizando até 70% de tokens de inferência e acelerando o tempo de primeira resposta no ARM64. O algoritmo utiliza correspondência estrita com limites de palavra (`\b`), prevenindo falsos positivos em comandos operacionais que contenham palavras com letras semelhantes (como "oito", "noite" ou "apoio").
-- **Personas Humanizadas do Squad Central:** Os 6 especialistas centrais (`@dot-supervisor`, `@dot-coder`, `@dot-auditor`, `@dot-muse`, `@dev-assistant`, `@dot-dev-core`) adotam postura de colegas de bancada técnica (Ada, Linus, Grace, etc.), recepcionando o operador com clareza, conversando sem jargões corporativos e colaborando visivelmente entre si.
+- **Fast-Path Conversacional com Limites de Palavra:** Mensagens curtas de saudação, apresentação ou dúvidas introdutórias (como "oi", "olá", "quem é você?", "por onde começo?") ativam a heurística `is_conversational_fast_path`. Nesses casos o sistema não envia a lista completa de ferramentas ao modelo, economizando até 70% do contexto e respondendo mais rápido no ARM64. O algoritmo utiliza correspondência estrita com limites de palavra (`\b`), prevenindo falsos positivos em comandos operacionais que contenham palavras com letras semelhantes (como "oito", "noite" ou "apoio").
+- **Personas Humanizadas do Squad Central:** Os 6 especialistas centrais têm personas de colegas (Ada, Linus, Grace etc.), falam direto e colaboram entre si sem formalidade.
 - **Card Interativo de Diagnóstico do Provedor de IA:** Falhas de rede, timeouts ou indisponibilidades temporárias (como erros HTTP 503 de provedores remotos) não são mascaradas com falsos sucessos. A interface renderiza um card industrial Pixel Paper UI com diagnóstico da causa raiz, detalhes técnicos do erro e três ações diretas em um clique: `[Tentar Novamente]`, `[Configurar Provedor]` e `[Testar Conexão]`.
-- **Live Team Chain na Mesma Conexão SSE:** Quando o operador envia mensagens em canais compartilhados sem citar nenhum agente, o `@dot-supervisor` é eleito como Task Owner padrão. Quando a resposta de um Dot cita um colega (ex: `@dot-coder` ou `@dot-auditor`), o segundo especialista é acionado automaticamente na mesma conexão teletipo, gerando uma nova ficha catalográfica (`ticker-slip`) com seu carimbo próprio, respeitando o limite seguro de 2 saltos (`max_chain_hops = 2`) e trava anti-loop.
+- **Live Team Chain na Mesma Conexão SSE:** Quando o operador envia mensagens em canais compartilhados sem citar nenhum agente, o `@dot-supervisor` é eleito como Task Owner padrão. Quando a resposta de um Dot cita um colega (ex: `@dot-coder` ou `@dot-auditor`), o segundo especialista é acionado automaticamente, limitado a 2 encaminhamentos (`max_chain_hops = 2`) e trava anti-loop.
 
 ---
 

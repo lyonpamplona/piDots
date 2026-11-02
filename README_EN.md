@@ -12,7 +12,7 @@
 
 piDots turns a single-board computer into an autonomous AI agent workstation. It runs locally on your desk without relying on external cloud orchestration. The hardware benchmark for the project is a **Raspberry Pi 4B with 4 GB RAM (ARM64)**.
 
-We built piDots for real silicon. Enterprise agent frameworks assume cloud servers packed with gigabytes of spare RAM, hidden headless browsers, and containerized vector databases. On edge hardware, that approach falls apart. The SoC overheats, synchronous disk writes destroy MicroSD cards, and energy consumption climbs.
+piDots was designed to run on single-board hardware. Conventional frameworks assume cloud servers with 64 GB of RAM, headless browsers, and containerized vector databases. On a single board, that approach breaks down: the SoC overheats, disk writes wear out MicroSD cards, and power draw climbs.
 
 piDots solves this with an asynchronous modular monolith in Python (`FastAPI + uvloop`). We stripped away bloated runtimes to deliver a lean, fast system: **under 50 MB RAM at idle** and **less than 80 MB during concurrent multi-agent runs**.
 
@@ -109,7 +109,7 @@ Four pre-tuned archetypes ship out of the box:
 - **Architect (`@muse`):** Models data structures, maps software flows, and writes technical specifications.
 - **Auditor (`@auditor`):** Audits shell security, monitors thermals, and enforces hardware boundaries.
 
-Each agent loads only the tools allowed in its configuration (`allowed_tools_json`). This dynamic pruning reduces context tokens by up to 75% and prevents agents from hallucinating unavailable tools.
+Each agent loads only the tools allowed in its configuration (`allowed_tools_json`). Each agent loads only its allowed tools, cutting context size by up to 75% and preventing the model from inventing tools it does not have.
 
 ### 2. Proactive Automations: Dot Heartbeat and Circuit Breakers
 
@@ -170,7 +170,7 @@ The intermediate debate is logged internally for security auditing. Only the syn
 
 The `shared_space.py` module acts as a collaborative blackboard for agents working within the same thread, allowing them to read, write, and review structured notes under shared topic keys.
 
-To migrate agent configurations between physical machines, piDots uses the Dot Pack v1.1 standard (`data/packs/`). Each pack is a JSON manifest backed by a cryptographic `SHA-256` checksum. When importing a pack (`POST /api/dots/import-pack`), the system verifies hash integrity and inspects initial memories for prompt-injection payloads before saving the agent to SQLite.
+To migrate agent configurations between physical machines, piDots uses the Dot Pack v1.1 standard (`data/packs/`). Each pack is a JSON file with a `SHA-256` hash that proves the pack has not been tampered with. When importing a pack (`POST /api/dots/import-pack`), the system verifies hash integrity and inspects initial memories for prompt-injection payloads before saving the agent to SQLite.
 
 ### 9. Hardware Triggers and Flash Protection
 

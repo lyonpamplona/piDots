@@ -519,20 +519,20 @@ O script `cross-surface-router.js` detecta se o acesso vem de portas locais, da 
 
 ## 22. Padrao OpenDots & CopilotKit CoAgents / AG-UI Protocol (v1.5.3)
 
-A arquitetura do piDots integra os paradigmas do ecossistema **CopilotKit/OpenDots** e do protocolo **AG-UI / CoAgents** diretamente no monolito modular e na estetica **Pixel Paper UI** do console `/app`:
+A arquitetura do piDots integra os paradigmas do ecossistema **CopilotKit/OpenDots** e do protocolo **AG-UI / CoAgents** diretamente no monolito modular e no visual **Pixel Paper UI** do console `/app`:
 
-### 22.1 Activity Rail Lateral e 4 Paineis Contextuais
-- **Activity Rail (48px):** Barra vertical esquerda inspirada no padrao OpenDots, permitindo alternancia instantanea entre 4 paineis operacionais sem recarregar a pagina:
-  1. `[SPACES]`: Canais multi-bot (`#channel`), topicos em arvore (`threads`) e documentos versionados (`Spaces`) com busca em tempo real.
-  2. `[DOTS]`: Squad de agentes especialistas com criacao e edicao ao vivo via modal `#pixelDotCreatorModal` e matriz visual de *Dynamic Tool Pruning* (`allowed_tools_json`).
+### 22.1 Activity Rail Lateral e 4 Painéis Contextuais
+- **Activity Rail (48px):** Barra vertical esquerda inspirada no padrão OpenDots, permitindo alternância instantânea entre 4 painéis operacionais sem recarregar a página:
+  1. `[SPACES]`: Canais multi-bot (`#channel`), tópicos em árvore (`threads`) e documentos versionados (`Spaces`) com busca em tempo real.
+  2. `[DOTS]`: Squad de agentes especialistas com criação e edição ao vivo via modal `#pixelDotCreatorModal` e matriz visual de *Dynamic Tool Pruning* (`allowed_tools_json`).
   3. `[TASKS]`: Rotinas autonomas agendadas (Cron / Heartbeat) com disparo imediato (`POST /api/tasks/{id}/run`) e toggle ativo/pausado (`PATCH /api/tasks/{id}/toggle`).
-  4. `[MEM/MCP]`: Busca Hibrida RRF (FTS5 BM25 + Vetor 64D) e gerenciamento de servidores MCP Lite (`GET/POST /api/edge/mcp/servers`).
+  4. `[MEM/MCP]`: Busca Híbrida RRF (FTS5 BM25 + Vetor 64D) e gerenciamento de servidores MCP Lite (`GET/POST /api/edge/mcp/servers`).
 
-### 22.2 Generative UI Inline e HITL com Edicao de Argumentos (`modified_args`)
-- **Generative UI Cards (`.gen-ui-card`):** Eventos SSE do protocolo AG-UI (`tool_call:start`, `tool_call:result`, `artifact:updated`) sao renderizados como fichas catalograficas colapsaveis diretamente na fita do teletipo, exibindo status `[EXECUTANDO...]`, tempo de execucao em milissegundos e payload formatado.
-- **Interrupt-Resume com `modified_args`:** Quando o guardiao HITL intercepta uma acao critica, o operador pode editar os argumentos JSON no cartao inline ou no dossie HITL e enviar `modified_args` para `POST /api/hitl/{id}/resolve`. O motor `DotAgent.resume_after_hitl()` injeta os argumentos corrigidos e retoma o loop ReAct sem perder o contexto da conversa.
+### 22.2 Generative UI Inline e HITL com Edição de Argumentos (`modified_args`)
+- **Generative UI Cards (`.gen-ui-card`):** Eventos SSE do protocolo AG-UI (`tool_call:start`, `tool_call:result`, `artifact:updated`) sao renderizados como fichas catalográficas colapsáveis diretamente na fita do teletipo, exibindo status `[EXECUTANDO...]`, tempo de execução em milissegundos e payload formatado.
+- **Interrupt-Resume com `modified_args`:** Quando o guardião HITL intercepta uma ação crítica, o operador pode editar os argumentos JSON no cartão inline ou no dossiê HITL e enviar `modified_args` para `POST /api/hitl/{id}/resolve`. O motor `DotAgent.resume_after_hitl()` injeta os argumentos corrigidos e retoma o loop ReAct sem perder o contexto da conversa.
 
 ### 22.3 CoAgents Shared State (`STATE_SNAPSHOT` e `STATE_DELTA`) e Computador do Dot
-- **Estado Compartilhado Bidirecional:** O motor emite `state:snapshot` no inicio de cada turno e `state:delta` a cada transicao de no cognitivo (`router -> thinker -> tool_executor -> verifier -> responder`), sincronizando a aba `[COAGENTS]` em tempo real e aceitando overrides manuais via `PATCH /api/threads/{id}/state`.
-- **Computador do Dot (`Dot's Computer`) e Modo Takeover:** O painel direito unifica terminal sandbox (`POST /api/edge/computer/exec`), navegador de arquivos de workspace (`GET /api/edge/computer/files`), editor de artefatos, CoAgents State e telemetria termica, contando com **Modo Takeover** para execucao manual direta pelo operador humano.
+- **Estado Compartilhado Bidirecional:** O motor emite `state:snapshot` no início de cada turno e `state:delta` a cada transição de nó cognitivo (`router -> thinker -> tool_executor -> verifier -> responder`), sincronizando a aba `[COAGENTS]` em tempo real e aceitando overrides manuais via `PATCH /api/threads/{id}/state`.
+- **Computador do Dot (`Dot's Computer`) e Modo Takeover:** O painel direito unifica terminal sandbox (`POST /api/edge/computer/exec`), navegador de arquivos de workspace (`GET /api/edge/computer/files`), editor de artefatos, CoAgents State e telemetria termica, contando com **Modo Takeover** para execução manual direta pelo operador humano.
 
