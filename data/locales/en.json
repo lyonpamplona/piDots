@@ -32,7 +32,7 @@
   "console": {
     "chat_title": "TELETYPE FEED // COMMANDS & AGENTS",
     "canvas_title": "WORKBENCH // LIVE CANVAS",
-    "input_placeholder": "Type an instruction or mention @coder (Enter sends)...",
+    "input_placeholder": "Type an instruction or mention @dot (Enter sends)...",
     "send_btn": "Send",
     "welcome_system": "[system] piDots node online. SQLite WAL database ready. Engine active (RSS RAM: 52 MB).",
     "welcome_agent": "Environment ready. Folder /workspace is mounted and silicon sensors are stable. Send a command in the terminal, summon specialists with @coder, or press F1 for the tech manual."
@@ -178,8 +178,8 @@
     "nav_08": "08 // TECHNICAL FAQ",
     "nav_09": "09 // 1-STEP INSTALL",
     "hero_eyebrow": "ARM64 CORTEX-A72 · 6.2W USB-C · < 70MB RAM RSS · OPEN SOURCE MIT",
-    "hero_title_html": "Autonomous AI agents on your <span class=\"highlight\">own hardware</span>.",
-    "hero_desc": "Run a persistent team of AI coworkers on Raspberry Pi 4B using less than 70 MB RAM and 6.2 Watts. Durable SQLite WAL memory, sub-15ms Bubblewrap isolation, and real-time human approval for risky commands without recurring cloud invoices.",
+    "hero_title_html": "AI agents that run on your <span class=\"highlight\">Raspberry Pi</span>.",
+    "hero_desc": "Four AI specialists working 24/7 on your hardware. No cloud. No bill. No internet dependency. Less than 70 MB RAM, 6.2 watts, and you approve every important action before it happens.",
     "deploy_label": "SINGLE-COMMAND INSTALLATION (DOCKER COMPOSE):",
     "deploy_eta": "ESTIMATED TIME: 45S",
     "btn_copy": "COPY",

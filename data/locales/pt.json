@@ -32,7 +32,7 @@
   "console": {
     "chat_title": "TELETIPO // FEED DE COMANDOS E AGENTES",
     "canvas_title": "PRANCHETA DE TRABALHO // LIVE CANVAS",
-    "input_placeholder": "Digite uma instrução ou mencione @coder (Enter envia)...",
+    "input_placeholder": "Digite uma instrução ou mencione @dot (Enter envia)...",
     "send_btn": "Enviar",
     "welcome_system": "[sistema] nó piDots online. Banco SQLite WAL pronto. Motor ativo (RAM RSS: 52 MB).",
     "welcome_agent": "Ambiente pronto. A pasta /workspace está montada e os sensores do silício estão estáveis. Envie um comando no terminal, chame especialistas com @coder ou aperte F1 para o manual técnico."
@@ -178,8 +178,8 @@
     "nav_08": "08 // FAQ TÉCNICO",
     "nav_09": "09 // INSTALAÇÃO EM 1 PASSO",
     "hero_eyebrow": "ARM64 CORTEX-A72 · 6.2W USB-C · < 70MB RAM RSS · OPEN SOURCE MIT",
-    "hero_title_html": "Agentes de IA autônomos no seu <span class=\"highlight\">próprio hardware</span>.",
-    "hero_desc": "Execute uma equipe de AI coworkers persistentes no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6.2 Watts. Memória durável em SQLite WAL, isolamento Bubblewrap em sub-15ms e aprovação humana de comandos críticos sem faturas recorrentes de nuvem.",
+    "hero_title_html": "Agentes de IA que rodam no seu <span class=\"highlight\">Raspberry Pi</span>.",
+    "hero_desc": "Quatro especialistas de IA que trabalham 24/7 no seu hardware. Sem nuvem. Sem fatura. Sem depender de internet. Menos de 70 MB de RAM, 6,2 watts, e você aprova cada ação importante antes de acontecer.",
     "deploy_label": "COMANDO ÚNICO DE INSTALAÇÃO (DOCKER COMPOSE):",
     "deploy_eta": "TEMPO ESTIMADO: 45S",
     "btn_copy": "COPIAR",

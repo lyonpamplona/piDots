@@ -44,6 +44,49 @@ header.guide-header::-webkit-scrollbar {
     display: none;
 }
 
+/* Indicador de Progresso "Passo X de 14" — fixo no topo, abaixo do header */
+.step-progress-indicator {
+    position: fixed;
+    top: calc(var(--header-height, 48px) + max(0px, var(--safe-top)));
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: var(--paper-base, #0c1012);
+    border-bottom: 1px solid var(--border-default, #1e3a34);
+    padding: 4px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: var(--phosphor-dim, #7a9a8e);
+    text-transform: uppercase;
+}
+
+.step-progress-indicator .step-progress-bar {
+    flex: 1;
+    height: 2px;
+    background: var(--border-default, #1e3a34);
+    position: relative;
+}
+
+.step-progress-indicator .step-progress-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--phosphor-green, #7cd9c6);
+    width: 0%;
+    transition: width 0.15s steps(3);
+}
+
+.step-progress-indicator .step-progress-label {
+    color: var(--phosphor-green, #7cd9c6);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 .lang-text-short {
     display: none;
 }

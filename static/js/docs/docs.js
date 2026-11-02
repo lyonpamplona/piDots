@@ -146,6 +146,18 @@
                 }
             }
             setActiveStepHighlight(activeId);
+
+            // Atualizar indicador de progresso "Passo X de 14"
+            const progressLabel = document.getElementById('stepProgressLabel');
+            const progressBarFill = document.getElementById('stepProgressBarFill');
+            if (progressLabel && progressBarFill) {
+                const activeIdx = stepModules.findIndex(m => m.id === activeId);
+                const totalSteps = stepModules.length;
+                if (activeIdx >= 0) {
+                    progressLabel.textContent = 'Passo ' + (activeIdx + 1) + ' de ' + totalSteps;
+                    progressBarFill.style.width = ((activeIdx + 1) / totalSteps * 100).toFixed(1) + '%';
+                }
+            }
         }
 
         window.addEventListener('scroll', updateActiveStepByScroll, { passive: true });

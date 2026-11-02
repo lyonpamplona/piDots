@@ -135,6 +135,14 @@
         </div>
     </header>
 
+    <!-- Indicador de Progresso "Passo X de 14" -->
+    <div class="step-progress-indicator" id="stepProgressIndicator" aria-live="polite">
+        <span class="step-progress-label" id="stepProgressLabel">Passo 1 de 14</span>
+        <div class="step-progress-bar">
+            <div class="step-progress-bar-fill" id="stepProgressBarFill"></div>
+        </div>
+    </div>
+
     <!-- SHELL PRINCIPAL EM LARGURA TOTAL COM GAVETA LATERAL DIREITA RETRATIL -->
     <div class="guide-shell">
 
@@ -327,7 +335,10 @@
                         O <strong>piDots</strong> foi projetado para executar assistentes técnicos locais com consumo inferior a 70 MB de RAM, mantendo os dados no hardware do operador e eliminando faturas de nuvem.
                     </p>
                     <p class="step-paragraph">
-                        A resposta está na disciplina de arquitetura. Em vez de subir navegadores Chromium pesados ou bancos vetoriais em contêineres separados, o piDots é um monólito enxuto em Python assíncrono. O estado, as conversas e as revisões de arquivos ficam salvos localmente em um banco SQLite configurado em modo WAL, garantindo que nada se perca caso falte luz.
+                        O piDots é um monólito enxuto em Python assíncrono. Em vez de subir navegadores Chromium pesados ou bancos vetoriais em contêineres separados, tudo roda em um único processo.
+                    </p>
+                    <p class="step-paragraph">
+                        O estado, as conversas e as revisões de arquivos ficam em um banco SQLite local em modo WAL (Write-Ahead Logging). Se faltar luz, nada se perde.
                     </p>
                     <p class="step-paragraph">
                         Para evitar que um único agente tente resolver tudo e se perca em instruções confusas, o trabalho é dividido entre <strong>quatro especialistas com perfis claros</strong>:
@@ -577,7 +588,7 @@
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Enquanto a maioria dos sistemas de IA permanece inerte esperando que um ser humano digite algo, o piDots conta com um motor de <strong>Autonomia Proativa continua (Dot Heartbeat)</strong>. O servico de agendamento em segundo plano (<code>EdgeScheduler</code>) executa verificacoes rotineiras de integridade, telemetria e tarefas operacionais mesmo com todos os operadores desconectados.
+                        A maioria dos sistemas de IA fica parada esperando o usuário digitar. O piDots não. Ele tem um motor de <strong>Autonomia Proativa (Dot Heartbeat)</strong> que executa verificações de rotina, telemetria e tarefas operacionais em segundo plano — mesmo com todos os operadores desconectados.
                     </p>
 
                     <div class="pixel-card-grid">
@@ -802,7 +813,7 @@ curl -s -X POST http://127.0.0.1:8000/api/channels/devops/messages \
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Em arquiteturas corporativas tradicionais de agentes, e comum enviar a especificacao JSON completa de todas as dezenas de ferramentas do sistema a cada chamada ao modelo de IA. No hardware de borda, essa pratica acarreta um desperdicio inaceitavel de tokens, aumenta o tempo de resposta e satura o contexto de raciocinio.
+                        A maioria dos sistemas de IA envia a lista completa de ferramentas (dezenas de itens em JSON) a cada chamada ao modelo. No Raspberry Pi, isso desperdiça tokens e deixa as respostas mais lentas.
                     </p>
                     <p class="step-paragraph">
                         O piDots implementa a tecnica de <strong>Poda Dinamica de Ferramentas (Dynamic Tool Pruning)</strong>: o <code>DotAgent</code> inspeciona a coluna <code>allowed_tools_json</code> do agente ativo e solicita ao <code>ToolRegistry</code> exclusivamente as ferramentas autorizadas para aquele perfil.
@@ -1605,7 +1616,10 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Para decisões críticas de arquitetura, segurança ou refatoração de código, o piDots implementa o padrão de <strong>Conselho Consultivo Multi-Bot</strong> (<code>CouncilOrchestrator</code>). Em vez de depender da opinião isolada de um único modelo, três arquétipos revisam o plano em conjunto com suporte a <strong>Saída Antecipada por Consenso (Early Consensus Exit)</strong>:
+                        Para decisões críticas, o piDots usa o <strong>Conselho Consultivo Multi-Bot</strong> (<code>CouncilOrchestrator</code>). Em vez de depender de um único modelo, três arquétipos revisam o plano em conjunto.
+                    </p>
+                    <p class="step-paragraph">
+                        Se os três concordarem, o plano é aprovado imediatamente (<strong>Early Consensus Exit</strong>). Se discordarem, o assunto vai para o humano decidir.
                     </p>
 
                     <div class="pixel-card-grid">
@@ -1968,7 +1982,10 @@ curl -s -X POST http://localhost:8000/api/edge/maintenance \
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Para viabilizar adocao global sem onerar o hardware de borda com bibliotecas pesadas de terceiros (como i18next ou vue-i18n), o piDots adota um <strong>micro-motor nativo de internacionalizacao Vanilla JS</strong> (<code>/static/js/core/pidots-i18n.js</code>) de menos de 1.5 KB gzipped, acompanhado de dicionarios JSON desacoplados (<code>data/locales/pt.json</code> e <code>en.json</code>):
+                        O piDots usa um motor de internacionalização próprio em Vanilla JS (<code>/static/js/core/pidots-i18n.js</code>, menos de 1.5 KB gzipped). Sem bibliotecas pesadas de terceiros.
+                    </p>
+                    <p class="step-paragraph">
+                        Os textos ficam em dicionários JSON separados (<code>data/locales/pt.json</code> e <code>en.json</code>). Para adicionar um idioma, basta criar um novo arquivo JSON.
                     </p>
 
                     <div class="pixel-card-grid">
