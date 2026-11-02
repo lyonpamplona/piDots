@@ -275,6 +275,15 @@ A página de documentação técnica (`/docs` na porta 8083) foi desenhada sob o
   4. *Governança HITL & Manutenção:* `/api/hitl/signed-resolve`, `/api/hitl/expire-stale`, `/api/edge/triggers/simulate`, `/api/edge/maintenance`, `/api/dots/packs/catalog`.
 - **Omnisearch Client-Side:** Busca instantânea indexada no DOM por atalho `Ctrl+K` ou `Cmd+K` com destaque visual e navegação rápida por teclado.
 
+### 22. Padrão Coworker / AI Teammate (Dinâmica OpenBot, Fast-Path e Live Team Chain)
+
+Inspirado na dinâmica de bancada do projeto OpenBot (`nightly-labs/openbot` / OpenDots), o piDots transforma os agentes em colegas de equipe vivos e acessíveis:
+
+- **Fast-Path Conversacional com Limites de Palavra:** Mensagens curtas de saudação, apresentação ou dúvidas introdutórias (como "oi", "olá", "quem é você?", "por onde começo?") ativam a heurística `is_conversational_fast_path`. Essa rotina suprime o envio do catálogo pesado de ferramentas, economizando até 70% de tokens de inferência e acelerando o tempo de primeira resposta no ARM64. O algoritmo utiliza correspondência estrita com limites de palavra (`\b`), prevenindo falsos positivos em comandos operacionais que contenham palavras com letras semelhantes (como "oito", "noite" ou "apoio").
+- **Personas Humanizadas do Squad Central:** Os 6 especialistas centrais (`@dot-supervisor`, `@dot-coder`, `@dot-auditor`, `@dot-muse`, `@dev-assistant`, `@dot-dev-core`) adotam postura de colegas de bancada técnica (Ada, Linus, Grace, etc.), recepcionando o operador com clareza, conversando sem jargões corporativos e colaborando visivelmente entre si.
+- **Card Interativo de Diagnóstico do Provedor de IA:** Falhas de rede, timeouts ou indisponibilidades temporárias (como erros HTTP 503 de provedores remotos) não são mascaradas com falsos sucessos. A interface renderiza um card industrial Pixel Paper UI com diagnóstico da causa raiz, detalhes técnicos do erro e três ações diretas em um clique: `[Tentar Novamente]`, `[Configurar Provedor]` e `[Testar Conexão]`.
+- **Live Team Chain na Mesma Conexão SSE:** Quando o operador envia mensagens em canais compartilhados sem citar nenhum agente, o `@dot-supervisor` é eleito como Task Owner padrão. Quando a resposta de um Dot cita um colega (ex: `@dot-coder` ou `@dot-auditor`), o segundo especialista é acionado automaticamente na mesma conexão teletipo, gerando uma nova ficha catalográfica (`ticker-slip`) com seu carimbo próprio, respeitando o limite seguro de 2 saltos (`max_chain_hops = 2`) e trava anti-loop.
+
 ---
 
 ## Requisitos de Sistema

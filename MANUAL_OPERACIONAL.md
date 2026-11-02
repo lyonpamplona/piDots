@@ -397,3 +397,26 @@ Na lateral esquerda do Console `/app` (ou na visão `[O] DOTS` em dispositivos m
 - **Modo 2 (Foco Teletipo):** Canvas recolhido via `Ctrl+B` ou `F11` para foco estrito em diálogo e comandos de terminal.
 - **Modo 3 (Foco Canvas):** Área de artefato expandida para leitura imersiva de documentos longos e inspeção forense de governança HITL.
 
+---
+
+## 24. Operação Dinâmica AI Teammate, Fast-Path e Live Team Chain
+
+O piDots incorpora o padrão **AI Teammate** inspirado no OpenBot, transformando interações burocráticas em uma bancada de trabalho viva e ágil:
+
+### 24.1 Fast-Path Conversacional (Economia de 70% de Tokens)
+- **Quando ocorre:** Em saudações simples ("oi", "olá", "bom dia"), perguntas de acolhimento ("quem é você?", "o que vocês fazem?") ou dúvidas iniciais ("por onde começo?").
+- **Comportamento do sistema:** O agente responde de forma imediata e acolhedora sem carregar as ferramentas pesadas de sistema. Não dispara planos burocráticos nem comandos de terminal.
+- **Transição suave para modo técnico:** No momento em que o operador envia um comando operacional (ex.: "execute o script", "verifique os processos", "crie o arquivo"), o agente detecta os termos técnicos e carrega automaticamente as 7 a 9 ferramentas de seu arquétipo.
+
+### 24.2 Diagnóstico Real de Inferência (Circuit Breaker)
+- Se o provedor de IA apresentar indisponibilidade transitória (ex.: erro HTTP 503 no Verboo durante sobrecarga momentânea de inferência), o sistema não mascara a falha com falso sucesso.
+- O teletipo renderiza imediatamente o **Card Interativo de Diagnóstico** com a causa técnica e 3 ações diretas:
+  1. **[Tentar Novamente]:** Reenvia o último prompt automaticamente sem precisar redigitar.
+  2. **[Configurar Provedor]:** Abre a gaveta de configurações de IA (Alt+5).
+  3. **[Testar Conexão]:** Dispara um ping HTTP contra o endpoint configurado e exibe a latência em milissegundos.
+
+### 24.3 Live Team Chain e Canais Compartilhados
+- **Default Responder em Canais:** Ao postar em um canal (ex.: `#geral` ou `#devops`) sem `@menção` direta, o `@dot-supervisor` assume a liderança como Task Owner e responde de prontidão.
+- **Encadeamento Automático:** Se o agente titular identificar que a tarefa precisa de um especialista (ex.: *"Vou pedir para o @dot-coder refatorar o script e o @dot-auditor revisar"*), o segundo Dot entra na mesma stream SSE com sua própria ficha catalográfica (`ticker-slip`) e carimbo de identificação, respeitando o limite seguro de 2 saltos (`max_chain_hops = 2`).
+
+

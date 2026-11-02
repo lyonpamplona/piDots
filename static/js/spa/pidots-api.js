@@ -1814,8 +1814,44 @@
             }
         },
 
+        renderProviderErrorCard(errorMessage, promptText) {
+            if (promptText) this._lastPromptText = promptText;
+            const safeError = safeEscape(errorMessage || 'Falha de comunicação ou indisponibilidade temporária de inferência.');
+            return `
+                <div class="pixel-error-diagnostic-card" style="margin-top: 6px; padding: 10px; background: var(--paper-surface-recessed, #040608); border: 2px solid var(--ink-stamp-danger, #ef4444); border-left: 5px solid var(--ink-stamp-danger, #ef4444); font-family: var(--font-mono-data, monospace); font-size: 11px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px dashed var(--border-pixel-default, #283340); padding-bottom: 4px;">
+                        <span style="font-family: var(--font-pixel-head, monospace); font-size: 10px; color: var(--ink-stamp-danger, #ef4444); display: inline-flex; align-items: center; gap: 4px;">
+                            <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" style="color: var(--ink-stamp-danger, #ef4444); width: 14px; height: 14px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            [DIAGNÓSTICO: FALHA DE INFERÊNCIA]
+                        </span>
+                        <span style="font-size: 9px; color: var(--ink-paper-muted, #64748b);">CIRCUIT BREAKER</span>
+                    </div>
+                    <p style="margin: 0 0 8px 0; color: var(--ink-paper-bright, #f1f5f9); line-height: 1.4;">
+                        O modelo de linguagem não retornou uma resposta textual. Diagnóstico do circuito:
+                        <br>
+                        <code style="display: block; margin-top: 4px; padding: 4px 6px; background: #000000; border: 1px solid var(--border-pixel-subtle, #1c2633); color: var(--ink-amber-thermal, #ffb830); word-break: break-all;">${safeError}</code>
+                    </p>
+                    <div style="font-size: 9.5px; color: var(--ink-paper-secondary, #94a3b8); margin-bottom: 8px; line-height: 1.3;">
+                        Nota: Se estiver conectado ao provedor Verboo com qwen3.8-27b, erros 503 indicam sobrecarga temporária do cluster de inferência. Você pode reenviar em instantes ou conferir a chave.
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                        <button type="button" class="pixel-btn btn-cyan" style="font-size: 9px; padding: 3px 8px;" onclick="window.retryLastPrompt()">
+                            Tentar Novamente
+                        </button>
+                        <button type="button" class="pixel-btn" style="font-size: 9px; padding: 3px 8px;" onclick="window.openAIConfigDrawer()">
+                            Configurar Provedor
+                        </button>
+                        <button type="button" class="pixel-btn" style="font-size: 9px; padding: 3px 8px;" onclick="window.testProviderConnectionCustom && window.testProviderConnectionCustom()">
+                            Testar Conexão
+                        </button>
+                    </div>
+                </div>
+            `;
+        },
+
         // 6. Streaming SSE Conversacional ReAct (AG-UI v1.0 + Multi-Bot + Generative UI)
         async transmitStream(promptText) {
+            if (promptText) this._lastPromptText = promptText;
             const scrollArea = document.getElementById('tickerScroll');
             if (!scrollArea) return;
 
@@ -1896,10 +1932,12 @@
             scrollArea.scrollTop = scrollArea.scrollHeight;
             this.enforceDomCeiling();
 
-            const thoughtEl = document.getElementById(thoughtId);
-            const contentEl = document.getElementById(contentId);
-            const genUiEl = document.getElementById(genUiId);
+            let thoughtEl = document.getElementById(thoughtId);
+            let contentEl = document.getElementById(contentId);
+            let genUiEl = document.getElementById(genUiId);
             let textAccumulator = '';
+            let lastErrorMessage = '';
+            let currentStreamDotId = this.activeDotId;
 
             try {
                 const response = await fetch(`/api/threads/${this.activeThreadId}/runs`, {
@@ -1959,6 +1997,62 @@
                                 const evData = JSON.parse(line.slice(6));
                                 if (!evData.event && currentSseEvent) {
                                     evData.event = currentSseEvent;
+                                }
+
+                                const eventDotId = evData.dot_id;
+                                if (eventDotId && eventDotId !== currentStreamDotId) {
+                                    if (contentEl && textAccumulator) {
+                                        contentEl.innerHTML = safeEscape(textAccumulator);
+                                    }
+                                    currentStreamDotId = eventDotId;
+                                    textAccumulator = '';
+
+                                    const nextDot = (this.dotsCache || []).find(d => d.id === currentStreamDotId);
+                                    let nextStampClass = 'stamp-general';
+                                    if (nextDot) {
+                                        if (nextDot.archetype === 'supervisor') nextStampClass = 'stamp-supervisor';
+                                        else if (nextDot.archetype === 'coder') nextStampClass = 'stamp-coder';
+                                        else if (nextDot.archetype === 'auditor') nextStampClass = 'stamp-auditor';
+                                        else if (nextDot.archetype === 'architect' || nextDot.archetype === 'writer') nextStampClass = 'stamp-architect';
+                                    }
+                                    const nextThoughtId = 'thought-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+                                    const nextContentId = 'content-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+                                    const nextGenUiId = 'genui-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+
+                                    const chainedSlip = document.createElement('article');
+                                    chainedSlip.className = 'ticker-slip';
+                                    chainedSlip.innerHTML = `
+                                        <header class="slip-header">
+                                            <span class="actor-stamp ${nextStampClass}" style="display: inline-flex; align-items: center; gap: 4px;">
+                                                <span class="dot-pulse-dot" style="width: 5px; height: 5px; background: currentColor; border-radius: 50%;"></span>
+                                                @${safeEscape(currentStreamDotId)}
+                                            </span>
+                                            <span>${new Date().toISOString()}</span>
+                                            <span>SEQ# 000${window.getNextSeqCounter()}</span>
+                                        </header>
+                                        <section class="slip-reasoning">
+                                            <div class="reasoning-toggle" onclick="toggleReasoning(this)">
+                                                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                                                <span>Caderno de Raciocínio (Live Team Chain)</span>
+                                                <span class="reasoning-state-badge">Colapsar</span>
+                                            </div>
+                                            <div class="reasoning-content" id="${nextThoughtId}" style="font-family: var(--font-mono); font-size: 11px; white-space: pre-wrap;">Acionado na bancada: analisando missão conjunta...</div>
+                                        </section>
+                                        <section class="slip-output">
+                                            <div id="${nextGenUiId}"></div>
+                                            <p class="slip-text" id="${nextContentId}"><span class="pixel-cursor">█</span></p>
+                                        </section>
+                                        <footer class="slip-perforation">
+                                            <span class="perforation-line"></span>
+                                        </footer>
+                                    `;
+                                    scrollArea.appendChild(chainedSlip);
+                                    scrollArea.scrollTop = scrollArea.scrollHeight;
+                                    this.enforceDomCeiling();
+
+                                    thoughtEl = document.getElementById(nextThoughtId);
+                                    contentEl = document.getElementById(nextContentId);
+                                    genUiEl = document.getElementById(nextGenUiId);
                                 }
                                 if (evData.thought && thoughtEl) {
                                     thoughtEl.textContent += '\n> ' + evData.thought;
@@ -2021,8 +2115,14 @@
                                         window.notifyMobileCanvasUpdate('PLAN');
                                     }
                                 }
-                                if (evData.error && thoughtEl) {
-                                    thoughtEl.textContent += '\n[AVISO CIRCUIT BREAKER]: ' + evData.error;
+                                if (evData.error) {
+                                    lastErrorMessage = evData.error;
+                                    if (thoughtEl) {
+                                        thoughtEl.textContent += '\n[AVISO CIRCUIT BREAKER]: ' + evData.error;
+                                    }
+                                }
+                                if ((evData.event === 'run:finished' || evData.status === 'failed') && (evData.error || (evData.data && evData.data.error))) {
+                                    lastErrorMessage = evData.error || (evData.data && evData.data.error);
                                 }
                             } catch (_) {}
                         }
@@ -2031,11 +2131,18 @@
                 }
 
                 this.enforceDomCeiling();
-                contentEl.innerHTML = safeEscape(textAccumulator || 'Operacao concluida com sucesso.');
+                if (textAccumulator.trim()) {
+                    contentEl.innerHTML = safeEscape(textAccumulator);
+                } else if (lastErrorMessage) {
+                    contentEl.innerHTML = this.renderProviderErrorCard(lastErrorMessage, promptText);
+                } else {
+                    contentEl.innerHTML = '<span style="color: var(--ink-paper-secondary, #94a3b8); font-style: italic;">Nenhuma resposta textual gerada pelo modelo neste turno.</span>';
+                }
                 this.loadActiveThreadState();
             } catch (err) {
-                if (thoughtEl) thoughtEl.textContent += `\n[Circuito de Protecao]: Provedor remoto offline ou timeout. Operando em contingencia local.`;
-                if (contentEl) contentEl.innerHTML = `Instrucao processada no ambiente local do piDots. Os dados estao preservados e persistidos no SQLite WAL.`;
+                const errMsg = err.message || 'Provedor remoto indisponível ou timeout de conexão.';
+                if (thoughtEl) thoughtEl.textContent += `\n[Circuito de Proteção]: Provedor remoto offline ou timeout (${errMsg}).`;
+                if (contentEl) contentEl.innerHTML = this.renderProviderErrorCard(errMsg, promptText);
                 scrollArea.scrollTop = scrollArea.scrollHeight;
                 this.enforceDomCeiling();
             } finally {
@@ -2047,6 +2154,32 @@
                     statusBadge.style.color = 'var(--phosphor-green)';
                 }
             }
+        }
+    };
+
+    window.openAIConfigDrawer = function() {
+        const railBtn = document.querySelector('.activity-rail .rail-btn[data-ctx="configs"]');
+        if (railBtn) {
+            railBtn.click();
+        } else {
+            const sidebar = document.getElementById('leftSidebar') || document.getElementById('appSidebar');
+            if (sidebar) sidebar.classList.remove('collapsed');
+            document.querySelectorAll('.sidebar-ctx-pane').forEach(p => p.classList.remove('active'));
+            const cfgPane = document.getElementById('sidebarCtxConfigs');
+            if (cfgPane) cfgPane.classList.add('active');
+        }
+    };
+
+    window.retryLastPrompt = function(promptText) {
+        if (!promptText) {
+            promptText = (window.PiDotsAPI && window.PiDotsAPI._lastPromptText) || '';
+        }
+        if (!promptText) {
+            const inputEl = document.getElementById('instructionInput') || document.getElementById('chatInput');
+            promptText = inputEl ? inputEl.value.trim() : '';
+        }
+        if (promptText && window.PiDotsAPI && typeof window.PiDotsAPI.transmitStream === 'function') {
+            window.PiDotsAPI.transmitStream(promptText);
         }
     };
 

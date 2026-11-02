@@ -3,6 +3,7 @@ Rotas REST e Streaming SSE para Gerenciamento de Threads, Estado CoAgents e Exec
 """
 
 import json
+import logging
 import re
 import uuid
 from datetime import datetime, timezone
@@ -18,6 +19,8 @@ from ..core.orchestrator import ThreadRouter, MultiBotOrchestrator
 from ..core.planner import TwoStagePlanner
 from ..core.council import CouncilOrchestrator
 from .deps import get_ai_provider
+
+logger = logging.getLogger("pidots.api.threads")
 
 router = APIRouter(tags=["Threads"])
 
@@ -369,24 +372,66 @@ async def run_thread_stream(thread_id: str, payload: RunPayload, request: Reques
     ai_provider = get_ai_provider(request)
 
     async def event_generator():
-        for idx, active_dot in enumerate(dots_sequence):
+        # Fila de execução dinâmica de agentes (Live Team Chain)
+        execution_queue: list[str] = list(dots_sequence)
+        visited_dots: set[str] = set(dots_sequence)
+        max_chain_hops = 2
+        chain_hops = 0
+        turn_index = 0
+
+        while execution_queue:
+            active_dot = execution_queue.pop(0)
             agent = DotAgent(dot_id=active_dot, provider=ai_provider)
-            # Apenas o primeiro Dot grava a user_message no banco; os seguintes leem do histórico da thread
-            msg_for_turn = effective_message if idx == 0 else None
-            if idx > 0:
+            # Apenas o primeiro turno grava a user_message; os seguintes leem o histórico consolidado do SQLite WAL
+            msg_for_turn = effective_message if turn_index == 0 else None
+
+            if turn_index > 0:
                 chain_ev = {
                     "event": "thought:delta",
-                    "run_id": f"chain-{idx}",
+                    "run_id": f"chain-{turn_index}",
                     "dot_id": active_dot,
-                    "thought": f"Encadeamento multi-bot ativo: acionando especialista @{active_dot}..."
+                    "thought": f"Live Team Chain ativo: acionando colega @{active_dot} para dar continuidade..."
                 }
                 yield f"event: thought:delta\ndata: {json.dumps(chain_ev, ensure_ascii=False)}\n\n"
 
+            turn_index += 1
+            dot_response_text = ""
+
             async for event in agent.run_thread(thread_id=thread_id, user_message=msg_for_turn):
                 ev_name = event["event"]
-                merged_data = {"event": ev_name, "dot_id": active_dot, **(event.get("data") or {})}
+                ev_data_dict = event.get("data") or {}
+
+                if ev_name in ("message:chunk", "thought:delta"):
+                    dot_response_text += ev_data_dict.get("content_chunk", "")
+                elif ev_name == "run:finished":
+                    final_txt = ev_data_dict.get("final_response", "")
+                    if final_txt:
+                        dot_response_text = final_txt
+
+                merged_data = {"event": ev_name, "dot_id": active_dot, **ev_data_dict}
                 ev_data = json.dumps(merged_data, ensure_ascii=False)
                 yield f"event: {ev_name}\ndata: {ev_data}\n\n"
+
+            # Inspeciona se a resposta do agente atual mencionou outros colegas da equipe
+            if chain_hops < max_chain_hops and dot_response_text:
+                new_mentions = ThreadRouter.parse_mentions(dot_response_text)
+                for candidate in new_mentions:
+                    candidate_clean = candidate.lower()
+                    if candidate_clean not in visited_dots and candidate_clean != active_dot:
+                        # Valida se o candidate existe como Dot ativo cadastrado no sistema
+                        async with get_db() as db:
+                            cursor = await db.execute("SELECT id FROM dots WHERE id = ? AND is_active = 1", (candidate_clean,))
+                            if await cursor.fetchone():
+                                execution_queue.append(candidate_clean)
+                                visited_dots.add(candidate_clean)
+                                chain_hops += 1
+                                await MultiBotOrchestrator.record_participant(thread_id, candidate_clean)
+                                logger.info(
+                                    "Live Team Chain: @%s mencionou @%s. Enfileirando próximo turno (salto %d/%d).",
+                                    active_dot, candidate_clean, chain_hops, max_chain_hops
+                                )
+                                # Limita a um novo colega acionado por resposta para encadeamento ordenado
+                                break
 
     return StreamingResponse(
         event_generator(),

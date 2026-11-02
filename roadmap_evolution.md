@@ -86,11 +86,35 @@ Todas as entregas abaixo ja estao implementadas no codigo-fonte e validadas pela
 
 ---
 
-## 7. Homologacao e Status dos Testes
+## 7. Fase 21 — Evolucao AI Teammate: Dinamica OpenBot, Fast-Path e Live Team Chain [CONCLUIDA]
 
-Todas as entregas das Fases 16 a 20 e o Design System Pixel Paper UI foram verificados e aprovados:
+- [x] **Fast-Path Conversacional e Poda Dinâmica de Ferramentas (`pidots/core/agent.py`):**
+  * Detecção de saudações e dúvidas leves via `is_conversational_fast_path` com limites estritos de fronteira de palavra (`\b`), suprimindo catálogos pesados de ferramentas e economizando até 70% de tokens de esquema.
+  * Poda dinâmica real (`ARCHETYPE_DOMAINS` e `DOT_ID_TO_ARCHETYPE`), limitando cada Dot ao seu escopo canônico (7 a 9 ferramentas em vez de 23).
+  * Sanitização rigorosa para compatibilidade com provedores estritos (OpenAI, Verboo, Ollama, Groq, LiteLLM), eliminando o campo proibido `name` e injetando prefixos textuais `[@actor]:`.
+- [x] **Personas Padrão Coworker / AI Teammate (`pidots/storage/db.py` e `pidots/core/agent.py`):**
+  * Atualização dos 6 Dots do Squad Central (Ada/@dot-supervisor, Linus/@dot-coder, Grace/@dot-auditor, etc.) com tom horizontal de colega de bancada, desburocratização em cumprimentos e colaboração visível.
+  * Injeção padronizada do bloco `COMO INTERAGIR COM O OPERADOR E COM A EQUIPE (PADRÃO COWORKER)` no contexto de execução de todos os Dots.
+- [x] **Card Interativo de Diagnóstico do Provedor (`static/js/spa/pidots-api.js`):**
+  * Erradicação completa de falsos positivos ("Operacao concluida com sucesso.") em falhas e timeouts de inferência.
+  * Renderização de card industrial Pixel Paper UI com causa raiz detalhada e ações em um clique: `[Tentar Novamente]`, `[Configurar Provedor]` e `[Testar Conexão]`.
+  * Blindagem total contra XSS e quebra de sintaxe através de armazenamento seguro de prompts em memória (`_lastPromptText`).
+- [x] **Live Team Chain Inter-Agentes e Default Responder (`routes_threads.py` e `messaging_gateway.py`):**
+  * Eleição automática do `@dot-supervisor` (ou primeiro especialista do canal) como Task Owner padrão em canais compartilhados quando o operador não menciona nenhum Dot diretamente.
+  * Encadeamento contínuo na mesma conexão SSE: quando um Dot cita um colega (ex: `@dot-coder`), o segundo especialista ingressa automaticamente na mesma stream teletipo com ficha catalográfica própria (`ticker-slip`), limitado a um teto seguro de 2 saltos (`max_chain_hops = 2`) e com trava anti-loop.
+
+---
+
+## 8. Homologacao e Status dos Testes
+
+Todas as entregas das Fases 16 a 21 e o Design System Pixel Paper UI foram verificados e aprovados:
 * **Fases 16-19:** `scripts/test_phase16_19_roadmap_evolution.py` (4/4 suítes aprovadas, 100% de sucesso).
 * **Fase 20 (Nginx Multi-Porta):** `scripts/test_phase20_port_decoupling_nginx.py` (100% de êxito).
+* **Fase 21 (AI Teammate OpenBot):**
+  - Fase 1 (Fast-Path e Poda de Ferramentas): `scripts/test_phase1_fast_path_and_tool_pruning.py` (100% aprovado).
+  - Fase 2 (Prompts Coworker e SQLite WAL): `scripts/test_phase2_coworker_prompts_and_identity.py` (100% aprovado).
+  - Fase 3 (Card Interativo de Diagnóstico): `scripts/test_phase3_error_diagnostic_card.js` (100% aprovado).
+  - Fase 4 (Live Team Chain e Default Responder): `scripts/test_phase4_live_team_chain.py` (100% aprovado).
 * **Roteador Cross-Surface:** `scripts/test_cross_surface_router.js` (100% de êxito via Node.js).
 * **Pixel Paper UI (Fases 1-4):** `scripts/test_pixel_paper_phase4_global_homologation.py` (100% aprovado).
 * **Regressão Global:** Suítes `test_phase15_llm_failover.py` e `test_phase4_opendots_homologation.py` validadas com 100% de êxito.

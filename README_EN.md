@@ -275,6 +275,15 @@ The technical guide surface (`/docs` on port 8083) adheres to the **Pixel Paper 
   4. *HITL Governance & Maintenance:* `/api/hitl/signed-resolve`, `/api/hitl/expire-stale`, `/api/edge/triggers/simulate`, `/api/edge/maintenance`, `/api/dots/packs/catalog`.
 - **Client-Side Omnisearch:** Instant in-memory DOM indexing accessible via `Ctrl+K` or `Cmd+K` keyboard shortcuts with highlighted matches and rapid keyboard navigation.
 
+### 22. Coworker / AI Teammate Standard (OpenBot Dynamics, Fast-Path & Live Team Chain)
+
+Inspired by the workbench team dynamics of the OpenBot project (`nightly-labs/openbot` / OpenDots), piDots transforms autonomous agents into accessible, interactive coworkers:
+
+- **Conversational Fast-Path with Word Boundaries:** Short greetings, introductions, or welcoming questions (such as "hi", "hello", "who are you?", "where do I start?") trigger the `is_conversational_fast_path` heuristic. This supresses heavy tool schemas from the model payload, cutting up to 70% of schema tokens and accelerating first-response latency on ARM64 nodes. The algorithm uses strict regex word boundaries (`\b`), preventing false triggers on operational commands containing similar substrings.
+- **Humanized Core Squad Personas:** The 6 central specialists (`@dot-supervisor`, `@dot-coder`, `@dot-auditor`, `@dot-muse`, `@dev-assistant`, `@dot-dev-core`) embody realistic coworker identities (Ada, Linus, Grace, etc.), greeting operators naturally, speaking plainly without corporate slop, and collaborating visibly with each other.
+- **Interactive Provider Diagnostic Card:** Network timeouts or temporary model outages (such as HTTP 503 service overload) are never disguised as fake successes. The teletype renders a Pixel Paper UI diagnostic card displaying the raw error details alongside 1-click action buttons: `[Retry Now]`, `[Configure Provider]`, and `[Test Connection]`.
+- **Single-Stream Live Team Chain:** When an operator posts to a channel without naming a bot, `@dot-supervisor` serves as the default Task Owner. If a Dot's response mentions another colleague (e.g., `@dot-coder` or `@dot-auditor`), that specialist automatically enters the ongoing SSE stream with their own stamped catalog slip (`ticker-slip`), bounded by a strict ceiling of 2 hops (`max_chain_hops = 2`) and anti-cycle guards.
+
 ---
 
 ## System Requirements

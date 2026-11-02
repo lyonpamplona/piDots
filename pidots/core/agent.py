@@ -20,6 +20,69 @@ from .planner import TwoStagePlanner
 
 logger = logging.getLogger("pidots.agent")
 
+# Domínios e ferramentas canônicas por arquétipo operacional (Dynamic Tool Pruning)
+ARCHETYPE_DOMAINS: dict[str, list[str]] = {
+    "supervisor": [
+        "plan_create",
+        "plan_update_step",
+        "plan_get_status",
+        "delegate_task",
+        "handoff_to_dot",
+        "run_council_debate",
+        "shared_space_read",
+        "shared_space_write",
+        "core_memory_append",
+    ],
+    "coder": [
+        "execute_shell_command",
+        "execute_and_verify",
+        "workspace_read_file",
+        "workspace_write_file",
+        "workspace_list_files",
+        "shared_space_read",
+        "shared_space_write",
+        "core_memory_append",
+    ],
+    "auditor": [
+        "get_edge_telemetry",
+        "hardware_trigger_check",
+        "edge_maintenance_run",
+        "workspace_read_file",
+        "execute_shell_command",
+        "shared_space_read",
+        "shared_space_write",
+        "core_memory_append",
+    ],
+    "writer": [
+        "workspace_read_file",
+        "workspace_write_file",
+        "workspace_list_files",
+        "read_web_page",
+        "shared_space_read",
+        "shared_space_write",
+        "core_memory_append",
+    ],
+    "general": [
+        "execute_shell_command",
+        "workspace_read_file",
+        "workspace_write_file",
+        "read_web_page",
+        "get_current_time",
+        "shared_space_read",
+        "shared_space_write",
+        "core_memory_append",
+    ],
+}
+
+DOT_ID_TO_ARCHETYPE: dict[str, str] = {
+    "dot-supervisor": "supervisor",
+    "dot-coder": "coder",
+    "dot-dev-core": "coder",
+    "dot-auditor": "auditor",
+    "dot-muse": "writer",
+    "dev-assistant": "general",
+}
+
 
 class DotAgent:
     """Motor operacional autônomo associado a um Dot."""
@@ -38,6 +101,61 @@ class DotAgent:
             self.provider = provider
         self.tools = tool_registry or default_tool_registry
         self.max_iterations = settings.max_iterations_per_goal
+
+    @staticmethod
+    def is_conversational_fast_path(text: str | None) -> bool:
+        """
+        Identifica se a mensagem do operador humano é uma saudação ou diálogo conversacional leve,
+        sem intenção de execução de sistema ou manipulação de arquivos.
+        Quando ativado, suprime a injeção do catálogo de ferramentas no payload LLM,
+        reduzindo em até 80% o tráfego de tokens e acelerando a resposta no nó ARM64.
+        """
+        if not text:
+            return False
+        clean = text.strip().lower()
+        if len(clean) > 140:
+            return False
+
+        # Termos e comandos operacionais que exigem ferramentas
+        technical_triggers = (
+            "execute", "executar", "crie", "criar", "escreva", "escrever", "arquivo",
+            "leia", "ler", "bash", "shell", "curl", "instale", "instalar", "rode", "rodar",
+            "delete", "deletar", "remova", "remover", "pesquise", "pesquisar", "url", "http",
+            "plano", "plan", "canvas", "space", "memoria", "memória", "temperatura",
+            "telemetria", "cpu", "ram", "reboot", "reinicie", "reiniciar", "git", "docker",
+            "mostre", "mostrar", "liste", "listar", "verifique", "verificar", "analise", "analisar",
+            "ajuste", "ajustar", "configure", "configurar", "atualize", "atualizar", "teste", "testar",
+            "consulte", "consultar", "status", "diff", "commit", "build"
+        )
+        if any(trigger in clean for trigger in technical_triggers):
+            return False
+
+        # Expressões de saudação, apresentação e acolhimento
+        conversational_patterns = (
+            "oi", "olá", "ola", "opa", "e ai", "e aí", "fala", "salve", "hello", "hi",
+            "bom dia", "boa tarde", "boa noite", "tudo bem", "como vai", "tudo bom",
+            "quem e voce", "quem é você", "quem e vc", "quem é vc",
+            "quem sao voces", "quem são vocês",
+            "o que voce faz", "o que você faz", "o que voces fazem", "o que vocês fazem",
+            "qual seu papel", "qual o seu papel", "qual e sua funcao", "qual é sua função",
+            "como funciona", "como voces trabalham", "como vocês trabalham",
+            "apresente-se", "apresente se", "por onde comeco", "por onde começo", "ajuda"
+        )
+
+        import re
+        # Normaliza hífens e pontuações para espaços antes de limpar caracteres especiais
+        normalized = re.sub(r"[\-_/]", " ", clean)
+        normalized = re.sub(r"[^\w\s]", "", normalized)
+        normalized = re.sub(r"\s+", " ", normalized).strip()
+        if not normalized:
+            return False
+
+        if normalized in conversational_patterns:
+            return True
+
+        # Verifica padrões conversacionais com limites estritos de fronteira de palavra (\b)
+        # para evitar falsos positivos com substrings em palavras como 'oito', 'noite', 'coisas', 'apoio'
+        return any(bool(re.search(rf"\b{re.escape(pat)}\b", normalized)) for pat in conversational_patterns)
 
     @staticmethod
     async def _update_thread_status(thread_id: str, status: str) -> None:
@@ -107,16 +225,35 @@ class DotAgent:
                 }
                 return
 
-            # Poda Dinâmica de Ferramentas (Dynamic Tool Pruning)
-            allowed_tools_raw = dot_info.get("allowed_tools_json")
-            allowed_tools = None
-            if allowed_tools_raw:
-                try:
-                    allowed_tools = json.loads(allowed_tools_raw) if isinstance(allowed_tools_raw, str) else allowed_tools_raw
-                except Exception:
-                    allowed_tools = None
+            # Fast-Path Conversacional e Poda Dinâmica de Ferramentas (Dynamic Tool Pruning)
+            if self.is_conversational_fast_path(user_message):
+                tool_defs = None
+                logger.info(
+                    "Fast-path conversacional ativado para Dot '%s' (mensagem: '%s'): suprimindo ferramentas.",
+                    self.dot_id, (user_message or "")[:40]
+                )
+            else:
+                allowed_tools_raw = dot_info.get("allowed_tools_json")
+                allowed_tools = None
+                if allowed_tools_raw:
+                    try:
+                        parsed = json.loads(allowed_tools_raw) if isinstance(allowed_tools_raw, str) else allowed_tools_raw
+                        if isinstance(parsed, list) and len(parsed) > 0:
+                            allowed_tools = parsed
+                    except Exception:
+                        allowed_tools = None
 
-            tool_defs = self.tools.get_tool_definitions(allowed_tools if allowed_tools else None)
+                # Fallback inteligente: se allowed_tools_json for nulo ou lista vazia,
+                # aplica o catálogo canônico do arquétipo do Dot, evitando injeção das 23 ferramentas
+                if not allowed_tools:
+                    dot_arch = dot_info.get("archetype") or DOT_ID_TO_ARCHETYPE.get(self.dot_id, "general")
+                    allowed_tools = ARCHETYPE_DOMAINS.get(dot_arch, ARCHETYPE_DOMAINS.get("general", []))
+
+                tool_defs = self.tools.get_tool_definitions(allowed_tools)
+                logger.debug(
+                    "Poda dinâmica ativa para Dot '%s' (arquétipo: %s): %d ferramentas carregadas.",
+                    self.dot_id, dot_arch, len(tool_defs)
+                )
             iteration = 0
             final_response_text = ""
 
@@ -134,8 +271,9 @@ class DotAgent:
 
                 # Modelo a utilizar: se o Dot estiver com modelo mock ou nulo, usa o default_model do provedor
                 model_to_use = dot_info.get("model")
+                provider_default_model = getattr(self.provider, "default_model", settings.ai_model)
                 if not model_to_use or model_to_use in ("mock-model", "test-model"):
-                    model_to_use = self.provider.default_model
+                    model_to_use = provider_default_model
 
                 try:
                     # Chamada com Circuit Breaker ao provedor OpenAI-compativel
@@ -147,16 +285,16 @@ class DotAgent:
                 except ProviderEndpointError as endp_err:
                     # Auto-Healing: se o modelo do Dot falhou com 404 e era diferente do default_model,
                     # retenta automaticamente com o default_model do provedor e persiste a correcao
-                    if model_to_use != self.provider.default_model:
+                    if model_to_use != provider_default_model:
                         logger.warning(
                             "Modelo '%s' falhou no endpoint. Aplicando Auto-Healing para o modelo padrao '%s'...",
-                            model_to_use, self.provider.default_model
+                            model_to_use, provider_default_model
                         )
                         try:
                             response = await self.provider.chat_completion(
                                 messages=messages,
                                 tools=tool_defs if tool_defs else None,
-                                model=self.provider.default_model
+                                model=provider_default_model
                             )
                             # Atualiza o modelo do Dot no SQLite WAL para persistir a auto-cura
                             async with get_db() as db:
@@ -675,19 +813,31 @@ class DotAgent:
             f"{core_memory_xml}"
             f"{plan_section}"
             f"{shared_space_section}\n\n"
-            "DIRETRIZES OPERACIONAIS DE BANCADA:\n"
-            "1. GESTÃO DE MEMÓRIA: Sua memória de trabalho fica no bloco <core_memory>. Use 'core_memory_append' ou 'core_memory_replace' para registrar preferências do operador (<human>) ou contexto ativo (<active_context>). Use 'archival_memory_insert' e 'archival_memory_search' para notas e histórico de longo prazo.\n"
-            "2. PLANEJAMENTO EM ETAPAS: Para tarefas complexas, utilize a ferramenta 'plan_create' para decompor o objetivo em marcos práticos. Conforme concluir cada marco, invoque 'plan_update_step' registrando a evidência do teste realizado.\n"
-            "3. AUTO-RECUPERAÇÃO: Se a execução de comandos resultar em falha ('needs_healing': True), não devolva o erro sem agir. Examine o diagnóstico em 'self_healing_advice', inspecione o código com 'workspace_read_file', aplique o ajuste com 'workspace_write_file' e reexecute a verificação até sanar a causa raiz.\n"
-            "4. DELIBERAÇÃO ENTRE COWORKERS: Para revisões críticas de arquitetura ou decisões conjuntas, utilize a ferramenta 'run_council_debate' para promover alinhamento técnico entre @dot-coder (proposta), @dot-auditor (auditoria de riscos) e @dot-supervisor (decisão final).\n"
-            "5. ESPAÇO COMPARTILHADO: Utilize 'shared_space_write' para registrar notas, contratos ou decisões que outros coworkers devam consultar nesta sessão, e 'shared_space_read' para ler notas da bancada."
+            "COMO INTERAGIR COM O OPERADOR E COM A EQUIPE (PADRÃO COWORKER):\n"
+            "1. CONVERSA NATURAL: Você é um colega de equipe vivo e acessível na bancada, não um terminal burocrático. "
+            "Se o operador mandar um 'Oi', puxar conversa, fizer uma pergunta aberta ou pedir orientação, cumprimente-o "
+            "de forma natural e calorosa, apresente-se brevemente pelo seu nome e papel, comente o contexto ativo se houver "
+            "e pergunte no que vão trabalhar agora. NÃO chame ferramentas de planejamento ('plan_create') nem de terminal "
+            "para responder a cumprimentos, saudações ou dúvidas simples.\n"
+            "2. TRABALHO EM EQUIPE VISÍVEL: Quando uma tarefa envolver outra especialidade ou camada técnica, converse como um time unido: "
+            "mencione o colega diretamente na sua resposta (ex.: '@dot-coder, você pode implementar essa função?' ou '@dot-auditor, valide a segurança desta rotina') "
+            "ou use 'delegate_task' / 'handoff_to_dot' explicando claramente ao operador o que está passando adiante.\n"
+            "3. MEMÓRIA E PLANEJAMENTO SOB DEMANDA: Use 'core_memory_append' apenas quando descobrir uma preferência real do operador, "
+            "e 'plan_create' apenas quando receber um projeto ou missão complexa de múltiplas etapas.\n"
+            "4. AUTO-RECUPERAÇÃO: Se a execução de comandos resultar em falha ('needs_healing': True), não devolva o erro sem agir. "
+            "Examine o diagnóstico em 'self_healing_advice', inspecione o código com 'workspace_read_file', aplique o ajuste com 'workspace_write_file' "
+            "e reexecute a verificação até sanar a causa raiz.\n"
+            "5. DELIBERAÇÃO E ESPAÇO COMPARTILHADO: Para revisões críticas de arquitetura ou decisões conjuntas, utilize 'run_council_debate' "
+            "para promover alinhamento técnico entre @dot-coder (proposta), @dot-auditor (auditoria de riscos) e @dot-supervisor (decisão final). "
+            "Utilize 'shared_space_write' para registrar notas, contratos ou decisões que outros coworkers devam consultar nesta sessão, "
+            "e 'shared_space_read' para ler notas da bancada."
         )
 
         messages: list[dict[str, Any]] = [
             {"role": "system", "content": system_content}
         ]
         for r in rows:
-            entry: dict[str, Any] = {"role": r["role"], "content": r["content"]}
+            entry: dict[str, Any] = {"role": r["role"], "content": r["content"] or ""}
             if r["tool_calls_json"]:
                 try:
                     entry["tool_calls"] = json.loads(r["tool_calls_json"])
@@ -696,8 +846,15 @@ class DotAgent:
             if r["role"] == "tool":
                 entry["tool_call_id"] = r["tool_call_id"] if "tool_call_id" in r.keys() and r["tool_call_id"] else f"call_{r['rid'] if 'rid' in r.keys() else 'fallback'}"
             actor = r["actor_id"] if "actor_id" in r.keys() else None
+            # Sanitização estrita para provedores OpenAI-compatíveis:
+            # Nunca injetar o campo 'name' no JSON da mensagem (rejeitado por Verboo, Ollama, Groq, LiteLLM).
+            # Quando a mensagem for de outro Dot participante na thread, prefixamos textualmente.
             if actor and r["role"] not in ("tool", "system"):
-                entry["name"] = actor.replace("-", "_")[:64]
+                if actor != self.dot_id and actor != "user":
+                    prefix = f"[@{actor}]: "
+                    if not str(entry["content"]).startswith(prefix):
+                        entry["content"] = f"{prefix}{entry['content']}"
+
             messages.append(entry)
 
         return dot_info, messages

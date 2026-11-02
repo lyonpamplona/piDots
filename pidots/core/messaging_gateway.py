@@ -274,6 +274,15 @@ class ChannelOrchestrator:
                 if d_id.lower() in explicit_mentions:
                     dots_to_trigger.append(d_id)
 
+        # Default Responder em canais compartilhados:
+        # Se for mensagem de humano/webhook e ninguém foi explicitamente mencionado,
+        # define o @dot-supervisor (ou o primeiro membro ativo) como Task Owner para acolher o operador
+        if author_type in ("user", "webhook") and not dots_to_trigger and not explicit_mentions and not has_all_mention:
+            default_owner = "dot-supervisor" if "dot-supervisor" in dot_ids else (dot_ids[0] if dot_ids else None)
+            if default_owner and default_owner != author_id:
+                dots_to_trigger.append(default_owner)
+                logger.info("Canal '%s': nenhum Dot mencionado pelo usuário. Elegendo Task Owner padrão '@%s'.", channel_id, default_owner)
+
         # Dispara os agentes de forma assíncrona desacoplada com retenção forte contra GC
         for target_dot in dots_to_trigger:
             task = asyncio.create_task(
