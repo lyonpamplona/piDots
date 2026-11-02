@@ -1256,14 +1256,14 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             </div>
                             <p class="pixel-card-body">
                                 <strong>/ :</strong> Landing Page Oficial com simulador ReAct e métricas de hardware.<br>
-                                <strong>/app e /workspace :</strong> Console Operacional SPA/PWA com Activity Rail (48px), CoAgents State e Dot's Computer.<br>
+                                <strong>/app e /workspace :</strong> Console Operacional SPA/PWA com Barra Lateral de Navegação (48px), Painel de Estado dos Agentes e Terminal Interativo.<br>
                                 <strong>/docs :</strong> Manual Técnico com busca client-side e Mini API Tester.<br>
                                 <strong>/api/docs :</strong> Swagger UI OpenAPI 3.1 interativo.<br>
                                 <strong>pidots/api/routes_dots.py :</strong> CRUD completo de agentes (GET/POST/PUT/DELETE), <code>/api/tools</code>, <code>/api/dots/packs/catalog</code> e instalação 1-clique com SHA-256 (<code>/api/dots/packs/install/{pack_id}</code>).<br>
                                 <strong>pidots/api/routes_threads.py :</strong> Sessões, <code>/state</code> (CoAgents Shared State), <code>/save-as-space</code> e streaming AG-UI <span class='jargon-explain'>(protocolo de streaming entre agentes e interface)</span> SSE.<br>
                                 <strong>pidots/api/routes_tasks.py :</strong> Agendamentos cron, disparo imediato (<code>/run</code>), toggle e quadro Spaces.<br>
                                 <strong>pidots/api/routes_hitl.py :</strong> Governança HITL com edição de argumentos (<code>modified_args</code>), retomada imediata e expiração determinística TTL (<code>/api/hitl/expire-stale</code>).<br>
-                                <strong>pidots/api/routes_edge.py :</strong> Telemetria RSS real (<code>process_rss_mb</code>), Dot's Computer (<code>/computer/files</code> e <code>/computer/exec</code>), MCP Lite (<code>/api/mcp/servers</code>) e simulação de gatilhos GPIO/MQTT (<code>/api/edge/triggers/simulate</code>).<br>
+                                <strong>pidots/api/routes_edge.py :</strong> Telemetria RSS real (<code>process_rss_mb</code>), Terminal Interativo (<code>/computer/files</code> e <code>/computer/exec</code>), MCP Lite (<code>/api/mcp/servers</code>) e simulação de gatilhos GPIO/MQTT (<code>/api/edge/triggers/simulate</code>).<br>
                                 <strong>pidots/api/routes_pwa.py :</strong> PWA Manifest, Service Worker e controle de redirects legados (<code>ENABLE_LEGACY_REDIRECTS</code>).
                             </p>
                         </article>
@@ -1289,7 +1289,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                             </div>
                             <p class="pixel-card-body" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 6px;">
                                 <span><code>Tecla /</code> : Abrir menu Autocomplete Popover de 34 Slash Commands no teletipo.</span>
-                                <span><code>Alt + 1..4</code> : Comutar os 4 paineis do Activity Rail (Spaces, Estudio Dots, Tasks, Memoria/MCP).</span>
+                                <span><code>Alt + 1..4</code> : Comutar os 4 paineis do Barra Lateral de Navegação (Spaces, Estudio Dots, Tasks, Memoria/MCP).</span>
                                 <span><code>Ctrl/Cmd + B</code> : Alternar gaveta da Sidebar no Triptico Adaptativo.</span>
                                 <span><code>Alt + I</code> : Focar e inspecionar artefato ativo no Live Canvas.</span>
                                 <span><code>Ctrl/Cmd + S</code> : Gravar revisao atomica do arquivo em Spaces.</span>
@@ -1622,7 +1622,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                         Para decisões críticas, o piDots usa o <strong>Conselho Consultivo Multi-Bot</strong> (<code>CouncilOrchestrator</code>). Em vez de depender de um único modelo, três arquétipos revisam o plano em conjunto.
                     </p>
                     <p class="step-paragraph">
-                        Se os três concordarem, o plano é aprovado imediatamente (<strong>Early Consensus Exit (saída antecipada por consenso: o debate termina se o auditor aprovar)</strong>). Se discordarem, o assunto vai para o humano decidir.
+                        Se os três concordarem, o plano é aprovado imediatamente (<strong>Saída Antecipada por Consenso (saída antecipada por consenso: o debate termina se o auditor aprovar)</strong>). Se discordarem, o assunto vai para o humano decidir.
                     </p>
 
                     <div class="pixel-card-grid">
@@ -1702,7 +1702,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                             ISOLAMENTO DE FITAS E SAIDA ANTECIPADA POR CONSENSO
                         </div>
                         <div class="pixel-callout-text">
-                            O debate interno ocorre em mensagens internas de depuração com <code>visibility = 'internal'</code>, mantendo o feed do usuário limpo. Somente o veredito final e publicado com o cabecalho <code>[CONSELHO CONSULTIVO - RESOLUCAO FINAL]</code>. Se na Rodada 2 o Auditor classificar a proposta como <code>RISK_LOW / APPROVED</code>, o Supervisor ativa a <strong>Saida Antecipada por Consenso (Early Consensus Exit)</strong>, homologando a decisao imediatamente sem desperdicio de tokens na Rodada 3.
+                            O debate interno ocorre em mensagens internas de depuração com <code>visibility = 'internal'</code>, mantendo o feed do usuário limpo. Somente o veredito final e publicado com o cabecalho <code>[CONSELHO CONSULTIVO - RESOLUCAO FINAL]</code>. Se na Rodada 2 o Auditor classificar a proposta como <code>RISK_LOW / APPROVED</code>, o Supervisor ativa a <strong>Saida Antecipada por Consenso (Saída Antecipada por Consenso)</strong>, homologando a decisao imediatamente sem desperdicio de tokens na Rodada 3.
                         </div>
                     </div>
                 </div>

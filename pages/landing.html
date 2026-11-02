@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>piDots: Agentes de IA Autonomos no seu Proprio Hardware de Borda</title>
-    <meta name="description" content="Quatro especialistas de IA que trabalham 24/7 no seu Raspberry Pi. Sem nuvem, sem fatura, sem depender de internet. Menos de 70 MB de RAM, 6,2 watts, e você aprova cada ação importante antes de acontecer.">
+    <meta name="description" content="Quatro especialistas de IA rodando no seu Raspberry Pi. Sem nuvem, sem fatura. Menos de 70 MB de RAM e 6,2 W. Você aprova cada ação importante antes de ela acontecer.">
     
     <!-- Favicon e Icones Oficiais PWA -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -112,7 +112,7 @@
         </div>
         <div class="mobile-nav-links">
             <a href="#hero" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_01">01 // VISAO GERAL</a>
-            <a href="#metricas-silicio" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_02">02 // METRICAS DE SILICIO</a>
+            <a href="#metricas-silicio" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_02">02 // HARDWARE</a>
             <a href="#coworkers" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_03">03 // COWORKERS (@DOTS)</a>
             <a href="#pilares" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_04">04 // 4 PILARES ARQUITETURA</a>
             <a href="#comparativo" class="mobile-nav-item" onclick="toggleMobileNavMenu(true)" data-i18n="landing.nav_05">05 // MATRIZ COMPARATIVA</a>
@@ -145,7 +145,7 @@
                     </h1>
 
                     <p class="hero-description" data-i18n="landing.hero_desc">
-                        Quatro especialistas de IA que trabalham 24/7 no seu hardware. Sem nuvem. Sem fatura. Sem depender de internet. Menos de 70 MB de RAM, 6,2 watts, e você aprova cada ação importante antes de acontecer.
+                        Quatro especialistas de IA rodando no seu Raspberry Pi. Menos de 70 MB de RAM e 6,2 W. Você aprova cada ação importante antes de ela acontecer.
                     </p>
 
                     <!-- Terminal de Deploy em 1 Comando (Atrito Zero) -->
@@ -468,7 +468,7 @@
                             <span class="card-tag tag-amber">SEGURANÇA</span>
                         </div>
                         <p class="card-desc">
-                            Auditor de integridade e supervisor de hardware. Intercepta comandos de alto risco e pede sua aprovação antes de executar. Monitora a temperatura do processador e evita desgaste do cartão MicroSD.
+                            Auditor de integridade e supervisor de hardware. Intercepta comandos de alto risco e pede sua aprovação. Monitora a temperatura e evita desgaste do cartão MicroSD.
                         </p>
                         <div class="card-meta-list">
                             <div class="card-meta-item"><span>Permissões:</span> <strong>Travas HITL · Telemetria Broadcom</strong></div>
@@ -510,7 +510,7 @@
                     </div>
                     <h3 class="bento-box-title">MicroSD que dura anos</h3>
                     <p class="bento-box-body">
-                        Gravações sequenciais em Grava em sequência, sem reescrever blocos do cartão. Arquivos temporários ficam em RAM (64 MB) e o banco compacta o log toda noite às 03:00.
+                        Gravações sequenciais em Grava em sequência, sem reescrever blocos. Temporários ficam em RAM (64 MB). O banco compacta o log às 03:00.
                     </p>
                 </div>
 
@@ -875,7 +875,7 @@
                         <span class="objection-indicator">[-]</span>
                     </header>
                     <div class="objection-body" id="faq-body-oom">
-                        O piDots roda em Python 3.13 assíncrono (uvloop), usando menos de 70 MB de RAM em repouso. Ele carrega no contexto só as ferramentas que a tarefa atual exige (até 65% menos memória de prompt) e isola cada execução em sandbox de menos de 3 MB, em vez de abrir um contêiner Docker por comando.
+                        Em termos práticos: o piDots roda em Python 3.13 assíncrono, usando menos de 70 MB de RAM em repouso. Ele carrega no contexto só as ferramentas que a tarefa atual exige (até 65% menos memória de prompt) e isola cada execução em sandbox de menos de 3 MB, em vez de abrir um contêiner Docker por comando.
                     </div>
                 </div>
 
@@ -886,7 +886,7 @@
                         <span class="objection-indicator">[+]</span>
                     </header>
                     <div class="objection-body" id="faq-body-flash">
-                        O banco usa WAL: grava em sequência, sem reescrever blocos aleatórios no cartão. Tabelas temporárias ficam em RAM (64 MB) e uma rotina às 03:00 compacta o arquivo de log. Isso reduz drasticamente o número de gravações no MicroSD.
+                        Em termos práticos: o banco usa WAL — grava em sequência, sem reescrever blocos aleatórios no cartão. Tabelas temporárias ficam em RAM (64 MB) e uma rotina às 03:00 compacta o arquivo de log. Isso reduz drasticamente o número de gravações no MicroSD.
                     </div>
                 </div>
 
@@ -897,7 +897,7 @@
                         <span class="objection-indicator">[+]</span>
                     </header>
                     <div class="objection-body" id="faq-body-hitl">
-                        Comandos destrutivos (como exclusões em massa ou mudanças de rede) são retidos e registrados no banco. Você recebe o cartão de aprovação, pode editar os argumentos ou aprovar pela interface ou pelo Telegram/WhatsApp. Só depois o comando chega à sandbox.
+                        Em termos práticos: comandos destrutivos (exclusões em massa, mudanças de rede) são retidos no banco. Você recebe o cartão de aprovação, pode editar os argumentos ou aprovar pela interface ou pelo Telegram/WhatsApp. Só depois o comando chega à sandbox.
                     </div>
                 </div>
 
@@ -908,7 +908,7 @@
                         <span class="objection-indicator">[+]</span>
                     </header>
                     <div class="objection-body" id="faq-body-byom">
-                        O piDots aceita qualquer modelo: local (Ollama, vLLM, llama.cpp no próprio ARM64) ou em nuvem (OpenAI, Anthropic, Groq, Mistral, OpenRouter), desde que use o protocolo Chat Completions da OpenAI. Basta mudar a URL e a chave de API na aba de configurações.
+                        Em termos práticos: o piDots aceita qualquer modelo — local (Ollama, vLLM, llama.cpp) ou em nuvem (OpenAI, Anthropic, Groq, Mistral, OpenRouter), desde que use o protocolo Chat Completions da OpenAI. Basta mudar a URL e a chave de API na aba de configurações.
                     </div>
                 </div>
             </div>
