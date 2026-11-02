@@ -134,7 +134,7 @@
         <section class="hero-section" id="hero">
             <div class="hero-eyebrow">
                 <span class="eyebrow-dot"></span>
-                <span class="eyebrow-text" data-i18n="landing.hero_eyebrow">ARM64 CORTEX-A72 · 6.2W USB-C · &lt; 70MB RAM RSS · OPEN SOURCE MIT</span>
+                <span class="eyebrow-text" data-i18n="landing.hero_eyebrow">ARM64 CORTEX-A72 · 6.2W USB-C · &lt; 70MB RAM em uso · OPEN SOURCE MIT</span>
             </div>
 
             <div class="hero-split-grid">
@@ -183,7 +183,7 @@
                     <div class="hero-silicon-badges">
                         <span class="silicon-chip">RAM: <strong>55 MB RSS</strong></span>
                         <span class="silicon-chip">Potência: <strong>6.2 Watts</strong></span>
-                        <span class="silicon-chip">Persistência: <strong>SQLite WAL</strong></span>
+                        <span class="silicon-chip">Persistência: <strong>SQLite (gravar em log sequencial)</strong></span>
                         <span class="silicon-chip">Sandbox: <strong>Bubblewrap ARM64</strong></span>
                     </div>
                 </div>
@@ -196,7 +196,7 @@
                             <div class="sim-tabs-left">
                                 <button type="button" class="sim-tab-btn active" id="tabBtnTerminal" onclick="switchSimulatorTab('terminal')">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                                    <span data-i18n="landing.sim_tab_term">Terminal AG-UI</span>
+                                    <span data-i18n="landing.sim_tab_term">Terminal do agente</span>
                                 </button>
                                 <button type="button" class="sim-tab-btn" id="tabBtnTelemetry" onclick="switchSimulatorTab('telemetry')">
                                     <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
@@ -217,7 +217,7 @@
                                     <span class="slip-agent">@dot-supervisor</span>
                                     <span>SEQ# 0001 · PROT: AG-UI</span>
                                 </div>
-                                <p class="slip-text">Missão inicializada. Alocando especialistas via Dynamic Tool Pruning (3/23 esquemas JSON ativos no contexto).</p>
+                                <p class="slip-text">Missão inicializada. Selecionando as ferramentas necessárias (3 de 23 disponíveis no contexto).</p>
                             </div>
 
                             <div class="slip-perforation">
@@ -231,13 +231,13 @@
                                     <span class="slip-agent">@dot-coder</span>
                                     <span>SEQ# 0002 · SANDBOX BWRAP</span>
                                 </div>
-                                <p class="slip-text">Gerando teste de integração de hardware em sandbox Bubblewrap sub-15ms. Solicitando autorização do operador humano. <span class="ticker-cursor" aria-hidden="true">█</span></p>
+                                <p class="slip-text">Gerando teste de hardware em ambiente isolado (início em menos de 15ms). Solicitando autorização do operador. <span class="ticker-cursor" aria-hidden="true">█</span></p>
 
                                 <!-- Card HITL Interativo -->
                                 <div class="hitl-box" id="heroDemoHitlBox">
                                     <div class="hitl-box-header">
                                         <span>EXECUCAO STRICT SANDBOX</span>
-                                        <span>HMAC-SHA256 VALIDO</span>
+                                        <span>Assinatura criptográfica válida</span>
                                     </div>
                                     <div class="hitl-box-cmd">bwrap --ro-bind /usr /usr --tmpfs /tmp python3 -m pytest tests/test_silicon.py</div>
                                     <div class="hitl-box-actions" id="heroDemoHitlActions">
@@ -276,7 +276,7 @@
                                 </svg>
 
                                 <div class="telemetry-header-row">
-                                    <span class="telemetry-title telemetry-green">TEMPERATURA BROADCOM BCM2711 // SoC</span>
+                                    <span class="telemetry-title telemetry-green">TEMPERATURA BROADCOM BCM2711 // processador</span>
                                     <span class="telemetry-val telemetry-green" id="arenaTempDisplay">48.2 C (NOMINAL)</span>
                                 </div>
                                 <svg class="telemetry-svg-chart" viewBox="0 0 310 80" preserveAspectRatio="none" shape-rendering="crispEdges">
@@ -326,11 +326,11 @@
         </section>
 
         <!-- ===============================================================
-             3. METRICAS DURAS DE SILICIO (TELEMETRIA REAL EM CHIPS DE ALTO CONTRASTE)
+             3. METRICAS DURAS DE SILICIO (TELEMETRIA REAL EM CHIPS DE ALTO CONTRparser sintáticoE)
              =============================================================== -->
         <section class="silicon-metrics-section" id="metricas-silicio">
             <div class="section-head">
-                <span class="section-tag" data-i18n="landing.sec3_tag">DADOS DE ENGENHARIA DE SILÍCIO</span>
+                <span class="section-tag" data-i18n="landing.sec3_tag">DADOS DE HARDWARE</span>
                 <h2 class="section-title" data-i18n="landing.sec3_title">Medições de hardware auditáveis em runtime real</h2>
                 <p class="section-lead" data-i18n="landing.sec3_lead">
                     Substituímos adjetivos subjetivos por números empíricos coletados diretamente do kernel Linux ARM64 em operação contínua.
@@ -354,7 +354,7 @@
                         <span class="metric-val">&lt; 70 MB</span>
                     </div>
                     <div class="metric-body">
-                        Monólito Python 3.13 com uvloop e Poda Dinâmica de Ferramentas. Utiliza menos de 2% dos 4GB LPDDR4 do nó Raspberry Pi.
+                        Um único processo Python 3.13 assíncrono. Utiliza menos de 2% dos 4GB LPDDR4 do nó Raspberry Pi.
                     </div>
                 </div>
 
@@ -364,7 +364,7 @@
                         <span class="metric-val">&lt; 15 MS</span>
                     </div>
                     <div class="metric-body">
-                        Namespaces Bubblewrap (bwrap) montados sem sobrecarga gráfica ou demoras de container Docker. Consumo &lt; 3MB por sandbox.
+                        Ambientes isolados criados com Bubblewrap, sem a demora de subir um container Docker. Consumo &lt; 3MB por sandbox.
                     </div>
                 </div>
 
@@ -374,7 +374,7 @@
                         <span class="metric-val">SQLITE WAL</span>
                     </div>
                     <div class="metric-body">
-                        Escritas sequenciais em append-only com temp_store em RAM volátil. Preservação garantida da vida útil do cartão MicroSD.
+                        Gravações em sequência; dados temporários ficam em RAM. Preservação garantida da vida útil do cartão MicroSD.
                     </div>
                 </div>
             </div>
@@ -405,7 +405,7 @@
                             <span class="card-tag tag-cyan">ORQUESTRADOR</span>
                         </div>
                         <p class="card-desc">
-                            Coordenador executivo do squad. Gerencia o desdobramento de tarefas, handoffs entre dots, resolução conjunta do Conselho e despachos de cronograma.
+                            Coordenador executivo do equipe. Gerencia o desdobramento de tarefas, transfere a condução entre dots, resolução conjunta do Conselho e despachos de cronograma.
                         </p>
                         <div class="card-meta-list">
                             <div class="card-meta-item"><span>Permissões:</span> <strong>Memória Central · Spaces · Handoffs</strong></div>
@@ -426,7 +426,7 @@
                             <span class="card-tag tag-green">ENGENHEIRO</span>
                         </div>
                         <p class="card-desc">
-                            Especialista em desenvolvimento de software e infraestrutura Linux. Executa scripts em sandbox Bubblewrap sub-15ms e aciona auto-cura via Self-Healing Harness.
+                            Especialista em desenvolvimento de software e infraestrutura Linux. Executa scripts em ambiente isolado e repara scripts com erro automaticamente, sem reiniciar.
                         </p>
                         <div class="card-meta-list">
                             <div class="card-meta-item"><span>Permissões:</span> <strong>Sandbox Shell · Workspace /workspaces</strong></div>
@@ -447,7 +447,7 @@
                             <span class="card-tag tag-cyan">ARQUITETO</span>
                         </div>
                         <p class="card-desc">
-                            Modelador de dados e guardião documental. Organiza a árvore de Spaces Markdown versionada, esquemas relacionais SQLite WAL e contratos de API REST.
+                            Modelador de dados e guardião documental. Organiza a árvore de Spaces Markdown versionada, esquemas relacionais SQLite (gravar em log sequencial) e contratos de API REST.
                         </p>
                         <div class="card-meta-list">
                             <div class="card-meta-item"><span>Permissões:</span> <strong>Árvore de Spaces · Diffs WAL</strong></div>
@@ -468,11 +468,11 @@
                             <span class="card-tag tag-amber">SEGURANÇA</span>
                         </div>
                         <p class="card-desc">
-                            Auditor de integridade e supervisor de hardware. Intercepta comandos de alto risco gerando cards de retenção HITL, monitora a temperatura do SoC e previne desgaste na memória flash.
+                            Auditor de integridade e supervisor de hardware. Intercepta comandos de alto risco e pede sua aprovação antes de executar. Monitora a temperatura do processador e evita desgaste do cartão MicroSD.
                         </p>
                         <div class="card-meta-list">
                             <div class="card-meta-item"><span>Permissões:</span> <strong>Travas HITL · Telemetria Broadcom</strong></div>
-                            <div class="card-meta-item"><span>Isolamento:</span> <strong>Assinaturas HMAC-SHA256</strong></div>
+                            <div class="card-meta-item"><span>Isolamento:</span> <strong>Verificação de integridade por assinatura</strong></div>
                         </div>
                     </div>
                 </div>
@@ -487,7 +487,7 @@
                 <span class="section-tag" data-i18n="landing.sec5_tag">ENGENHARIA PARA RECURSOS REAIS</span>
                 <h2 class="section-title" data-i18n="landing.sec5_title">Construído para o silício físico, não para a nuvem infinita</h2>
                 <p class="section-lead" data-i18n="landing.sec5_lead">
-                    Enquanto frameworks corporativos dependem de múltiplos contêineres pesados e navegadores ocultos, o piDots foi calibrado para operar com folga em nós de 4GB.
+                    Enquanto frameworks corporativos dependem de múltiplos contêineres pesados e navegadores ocultos, o piDots roda com folga num Raspberry Pi de 4 GB.
                 </p>
             </div>
 
@@ -499,7 +499,7 @@
                     </div>
                     <h3 class="bento-box-title">Memória que não esquece</h3>
                     <p class="bento-box-body">
-                        Documentos Markdown versionados com controle de concorrência otimista (expectedRevision). Cada Space mantém histórico imutável sem necessidade de bancos vetoriais em nuvem.
+                        Documentos Markdown versionados com se duas pessoas editarem ao mesmo tempo, o sistema avisa. Cada Space mantém histórico imutável sem necessidade de bancos vetoriais em nuvem.
                     </p>
                 </div>
 
@@ -510,7 +510,7 @@
                     </div>
                     <h3 class="bento-box-title">MicroSD que dura anos</h3>
                     <p class="bento-box-body">
-                        Gravações sequenciais em append-only sem reescrita de blocos, diretório temporário montado em RAM volátil (tmpfs 64MB) e rotina de consolidação às 03:00 com WAL TRUNCATE.
+                        Gravações sequenciais em Grava em sequência, sem reescrever blocos do cartão. Arquivos temporários ficam em RAM (64 MB) e o banco compacta o log toda noite às 03:00.
                     </p>
                 </div>
 
@@ -521,7 +521,7 @@
                     </div>
                     <h3 class="bento-box-title">Você aprova antes de executar</h3>
                     <p class="bento-box-body">
-                        Comandos destrutivos são retidos aguardando assinatura. O operador pode editar os parâmetros (modified_args) no cartão ou via Telegram e retomar o loop ReAct na hora.
+                        Comandos destrutivos são retidos aguardando assinatura. O operador pode editar os parâmetros (parâmetros editáveis) no cartão ou via Telegram e retomar o ciclo do agente na hora.
                     </p>
                 </div>
 
@@ -546,7 +546,7 @@
                 <span class="section-tag" data-i18n="landing.sec6_tag">COMPARATIVO DE ENGENHARIA COMPLETO</span>
                 <h2 class="section-title" data-i18n="landing.sec6_title">O que muda ao migrar para hardware soberano local</h2>
                 <p class="section-lead" data-i18n="landing.sec6_lead">
-                    Veja como o piDots se diferencia de soluções em nuvem tradicionais e frameworks pesados de agentes que tratam IA como caixas-pretas de alto custo.
+                    Compare o piDots com serviços em nuvem e frameworks de agentes: custo, consumo e o que você controla em cada caso.
                 </p>
             </div>
 
@@ -571,7 +571,7 @@
                             <td class="col-dimension">Consumo de Memória RAM</td>
                             <td class="col-cloud">1.800 MB a 3.500 MB (Node.js/Chromium)</td>
                             <td class="col-heavy">2.500 MB a 6.000 MB (vários containers)</td>
-                            <td class="col-pidots"><strong>Menos de 70 MB RAM RSS real</strong></td>
+                            <td class="col-pidots"><strong>Menos de 70 MB RAM em uso real</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Potência Térmica Dissipada</td>
@@ -589,19 +589,19 @@
                             <td class="col-dimension">Preservação do Armazenamento</td>
                             <td class="col-cloud">I/O cobrado por requisição de bloco</td>
                             <td class="col-heavy">Escritas descontroladas em logs locais</td>
-                            <td class="col-pidots"><strong>SQLite WAL + Tmpfs Flash-Safe</strong></td>
+                            <td class="col-pidots"><strong>SQLite (gravar em log sequencial) + Tmpfs Flash-Safe</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Protocolo de Comunicação</td>
                             <td class="col-cloud">Polling HTTP e websockets proprietários</td>
                             <td class="col-heavy">REST síncrono com bloqueio de thread</td>
-                            <td class="col-pidots"><strong>AG-UI SSE padronizado sub-milissegundo</strong></td>
+                            <td class="col-pidots"><strong>Streaming de eventos em tempo real (SSE), latência menor que 1 ms</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Governança e Segurança</td>
                             <td class="col-cloud">Telas genéricas de aceite assíncrono</td>
                             <td class="col-heavy">Confirmações simples no terminal CLI</td>
-                            <td class="col-pidots"><strong>Cards HITL inline com modified_args</strong></td>
+                            <td class="col-pidots"><strong>Cards HITL inline com parâmetros editáveis</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Mensageria Integrada</td>
@@ -613,13 +613,13 @@
                             <td class="col-dimension">Autonomia em Segundo Plano</td>
                             <td class="col-cloud">Workers Celery / Redis em nuvem</td>
                             <td class="col-heavy">Loops de polling contínuos bloqueantes</td>
-                            <td class="col-pidots"><strong>Dot Heartbeat 24/7 com HEARTBEAT_OK</strong></td>
+                            <td class="col-pidots"><strong>Verificações automáticas 24/7: só avisa quando há algo relevante</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Memória de Longo Prazo</td>
                             <td class="col-cloud">Bancos vetoriais em nuvem ou efêmera</td>
                             <td class="col-heavy">Context window truncado sem persistência</td>
-                            <td class="col-pidots"><strong>MemGPT 3 Camadas + Archival FTS5</strong></td>
+                            <td class="col-pidots"><strong>Memória em 3 camadas com busca full-text no SQLite</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Resolução de Conflitos</td>
@@ -631,13 +631,13 @@
                             <td class="col-dimension">Resiliência de Código</td>
                             <td class="col-cloud">Parada com traceback de erro</td>
                             <td class="col-heavy">Parada exigindo reinício do agente</td>
-                            <td class="col-pidots"><strong>Self-Healing Harness com parser AST</strong></td>
+                            <td class="col-pidots"><strong>Auto-reparo: analisa o erro e corrige o código</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Acesso Remoto</td>
                             <td class="col-cloud">Portas abertas no roteador ou VPN paga</td>
                             <td class="col-heavy">Complexidade de túneis manuais</td>
-                            <td class="col-pidots"><strong>Cloudflare Tunnel Zero Trust nativo</strong></td>
+                            <td class="col-pidots"><strong>Túnel Cloudflare: acesso remoto sem abrir portas no roteador</strong></td>
                         </tr>
                         <tr>
                             <td class="col-dimension">Custo Mensal Recorrente</td>
@@ -672,7 +672,7 @@
 
                     <h3 class="feature-title">Chave Manual de Autorização &amp; Carimbos de Segurança</h3>
                     <p class="feature-desc">
-                        Ative a confirmação manual de segurança para homologar ou vetar a ordem retida na fila transacional do SQLite WAL:
+                        Ative a confirmação manual de segurança para homologar ou vetar a ordem retida na fila transacional do SQLite (gravar em log sequencial):
                     </p>
 
                     <!-- Trava de Seguranca -->
@@ -746,7 +746,7 @@
 
                     <h3 class="feature-title">Auto-Cura e Reparo de Traceback</h3>
                     <p class="feature-desc">
-                        O agente intercepta falhas de execucao, analisa o traceback sintatico via AST e aplica a correcao cirurgica:
+                        O agente intercepta falhas de execucao, analisa o traceback sintatico via parser sintático e aplica a correcao cirurgica:
                     </p>
 
                     <div class="arena-healing-feed" id="healingDemoFeed">
@@ -875,18 +875,18 @@
                         <span class="objection-indicator">[-]</span>
                     </header>
                     <div class="objection-body" id="faq-body-oom">
-                        O piDots opera sob um monólito modular assíncrono em Python 3.13 com uvloop, consumindo menos de 70 MB de RAM RSS em repouso. Além disso, aplicamos a Poda Dinâmica de Ferramentas (Dynamic Tool Pruning), reduzindo o payload de esquemas JSON em até 65%, e utilizamos namespaces Bubblewrap nativos que alocam menos de 3 MB de RAM por sandbox em vez de pesados contêineres Docker.
+                        O piDots roda em Python 3.13 assíncrono (uvloop), usando menos de 70 MB de RAM em repouso. Ele carrega no contexto só as ferramentas que a tarefa atual exige (até 65% menos memória de prompt) e isola cada execução em sandbox de menos de 3 MB, em vez de abrir um contêiner Docker por comando.
                     </div>
                 </div>
 
                 <!-- FAQ 2: MicroSD Flash -->
                 <div class="objection-card" id="faq-card-flash">
                     <header class="objection-header" role="button" tabindex="0" aria-expanded="false" aria-controls="faq-body-flash" onclick="toggleObjection('faq-card-flash')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleObjection('faq-card-flash');}">
-                        <span class="objection-title">Como a escrita sequencial no SQLite WAL preserva as células do cartão MicroSD</span>
+                        <span class="objection-title">Como a escrita sequencial no SQLite (gravar em log sequencial) preserva as células do cartão MicroSD</span>
                         <span class="objection-indicator">[+]</span>
                     </header>
                     <div class="objection-body" id="faq-body-flash">
-                        Configuramos o SQLite com <code>journal_mode=WAL</code> (Write-Ahead Logging) em modo de escrita sequencial append-only, eliminando reescritas randômicas destrutivas. Tabelas temporárias operam em RAM volátil (<code>temp_store=MEMORY</code> e tmpfs 64MB) e uma rotina automática consolida os checkpoints às 03:00 com <code>WAL TRUNCATE</code>, preservando a integridade das células Flash por anos.
+                        O banco usa WAL: grava em sequência, sem reescrever blocos aleatórios no cartão. Tabelas temporárias ficam em RAM (64 MB) e uma rotina às 03:00 compacta o arquivo de log. Isso reduz drasticamente o número de gravações no MicroSD.
                     </div>
                 </div>
 
@@ -897,7 +897,7 @@
                         <span class="objection-indicator">[+]</span>
                     </header>
                     <div class="objection-body" id="faq-body-hitl">
-                        Nossa camada de governança Human-in-the-Loop (HITL) intercepta preventivamente qualquer comando destrutivo (como exclusões em massa ou alterações de rede). O agente é congelado no SQLite WAL emitindo o evento <code>hitl:approval_required</code>. O operador humano pode homologar, vetar ou editar os argumentos (modified_args) diretamente na interface ou via Telegram/WhatsApp antes que qualquer byte atinja o sandbox Bubblewrap.
+                        Comandos destrutivos (como exclusões em massa ou mudanças de rede) são retidos e registrados no banco. Você recebe o cartão de aprovação, pode editar os argumentos ou aprovar pela interface ou pelo Telegram/WhatsApp. Só depois o comando chega à sandbox.
                     </div>
                 </div>
 
@@ -908,7 +908,7 @@
                         <span class="objection-indicator">[+]</span>
                     </header>
                     <div class="objection-body" id="faq-body-byom">
-                        O piDots é 100% agnóstico (Bring Your Own Model). Você pode conectar inferência local rodando no mesmo hardware ou rede (Ollama, vLLM, llama.cpp em ARM64) ou qualquer provedor em nuvem compatível com o protocolo OpenAI Chat Completions (OpenAI, Anthropic Claude, Verboo, Groq, Mistral, OpenRouter) apenas ajustando a Base URL e a chave de API na aba de configurações.
+                        O piDots aceita qualquer modelo: local (Ollama, vLLM, llama.cpp no próprio ARM64) ou em nuvem (OpenAI, Anthropic, Groq, Mistral, OpenRouter), desde que use o protocolo Chat Completions da OpenAI. Basta mudar a URL e a chave de API na aba de configurações.
                     </div>
                 </div>
             </div>
@@ -998,7 +998,7 @@
             <div class="guide-step">
                 <div class="step-num">PASSO 02 // CHAT MULTI-BOT</div>
                 <div class="step-heading">Orquestração Dinâmica com @dot</div>
-                <div class="step-body">Invoque especialistas no mesmo terminal com menções diretas. Handoff de liderança sincronizado entre dots no SQLite WAL.</div>
+                <div class="step-body">Invoque especialistas no mesmo terminal com menções diretas. Handoff de liderança sincronizado entre dots no SQLite (gravar em log sequencial).</div>
             </div>
 
             <div class="guide-step">
@@ -1021,14 +1021,14 @@
 
             <div class="guide-step">
                 <div class="step-num">PASSO 06 // PRESERVACAO FLASH &amp; DEPLOY</div>
-                <div class="step-heading">Calibração SQLite WAL e Consumo 6.2W</div>
+                <div class="step-heading">Calibração SQLite (gravar em log sequencial) e Consumo 6.2W</div>
                 <div class="step-body">Com journal_mode=WAL e temp_store=MEMORY, escritas são amortecidas garantindo vida útil estendida ao MicroSD.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 07 // MEMORIA HIERARQUICA</div>
-                <div class="step-heading">Core Memory, Recall &amp; Archival FTS5</div>
-                <div class="step-body">Memória persistente inspirada no MemGPT com auto-edição autônoma, busca FTS5 BM25 e projeção vetorial 64D.</div>
+                <div class="step-heading">Core Memory, Recall &amp; Archival busca por texto</div>
+                <div class="step-body">Memória persistente inspirada no 3 camadas com auto-edição autônoma, busca busca por texto relevância e vetores de 64 dimensões.</div>
             </div>
 
             <div class="guide-step">
@@ -1052,7 +1052,7 @@
             <div class="guide-step">
                 <div class="step-num">PASSO 11 // TRIGGERS DE SILICIO &amp; VACUUM</div>
                 <div class="step-heading">Proteção Térmica Broadcom e Rotina Noturna</div>
-                <div class="step-body">Monitoramento térmico do SoC, mitigação de throttling e consolidação noturna automática com WAL TRUNCATE.</div>
+                <div class="step-body">Monitoramento térmico do processador, mitigação de reduz o ritmo se esquentar e consolidação noturna automática com compacta o banco.</div>
             </div>
 
             <div class="guide-step">
@@ -1064,13 +1064,13 @@
             <div class="guide-step">
                 <div class="step-num">PASSO 13 // SLASH COMMANDS</div>
                 <div class="step-heading">Catálogo de 34 Comandos &amp; Autocomplete</div>
-                <div class="step-body">Acione operações com barra (/), busca difusa por Levenshtein e execução assíncrona com recibos táteis.</div>
+                <div class="step-body">Acione operações com barra (/), busca difusa por busca que tolera erros de digitação e execução assíncrona com recibos táteis.</div>
             </div>
 
             <div class="guide-step">
                 <div class="step-num">PASSO 14 // DESACOPLAMENTO &amp; CLOUDFLARE</div>
                 <div class="step-heading">Superfícies Isoladas :8081-:8088 e Zero Trust</div>
-                <div class="step-body">Segregação física de portas no Nginx Alpine (&lt; 3MB RAM) e túnel seguro NAT Traversal com cloudflared.</div>
+                <div class="step-body">Segregação física de portas no Nginx Alpine (&lt; 3MB RAM) e túnel seguro acesso remoto pelo túnel Cloudflare com cloudflared.</div>
             </div>
 
             <div style="margin-top: 10px; padding: 10px; background: var(--paper-surface-recessed); border: 1px solid var(--border-default); text-align: center; border-radius: 0;">
@@ -1081,7 +1081,7 @@
         </div>
     </aside>
 
-    <!-- CONTAINER DE NOTIFICACOES (TOASTS) -->
+    <!-- CONTAINER DE NOTIFICACOES (TOparser sintáticoS) -->
     <div id="pixelToastContainer" aria-live="polite"></div>
 
 </body>
