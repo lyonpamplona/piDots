@@ -278,14 +278,14 @@
                 <div class="catalog-meta-strip">
                     <div class="catalog-tag-group">
                         <span class="brand-badge" style="color: var(--phosphor-green); border-color: var(--phosphor-green);">SISTEMA MULTI-BOT OPERACIONAL</span>
-                        <span class="brand-badge">REF: RASPBERRY PI 4B ARM64 (6.2W USB-C)</span>
+                        <span class="brand-badge">REF: RASPBERRY PI 4B ARM64 (6,2 W USB-C)</span>
                     </div>
                     <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted);">DOC# PIDOTS-MANUAL-V3</span>
                 </div>
 
                 <h1 class="catalog-title" data-i18n="guide.title">piDots // Manual Operacional de Engenharia</h1>
                 <p class="catalog-lead" data-i18n="guide.subtitle">
-                    Guia de referência arquitetural e operacional para execução de equipes autônomas de IA no Raspberry Pi 4B consumindo menos de 70 MB de RAM e 6 Watts. Governança física Human-in-the-Loop, memória SQLite WAL durável e comunicação multi-canal.
+                    Guia de instalação e operação do piDots no Raspberry Pi 4B: menos de 70 MB de RAM e 6,2 W, com aprovação humana antes de comandos de risco e dados 100% locais.
                 </p>
 
                 <div class="catalog-grid-telemetry">
@@ -335,7 +335,7 @@
                         O <strong>piDots</strong> foi projetado para executar assistentes técnicos locais com consumo inferior a 70 MB de RAM, mantendo os dados no hardware do operador e eliminando faturas de nuvem.
                     </p>
                     <p class="step-paragraph">
-                        O piDots é um monólito enxuto em Python assíncrono. Em vez de subir navegadores Chromium pesados ou bancos vetoriais em contêineres separados, tudo roda em um único processo.
+                        O piDots é uma aplicação única em Python assíncrono. Não sobe navegadores Chromium nem bancos vetoriais em contêineres separados: tudo roda num processo só.
                     </p>
                     <p class="step-paragraph">
                         O estado, as conversas e as revisões de arquivos ficam em um banco SQLite local em modo WAL (Write-Ahead Logging). Se faltar luz, nada se perde.
@@ -462,7 +462,7 @@
                             VANTAGEM DA ESPECIALIZACAO NO RASPBERRY PI 4B
                         </div>
                         <div class="pixel-callout-text">
-                            Dividir a agencia entre multiplos arquetipos reduz a alucinacao cruzada do modelo. O Supervisor nunca perde tempo tentando adivinhar sintaxes do shell, enquanto o Coder foca exclusivamente no codigo sem dispersar atencao com redacoes longas.
+                            Dividir o trabalho entre agentes especializados deixa cada prompt mais curto e focado. O Supervisor nunca perde tempo tentando adivinhar sintaxes do shell, enquanto o Coder foca exclusivamente no codigo sem dispersar atencao com redacoes longas.
                         </div>
                     </div>
                 </div>
@@ -681,7 +681,7 @@
                 <span class="track-tag">TRILHA 02 // INTEGRACOES E OPERACAO</span>
                 <h2 class="track-title">Canais de Mensageria, Ferramentas e Deploy Operacional</h2>
                 <p class="track-desc">
-                    Conecte agentes ao Telegram e WhatsApp com travas anti-loop, utilize mais de 15 ferramentas nativas com poda dinâmica de contexto e suba a infraestrutura completa em um único comando Docker Compose.
+                    Conecte agentes ao Telegram e WhatsApp com travas anti-loop, utilize mais de 15 ferramentas nativas com ferramentas carregadas sob demanda para economizar tokens e suba a infraestrutura completa em um único comando Docker Compose.
                 </p>
             </div>
 
@@ -1622,7 +1622,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                         Para decisões críticas, o piDots usa o <strong>Conselho Consultivo Multi-Bot</strong> (<code>CouncilOrchestrator</code>). Em vez de depender de um único modelo, três arquétipos revisam o plano em conjunto.
                     </p>
                     <p class="step-paragraph">
-                        Se os três concordarem, o plano é aprovado imediatamente (<strong>Early Consensus Exit</strong>). Se discordarem, o assunto vai para o humano decidir.
+                        Se os três concordarem, o plano é aprovado imediatamente (<strong>Early Consensus Exit (saída antecipada por consenso: o debate termina se o auditor aprovar)</strong>). Se discordarem, o assunto vai para o humano decidir.
                     </p>
 
                     <div class="pixel-card-grid">
@@ -1692,7 +1692,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
 
                             <!-- Barra de Governanca Inferior -->
                             <rect x="20" y="125" width="800" height="15" fill="#040608" stroke="#1c2633" stroke-width="1"/>
-                            <text x="420" y="136" fill="#64748b" font-family="'Silkscreen', monospace" font-size="9" text-anchor="middle">EARLY CONSENSUS EXIT (ROUND 2) // OVERHEAD RAM &lt; 53MB // EXECUCAO DETERMINISTICA</text>
+                            <text x="420" y="136" fill="#64748b" font-family="'Silkscreen', monospace" font-size="9" text-anchor="middle">EARLY CONSENSUS EXIT (ROUND 2) // OVERHEAD RAM &lt; 53MB // CONSENSO ALCANÇADO</text>
                         </svg>
                     </div>
 
@@ -2068,7 +2068,7 @@ curl -s -I http://localhost:8000/static/js/core/pidots-i18n.js
                     <span class="step-badge">PASSO 13 // CONTROLE OPERACIONAL DE ALTA VELOCIDADE</span>
                     <h2 class="step-heading" data-i18n="guide.step13_title">Comandos / e atalhos do console</h2>
                     <p class="step-summary">
-                        O piDots incorpora uma central unificada de comandos iniciados por barra (<code>/</code>), permitindo operacao cirurgica de baixa latencia sem consumo de tokens de LLM para tarefas locais. O subsistema conta com menu flutuante de autocompletar em Vanilla JS (< 10KB), navegacao completa por teclado, tolerancia a falhas via Levenshtein e emissao de recibos tatis na bobina de teletipo com teto circular de 150 nos DOM.
+                        O piDots incorpora uma central unificada de comandos iniciados por barra (<code>/</code>), permitindo operacao cirurgica de baixa latencia sem consumo de tokens de LLM para tarefas locais. O subsistema conta com menu flutuante de autocompletar em Vanilla JS (< 10KB), navegacao completa por teclado, tolerancia a falhas via Levenshtein e emissao de recibos táteis na bobina de teletipo com teto circular de 150 nos DOM.
                     </p>
                 </header>
 
@@ -2195,7 +2195,7 @@ curl -s -I http://localhost:8000/static/js/core/pidots-i18n.js
                                     <td><code>/council</code></td>
                                     <td><code>/council [tema]</code></td>
                                     <td>Local / Core</td>
-                                    <td>Revisão em 3 vias: perspectivas Pragmática, Inovadora e Auditor de Borda.</td>
+                                    <td>Revisão em 3 vias: perspectivas Propositor (@coder), Auditor Crítico (@auditor) e Supervisor (@supervisor).</td>
                                 </tr>
                                 <tr>
                                     <td><code>/delegate</code></td>
@@ -2520,7 +2520,7 @@ sudo systemctl status cloudflared</code></pre>
                         Como a porta <code>8082</code> permite interagir diretamente com o terminal de comandos bash dos Dots e ferramentas de gerenciamento de arquivos do Raspberry Pi, a melhor pratica de seguranca consiste em aplicar uma politica do <strong>Cloudflare Zero Trust Access</strong> para o subdominio <code>app.seudominio.com</code>.
                     </p>
                     <p class="step-paragraph">
-                        Dessa forma, qualquer tentativa de acesso ao Workspace remoto exigira autenticacao previa por e-mail (Magic Link) ou Provedor de Identidade (GitHub, Google, Okta) antes que a requisicao atinja o hardware de borda, garantindo imunidade total contra bots maliciosos e varreduras de portas.
+                        Dessa forma, qualquer tentativa de acesso ao Workspace remoto exigira autenticacao previa por e-mail (Magic Link) ou Provedor de Identidade (GitHub, Google, Okta) antes que a requisicao atinja o hardware de borda, bloqueando bots e varreduras de portas que não passam pela autenticação.
                     </p>
                 </div>
 

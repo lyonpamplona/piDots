@@ -98,7 +98,7 @@
     "header": "PIDOTS // NOTAS DE ATUALIZAÇÃO - VERSÃO 1.5.5",
     "badge": "RECÉM APLICADO",
     "title": "NOTAS DE ATUALIZAÇÃO - VERSÃO 1.5.5",
-    "subtitle": "Módulo MCP Lite, Aprovação Remota HMAC-SHA256, Dot Packs v1.1 e Barramento Físico GPIO/MQTT.",
+    "subtitle": "Módulo MCP Lite, Aprovação Remota HMAC-SHA256, Dot Packs v1.1 e gatilhos GPIO/MQTT.",
     "tag_new": "[INCLUÍDO / NOVO]",
     "tag_opt": "[AJUSTADO / MELHORADO]",
     "tag_dep": "[REMOVIDO / DEPRECIADO]",
