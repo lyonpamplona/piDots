@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>piDots // Guia Operacional Didático (Console Minimalista)</title>
-    <meta name="description" content="Guia operacional oficial e didático do piDots: conceitos, ciclo ReAct, arsenal de ferramentas, governança HITL, configuração e deploy em Raspberry Pi 4B sob interface técnica minimalista.">
+    <meta name="description" content="Guia operacional oficial e didático do piDots: conceitos, ciclo ReAct <span class='jargon-explain'>(ciclo de raciocínio + ação: o agente pensa antes de agir)</span>, arsenal de ferramentas, governança HITL <span class='jargon-explain'>(Human-in-the-Loop: você aprova antes de o sistema executar comandos críticos)</span>, configuração e deploy em Raspberry Pi 4B sob interface técnica minimalista.">
     
     <!-- Favicon e Icones Oficiais PWA (Rasterizados & SVG) -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -183,7 +183,7 @@
                 </li>
 
                 <li class="drawer-track-header" style="color: var(--brand-purple, #a855f7);">TRILHA 02 // INTEGRAÇÕES &amp; OPERAÇÃO</li>
-                <li class="drawer-item" data-keywords="gateway mensageria telegram whatsapp evolution webhooks salas hop_count devops">
+                <li class="drawer-item" data-keywords="gateway mensageria telegram whatsapp evolution webhooks salas hop_count <span class='jargon-explain'>(limite de quantas vezes um agente pode delegar para outro)</span> devops">
                     <a href="#passo-4" class="drawer-link" onclick="handleDrawerNav(event, 'passo-4')">
                         <span class="drawer-step-idx">04</span>
                         <span>Gateway Unificado &amp; Salas Temáticas</span>
@@ -192,10 +192,10 @@
                 <li class="drawer-item" data-keywords="ferramentas tools pruning poda dinamica tokens economia sandbox bash hitl">
                     <a href="#passo-5" class="drawer-link" onclick="handleDrawerNav(event, 'passo-5')">
                         <span class="drawer-step-idx">05</span>
-                        <span>Arsenal de Ferramentas &amp; Tool Pruning</span>
+                        <span>Arsenal de Ferramentas &amp; Tool Pruning <span class='jargon-explain'>(poda de ferramentas: carregar só o que é necessário)</span></span>
                     </a>
                 </li>
-                <li class="drawer-item" data-keywords="operacional deploy docker env curl endpoints microsd flash wal preservacao computer state">
+                <li class="drawer-item" data-keywords="operacional deploy docker env curl endpoints microsd flash wal <span class='jargon-explain'>(Write-Ahead Logging: técnica de banco de dados que garante que nada se perca se faltar energia)</span> preservacao computer state">
                     <a href="#passo-6" class="drawer-link" onclick="handleDrawerNav(event, 'passo-6')">
                         <span class="drawer-step-idx">06</span>
                         <span>Passo a Passo Operacional &amp; MicroSD</span>
@@ -203,13 +203,13 @@
                 </li>
 
                 <li class="drawer-track-header" style="color: var(--phosphor-green, #7cd9c6);">TRILHA 03 // PERSISTÊNCIA &amp; GOVERNANÇA</li>
-                <li class="drawer-item" data-keywords="memoria hierarquica core memory archival memgpt letta fts5 bm25 64d embeddings recall">
+                <li class="drawer-item" data-keywords="memoria hierarquica core memory archival memgpt <span class='jargon-explain'>(sistema de memória em camadas inspirado em como o cérebro funciona)</span> letta <span class='jargon-explain'>(framework de memória para agentes de IA)</span> fts5 <span class='jargon-explain'>(busca textual completa no banco de dados)</span> bm25 <span class='jargon-explain'>(algoritmo de ranking para busca textual)</span> 64d embeddings recall">
                     <a href="#passo-7" class="drawer-link" onclick="handleDrawerNav(event, 'passo-7')">
                         <span class="drawer-step-idx">07</span>
                         <span>Memória Hierárquica &amp; Core Memory</span>
                     </a>
                 </li>
-                <li class="drawer-item" data-keywords="self-healing auto-correcao traceback goals milestones planejamento metas checkpoints">
+                <li class="drawer-item" data-keywords="self-healing <span class='jargon-explain'>(auto-reparo: o sistema detecta e corrige erros sozinho)</span> auto-correcao traceback goals milestones planejamento metas checkpoints">
                     <a href="#passo-8" class="drawer-link" onclick="handleDrawerNav(event, 'passo-8')">
                         <span class="drawer-step-idx">08</span>
                         <span>Self-Healing &amp; Two-Stage Planning</span>
@@ -241,13 +241,13 @@
                         <span>Micro-Motor i18n &amp; Dicionários JSON</span>
                     </a>
                 </li>
-                <li class="drawer-item" data-keywords="slash commands barra popover autocomplete catalogo 34 comandos teletipo slips levenshtein export pack hitl telemetry coagents computer save-space mcp">
+                <li class="drawer-item" data-keywords="slash commands barra popover autocomplete catalogo 34 comandos teletipo slips levenshtein <span class='jargon-explain'>(tolerância a erros de digitação)</span> export pack hitl telemetry coagents computer save-space mcp">
                     <a href="#passo-13" class="drawer-link" onclick="handleDrawerNav(event, 'passo-13')">
                         <span class="drawer-step-idx">13</span>
                         <span>Slash Commands &amp; Protocolo de Borda</span>
                     </a>
                 </li>
-                <li class="drawer-item" data-keywords="cloudflare tunnel cloudflared desacoplamento portas 8081 8082 8083 nginx reverse proxy zero trust nat traversal ingress">
+                <li class="drawer-item" data-keywords="cloudflare tunnel cloudflared desacoplamento portas 8081 8082 8083 nginx reverse proxy zero trust <span class='jargon-explain'>(nenhum acesso é confiável por padrão: tudo é verificado)</span> nat traversal ingress">
                     <a href="#passo-14" class="drawer-link" onclick="handleDrawerNav(event, 'passo-14')">
                         <span class="drawer-step-idx">14</span>
                         <span>Desacoplamento por Portas &amp; Cloudflare Tunnel</span>
@@ -647,7 +647,8 @@
                                 <span>Copiar</span>
                             </button>
                         </div>
-                        <pre class="code-paper-content">curl -X POST http://127.0.0.1:8000/api/tasks \
+                        <div class="code-context">Execute este comando no terminal para:</div>
+<pre class="code-paper-content">curl -X POST http://127.0.0.1:8000/api/tasks \
   -H "Content-Type: application/json" \
   -d '{
     "dot_id": "dot-coder",
@@ -773,7 +774,8 @@
                                 <span>Copiar</span>
                             </button>
                         </div>
-                        <pre class="code-paper-content"># 1. Garantir criacao previa da sala (idempotente)
+                        <div class="code-context">Execute este comando para:</div>
+<pre class="code-paper-content"># 1. Garantir criacao previa da sala (idempotente)
 curl -s -X POST http://127.0.0.1:8000/api/channels \
   -H "Content-Type: application/json" \
   -d '{"id": "devops", "name": "Operacoes DevOps", "description": "Canal de infraestrutura de borda"}'
@@ -870,7 +872,7 @@ curl -s -X POST http://127.0.0.1:8000/api/channels/devops/messages \
                                 <span class="pixel-card-title">execute_shell_command</span>
                                 <span class="brand-badge">BWRAP NAMESPACES</span>
                             </div>
-                            <p class="pixel-card-body">Executa comandos Linux isolados via Bubblewrap. Em modo estrito (STRICT_SANDBOX=true), recusa execucao se bwrap inexiste.</p>
+                            <p class="pixel-card-body">Executa comandos Linux isolados via Bubblewrap <span class='jargon-explain'>(sandbox Linux: ambiente isolado onde comandos rodam sem afetar o sistema)</span>. Em modo estrito (STRICT_SANDBOX=true), recusa execucao se bwrap inexiste.</p>
                         </article>
                         <article class="pixel-card">
                             <div class="pixel-card-header">
@@ -1077,7 +1079,8 @@ TELEGRAM_CHAT_ID=</pre>
                                 <span>Copiar</span>
                             </button>
                         </div>
-                        <pre class="code-paper-content"># 1. Iniciar os servicos em segundo plano
+                        <div class="code-context">Siga estes passos:</div>
+<pre class="code-paper-content"># 1. Iniciar os servicos em segundo plano
 docker compose up -d
 
 # 2. Consultar status e telemetria instantanea
@@ -1257,7 +1260,7 @@ curl -s http://127.0.0.1:8000/api/channels | jq .
                                 <strong>/docs :</strong> Manual Técnico com busca client-side e Mini API Tester.<br>
                                 <strong>/api/docs :</strong> Swagger UI OpenAPI 3.1 interativo.<br>
                                 <strong>pidots/api/routes_dots.py :</strong> CRUD completo de agentes (GET/POST/PUT/DELETE), <code>/api/tools</code>, <code>/api/dots/packs/catalog</code> e instalação 1-clique com SHA-256 (<code>/api/dots/packs/install/{pack_id}</code>).<br>
-                                <strong>pidots/api/routes_threads.py :</strong> Sessões, <code>/state</code> (CoAgents Shared State), <code>/save-as-space</code> e streaming AG-UI SSE.<br>
+                                <strong>pidots/api/routes_threads.py :</strong> Sessões, <code>/state</code> (CoAgents Shared State), <code>/save-as-space</code> e streaming AG-UI <span class='jargon-explain'>(protocolo de streaming entre agentes e interface)</span> SSE.<br>
                                 <strong>pidots/api/routes_tasks.py :</strong> Agendamentos cron, disparo imediato (<code>/run</code>), toggle e quadro Spaces.<br>
                                 <strong>pidots/api/routes_hitl.py :</strong> Governança HITL com edição de argumentos (<code>modified_args</code>), retomada imediata e expiração determinística TTL (<code>/api/hitl/expire-stale</code>).<br>
                                 <strong>pidots/api/routes_edge.py :</strong> Telemetria RSS real (<code>process_rss_mb</code>), Dot's Computer (<code>/computer/files</code> e <code>/computer/exec</code>), MCP Lite (<code>/api/mcp/servers</code>) e simulação de gatilhos GPIO/MQTT (<code>/api/edge/triggers/simulate</code>).<br>
@@ -1872,7 +1875,7 @@ curl -s -X POST http://localhost:8000/api/dots/import-pack \
 
                         <article class="pixel-card">
                             <div class="pixel-card-header">
-                                <span class="pixel-card-title">6. HITL COM EXPIRACAO TTL &amp; HMAC</span>
+                                <span class="pixel-card-title">6. HITL COM EXPIRACAO TTL &amp; HMAC <span class='jargon-explain'>(assinatura criptográfica que garante que a mensagem não foi alterada)</span></span>
                                 <span class="brand-badge">TELEGRAM / WHATSAPP</span>
                             </div>
                             <p class="pixel-card-body">
@@ -2121,7 +2124,7 @@ curl -s -I http://localhost:8000/static/js/core/pidots-i18n.js
                                     <td><code>/info</code></td>
                                     <td><code>/info</code></td>
                                     <td>REST (/health)</td>
-                                    <td>Relatório técnico do nó: arquitetura Cortex-A72, uvloop, SQLite WAL e modelo ativo.</td>
+                                    <td>Relatório técnico do nó: arquitetura Cortex-A72, uvloop <span class='jargon-explain'>(biblioteca que deixa o servidor Python mais rápido)</span>, SQLite WAL e modelo ativo.</td>
                                 </tr>
                                 <tr>
                                     <td><code>/status</code></td>
@@ -2245,7 +2248,7 @@ curl -s -I http://localhost:8000/static/js/core/pidots-i18n.js
                                     <td><code>/archival</code></td>
                                     <td><code>/archival &lt;busca&gt;</code></td>
                                     <td>Memoria</td>
-                                    <td>Busca semantica vetorial KNN 64D na base arquival persistente no SQLite WAL.</td>
+                                    <td>Busca semantica vetorial KNN <span class='jargon-explain'>(busca por proximidade numérica: encontra itens parecidos)</span> 64D na base arquival persistente no SQLite WAL.</td>
                                 </tr>
                                 <tr>
                                     <td><code>/shared</code></td>
@@ -2281,7 +2284,7 @@ curl -s -I http://localhost:8000/static/js/core/pidots-i18n.js
                                     <td><code>/cron</code></td>
                                     <td><code>/cron [listar|status]</code></td>
                                     <td>Tarefas</td>
-                                    <td>Inspeciona rotinas periodicas registradas no EdgeScheduler do uvloop.</td>
+                                    <td>Inspeciona rotinas periodicas registradas no EdgeScheduler <span class='jargon-explain'>(agendador de tarefas em segundo plano)</span> do uvloop.</td>
                                 </tr>
                                 <tr>
                                     <td><code>/run-task</code></td>
@@ -2486,7 +2489,8 @@ Throttle Automatico     : DESATIVADO (NORMAL)
                                 </button>
                             </div>
                         </div>
-                        <pre class="terminal-pre"><code># 1. Executar o assistente automatizado do piDots:
+                        <div class="code-context">Execute estes comandos para:</div>
+<pre class="terminal-pre"><code># 1. Executar o assistente automatizado do piDots:
 ./cloudflared/setup-tunnel.sh
 
 # 2. Autenticar a sessao na sua conta Cloudflare:

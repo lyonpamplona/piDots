@@ -1718,6 +1718,29 @@ footer.guide-paper-footer {
         border-right: 1px solid var(--border-default);
     }
 
+/* Explicações de jargão técnico na primeira ocorrência */
+.jargon-explain {
+    font-size: 11px;
+    color: var(--phosphor-dim, #7a9a8e);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: 0.8;
+}
+
+/* Contexto antes de blocos de código */
+.code-context {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    color: var(--phosphor-dim, #7a9a8e);
+    margin-bottom: 4px;
+    padding-left: 12px;
+    border-left: 2px solid var(--border-default, #1e3a34);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
     table.pixel-table td:first-child {
         background: var(--paper-sheet);
     }
