@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>piDots // Guia Operacional Didático (Console Minimalista)</title>
-    <meta name="description" content="Guia operacional oficial e didático do piDots: conceitos, ciclo ReAct <span class='jargon-explain'>(ciclo de raciocínio + ação: o agente pensa antes de agir)</span>, arsenal de ferramentas, governança HITL <span class='jargon-explain'>(Human-in-the-Loop: você aprova antes de o sistema executar comandos críticos)</span>, configuração e deploy em Raspberry Pi 4B sob interface técnica minimalista.">
+    <meta name="description" content="Guia operacional oficial e didático do piDots: conceitos, ciclo ReAct <span class='jargon-explain'>(ciclo de raciocínio + ação: o agente pensa antes de agir)</span>, catálogo de ferramentas, governança HITL <span class='jargon-explain'>(Human-in-the-Loop: você aprova antes de o sistema executar comandos críticos)</span>, configuração e deploy em Raspberry Pi 4B sob interface técnica minimalista.">
     
     <!-- Favicon e Icones Oficiais PWA (Rasterizados & SVG) -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -497,7 +497,7 @@
                                 <span class="brand-badge">ThreadRouter</span>
                             </div>
                             <p class="pixel-card-body">
-                                Ao incluir <code>@dot-coder</code> ou <code>@dot-supervisor</code> na sua mensagem, o mecanismo <code>ThreadRouter</code> extrai a mencao via regex deterministica, verifica a existencia do agente no banco e redireciona o turno de execucao diretamente para o especialista citado, registrando-o na tabela <code>thread_participants</code>.
+                                Ao incluir <code>@dot-coder</code> ou <code>@dot-supervisor</code> na sua mensagem, o mecanismo <code>ThreadRouter</code> extrai a mencao via regex deterministica, verifica a existencia do agente no banco e redireciona o turno de execução diretamente para o especialista citado, registrando-o na tabela <code>thread_participants</code>.
                             </p>
                         </article>
 
@@ -797,14 +797,14 @@ curl -s -X POST http://127.0.0.1:8000/api/channels/devops/messages \
                     </button>
                     <span class="step-counter-tag">PASSO 04 DE 14 // MANUAL OPERACIONAL</span>
                     <button class="pixel-btn btn-cyan" onclick="scrollToStep('passo-5')">
-                        <span>AVANCAR: ARSENAL DE TOOLS &amp; TOOL PRUNING</span>
+                        <span>AVANCAR: CATÁLOGO DE FERRAMENTAS &amp; TOOL PRUNING</span>
                         <svg class="ui-icon" viewBox="0 0 24 24" shape-rendering="crispEdges"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
             </section>
 
             <!-- =================================================================
-                 PASSO 05: ARSENAL DE FERRAMENTAS E PODA DINAMICA
+                 PASSO 05: CATÁLOGO DE FERRAMENTAS E PODA DINAMICA
                  ================================================================= -->
             <section class="step-module" id="passo-5">
                 <div class="step-module-header">
@@ -862,7 +862,7 @@ curl -s -X POST http://127.0.0.1:8000/api/channels/devops/messages \
 
                     <div class="slip-perforation">
                         <span class="perforation-line"></span>
-                        <span class="perforation-label">CATALOGO COMPLETO DO ARSENAL NATIVO</span>
+                        <span class="perforation-label">CATALOGO COMPLETO DO CATÁLOGO NATIVO</span>
                         <span class="perforation-line"></span>
                     </div>
 
@@ -872,7 +872,7 @@ curl -s -X POST http://127.0.0.1:8000/api/channels/devops/messages \
                                 <span class="pixel-card-title">execute_shell_command</span>
                                 <span class="brand-badge">BWRAP NAMESPACES</span>
                             </div>
-                            <p class="pixel-card-body">Executa comandos Linux isolados via Bubblewrap <span class='jargon-explain'>(sandbox Linux: ambiente isolado onde comandos rodam sem afetar o sistema)</span>. Em modo estrito (STRICT_SANDBOX=true), recusa execucao se bwrap inexiste.</p>
+                            <p class="pixel-card-body">Executa comandos Linux isolados via Bubblewrap <span class='jargon-explain'>(sandbox Linux: ambiente isolado onde comandos rodam sem afetar o sistema)</span>. Em modo estrito (STRICT_SANDBOX=true), recusa execução se bwrap inexiste.</p>
                         </article>
                         <article class="pixel-card">
                             <div class="pixel-card-header">
@@ -1731,7 +1731,7 @@ Missao ativa: Homologar triggers de hardware e rotina de manutencao noturna do M
                 </div>
                 <div class="step-content-body">
                     <p class="step-paragraph">
-                        Para maximizar a cooperacao entre bots e viabilizar a distribuicao portavel de agentes pre-treinados, o piDots introduz o <strong>Shared Knowledge Space</strong> e o padrao de <strong>Dot Packs v1.1</strong> com assinatura criptografica SHA-256:
+                        Para maximizar a cooperação entre bots e viabilizar a distribuição portátil de agentes pre-treinados, o piDots introduz o <strong>Shared Knowledge Space</strong> e o padrao de <strong>Dot Packs v1.1</strong> com assinatura criptografica SHA-256:
                     </p>
 
                     <div class="pixel-card-grid">
@@ -2068,7 +2068,7 @@ curl -s -I http://localhost:8000/static/js/core/pidots-i18n.js
                     <span class="step-badge">PASSO 13 // CONTROLE OPERACIONAL DE ALTA VELOCIDADE</span>
                     <h2 class="step-heading" data-i18n="guide.step13_title">Comandos / e atalhos do console</h2>
                     <p class="step-summary">
-                        O piDots incorpora uma central unificada de comandos iniciados por barra (<code>/</code>), permitindo operacao cirurgica de baixa latencia sem consumo de tokens de LLM para tarefas locais. O subsistema conta com menu flutuante de autocompletar em Vanilla JS (< 10KB), navegacao completa por teclado, tolerancia a falhas via Levenshtein e emissao de confirmação de resultado na bobina de teletipo com teto circular de 150 nos DOM.
+                        O piDots incorpora uma central unificada de comandos iniciados por barra (<code>/</code>), permitindo operacao cirurgica de baixa latencia sem consumo de tokens de LLM para tarefas locais. O subsistema conta com menu flutuante de autocompletar em Vanilla JS (< 10KB), navegação completa por teclado, tolerancia a falhas via Levenshtein e emissao de confirmação de resultado na bobina de teletipo com teto circular de 150 nos DOM.
                     </p>
                 </header>
 
@@ -2290,13 +2290,13 @@ curl -s -I http://localhost:8000/static/js/core/pidots-i18n.js
                                     <td><code>/run-task</code></td>
                                     <td><code>/run-task &lt;task_id&gt;</code></td>
                                     <td>Tarefas</td>
-                                    <td>Despacha ordem de execucao manual imediata para uma tarefa agendada.</td>
+                                    <td>Despacha ordem de execução manual imediata para uma tarefa agendada.</td>
                                 </tr>
                                 <tr>
                                     <td><code>/hitl</code></td>
                                     <td><code>/hitl [status|logs|clear]</code></td>
                                     <td>Governanca</td>
-                                    <td>Inspeciona acoes retidas no guardrail Deny-by-Default ou homologa acoes via CLI.</td>
+                                    <td>Inspeciona ações retidas no guardrail Deny-by-Default ou homologa ações via CLI.</td>
                                 </tr>
                                 <tr>
                                     <td><code>/triggers</code></td>
@@ -2475,7 +2475,7 @@ Throttle Automatico     : DESATIVADO (NORMAL)
 
                     <h3 class="step-subheading" id="passo-14-cloudflare-setup">Passo a Passo: Ativando o Cloudflare Tunnel no Raspberry Pi</h3>
                     <p class="step-paragraph">
-                        O processo de configuracao leva menos de 5 minutos e nao expoe o endereco IP fisico do nó. Siga a esteira recomendada:
+                        O processo de configuração leva menos de 5 minutos e não expõe o endereço IP fisico do nó. Siga a esteira recomendada:
                     </p>
 
                     <div class="terminal-card">
@@ -2505,7 +2505,7 @@ cloudflared tunnel route dns pidots-edge app.seudominio.com
 cloudflared tunnel route dns pidots-edge docs.seudominio.com
 cloudflared tunnel route dns pidots-edge api.seudominio.com
 
-# 5. Instalar o arquivo de configuracao oficial:
+# 5. Instalar o arquivo de configuração oficial:
 sudo cp cloudflared/config.yml.example /etc/cloudflared/config.yml
 # (Edite /etc/cloudflared/config.yml inserindo o UUID gerado no passo 3)
 
