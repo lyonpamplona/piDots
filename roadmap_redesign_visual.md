@@ -110,11 +110,38 @@ Padronizada a documentacao tecnica e o relatorio de engenharia com o mesmo cabe�
 
 ---
 
-## 6. Dossiê de Homologação Final
+## Fase 6: Redesign e Despoluicao da Documentacao Tecnica (`/docs`) no Padrao Pixel Paper Technical Wiki [CONCLUIDA]
 
-O redesign visual do ecossistema piDots para a arquitetura **Pixel Paper UI (Dark Paper Noir)** foi integralmente homologado e consolidado com 100% de aprovação técnica nas suítes automatizadas:
+Com base nos frameworks Diataxis, Stripe Docs e nos principios de escaneabilidade tecnica do Pixel Paper UI, a superficie `/docs` foi integralmente despoluida e reformulada no padrao **Pixel Paper Technical Wiki**:
+
+### 6.1. Calibracao Tipografica e Despoluicao Visual (`static/css/docs.css`)
+- [x] **Tipografia Dual:** Titulos de secoes e passos (`.step-heading`, `.step-title`) configurados para usar `--font-display-modern` (`IBM Plex Sans` 700 / `JetBrains Mono`), preservando `Silkscreen` exclusivamente nos micro-badges ordinais (`.step-index-badge`).
+- [x] **Alivio de Caixas e Bordas:** Remocao da sindrome "caixa sobre caixa", eliminando fundos pesados e sombras duras de contêineres textuais.
+- [x] **Divisores de Trilha:** Transicao de caixas fechadas para marcadores limpos de trilha com linha horizontal sutil.
+
+### 6.2. Estrutura dos 14 Passos Didaticos (`pages/docs.html`)
+- [x] **Remocao de Carimbos Decorativos:** Expurgados os carimbos repetitivos (`stamp-notice`, `stamp-approved`) dos cabecalhos dos passos 01 a 12 e 14.
+- [x] **Cartoes Tecnicos Limpos:** Handles de arquetipos no Passo 01 (`@dot-supervisor`, `@dot-coder`, etc.) e subdominios dedicados no Passo 14 (`pidots.*`, `app.*`, `docs.*`, `api.*`) em fonte mono tabular.
+- [x] **Hero Compacto:** Resumo horizontal com as 4 especificacoes essenciais de silicio (RAM RSS, Especialistas, Trava Hop, SQLite WAL).
+
+### 6.3. Reorganizacao do Mini API Tester (`pages/docs.html`, `static/css/docs.css`, `static/js/docs/docs.js`)
+- [x] **Categorizacao em 4 Abas Tecnicas:** Endpoints agrupados em 4 abas colapsaveis:
+  * 01 // SAUDE & SILICIO (`/health`, `/api/changelog`, `/api/edge/triggers`, `/data/locales/pt.json`)
+  * 02 // AGENTES & CANAIS (`/api/dots`, `/api/spaces`, `/api/channels`, `/api/tasks`, `/api/threads`)
+  * 03 // COMPUTADOR & MCP (`/api/edge/computer/files`, `/api/edge/computer/exec`, `/api/tools`, `/api/mcp/servers`)
+  * 04 // GOVERNANCA & HITL (`/api/hitl/signed-resolve`, `/api/hitl/expire-stale`, `/api/edge/triggers/simulate`, `/api/edge/maintenance`, etc.)
+- [x] **Chips com Badges de Verbo HTTP:** Distincao visual semantica com badges para `GET` (verde fosforo) e `POST` (ciano blueprint).
+- [x] **Controles JS e Acessibilidade:** Implementacao de `alternarGrupoApi` com sincronizacao de `aria-selected` e suporte resiliente a `.closest` em `selecionarEndpointApi`.
+
+---
+
+## 7. Dossiê de Homologação Final
+
+O redesign visual do ecossistema piDots para a arquitetura **Pixel Paper UI (Dark Paper Noir) e Pixel Paper Technical Wiki** foi integralmente homologado e consolidado com 100% de aprovação técnica nas suítes automatizadas:
 * `scripts/test_pixel_paper_phase1_tokens_components.py` (Aprovado).
 * `scripts/test_pixel_paper_phase2_landing.py` (Aprovado).
 * `scripts/test_pixel_paper_phase3_docs.py` (Aprovado).
 * `scripts/test_pixel_paper_phase4_global_homologation.py` (Aprovado).
+* `scripts/test_phase20_port_decoupling_nginx.py` (Aprovado nas 5 portas).
+* `node scripts/test_cross_surface_router.js` (Aprovado).
 * Conformidade total de acessibilidade WCAG AA, paleta de alto contraste, tipografia fluida monoespaçada e ausência estrita de emojis.

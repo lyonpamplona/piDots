@@ -195,9 +195,10 @@ A interface do piDots foi desenhada especificamente para computadores de placa �
    - Âmbar de alerta para ordens retidas em segurança (`#f59e0b`).
 2. **Geometria Ortogonal Estrita:** Bordas retas com `border-radius: 0px`. Ausência de cantos arredondados genéricos. Cada painel delimita fronteiras cartesianas precisas com bordas de 1 pixel (`1px solid var(--border)`).
 3. **Sombras Cartesianas Mecânicas:** Toda elevação utiliza sombras sem desfoque (zero blur radius): `box-shadow: 2px 2px 0px #000000;`, `3px 3px 0px #000000;` ou `4px 4px 0px #000000;`. Isso simula relevo mecânico tátil sem exigir esforço de composição de sombras na GPU integrada da placa.
-4. **Dupla Tipografia Técnica:**
-   - **Silkscreen:** Tipografia bitmap crisp aplicada estritamente em títulos, identificadores, tags de estado e carimbos de auditoria.
-   - **JetBrains Mono:** Tipografia monoespaçada legível aplicada ao corpo de texto, teletipo de execução, tabelas e janelas de código (com `font-variant-numeric: tabular-nums`).
+4. **Dupla Tipografia Técnica & Padrão Technical Wiki:**
+   - **Silkscreen:** Tipografia bitmap crisp aplicada estritamente em identificadores, micro-badges ordinais (`PASSO 01`), tags de estado e carimbos de auditoria.
+   - **IBM Plex Sans 700 / JetBrains Mono:** Tipografia moderna de alta legibilidade nos títulos e corpo de texto das seções do manual (`/docs`), garantindo escaneamento ágil sem fadiga visual.
+   - **Tabular Nums:** Numerais tabulares monoespaçados aplicados a dados, telemetria, tabelas e janelas de código (`font-variant-numeric: tabular-nums`).
 5. **Ergonomia Mobile-First (Thumb Zone):** Em smartphones, o console ativa uma barra inferior ancorada na zona confortável do polegar, botões com alvos de toque mínimos de 44x44 pontos e compensação dinâmica de altura útil via `window.visualViewport` para evitar oclusão pelo teclado virtual.
 
 ### 12. Terminal com 35 Slash Commands e Console Mobile
@@ -262,6 +263,17 @@ Quando a variável `STRICT_SANDBOX=true` está ativa no arquivo `.env`, o piDots
 ### 20. Acesso Remoto Seguro com Cloudflare Tunnel
 
 O diretório `cloudflared/` traz scripts prontos para publicar as portas locais na internet de forma segura, utilizando túneis criptografados via protocolo QUIC. A conexão não exige abertura de portas no roteador doméstico nem liberação de IP público, permitindo proteger o console com políticas de acesso Zero Trust.
+
+### 21. Manual Técnico e Mini API Tester (/docs)
+
+A página de documentação técnica (`/docs` na porta 8083) foi desenhada sob o padrão **Pixel Paper Technical Wiki**, garantindo clareza técnica e eliminação de poluição visual:
+- **14 Passos Operacionais:** Guias passo a passo cobrindo arquitetura de borda, chat multi-bot, Dot Heartbeat, mensagens externas, poda dinâmica de schemas, governança HITL, proteção do silício Broadcom e deploy Nginx.
+- **Console Interativo Mini API Tester:** Console client-side dividido em 4 abas colapsáveis com badges semânticos para verbos `GET` (verde fósforo) e `POST` (ciano blueprint):
+  1. *Saúde & Silício:* `/health`, `/api/changelog`, `/api/edge/triggers`, `/data/locales/pt.json`.
+  2. *Agentes & Canais:* `/api/dots`, `/api/spaces`, `/api/channels`, `/api/tasks`, `/api/threads`.
+  3. *Computador do Dot & MCP:* `/api/edge/computer/files`, `/api/edge/computer/exec`, `/api/tools`, `/api/mcp/servers`.
+  4. *Governança HITL & Manutenção:* `/api/hitl/signed-resolve`, `/api/hitl/expire-stale`, `/api/edge/triggers/simulate`, `/api/edge/maintenance`, `/api/dots/packs/catalog`.
+- **Omnisearch Client-Side:** Busca instantânea indexada no DOM por atalho `Ctrl+K` ou `Cmd+K` com destaque visual e navegação rápida por teclado.
 
 ---
 

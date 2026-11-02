@@ -253,6 +253,34 @@
         // 6. Mini API Tester Interativo (Passo 06)
         let currentApiPayload = '';
 
+        function alternarGrupoApi(grupoId, tabBtn) {
+            let activeTab = tabBtn;
+            if (!activeTab && grupoId) {
+                activeTab = document.querySelector('.api-cat-tab[data-group="' + grupoId + '"]');
+            }
+
+            const tabs = document.querySelectorAll('.api-cat-tab');
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.setAttribute('aria-selected', 'true');
+            }
+
+            const groups = document.querySelectorAll('.api-chip-group');
+            groups.forEach(g => {
+                if (g.id === 'apiGroup-' + grupoId) {
+                    g.classList.add('active');
+                    g.style.display = 'flex';
+                } else {
+                    g.classList.remove('active');
+                    g.style.display = 'none';
+                }
+            });
+        }
+
         function selecionarEndpointApi(metodo, rota, payload, btnElement) {
             currentApiPayload = (payload !== undefined && payload !== null) ? payload : '';
             const chips = document.querySelectorAll('.api-chip-btn');
@@ -262,13 +290,16 @@
             if (!target && typeof event !== 'undefined' && event) {
                 target = event.currentTarget || event.target;
             }
-            if (target && target.classList) {
+            if (target && target.closest) {
+                const btn = target.closest('.api-chip-btn');
+                if (btn) btn.classList.add('active');
+            } else if (target && target.classList) {
                 target.classList.add('active');
             } else {
                 let matched = false;
                 chips.forEach(c => {
                     const text = c.textContent.trim();
-                    if (!matched && (text === `${metodo} ${rota}` || text === rota || text.endsWith(rota))) {
+                    if (!matched && (text.includes(rota) || text.endsWith(rota))) {
                         c.classList.add('active');
                         matched = true;
                     }
@@ -815,6 +846,7 @@
     window.handleDrawerNav = handleDrawerNav;
     window.filtrarDrawer = filtrarDrawer;
     window.copiarTextoPixel = copiarTextoPixel;
+    window.alternarGrupoApi = alternarGrupoApi;
     window.selecionarEndpointApi = selecionarEndpointApi;
     window.executarTesteApi = executarTesteApi;
     window.abrirOmnisearch = abrirOmnisearch;

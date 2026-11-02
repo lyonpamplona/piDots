@@ -195,9 +195,10 @@ The piDots interface is crafted specifically for single-board computers and high
    - Thermal amber for approvals held in safety queues (`#f59e0b`).
 2. **Strict Orthogonal Geometry:** Zero border radius (`border-radius: 0px`). No generic rounded corners. Every panel and card defines clean, crisp cartesian boundaries with 1-pixel borders (`1px solid var(--border)`).
 3. **Mechanical Cartesian Shadows:** All surface elevation relies on zero-blur projection shadows: `box-shadow: 2px 2px 0px #000000;`, `3px 3px 0px #000000;`, or `4px 4px 0px #000000;`. This produces tactile mechanical relief without taxing the integrated SBC GPU.
-4. **Dual Technical Typography:**
-   - **Silkscreen:** Crisp bitmap font strictly applied to headings, identifiers, status badges, and audit stamps.
-   - **JetBrains Mono:** Highly legible monospace font applied to body text, teletipo streams, tables, and code viewers (with `font-variant-numeric: tabular-nums`).
+4. **Dual Technical Typography & Technical Wiki Standard:**
+   - **Silkscreen:** Crisp bitmap font strictly applied to identifiers, ordinal micro-badges (`PASSO 01`), status tags, and audit stamps.
+   - **IBM Plex Sans 700 / JetBrains Mono:** Highly legible modern typography applied to guide titles and body text across documentation sections (`/docs`), ensuring rapid scannability without visual fatigue.
+   - **Tabular Nums:** Monospaced tabular numerals applied to telemetry data, tables, and code viewers (`font-variant-numeric: tabular-nums`).
 5. **Mobile-First Ergonomics (Thumb Zone):** On mobile displays, the workstation pins an accessible bottom navigation bar to the natural thumb reach area, features touch targets of at least 44x44 points, and smoothly adapts viewport heights via `window.visualViewport` to avoid virtual keyboard occlusion.
 
 ### 12. Command Palette with 35 Slash Commands and Mobile Console
@@ -262,6 +263,17 @@ When `STRICT_SANDBOX=true` is set in your `.env` file, piDots refuses to execute
 ### 20. Remote Access with Cloudflare Tunnels
 
 The `cloudflared/` directory provides scripts to publish local ports securely across the web using encrypted QUIC tunnels. Setup requires no open router ports and no public IP addresses, allowing you to protect the console with Cloudflare Zero Trust policies.
+
+### 21. Technical Manual and Categorized Mini API Tester (/docs)
+
+The technical guide surface (`/docs` on port 8083) adheres to the **Pixel Paper Technical Wiki** standard, delivering technical clarity and eliminating clutter:
+- **14 Step-by-Step Sections:** Comprehensive guides covering edge architecture, multi-bot orchestration, Dot Heartbeat, external gateways, schema pruning, HITL guardrails, Broadcom SoC thermal protection, and multi-port Nginx topologies.
+- **Categorized Mini API Tester:** Client-side test console organized into 4 collapsible tabs with semantic HTTP verb badges (`GET` in phosphor green and `POST` in blueprint cyan):
+  1. *Health & Silicon:* `/health`, `/api/changelog`, `/api/edge/triggers`, `/data/locales/pt.json`.
+  2. *Agents & Channels:* `/api/dots`, `/api/spaces`, `/api/channels`, `/api/tasks`, `/api/threads`.
+  3. *Dot's Computer & MCP:* `/api/edge/computer/files`, `/api/edge/computer/exec`, `/api/tools`, `/api/mcp/servers`.
+  4. *HITL Governance & Maintenance:* `/api/hitl/signed-resolve`, `/api/hitl/expire-stale`, `/api/edge/triggers/simulate`, `/api/edge/maintenance`, `/api/dots/packs/catalog`.
+- **Client-Side Omnisearch:** Instant in-memory DOM indexing accessible via `Ctrl+K` or `Cmd+K` keyboard shortcuts with highlighted matches and rapid keyboard navigation.
 
 ---
 
