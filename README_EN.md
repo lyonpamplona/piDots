@@ -16,7 +16,7 @@ piDots was designed to run on single-board hardware. Conventional frameworks ass
 
 piDots solves this with an asynchronous modular monolith in Python (`FastAPI + uvloop`). We stripped away bloated runtimes to deliver a lean, fast system: **under 50 MB RAM at idle** and **less than 80 MB during concurrent multi-agent runs**.
 
-The platform gives you persistent specialists for practical work: coding, software architecture, technical auditing, and preventive maintenance. The entire stack features SQLite WAL persistence, process containment via Linux Bubblewrap sandboxes, real-time Human-in-the-Loop approvals, and a dark-mode tactical web console.
+The platform gives you persistent specialists for practical work: coding, software architecture, technical auditing, and preventive maintenance. The entire stack features SQLite WAL persistence, process containment via Linux Bubblewrap sandboxes, real-time Human-in-the-Loop approvals, and a dark-mode web console.
 
 ---
 

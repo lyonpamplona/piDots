@@ -16,7 +16,7 @@ O piDots foi projetado para rodar em hardware de placa única. Frameworks conven
 
 A solução: um único processo assíncrono em Python (`FastAPI + uvloop`), sem camadas extras de orquestração. O resultado: **menos de 50 MB de RAM em repouso** e **menos de 80 MB durante a execução simultânea de agentes**.
 
-O sistema disponibiliza especialistas para tarefas reais: programação, arquitetura de software, auditoria técnica e manutenção preventiva. Toda a operação conta com persistência em SQLite WAL, isolamento de comandos em sandbox Linux Bubblewrap, aprovações Human-in-the-Loop em tempo real e console web tático em modo escuro.
+O sistema disponibiliza especialistas para tarefas reais: programação, arquitetura de software, auditoria técnica e manutenção preventiva. Toda a operação conta com persistência em SQLite WAL, isolamento de comandos em sandbox Linux Bubblewrap, aprovações humanas em tempo real (Human-in-the-Loop, HITL) e console web em modo escuro.
 
 ---
 
@@ -29,7 +29,7 @@ O sistema disponibiliza especialistas para tarefas reais: programação, arquite
 | **Consumo de Memória (Repouso)** | 2.000 MB - 3.500 MB RAM | ~48 MB - 52 MB RAM (Redução de ~98%) |
 | **Consumo sob Carga (Pico)** | 4.000 MB - 6.000 MB RAM | < 100 MB RAM |
 | **Banco de Dados & Estado** | PostgreSQL / Neo4j / Redis | SQLite com WAL Mode e PRAGMAs otimizados |
-| **Banco Vetorial / Memória** | ChromaDB / Pinecone / Qdrant (500 MB+) | Extrator Vetorial CRC32 KNN em disco (< 5 MB) |
+| **Banco Vetorial / Memória** | ChromaDB / Pinecone / Qdrant (500 MB+) | Busca vetorial leve (hash CRC32, k-NN) em disco, < 5 MB |
 | **Navegador e Leitura Web** | Chromium / Playwright headless (~500 MB RAM) | Trafilatura / httpx assíncrono puro em CPU (~20 MB) |
 | **Isolamento de Segurança** | Docker aninhado / VM Cloud | Sandbox Bubblewrap (`bwrap`) nativo Linux |
 | **Desgaste de Armazenamento** | Alto overhead de fsync em disco | Otimizado para preservar MicroSD / SSD USB |
@@ -39,7 +39,7 @@ O sistema disponibiliza especialistas para tarefas reais: programação, arquite
 
 ## Arquitetura e Principais Módulos
 
-O piDots foi estruturado como um monólito modular assíncrono para garantir baixa sobrecarga computacional:
+O piDots roda em um único processo assíncrono, para manter a sobrecarga baixa:
 
 ```
 pidots/
@@ -60,7 +60,7 @@ pidots/
 │   └── routes_webhooks.py # Webhooks Telegram, WhatsApp e endpoints incoming
 ├── core/
 │   ├── __init__.py
-│   ├── agent.py         # Motor ReAct assíncrono com poda dinâmica de ferramentas (AG-UI)
+│   ├── agent.py         # Motor ReAct (Raciocínio + Ação) assíncrono, com seleção dinâmica de ferramentas (protocolo AG-UI)
 │   ├── council.py       # Conselho consultivo e debate em três vias entre agentes
 │   ├── dot_pack.py      # Dot Packs v1.1 com assinatura SHA-256 e checagem anti-injection
 │   ├── edge_triggers.py # Triggers de hardware (BCM2711), pinos GPIO e cliente MQTT
@@ -68,27 +68,27 @@ pidots/
 │   ├── hitl_crypto.py   # Assinatura e validação de tokens HMAC-SHA256
 │   ├── messaging_gateway.py # Gateway de mensageria externa e barramento de canais
 │   ├── notifier.py      # Notificador HTTP e alertas externos assinados
-│   ├── orchestrator.py  # Orquestrador multi-bot (Supervisor, Handoff e menções @dot)
+│   ├── orchestrator.py  # Orquestrador multi-bot (Supervisor, passagem de bastão e menções @dot)
 │   ├── planner.py       # Planejamento em dois estágios (Goals, Milestones e Checkpoints)
 │   ├── scheduler.py     # Motor proativo Dot Heartbeat com cálculo via croniter
-│   ├── self_healing.py  # Auto-reparo com diagnóstico de tracebacks de erro
+│   ├── self_healing.py  # Auto-reparo: lê o relatório de erro (traceback) e sugere a correção
 │   └── state.py         # Modelos de eventos do protocolo AG-UI e estados de sessão
 ├── providers/
 │   ├── __init__.py
 │   └── openai_client.py # Gateway universal de inferência com Circuit Breaker de 3 estados
 ├── storage/
 │   ├── __init__.py
-│   ├── db.py            # SQLite WAL calibrado para microSD e migrações idempotentes
+│   ├── db.py            # SQLite em modo WAL (journal de escrita adiantada), ajustado para cartão MicroSD
 │   ├── maintenance.py   # Manutenção noturna autônoma, checkpoint TRUNCATE e VACUUM INTO
 │   ├── memory_manager.py # Memória hierárquica (Core Memory e Archival FTS5 + 64d)
 │   ├── shared_space.py  # Espaço de anotações compartilhado entre bots na mesma thread
 │   ├── spaces_manager.py # Workspaces isolados, versionamento e diffs unificados
-│   └── vector_store.py  # Memória vetorial KNN em disco com hashing CRC32
+│   └── vector_store.py  # Memória vetorial leve (k-nearest neighbors) em disco, com hash CRC32
 └── tools/
     ├── __init__.py
     ├── file_ops.py      # Leitura, escrita atômica e listagem de arquivos
     ├── mcp_client.py    # Cliente MCP Lite assíncrono sobre STDIO/SSE
-    ├── registry.py      # Registro centralizado de ferramentas com poda dinâmica
+    ├── registry.py      # Registro central de ferramentas com seleção dinâmica por perfil
     ├── terminal.py      # Executor shell em sandbox Bubblewrap com trava de segurança
     └── web_reader.py    # Extrator semântico web assíncrono com Trafilatura
 ```
@@ -113,11 +113,11 @@ Cada agente carrega apenas as ferramentas permitidas (`allowed_tools_json`), eco
 
 ### 2. Automações Proativas: Padrão Dot Heartbeat e Circuit Breaker
 
-O agendador in-process (`pidots/core/scheduler.py`) executa rotinas cron diretamente no loop do FastAPI, sem exigir Redis, Celery ou bancos externos:
+O agendador interno executa tarefas cron dentro do próprio processo FastAPI, sem exigir Redis, Celery ou bancos externos:
 
-As tarefas ficam salvas na tabela `scheduled_tasks` do SQLite. Quando uma checagem periódica constata que o sistema está em ordem, o agente responde com a diretiva `HEARTBEAT_OK`. O agendador marca a execução como silenciosa e volta a dormir, sem disparar alertas desnecessários ou inflar o banco de dados.
+As tarefas ficam salvas na tabela `scheduled_tasks` do SQLite. Quando uma checagem periódica constata que o sistema está em ordem, o agente responde com `HEARTBEAT_OK` (sinal de que tudo está normal). O agendador marca a execução como silenciosa e volta a dormir, sem disparar alertas desnecessários ou inflar o banco de dados.
 
-Para proteger a CPU do Raspberry Pi, o agendador usa travas de memória que impedem execuções sobrepostas. Se uma tarefa falhar consecutivamente, um Circuit Breaker com backoff exponencial entra em ação. O intervalo de espera sobe gradualmente de 30 segundos até 1 hora. Ao atingir 5 falhas seguidas, o circuito abre e a tarefa é suspensa, evitando que loops de erro consumam a cota de inferência ou travem a máquina. Caso a chave de API esteja vazia ou inválida, as tarefas são pausadas preventivamente.
+Para proteger a CPU do Raspberry Pi, o agendador usa travas de memória que impedem execuções sobrepostas. Se uma tarefa falhar consecutivamente, um mecanismo de proteção aumenta o intervalo entre tentativas (backoff exponencial). O intervalo de espera sobe gradualmente de 30 segundos até 1 hora. Ao atingir 5 falhas seguidas, o circuito abre e a tarefa é suspensa, evitando que loops de erro consumam a cota de inferência ou travem a máquina. Caso a chave de API esteja vazia ou inválida, as tarefas são pausadas preventivamente.
 
 ### 3. Gateway de Mensageria e Salas Temáticas
 
@@ -134,9 +134,9 @@ Se a API de inteligência artificial estiver fora do ar, o gateway captura a fal
 
 ### 4. Resiliência e Tratamento Tipado de Falhas
 
-O cliente de inferência distingue falhas definitivas de autenticação (HTTP 401/403) de falhas transitórias de rede ou sobrecarga (HTTP 429/503). Erros de autenticação interrompem o ciclo imediatamente, sem gastar tempo com retentativas inúteis. Erros de rede passam por tentativas com variação aleatória de tempo (jitter).
+O cliente de inferência distingue falhas definitivas de autenticação (HTTP 401/403) de falhas transitórias de rede ou sobrecarga (HTTP 429/503). Erros de autenticação interrompem o ciclo imediatamente, sem gastar tempo com retentativas inúteis. Erros de rede são retomados com esperas de duração variável (jitter).
 
-O ciclo do agente emite eventos padronizados no protocolo AG-UI. Se uma execução falha, o evento terminal `run:finished` reporta o tipo exato do problema. O erro é gravado no banco SQLite com visibilidade interna para depuração posterior.
+O ciclo do agente emite eventos padronizados (protocolo AG-UI). Se uma execução falha, o evento terminal `run:finished` reporta o tipo exato do problema. O erro é gravado no banco SQLite com visibilidade interna para depuração posterior.
 
 Essa proteção se estende aos três serviços consumidores:
 - O **Scheduler** registra a falha com o diagnóstico técnico real no banco.
@@ -153,7 +153,7 @@ O módulo de memória (`pidots/storage/memory_manager.py`) dá autonomia para o 
 
 ### 6. Auto-Reparo e Planejamento em Dois Estágios
 
-O módulo `self_healing.py` inspeciona a saída de comandos shell e scripts Python executados no sandbox. Ao detectar um erro, ele disseca o traceback, aponta o arquivo e a linha da falha e sugere a correção técnica através da ferramenta `execute_and_verify`.
+O módulo `self_healing.py` inspeciona a saída de comandos shell e scripts Python executados no sandbox. Ao detectar um erro, ele lê o relatório de erro (traceback), aponta o arquivo e a linha da falha e sugere a correção técnica através da ferramenta `execute_and_verify`.
 
 Para missões complexas, o planejador (`planner.py`) quebra o objetivo principal em marcos menores salvos no SQLite. O agente cria a estrutura com `plan_create`, atualiza cada marco com evidências reais de execução via `plan_update_step` e acompanha a porcentagem de conclusão com `plan_get_status`.
 
@@ -164,7 +164,7 @@ O módulo `council.py` reúne três agentes antes da execução de tarefas arris
 2. O **Auditor** faz uma revisão crítica em busca de brechas de segurança, impacto térmico e consumo de memória.
 3. O **Supervisor** avalia os dois pontos e emite a decisão final.
 
-O debate intermediário é registrado internamente para auditoria. Apenas o parecer consolidado aparece na conversa do operador. Para evitar gastos excessivos de tempo e tokens, a discussão é travada em no máximo 3 rodadas. O consumo medido dessa rotina fica abaixo de 53 MB de RAM.
+O debate interno fica registrado para auditoria; só o parecer final aparece para o operador. Para evitar gastos excessivos de tempo e tokens, a discussão é travada em no máximo 3 rodadas. O consumo medido dessa rotina fica abaixo de 53 MB de RAM.
 
 ### 8. Quadro de Anotações e Dot Packs Assinados (v1.1)
 
@@ -174,9 +174,9 @@ Para transportar configurações de agentes entre diferentes máquinas, o sistem
 
 ### 9. Triggers de Hardware e Cuidados com o MicroSD
 
-O módulo `edge_triggers.py` lê os sensores térmicos do processador Broadcom BCM2711 via sysfs Linux (`/sys/class/thermal/thermal_zone0/temp`), além do espaço em disco e da memória RAM livre. Se a placa passar dos 72 °C ou o espaço livre cair abaixo de 10%, o sistema desacelera a frequência de checagens para resfriar o silício.
+O módulo `edge_triggers.py` lê os sensores de temperatura do processador via sysfs (sistema de arquivos do kernel Linux) (`/sys/class/thermal/thermal_zone0/temp`), além do espaço em disco e da memória RAM livre. Se a placa passar dos 72 °C ou o espaço livre cair abaixo de 10%, o sistema desacelera a frequência de checagens para resfriar o silício.
 
-A manutenção noturna (`maintenance.py`) cuida da integridade da mídia Flash. Ela roda `PRAGMA wal_checkpoint(TRUNCATE)` para consolidar o log de transações, arquiva mensagens com mais de 7 dias e cria cópias de segurança consistentes usando `VACUUM INTO` em conexões isoladas, mantendo o banco ágil e sem fragmentação.
+A manutenção noturna (`maintenance.py`) cuida da integridade da mídia Flash. Ela roda `PRAGMA wal_checkpoint(TRUNCATE)` para consolidar o log de transações, arquiva mensagens com mais de 7 dias e cria backup consistente (`VACUUM INTO`) em conexões isoladas, mantendo o banco ágil e sem fragmentação.
 
 ### 10. Suporte Bilíngue Nativo (PT/EN)
 
@@ -188,15 +188,15 @@ As traduções ficam organizadas em arquivos JSON (`data/locales/pt.json` e `dat
 
 A interface do piDots foi desenhada especificamente para computadores de placa única e telas operacionais de alta densidade. Rejeitamos intencionalmente bibliotecas pesadas de terceiros (Tailwind, React, Electron ou frameworks de componentes inflados) em favor de CSS nativo modular desacoplado em 8 folhas estilísticas (`static/css/*.css`), garantindo carregamento inicial abaixo de 100 milissegundos e consumo nulo de CPU na renderização:
 
-1. **Materialidade de Papel Técnico & Alto Contraste:** Inspirado em teletipos, carimbos de controle de qualidade, fichas catalográficas e grafite técnico sobre papel escuro.
+1. **Visual inspirado em teletipo e fichas técnicas:** Alto contraste sobre fundo escuro.
    - Fundo base Dark Paper (`#07090c` e `#0c0d0e`).
    - Tinta fosforosa verde para sucesso e prontidão (`#33ff66`).
    - Tinta azul blueprint para enlaces técnicos (`#38bdf8`).
    - Âmbar de alerta para ordens retidas em segurança (`#f59e0b`).
 2. **Geometria Ortogonal Estrita:** Bordas retas com `border-radius: 0px`. Ausência de cantos arredondados genéricos. Cada painel delimita fronteiras cartesianas precisas com bordas de 1 pixel (`1px solid var(--border)`).
-3. **Sombras Cartesianas Mecânicas:** Toda elevação utiliza sombras sem desfoque (zero blur radius): `box-shadow: 2px 2px 0px #000000;`, `3px 3px 0px #000000;` ou `4px 4px 0px #000000;`. Isso simula relevo mecânico tátil sem exigir esforço de composição de sombras na GPU integrada da placa.
+3. **Sombras rígidas:** Sem desfoque, com deslocamento fixo (2px/3px/4px): `box-shadow: 2px 2px 0px #000000;`, `3px 3px 0px #000000;` ou `4px 4px 0px #000000;`. Isso simula relevo mecânico tátil sem exigir esforço de composição de sombras na GPU integrada da placa.
 4. **Dupla Tipografia Técnica & Padrão Technical Wiki:**
-   - **Silkscreen:** Tipografia bitmap crisp aplicada estritamente em identificadores, micro-badges ordinais (`PASSO 01`), tags de estado e carimbos de auditoria.
+   - **Silkscreen (fonte pixel):** Usada só em rótulos curtos, numerais de passo, tags de status e carimbos.
    - **IBM Plex Sans 700 / JetBrains Mono:** Tipografia moderna de alta legibilidade nos títulos e corpo de texto das seções do manual (`/docs`), garantindo escaneamento ágil sem fadiga visual.
    - **Tabular Nums:** Numerais tabulares monoespaçados aplicados a dados, telemetria, tabelas e janelas de código (`font-variant-numeric: tabular-nums`).
 5. **Ergonomia Mobile-First (Thumb Zone):** Em smartphones, o console ativa uma barra inferior ancorada na zona confortável do polegar, botões com alvos de toque mínimos de 44x44 pontos e compensação dinâmica de altura útil via `window.visualViewport` para evitar oclusão pelo teclado virtual.
@@ -206,13 +206,13 @@ A interface do piDots foi desenhada especificamente para computadores de placa �
 O console SPA traz um catálogo completo de comandos rápidos acionados pela barra (`/`):
 - Comandos operacionais locais (`/clear`, `/theme`, `/lang`, `/status`, `/telemetry`) respondem em menos de 16 milissegundos no próprio navegador, sem consumir tokens.
 - O popover flutuante conta com busca por proximidade textual, navegação por setas e suporte ao botão físico touch `[/]` para celulares.
-- Cada ordem executada emite um comprovante no teletipo com carimbo de data/hora UTC e número sequencial de auditoria.
+- Cada comando executado gera uma linha no log com data/hora UTC e número sequencial.
 
 Em telas menores de smartphones (<= 768px), uma barra inferior dedicada organiza o acesso com botões dimensionados para toque confortável (mínimo de 44x44 pontos). A altura útil se adapta à abertura do teclado virtual via `window.visualViewport`, evitando que o campo de digitação fique escondido atrás do teclado.
 
 ### 13. Tour de Onboarding no Console Real
 
-O motor de tour (`tour-engine.js`) guia novos operadores diretamente na interface ativa, sem usar modais estáticos. Ele aplica sombras calculadas na GPU para destacar os elementos reais na tela:
+O motor de tour (`tour-engine.js`) guia novos operadores diretamente na interface ativa, sem usar modais estáticos. Ele escurece a tela e destaca os elementos reais em uso.:
 1. Barra lateral e biblioteca de arquivos/spaces.
 2. Teletipo e terminal de comandos dos agentes.
 3. Sandbox Bubblewrap e isolamento de segurança.
@@ -229,7 +229,7 @@ Ferramentas importadas via JSON-RPC 2.0 entram direto no catálogo do piDots, re
 
 ### 15. Aprovações de Segurança Remotas (HMAC-SHA256)
 
-Comandos arriscados podem ser aprovados diretamente pelo celular via links ou botões seguros enviados para o Telegram ou WhatsApp. Cada ordem recebe uma assinatura HMAC-SHA256 validada em tempo constante.
+Comandos arriscados podem ser aprovados diretamente pelo celular via links ou botões seguros enviados para o Telegram ou WhatsApp. Cada ordem leva uma assinatura HMAC-SHA256, verificada de forma que não dá para forjar.
 
 Toda solicitação retida possui um prazo de validade de 30 minutos. Se o operador não aprovar o comando dentro desse período, a ordem expira por segurança, liberando o agente de volta para o estado ocioso sem executar nada arriscado.
 
@@ -248,25 +248,25 @@ O diretório `data/packs/` reúne três agentes especializados com instalação 
 
 ### 18. Proxy Reverso Nginx com Entrega em Quatro Portas
 
-Um contêiner Nginx Alpine leve (< 6 MB de RAM) assume a entrega dos arquivos estáticos (`/static/` e `/data/locales/`) com cache estrito. Ele gerencia as quatro superfícies do sistema em portas separadas:
+Um contêiner Nginx Alpine leve (< 6 MB de RAM) entrega os arquivos estáticos com regras rígidas de cache. Ele gerencia as quatro superfícies do sistema em portas separadas:
 - Porta `8081`: Apresentação e introdução ao sistema.
 - Porta `8082`: Console operacional de trabalho (SPA/PWA).
 - Porta `8083`: Manual técnico e documentação da API.
 - Porta `8088`: Gateway de rotas com redirecionamentos canônicos.
 
-Essa divisão libera 100% dos recursos do FastAPI para processar a lógica dos agentes e as transações no banco SQLite.
+O FastAPI fica livre para processar só a lógica dos agentes e as consultas ao banco.
 
 ### 19. Sandbox Estrito com Bubblewrap
 
-Quando a variável `STRICT_SANDBOX=true` está ativa no arquivo `.env`, o piDots recusa a execução de qualquer comando shell caso o utilitário Bubblewrap (`bwrap`) não esteja instalado no sistema hospedeiro. O comando retorna erro com código de saída 126, impedindo que scripts executem sem o devido isolamento de namespaces.
+Quando a variável `STRICT_SANDBOX=true` está ativa no arquivo `.env`, o piDots recusa a execução de qualquer comando shell caso o utilitário Bubblewrap (`bwrap`) não esteja instalado no sistema hospedeiro. O comando retorna erro com código de saída 126, impedindo que scripts rodem sem isolamento do sistema.
 
 ### 20. Acesso Remoto Seguro com Cloudflare Tunnel
 
-O diretório `cloudflared/` traz scripts prontos para publicar as portas locais na internet de forma segura, utilizando túneis criptografados via protocolo QUIC. A conexão não exige abertura de portas no roteador doméstico nem liberação de IP público, permitindo proteger o console com políticas de acesso Zero Trust.
+O diretório `cloudflared/` traz scripts prontos para publicar as portas locais na internet de forma segura, utilizando túneis criptografados via protocolo QUIC. A conexão não exige abertura de portas no roteador doméstico nem liberação de IP público, permitindo proteger o console com regras de acesso da Cloudflare Zero Trust.
 
 ### 21. Manual Técnico e Mini API Tester (/docs)
 
-A página de documentação técnica (`/docs` na porta 8083) foi desenhada sob o padrão **Pixel Paper Technical Wiki**, garantindo clareza técnica e eliminação de poluição visual:
+A página de documentação técnica (`/docs` na porta 8083) segue o visual Pixel Paper, sem elementos decorativos:
 - **14 Passos Operacionais:** Guias passo a passo cobrindo arquitetura de borda, chat multi-bot, Dot Heartbeat, mensagens externas, poda dinâmica de schemas, governança HITL, proteção do silício Broadcom e deploy Nginx.
 - **Console Interativo Mini API Tester:** Console client-side dividido em 4 abas colapsáveis com badges semânticos para verbos `GET` (verde fósforo) e `POST` (ciano blueprint):
   1. *Saúde & Silício:* `/health`, `/api/changelog`, `/api/edge/triggers`, `/data/locales/pt.json`.
