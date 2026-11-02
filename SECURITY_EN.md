@@ -1,6 +1,6 @@
 # Security Policy (SECURITY)
 
-Infrastructure security and deterministic tool execution control are foundational requirements in **piDots**. Because the platform coordinates autonomous agents capable of executing commands on persistent edge hardware, we enforce multi-layered defence-in-depth isolation.
+Infrastructure security and controlled tool execution control are foundational requirements in **piDots**. Because the platform coordinates autonomous agents capable of executing commands on persistent edge hardware, we enforce multi-layered defence-in-depth isolation.
 
 ---
 

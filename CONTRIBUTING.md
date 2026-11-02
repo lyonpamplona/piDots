@@ -27,7 +27,7 @@ Ao propor alterações no piDots, mantenha em mente os seguintes requisitos:
    - É proibido o uso de emojis no código-fonte, nomes de variáveis, logs, documentação técnica, mensagens de commit e interfaces.
 
 5. **Padrão Visual: Design System Pixel Paper UI:**
-   - Toda alteração em interfaces web (HTML/CSS) deve obedecer estritamente ao **Pixel Paper UI** (Dark Paper Noir).
+   - Toda alteração em interfaces web (HTML/CSS) deve obedecer estritamente ao **Pixel Paper UI** (Pixel Paper UI (tema escuro)).
    - É proibido introduzir frameworks de estilização pesados (Tailwind, Bootstrap) ou bibliotecas de componentes externas.
    - Rigor geométrico ortogonal absoluto (`border-radius: 0px`).
    - Sombras puramente cartesianas sem desfoque gaussiano (`box-shadow: 2px 2px 0px #000000;`, etc.).

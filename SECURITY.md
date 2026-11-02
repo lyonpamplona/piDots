@@ -1,6 +1,6 @@
 # Política de Segurança (SECURITY)
 
-A segurança da infraestrutura e o controle determinístico sobre a execução de ferramentas são requisitos centrais no **piDots**. Como a plataforma opera agentes autônomos com capacidade de execução de comandos em sistemas de borda persistentes, adotamos medidas rigorosas de isolamento em camadas.
+A segurança da infraestrutura e o controle controlado sobre a execução de ferramentas são requisitos centrais no **piDots**. Como a plataforma opera agentes autônomos com capacidade de execução de comandos em sistemas de borda persistentes, adotamos medidas rigorosas de isolamento em camadas.
 
 ---
 
