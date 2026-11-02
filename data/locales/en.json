@@ -83,7 +83,7 @@
       "tip": "Need details on a route or tool? Press <kbd>F1</kbd> to display the full Technical Manual."
     },
     "step1_title": "01 // CONCEPT: PERSISTENT EDGE AGENTS",
-    "step1_desc": "piDots turns your edge device into a smart workstation. Lightweight async Python monolith running multiple specialists using under 70 MB RAM.",
+    "step1_desc": "piDots turns your edge device into a smart workstation. Single async Python application running multiple specialists using under 70 MB RAM.",
     "step2_title": "02 // MENTIONS & DELEGATION: @SPECIALIST",
     "step2_desc": "Speak directly to coworkers by typing @coder for code, @architect for docs, and @auditor for command review. The supervisor coordinates teamwork.",
     "step3_title": "03 // LIVE CANVAS & ARTEFACTS",
