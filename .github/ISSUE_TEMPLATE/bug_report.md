@@ -1,33 +1,33 @@
 ---
-name: Relato de Bug
-about: Crie um relatorio de defeito ou falha para ajudar a melhorar o piDots
-title: "[BUG]: "
+name: relato de bug
+about: crie um relatorio de defeito ou falha para ajudar a melhorar o pidots
+title: "[bug]: "
 labels: ["bug"]
 assignees: ""
 ---
 
-## Descricao do Problema
-Uma descricao clara e objetiva sobre o comportamento inesperado encontrado.
+## descricao do problema
+uma descricao clara e objetiva sobre o comportamento inesperado encontrado.
 
-## Passos para Reproduzir
-1. Iniciar o piDots via: `...`
-2. Executar o comando ou requisicao: `...`
-3. Observar a saida ou comportamento anomalo: `...`
+## passos para reproduzir
+1. iniciar o pidots via: `...`
+2. executar o comando ou requisicao: `...`
+3. observar a saida ou comportamento anomalo: `...`
 
-## Comportamento Esperado
-Uma explicacao clara do que deveria acontecer.
+## comportamento esperado
+uma explicacao clara do que deveria acontecer.
 
-## Logs e Saida de Erro
+## logs e saida de erro
 ```text
-Cole aqui os logs relevantes do terminal ou do container Docker
+cole aqui os logs relevantes do terminal ou do container docker
 ```
 
-## Ambiente e Telemetria
-- **Hardware:** [ex: Raspberry Pi 4B 4GB / PC x86_64]
-- **Sistema Operacional:** [ex: Raspberry Pi OS 64-bit / Ubuntu 24.04]
-- **Versao do Python:** [ex: 3.11 / 3.12 / 3.13]
-- **Modo de Execucao:** [ex: Docker Compose / CLI Local / Biblioteca Python]
-- **Modelo de LLM Utilizado:** [ex: gpt-4o-mini / claude-3-5-sonnet / llama-3.1-8b]
+## ambiente e telemetria
+- **hardware:** [ex: raspberry pi 4b 4gb / pc x86_64]
+- **sistema operacional:** [ex: raspberry pi os 64-bit / ubuntu 24.04]
+- **versao do python:** [ex: 3.11 / 3.12 / 3.13]
+- **modo de execução:** [ex: docker compose / cli local / biblioteca python]
+- **modelo de llm utilizado:** [ex: gpt-4o-mini / claude-3-5-sonnet / llama-3.1-8b]
 
-## Contexto Adicional
-Adicione qualquer outro contexto relevante sobre o problema aqui. Lembre-se de nao incluir chaves de API ou dados confidenciais nos logs.
+## contexto adicional
+adicione qualquer outro contexto relevante sobre o problema aqui. lembre-se de nao incluir chaves de api ou dados confidenciais nos logs.

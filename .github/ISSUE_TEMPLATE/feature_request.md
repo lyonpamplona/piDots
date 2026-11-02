@@ -1,24 +1,24 @@
 ---
-name: Solicitacao de Funcionalidade
-about: Sugira uma nova capacidade, melhoria ou ferramenta para o piDots
-title: "[FEATURE]: "
+name: solicitacao de funcionalidade
+about: sugira uma nova capacidade, melhoria ou ferramenta para o pidots
+title: "[feature]: "
 labels: ["enhancement"]
 assignees: ""
 ---
 
-## A Funcionalidade esta Relacionada a um Problema?
-Uma descricao clara e concisa do problema ou da limitacao atual. Ex: "Gostaria que o piDots suportasse a ferramenta X..."
+## a funcionalidade esta relacionada a um problema?
+uma descricao clara e concisa do problema ou da limitacao atual. ex: "gostaria que o pidots suportasse a ferramenta x..."
 
-## Descricao da Solucao Proposta
-Uma explicacao clara e detalhada da capacidade que voce gostaria de ver implementada.
+## descricao da solucao proposta
+uma explicacao clara e detalhada da capacidade que voce gostaria de ver implementada.
 
-## Impacto Computacional e Viabilidade de Borda (Edge)
-- **Impacto Estimado na Memoria RAM:** [ex: Menos de 5 MB adicionais / Neutro]
-- **Impacto no Armazenamento Flash (I/O):** [ex: Somente em memoria / Requer gravacao em SQLite WAL]
-- **Compatibilidade com Arquitetura ARM64:** [ex: Dependencias em C puro / Python puro compativeis com ARM64]
+## impacto computacional e viabilidade de borda (edge)
+- **impacto estimado na memória ram:** [ex: menos de 5 mb adicionais / neutro]
+- **impacto no armazenamento flash (i/o):** [ex: somente em memória / requer gravacao em sqlite wal]
+- **compatibilidade com arquitetura arm64:** [ex: dependencias em c puro / python puro compativeis com arm64]
 
-## Alternativas Consideradas
-Descricao de abordagens ou ferramentas alternativas que voce avaliou.
+## alternativas consideradas
+descricao de abordagens ou ferramentas alternativas que voce avaliou.
 
-## Contexto Adicional
-Adicione qualquer outro contexto, diagramas ou referencias tecnicas relevantes aqui.
+## contexto adicional
+adicione qualquer outro contexto, diagramas ou referencias tecnicas relevantes aqui.

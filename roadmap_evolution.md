@@ -1,120 +1,120 @@
-# piDots // Roadmap Oficial de Engenharia e Arquitetura (2026-2027)
+# pidots // roadmap oficial de engenharia e arquitetura (2026-2027)
 
-> **Projeto:** piDots — Orquestrador local de agentes para hardware de placa única
-> **Hardware de Referencia:** Raspberry Pi 4B (ARM64 / Broadcom BCM2711)
-> **Baseline Auditado:** Build 4c25b3b30549df294686789e7f1b9695d71a2a2e
-> **Orcamento Operacional:** ~52 MB / 384 MB RAM RSS | SQLite WAL + FTS5 64D | HOP_COUNT <= 3
-> **Design System:** Pixel Paper UI (Dark Noir & Blueprint) + OpenDots Spatial Triptych
-
----
-
-## 1. Baseline Consolidado (Fases 1 a 15 — Concluidas e Homologadas)
-
-Todas as entregas abaixo ja estao implementadas no codigo-fonte e validadas pela suite de 21 scripts automatizados no diretorio `scripts/`:
-
-- [x] **Fase 01 — Conceito e Arquitetura de Borda:** Monolito enxuto em Python assincrono com 4 especialistas nativos (`[SPV] dot-supervisor`, `[CDR] dot-coder`, `[MUS] dot-muse`, `[AUD] dot-auditor`).
-- [x] **Fase 02 — Colaboracao Multi-Bot e Fitas de Carbono:** Roteamento deterministico via `ThreadRouter` (`@dot`), `delegate_task` em sub-threads isoladas, `handoff_to_dot` atomico e `[CADERNO DE RACIOCINIO]` com `visibility='internal'`.
-- [x] **Fase 03 — Autonomia Proativa e Dot Heartbeat:** Agendador `EdgeScheduler` via `croniter` com diretriz silenciosa `HEARTBEAT_OK` para economia de tokens e zero spam.
-- [x] **Fase 04 — Gateway de Mensageria e Salas Tematicas:** Integracao nativa com Telegram, WhatsApp (Evolution API), Webhooks HTTP HMAC-SHA256 e salas `#canaist` com trava `hop_count <= 3`.
-- [x] **Fase 05 — Catálogo de 23 Ferramentas com Seleção Automática:** Filtragem por perfil (`allowed_tools_json`, ~420 a ~780 tokens por turno) e leitura web via Trafilatura sem Chromium.
-- [x] **Fase 06 — Persistência Flash-Safe SQLite WAL:** Configuração `SYNCHRONOUS NORMAL`, `TEMP_STORE` em RAM e escritas atômicas POSIX nos workspaces.
-- [x] **Fase 07 — Memória em 3 Camadas (padrão MemGPT):** `Core Memory` (memória de trabalho), `Archival Memory` (busca híbrida FTS5 + vetorial 64D) e `Recall Memory` (memória retrospectiva).
-- [x] **Fase 08 — Auto-reparo e Planejamento em 2 Etapas:** Interceptação de relatórios de erro (traceback) e planejamento estruturado em metas e marcos (`<execution_plan>`).
-- [x] **Fase 09 — Revisão em 3 Etapas entre Coder, Auditor e Supervisor:** Debate interno isolado em até 3 rodadas.
-- [x] **Fase 10 — Espaço de Conhecimento Compartilhado e Dot Packs v1.0:** Quadro compartilhado `<shared_knowledge_space>` e exportação/importação de agentes em JSON.
-- [x] **Fase 11 — Monitores de Hardware e Manutenção Noturna:** Monitoramento de temperatura do SoC (`THERMAL_LIMIT_CELSIUS`), `wal_checkpoint(TRUNCATE)`, arquivamento de mensagens antigas (>7 dias) e backup `VACUUM INTO`.
-- [x] **Fase 12 — Tradução PT/EN sem Dependências:** Internacionalização em JavaScript puro (`pidots-i18n.js` < 1.5 KB gzip) com proteção contra XSS via `textContent`.
-- [x] **Fase 13 — Catálogo de 30 Comandos Locais:** Execução no navegador em menos de 16ms, com parser que tolera erros de digitação (distância de Levenshtein).
-- [x] **Fase 14 — Desacoplamento de Rotas API e Strict Sandbox:** Fatiamento do `main.py` em 8 roteadores dentro de `pidots/api/` (`routes_dots.py`, `routes_threads.py`, `routes_tasks.py`, `routes_channels.py`, `routes_hitl.py`, `routes_webhooks.py`, `routes_edge.py`, `routes_pwa.py`) e validacao de sandbox em `terminal.py`.
-- [x] **Fase 15 — Failover de LLM, HITL Criptografico e Cliente MCP:** Implementacao de `pidots/core/hitl_crypto.py`, `pidots/tools/mcp_client.py` e suite de homologacao OpenDots/AG-UI (`scripts/test_phase15_llm_failover.py` e `test_phase1_opendots_agui.py` a `test_phase4_opendots_homologation.py`).
+> **projeto:** pidots — orquestrador local de agentes para hardware de placa única
+> **hardware de referencia:** raspberry pi 4b (arm64 / broadcom bcm2711)
+> **baseline auditado:** build 4c25b3b30549df294686789e7f1b9695d71a2a2e
+> **orcamento operacional:** ~52 mb / 384 mb ram rss | sqlite wal + fts5 64d | hop_count <= 3
+> **design system:** pixel paper ui (dark noir & blueprint) + opendots spatial triptych
 
 ---
 
-## 2. Fase 16 — Redesign Total UI/UX: OpenDots Spatial Triptych + Pixel Paper UI [CONCLUIDA]
+## 1. baseline consolidado (fases 1 a 15 — concluidas e homologadas)
 
-- [x] **2.1. Compactacao do Cabecalho Mobile (`static/css/layout.css` e `mobile.css`):**
-  * Cabecalho unificado em `48px` com controles secundarios (`[IDIOMA]`, `[TEMA]`, `[MANUAL]`, `[SOBRE]`) organizados na barra `#mobileQuickControlsBar` dentro do painel gaveta retratil (`#retractableDrawer`).
-- [x] **2.2. Layout Triptico Espacial no Workspace (`pages/app.html` e `static/css/spa.css`):**
-  * Coluna Esquerda: Rodape fixo de telemetria fisica em barras ASCII (`#sidebarHardwareFooter`, `#sidebarAsciiRamBar`, `#sidebarAsciiTemp`, `#sidebarAsciiWal`).
-  * Coluna Central: Bobina de teletipo e Command Dock com popovers de atalhos e acoes interativas.
-  * Coluna Direita: Aba CoAgents com indicador dinamico de progresso `#canvasTabCoagentsLabel` (`[COAGENTS // X%]`) e Bloco 5 de Inspecao Rapida MemGPT (`#coagentMemgptBox`).
-- [x] **2.3. Barra Inferior Mobile Sincronizada (`static/js/spa/pidots-ux.js` e `app-init.js`):**
-  * Badge `#mobileCanvasBadge` ativo no botao `#mobileNavCanvas` com transicoes nao-intrusivas via `notifyMobileCanvasUpdate()` e `silentMobile: true`.
+todas as entregas abaixo ja estao implementadas no codigo-fonte e validadas pela suite de 21 scripts automatizados no diretorio `scripts/`:
 
----
-
-## 3. Fase 17 — Infraestrutura de Borda, Nginx e Remoções de Legado [CONCLUIDA]
-
-- [x] **3.1. Desoneracao de Arquivos Estaticos via Nginx (`nginx/nginx.conf` e `docker-compose.yml`):**
-  * Servico `pidots-nginx` (`nginx:1.27-alpine`, multi-porta `8081/8082/8083/8088`, limite de memoria `32M`) com entrega direta em C de `/static/` e `/data/locales/` com `Cache-Control: immutable` e SSE streaming com `proxy_buffering off`.
-- [x] **3.2. Limpeza de Redirecionamentos e Fallbacks (`pidots/api/routes_pwa.py`, `pidots/config.py` e `terminal.py`):**
-  * Flag configuravel `ENABLE_LEGACY_REDIRECTS` (padrao `True` retornando `308 Permanent Redirect` para preservar retrocompatibilidade, ou `410 Gone` quando delegada ao Nginx).
-  * Trava `STRICT_SANDBOX`: Quando `True` e o `bwrap` nao esta presente, o terminal recusa execucao com `exit_code: 126` impedindo subprocessos abertos sem isolamento.
-
----
-
-## 4. Fase 18 — Refinamentos Cognitivos, HITL Remoto e Gatilhos Fisicos [CONCLUIDA]
-
-- [x] **4.1. Aprovacao HITL Remota no Telegram e WhatsApp (`messaging_gateway.py` + `hitl_crypto.py`):**
-  * Rotina de expiracao deterministica de acoes pendentes (`TTL = 30 min`) disponivel via `POST /api/hitl/expire-stale`.
-- [x] **4.2. Otimizacoes de Tokens e Memoria (`council.py`, `self_healing.py`, `memory_manager.py`):**
-  * Consenso Antecipado no Conselho (`council.py`): Encerramento por consenso imediato (`early_consensus`) na rodada 2 quando o parecer do auditor for `RISK_LOW` / `APPROVED`.
-  * Trava de Loop no Self-Healing: `MAX_HEAL_ATTEMPTS = 2` em `pidots/core/self_healing.py`.
-  * Deduplicacao Arquival: Limiar de similaridade semantica `>= 0.92` em `pidots/storage/memory_manager.py`.
-- [x] **4.3. Gatilhos Fisicos GPIO e MQTT (`edge_triggers.py` e `pidots/api/routes_edge.py`):**
-  * Monitoramento de hardware e endpoint `POST /api/edge/triggers/simulate` para injecao e despertar automatico do `@dot-supervisor` na thread `edge-supervisor-wakeup` com nota sincronizada em `thread_shared_notes`.
+- [x] **fase 01 — conceito e arquitetura de borda:** monolito enxuto em python assincrono com 4 especialistas nativos (`[spv] dot-supervisor`, `[cdr] dot-coder`, `[mus] dot-muse`, `[aud] dot-auditor`).
+- [x] **fase 02 — colaboracao multi-bot e fitas de carbono:** roteamento deterministico via `threadrouter` (`@dot`), `delegate_task` em sub-threads isoladas, `handoff_to_dot` atomico e `[caderno de raciocinio]` com `visibility='internal'`.
+- [x] **fase 03 — autonomia proativa e dot heartbeat:** agendador `edgescheduler` via `croniter` com diretriz silenciosa `heartbeat_ok` para economia de tokens e zero spam.
+- [x] **fase 04 — gateway de mensageria e salas tematicas:** integração nativa com telegram, whatsapp (evolution api), webhooks http hmac-sha256 e salas `#canaist` com trava `hop_count <= 3`.
+- [x] **fase 05 — catálogo de 23 ferramentas com seleção automática:** filtragem por perfil (`allowed_tools_json`, ~420 a ~780 tokens por turno) e leitura web via trafilatura sem chromium.
+- [x] **fase 06 — persistência flash-safe sqlite wal:** configuração `synchronous normal`, `temp_store` em ram e escritas atômicas posix nos workspaces.
+- [x] **fase 07 — memória em 3 camadas (padrão memgpt):** `core memory` (memória de trabalho), `archival memory` (busca híbrida fts5 + vetorial 64d) e `recall memory` (memória retrospectiva).
+- [x] **fase 08 — auto-reparo e planejamento em 2 etapas:** interceptação de relatórios de erro (traceback) e planejamento estruturado em metas e marcos (`<execution_plan>`).
+- [x] **fase 09 — revisão em 3 etapas entre coder, auditor e supervisor:** debate interno isolado em até 3 rodadas.
+- [x] **fase 10 — espaço de conhecimento compartilhado e dot packs v1.0:** quadro compartilhado `<shared_knowledge_space>` e exportação/importação de agentes em json.
+- [x] **fase 11 — monitores de hardware e manutenção noturna:** monitoramento de temperatura do soc (`thermal_limit_celsius`), `wal_checkpoint(truncate)`, arquivamento de mensagens antigas (>7 dias) e backup `vacuum into`.
+- [x] **fase 12 — tradução pt/en sem dependências:** internacionalização em javascript puro (`pidots-i18n.js` < 1.5 kb gzip) com proteção contra xss via `textcontent`.
+- [x] **fase 13 — catálogo de 30 comandos locais:** execução no navegador em menos de 16ms, com parser que tolera erros de digitação (distância de levenshtein).
+- [x] **fase 14 — desacoplamento de rotas api e strict sandbox:** fatiamento do `main.py` em 8 roteadores dentro de `pidots/api/` (`routes_dots.py`, `routes_threads.py`, `routes_tasks.py`, `routes_channels.py`, `routes_hitl.py`, `routes_webhooks.py`, `routes_edge.py`, `routes_pwa.py`) e validacao de sandbox em `terminal.py`.
+- [x] **fase 15 — failover de llm, hitl criptografico e cliente mcp:** implementacao de `pidots/core/hitl_crypto.py`, `pidots/tools/mcp_client.py` e suite de homologacao opendots/ag-ui (`scripts/test_phase15_llm_failover.py` e `test_phase1_opendots_agui.py` a `test_phase4_opendots_homologation.py`).
 
 ---
 
-## 5. Fase 19 — Lancamento Open Source e Engenharia Centauro [CONCLUIDA]
+## 2. fase 16 — redesign total ui/ux: opendots spatial triptych + pixel paper ui [concluida]
 
-- [x] **Manifesto de Engenharia Centauro (`AI_MANIFESTO.md`):** Documento formal estabelecendo a coautoria centauro, limites de silicio (RPi 4B 4GB ARM64, Broadcom BCM2711), politicas flash-safe e zero emojis.
-- [x] **Imagens Multi-Arch Automatizadas (`.github/workflows/ci.yml`):** Pipeline GitHub Actions com `setup-qemu-action@v3` e `setup-buildx-action@v3` para publicacao multi-plataforma (`linux/amd64,linux/arm64`).
-- [x] **Repositorio Comunitario de Dot Packs (`dot_pack.py` e `pidots/api/routes_dots.py`):** Catalogo oficial de 3 pacotes v1.1 assinados criptograficamente com SHA-256 (`data/packs/dot-secops.json`, `dot-homelab.json`, `dot-finops.json`), endpoints `GET /api/dots/packs/catalog` e `POST /api/dots/packs/install/{pack_id}` com instalacao em 1 clique integrada no `/app`.
-
----
-
-## 6. Fase 20 — Desacoplamento de Portas e Nginx Multi-Porta [CONCLUIDA]
-
-- [x] **Topologia Multi-Porta Isolada (`nginx/nginx.conf`):** Quatro blocos de servidor independentes rodando sob Nginx Alpine (consumo total < 6 MB RAM):
-  * **8081:** Landing Page (`X-Edge-Service: pidots-landing`).
-  * **8082:** Workspace SPA / PWA (`X-Edge-Service: pidots-workspace`).
-  * **8083:** Documentação Técnica Diataxis (`X-Edge-Service: pidots-docs`).
-  * **8088:** Gateway Central de Acesso Agregado (`X-Edge-Service: pidots-gateway`).
-- [x] **Roteador Cross-Surface (`static/js/core/pidots-router.js`):** Navegação transparente entre superfícies com suporte a hotkeys globais (Alt+1 Landing, Alt+2 App, Alt+3 Docs, Alt+4 Gateway) e resolução de URLs em ambientes desacoplados ou unificados.
-- [x] **Suíte de Testes Automatizada (`scripts/test_phase20_port_decoupling_nginx.py`):** Cobertura completa de conformidade HTTP, cabeçalhos de serviço e roteamento reverso.
+- [x] **2.1. compactação do cabecalho mobile (`static/css/layout.css` e `mobile.css`):**
+  * cabecalho unificado em `48px` com controles secundarios (`[idioma]`, `[tema]`, `[manual]`, `[sobre]`) organizados na barra `#mobilequickcontrolsbar` dentro do painel gaveta retratil (`#retractabledrawer`).
+- [x] **2.2. layout triptico espacial no workspace (`pages/app.html` e `static/css/spa.css`):**
+  * coluna esquerda: rodape fixo de telemetria fisica em barras ascii (`#sidebarhardwarefooter`, `#sidebarasciirambar`, `#sidebarasciitemp`, `#sidebarasciiwal`).
+  * coluna central: bobina de teletipo e command dock com popovers de atalhos e acoes interativas.
+  * coluna direita: aba coagents com indicador dinamico de progresso `#canvastabcoagentslabel` (`[coagents // x%]`) e bloco 5 de inspecao rapida memgpt (`#coagentmemgptbox`).
+- [x] **2.3. barra inferior mobile sincronizada (`static/js/spa/pidots-ux.js` e `app-init.js`):**
+  * badge `#mobilecanvasbadge` ativo no botao `#mobilenavcanvas` com transicoes nao-intrusivas via `notifymobilecanvasupdate()` e `silentmobile: true`.
 
 ---
 
-## 7. Fase 21 — Evolucao AI Teammate: Dinamica OpenBot, Fast-Path e Live Team Chain [CONCLUIDA]
+## 3. fase 17 — infraestrutura de borda, nginx e remoções de legado [concluida]
 
-- [x] **Fast-Path Conversacional e Poda Dinâmica de Ferramentas (`pidots/core/agent.py`):**
-  * Detecção de saudações e dúvidas leves via `is_conversational_fast_path` com limites estritos de fronteira de palavra (`\b`), suprimindo catálogos pesados de ferramentas e economizando até 70% de tokens de esquema.
-  * Poda dinâmica real (`ARCHETYPE_DOMAINS` e `DOT_ID_TO_ARCHETYPE`), limitando cada Dot ao seu escopo canônico (7 a 9 ferramentas em vez de 23).
-  * Sanitização rigorosa para compatibilidade com provedores estritos (OpenAI, Verboo, Ollama, Groq, LiteLLM), eliminando o campo proibido `name` e injetando prefixos textuais `[@actor]:`.
-- [x] **Personas Padrão Coworker / AI Teammate (`pidots/storage/db.py` e `pidots/core/agent.py`):**
-  * Atualização dos 6 Dots do Squad Central (Ada/@dot-supervisor, Linus/@dot-coder, Grace/@dot-auditor, etc.) com tom horizontal de colega de bancada, desburocratização em cumprimentos e colaboração visível.
-  * Injeção padronizada do bloco `COMO INTERAGIR COM O OPERADOR E COM A EQUIPE (PADRÃO COWORKER)` no contexto de execução de todos os Dots.
-- [x] **Card Interativo de Diagnóstico do Provedor (`static/js/spa/pidots-api.js`):**
-  * Erradicação completa de falsos positivos ("Operacao concluida com sucesso.") em falhas e timeouts de inferência.
-  * Renderização de card industrial Pixel Paper UI com causa raiz detalhada e ações em um clique: `[Tentar Novamente]`, `[Configurar Provedor]` e `[Testar Conexão]`.
-  * Blindagem total contra XSS e quebra de sintaxe através de armazenamento seguro de prompts em memória (`_lastPromptText`).
-- [x] **Live Team Chain Inter-Agentes e Default Responder (`routes_threads.py` e `messaging_gateway.py`):**
-  * Eleição automática do `@dot-supervisor` (ou primeiro especialista do canal) como Task Owner padrão em canais compartilhados quando o operador não menciona nenhum Dot diretamente.
-  * Encadeamento contínuo na mesma conexão SSE: quando um Dot cita um colega (ex: `@dot-coder`), o segundo especialista ingressa automaticamente na mesma stream teletipo com ficha catalográfica própria (`ticker-slip`), limitado a um teto seguro de 2 saltos (`max_chain_hops = 2`) e com trava anti-loop.
+- [x] **3.1. desoneracao de arquivos estaticos via nginx (`nginx/nginx.conf` e `docker-compose.yml`):**
+  * servico `pidots-nginx` (`nginx:1.27-alpine`, multi-porta `8081/8082/8083/8088`, limite de memória `32m`) com entrega direta em c de `/static/` e `/data/locales/` com `cache-control: immutable` e sse streaming com `proxy_buffering off`.
+- [x] **3.2. limpeza de redirecionamentos e fallbacks (`pidots/api/routes_pwa.py`, `pidots/config.py` e `terminal.py`):**
+  * flag configuravel `enable_legacy_redirects` (padrao `true` retornando `308 permanent redirect` para preservar retrocompatibilidade, ou `410 gone` quando delegada ao nginx).
+  * trava `strict_sandbox`: quando `true` e o `bwrap` nao esta presente, o terminal recusa execução com `exit_code: 126` impedindo subprocessos abertos sem isolamento.
 
 ---
 
-## 8. Homologacao e Status dos Testes
+## 4. fase 18 — refinamentos cognitivos, hitl remoto e gatilhos fisicos [concluida]
 
-Todas as entregas das Fases 16 a 21 e o Design System Pixel Paper UI foram verificados e aprovados:
-* **Fases 16-19:** `scripts/test_phase16_19_roadmap_evolution.py` (4/4 suítes aprovadas, 100% de sucesso).
-* **Fase 20 (Nginx Multi-Porta):** `scripts/test_phase20_port_decoupling_nginx.py` (100% de êxito).
-* **Fase 21 (AI Teammate OpenBot):**
-  - Fase 1 (Fast-Path e Poda de Ferramentas): `scripts/test_phase1_fast_path_and_tool_pruning.py` (100% aprovado).
-  - Fase 2 (Prompts Coworker e SQLite WAL): `scripts/test_phase2_coworker_prompts_and_identity.py` (100% aprovado).
-  - Fase 3 (Card Interativo de Diagnóstico): `scripts/test_phase3_error_diagnostic_card.js` (100% aprovado).
-  - Fase 4 (Live Team Chain e Default Responder): `scripts/test_phase4_live_team_chain.py` (100% aprovado).
-* **Roteador Cross-Surface:** `scripts/test_cross_surface_router.js` (100% de êxito via Node.js).
-* **Pixel Paper UI (Fases 1-4):** `scripts/test_pixel_paper_phase4_global_homologation.py` (100% aprovado).
-* **Regressão Global:** Suítes `test_phase15_llm_failover.py` e `test_phase4_opendots_homologation.py` validadas com 100% de êxito.
+- [x] **4.1. aprovacao hitl remota no telegram e whatsapp (`messaging_gateway.py` + `hitl_crypto.py`):**
+  * rotina de expiracao deterministica de acoes pendentes (`ttl = 30 min`) disponivel via `post /api/hitl/expire-stale`.
+- [x] **4.2. otimizacoes de tokens e memória (`council.py`, `self_healing.py`, `memory_manager.py`):**
+  * consenso antecipado no conselho (`council.py`): encerramento por consenso imediato (`early_consensus`) na rodada 2 quando o parecer do auditor for `risk_low` / `approved`.
+  * trava de loop no self-healing: `max_heal_attempts = 2` em `pidots/core/self_healing.py`.
+  * deduplicacao arquival: limiar de similaridade semantica `>= 0.92` em `pidots/storage/memory_manager.py`.
+- [x] **4.3. gatilhos fisicos gpio e mqtt (`edge_triggers.py` e `pidots/api/routes_edge.py`):**
+  * monitoramento de hardware e endpoint `post /api/edge/triggers/simulate` para injecao e despertar automatico do `@dot-supervisor` na thread `edge-supervisor-wakeup` com nota sincronizada em `thread_shared_notes`.
+
+---
+
+## 5. fase 19 — lancamento open source e engenharia centauro [concluida]
+
+- [x] **manifesto de engenharia centauro (`ai_manifesto.md`):** documento formal estabelecendo a coautoria centauro, limites de silicio (rpi 4b 4gb arm64, broadcom bcm2711), politicas flash-safe e zero emojis.
+- [x] **imagens multi-arch automatizadas (`.github/workflows/ci.yml`):** pipeline github actions com `setup-qemu-action@v3` e `setup-buildx-action@v3` para publicacao multi-plataforma (`linux/amd64,linux/arm64`).
+- [x] **repositorio comunitario de dot packs (`dot_pack.py` e `pidots/api/routes_dots.py`):** catalogo oficial de 3 pacotes v1.1 assinados criptograficamente com sha-256 (`data/packs/dot-secops.json`, `dot-homelab.json`, `dot-finops.json`), endpoints `get /api/dots/packs/catalog` e `post /api/dots/packs/install/{pack_id}` com instalacao em 1 clique integrada no `/app`.
+
+---
+
+## 6. fase 20 — desacoplamento de portas e nginx multi-porta [concluida]
+
+- [x] **topologia multi-porta isolada (`nginx/nginx.conf`):** quatro blocos de servidor independentes rodando sob nginx alpine (consumo total < 6 mb ram):
+  * **8081:** landing page (`x-edge-service: pidots-landing`).
+  * **8082:** workspace spa / pwa (`x-edge-service: pidots-workspace`).
+  * **8083:** documentação técnica diataxis (`x-edge-service: pidots-docs`).
+  * **8088:** gateway central de acesso agregado (`x-edge-service: pidots-gateway`).
+- [x] **roteador cross-surface (`static/js/core/pidots-router.js`):** navegação transparente entre superfícies com suporte a hotkeys globais (alt+1 landing, alt+2 app, alt+3 docs, alt+4 gateway) e resolução de urls em ambientes desacoplados ou unificados.
+- [x] **suíte de testes automatizada (`scripts/test_phase20_port_decoupling_nginx.py`):** cobertura completa de conformidade http, cabeçalhos de serviço e roteamento reverso.
+
+---
+
+## 7. fase 21 — evolucao ai teammate: dinamica openbot, fast-path e live team chain [concluida]
+
+- [x] **fast-path conversacional e poda dinâmica de ferramentas (`pidots/core/agent.py`):**
+  * detecção de saudações e dúvidas leves via `is_conversational_fast_path` com limites estritos de fronteira de palavra (`\b`), suprimindo catálogos pesados de ferramentas e economizando até 70% de tokens de esquema.
+  * poda dinâmica real (`archetype_domains` e `dot_id_to_archetype`), limitando cada dot ao seu escopo canônico (7 a 9 ferramentas em vez de 23).
+  * sanitização rigorosa para compatibilidade com provedores estritos (openai, verboo, ollama, groq, litellm), eliminando o campo proibido `name` e injetando prefixos textuais `[@actor]:`.
+- [x] **personas padrão coworker / ai teammate (`pidots/storage/db.py` e `pidots/core/agent.py`):**
+  * atualização dos 6 dots do squad central (ada/@dot-supervisor, linus/@dot-coder, grace/@dot-auditor, etc.) com tom horizontal de colega de bancada, desburocratização em cumprimentos e colaboração visível.
+  * injeção padronizada do bloco `como interagir com o operador e com a equipe (padrão coworker)` no contexto de execução de todos os dots.
+- [x] **card interativo de diagnóstico do provedor (`static/js/spa/pidots-api.js`):**
+  * erradicação completa de falsos positivos ("operação concluida com sucesso.") em falhas e timeouts de inferência.
+  * renderização de card industrial pixel paper ui com causa raiz detalhada e ações em um clique: `[tentar novamente]`, `[configurar provedor]` e `[testar conexão]`.
+  * blindagem total contra xss e quebra de sintaxe através de armazenamento seguro de prompts em memória (`_lastprompttext`).
+- [x] **live team chain inter-agentes e default responder (`routes_threads.py` e `messaging_gateway.py`):**
+  * eleição automática do `@dot-supervisor` (ou primeiro especialista do canal) como task owner padrão em canais compartilhados quando o operador não menciona nenhum dot diretamente.
+  * encadeamento contínuo na mesma conexão sse: quando um dot cita um colega (ex: `@dot-coder`), o segundo especialista ingressa automaticamente na mesma stream teletipo com ficha catalográfica própria (`ticker-slip`), limitado a um teto seguro de 2 saltos (`max_chain_hops = 2`) e com trava anti-loop.
+
+---
+
+## 8. homologacao e status dos testes
+
+todas as entregas das fases 16 a 21 e o design system pixel paper ui foram verificados e aprovados:
+* **fases 16-19:** `scripts/test_phase16_19_roadmap_evolution.py` (4/4 suítes aprovadas, 100% de sucesso).
+* **fase 20 (nginx multi-porta):** `scripts/test_phase20_port_decoupling_nginx.py` (100% de êxito).
+* **fase 21 (ai teammate openbot):**
+  - fase 1 (fast-path e poda de ferramentas): `scripts/test_phase1_fast_path_and_tool_pruning.py` (100% aprovado).
+  - fase 2 (prompts coworker e sqlite wal): `scripts/test_phase2_coworker_prompts_and_identity.py` (100% aprovado).
+  - fase 3 (card interativo de diagnóstico): `scripts/test_phase3_error_diagnostic_card.js` (100% aprovado).
+  - fase 4 (live team chain e default responder): `scripts/test_phase4_live_team_chain.py` (100% aprovado).
+* **roteador cross-surface:** `scripts/test_cross_surface_router.js` (100% de êxito via node.js).
+* **pixel paper ui (fases 1-4):** `scripts/test_pixel_paper_phase4_global_homologation.py` (100% aprovado).
+* **regressão global:** suítes `test_phase15_llm_failover.py` e `test_phase4_opendots_homologation.py` validadas com 100% de êxito.
