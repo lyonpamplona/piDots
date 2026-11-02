@@ -143,16 +143,16 @@ a governança segue o princípio de recusa padrão (*deny-by-default*). o sistem
 
 ```mermaid
 statediagram-v2
-    [*] --> avaliacaorisco: chamada de ferramenta
+    [*] --> avaliaçãorisco: chamada de ferramenta
     
-    avaliacaorisco --> execuçãodireta: comando seguro (leitura / consulta)
-    avaliacaorisco --> retidohitl: comando de risco detectado
+    avaliaçãorisco --> execuçãodireta: comando seguro (leitura / consulta)
+    avaliaçãorisco --> retidohitl: comando de risco detectado
     
-    retidohitl --> aguardandoaprovacao: registrado em hitl_approvals (ttl: 30 min)
+    retidohitl --> aguardandoaprovação: registrado em hitl_approvals (ttl: 30 min)
     
-    aguardandoaprovacao --> execuçãoautorizada: operador aprova (/api/hitl/{id}/resolve)
-    aguardandoaprovacao --> abortadorejeitado: operador veta (/reject)
-    aguardandoaprovacao --> expiradotimeout: ttl excedido (> 30 min) -> status expired
+    aguardandoaprovação --> execuçãoautorizada: operador aprova (/api/hitl/{id}/resolve)
+    aguardandoaprovação --> abortadorejeitado: operador veta (/reject)
+    aguardandoaprovação --> expiradotimeout: ttl excedido (> 30 min) -> status expired
     
     execuçãodireta --> [*]: devolve resultado ao agente
     execuçãoautorizada --> [*]: executa e devolve resultado
@@ -517,7 +517,7 @@ o script `cross-surface-router.js` detecta se o acesso vem de portas locais, da 
 
 ---
 
-## 22. padrao opendots & copilotkit coagents / ag-ui protocol (v1.5.3)
+## 22. padrão opendots & copilotkit coagents / ag-ui protocol (v1.5.3)
 
 a arquitetura do pidots integra os paradigmas do ecossistema **copilotkit/opendots** e do protocolo **ag-ui / coagents** diretamente no monolito modular e no visual **pixel paper ui** do console `/app`:
 
