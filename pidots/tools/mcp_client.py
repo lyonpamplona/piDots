@@ -72,7 +72,8 @@ class LiteMCPClient:
                     *self.args,
                     stdin=asyncio.subprocess.PIPE,
                     stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.DEVNULL,
+                    limit=4 * 1024 * 1024,
                     env=env_vars
                 )
                 logger.info("Servidor MCP STDIO '%s' iniciado (PID: %s).", self.server_name, self._process.pid)
@@ -115,15 +116,19 @@ class LiteMCPClient:
                 self._process.stdin.write(line.encode("utf-8"))
                 await self._process.stdin.drain()
 
-                # Leitura da resposta linha a linha com timeout defensivo
+                # Leitura da resposta linha a linha com timeout defensivo e descarte de notificações assíncronas
                 try:
-                    resp_line = await asyncio.wait_for(
-                        self._process.stdout.readline(),
-                        timeout=self.timeout_seconds
-                    )
-                    if not resp_line:
-                        return {"error": {"code": -32000, "message": "Servidor MCP encerrou stdout inesperadamente."}}
-                    return json.loads(resp_line.decode("utf-8").strip())
+                    while True:
+                        resp_line = await asyncio.wait_for(
+                            self._process.stdout.readline(),
+                            timeout=self.timeout_seconds
+                        )
+                        if not resp_line:
+                            return {"error": {"code": -32000, "message": "Servidor MCP encerrou stdout inesperadamente."}}
+                        parsed = json.loads(resp_line.decode("utf-8").strip())
+                        if isinstance(parsed, dict) and parsed.get("id") == req_id:
+                            return parsed
+                        logger.debug("Notificação assíncrona MCP ignorada durante espera por id %s: %s", req_id, parsed.get("method"))
                 except asyncio.TimeoutError:
                     return {"error": {"code": -32000, "message": f"Timeout ({self.timeout_seconds}s) aguardando resposta MCP."}}
                 except Exception as e:
@@ -155,18 +160,19 @@ class LiteMCPClient:
             "method": method,
             "params": params or {}
         }
-        if self.transport == "stdio" and self._process and self._process.returncode is None:
-            line = json.dumps(payload, ensure_ascii=False) + "\n"
-            assert self._process.stdin is not None
-            self._process.stdin.write(line.encode("utf-8"))
-            await self._process.stdin.drain()
-        elif self.transport in ("sse", "http") and self._http_client:
-            target_url = self.http_endpoint or self.sse_url
-            if target_url:
-                try:
-                    await self._http_client.post(target_url, json=payload)
-                except Exception as e:
-                    logger.debug("Falha no envio de notificação MCP HTTP: %s", str(e))
+        async with self._lock:
+            if self.transport == "stdio" and self._process and self._process.returncode is None:
+                line = json.dumps(payload, ensure_ascii=False) + "\n"
+                assert self._process.stdin is not None
+                self._process.stdin.write(line.encode("utf-8"))
+                await self._process.stdin.drain()
+            elif self.transport in ("sse", "http") and self._http_client:
+                target_url = self.http_endpoint or self.sse_url
+                if target_url:
+                    try:
+                        await self._http_client.post(target_url, json=payload)
+                    except Exception as e:
+                        logger.debug("Falha no envio de notificação MCP HTTP: %s", str(e))
 
     async def initialize(self) -> bool:
         """Executa o handshake 'initialize' do protocolo MCP e envia confirmação."""

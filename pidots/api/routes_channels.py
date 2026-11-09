@@ -15,6 +15,7 @@ router = APIRouter(tags=["Channels"])
 
 class CreateChannelPayload(BaseModel):
     name: str
+    id: str | None = None
     description: str | None = None
 
 
@@ -50,18 +51,19 @@ async def list_channels():
 @router.post("/api/channels")
 async def create_channel(payload: CreateChannelPayload):
     """Cria uma nova sala temática de equipe no SQLite WAL."""
-    channel_id = re.sub(r"[^a-z0-9_\-]", "", payload.name.lower().strip().replace(" ", "-"))
+    raw_id = payload.id or payload.name
+    channel_id = re.sub(r"[^a-z0-9_\-]", "", raw_id.lower().strip().replace(" ", "-"))
     if not channel_id:
-        raise HTTPException(status_code=400, detail="Nome de canal inválido.")
+        raise HTTPException(status_code=400, detail="Nome ou identificador de canal inválido.")
     async with get_db() as db:
-        try:
-            await db.execute(
-                "INSERT INTO channels (id, name, description) VALUES (?, ?, ?)",
-                (channel_id, payload.name.strip(), payload.description)
-            )
-            await db.commit()
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Canal já existe ou dados inválidos: {e}")
+        cur = await db.execute("SELECT id FROM channels WHERE id = ?", (channel_id,))
+        if await cur.fetchone():
+            raise HTTPException(status_code=409, detail=f"Canal '{channel_id}' já existe.")
+        await db.execute(
+            "INSERT INTO channels (id, name, description) VALUES (?, ?, ?)",
+            (channel_id, payload.name.strip(), payload.description)
+        )
+        await db.commit()
 
     return {"id": channel_id, "name": payload.name.strip(), "description": payload.description}
 

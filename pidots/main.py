@@ -23,10 +23,9 @@ from .config import settings
 from .core.edge_triggers import EdgeHardwareTriggers
 from .providers.openai_client import OpenAIUniversalProvider
 from .storage.db import get_db, init_edge_database
+from . import __version__ as APP_VERSION
 
 logger = logging.getLogger("pidots.main")
-
-APP_VERSION = "1.5.5"
 
 
 HTML_404_PAGE = """<!DOCTYPE html>
@@ -80,10 +79,14 @@ class StaticPageManager:
         self._etags: Dict[str, str] = {}
 
     def _resolve_file(self, filename: str) -> Optional[Path]:
+        safe_name = Path(filename).name
         for base in self.search_dirs:
-            target = base / filename
-            if target.is_file():
-                return target
+            target = (base / safe_name).resolve()
+            try:
+                if target.is_file() and target.is_relative_to(base.resolve()):
+                    return target
+            except (ValueError, RuntimeError):
+                continue
         return None
 
     def preload(self, filename: str, compress_level: int = 6) -> bool:
@@ -232,6 +235,11 @@ async def lifespan(app: FastAPI):
     else:
         logger.info("motor de inferência pronto -> modelo '%s'", settings.ai_model)
 
+    if settings.hitl_hmac_secret == "pidots-edge-hmac-secret-key-v15":
+        logger.warning(
+            "AVISO DE SEGURANÇA: HITL_HMAC_SECRET padrão em uso. Para ambientes expostos à internet, defina uma chave secreta exclusiva no .env."
+        )
+
     # Inicia rotina periódica de proteção contra inchaço do MicroSD (a cada 15 min)
     checkpoint_task = asyncio.create_task(periodic_wal_checkpoint(interval_seconds=900))
 
@@ -280,7 +288,7 @@ app.add_middleware(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"^https?://.*",
+    allow_origin_regex=settings.cors_allowed_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

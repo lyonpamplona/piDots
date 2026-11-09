@@ -60,10 +60,11 @@ class SelfHealingHarness:
         stdout = tool_result.get("stdout", "")
         stderr = tool_result.get("stderr", "")
 
-        key = context_key or f"{tool_name}:{tool_args.get('command', '')}"
+        key = context_key or f"{tool_args.get('dot_id', '')}:{tool_name}:{tool_args.get('command', '')}"
 
-        # Se exit_code for 0 e não houver traceback explícito, execução foi bem-sucedida
-        if exit_code == 0 and "Traceback (most recent call last):" not in stderr and "Traceback (most recent call last):" not in stdout:
+        # Se exit_code for 0 e não houver traceback explícito em stderr, execução foi bem-sucedida
+        # Evita falso positivo em stdout quando comandos como grep, cat ou git diff inspecionam logs
+        if exit_code == 0 and "Traceback (most recent call last):" not in stderr:
             cls._attempt_counters.pop(key, None)
             return None
 
@@ -75,7 +76,12 @@ class SelfHealingHarness:
             if len(cls._attempt_counters) >= 256 and key not in cls._attempt_counters:
                 oldest_key = next(iter(cls._attempt_counters))
                 cls._attempt_counters.pop(oldest_key, None)
-            cls._attempt_counters[key] = current_attempt
+
+            if current_attempt >= MAX_HEAL_ATTEMPTS:
+                # Reseta a contagem para este comando para não travar execuções futuras
+                cls._attempt_counters.pop(key, None)
+            else:
+                cls._attempt_counters[key] = current_attempt
 
         combined_output = f"{stderr}\n{stdout}".strip()
         analysis = cls.analyze_failure(combined_output, exit_code, attempt=current_attempt)

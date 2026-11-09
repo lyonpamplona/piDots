@@ -21,8 +21,9 @@ class DotModel(BaseModel):
     model: str
     workspace_path: str
     is_active: bool = True
-    archetype: str = "generalist"
+    archetype: str = "general"
     avatar_stamp: str = "[DOT]"
+    allowed_tools_json: str = "[]"
     is_core: bool = False
     created_at: datetime = Field(default_factory=now_utc)
 
@@ -49,6 +50,7 @@ class MessageModel(BaseModel):
     content: str
     thought_log: str | None = None
     tool_calls_json: str | None = None
+    tool_call_id: str | None = None
     parent_message_id: str | None = None
     created_at: datetime = Field(default_factory=now_utc)
 
@@ -87,7 +89,10 @@ class AGUIEvent(BaseModel):
         "tool:called",
         "tool:result",
         "self_healing:triggered",
+        "self_healing:max_attempts_exceeded",
+        "hitl:pending_approval",
         "hitl:approval_required",
+        "canvas:patch",
         "artifact:updated",
         "run:finished",
         "state:sync"

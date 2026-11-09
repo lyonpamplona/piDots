@@ -74,8 +74,8 @@ class EdgeMaintenanceManager:
             dest.unlink()
 
         safe_path_str = str(dest).replace("'", "''")
-        async with aiosqlite.connect(settings.sqlite_db_path, isolation_level=None, timeout=5.0) as db:
-            cur_p = await db.execute("PRAGMA busy_timeout = 5000;")
+        async with aiosqlite.connect(settings.sqlite_db_path, isolation_level=None, timeout=30.0) as db:
+            cur_p = await db.execute("PRAGMA busy_timeout = 30000;")
             await cur_p.close()
             cur = await db.execute(f"VACUUM INTO '{safe_path_str}';")
             await cur.close()
@@ -134,11 +134,12 @@ class EdgeMaintenanceManager:
             if dot_id:
                 cursor = await db.execute(
                     """
-                    SELECT m.id, m.thread_id, m.role, m.content, m.created_at, t.dot_id, t.title
+                    SELECT m.id, m.thread_id, m.role, m.content, m.created_at,
+                           COALESCE(t.primary_dot_id, t.dot_id) AS dot_id, t.title
                     FROM messages m
                     JOIN threads t ON m.thread_id = t.id
                     WHERE m.created_at <= datetime('now', '-' || ? || ' days')
-                      AND t.dot_id = ?
+                      AND COALESCE(t.primary_dot_id, t.dot_id) = ?
                     ORDER BY m.thread_id, m.created_at ASC
                     """,
                     (str(days_threshold), dot_id)
@@ -146,7 +147,8 @@ class EdgeMaintenanceManager:
             else:
                 cursor = await db.execute(
                     """
-                    SELECT m.id, m.thread_id, m.role, m.content, m.created_at, t.dot_id, t.title
+                    SELECT m.id, m.thread_id, m.role, m.content, m.created_at,
+                           COALESCE(t.primary_dot_id, t.dot_id) AS dot_id, t.title
                     FROM messages m
                     JOIN threads t ON m.thread_id = t.id
                     WHERE m.created_at <= datetime('now', '-' || ? || ' days')

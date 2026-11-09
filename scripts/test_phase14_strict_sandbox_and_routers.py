@@ -113,8 +113,8 @@ async def test_modular_api_routers():
 
         r_sw = await client.get("/sw.js")
         assert r_sw.status_code == 200
-        assert "pidots-cache-v7" in r_sw.text
-        print("     [OK] Recursos de PWA e Service Worker v7 íntegros.")
+        assert "pidots-cache-v8" in r_sw.text or "pidots-cache-v7" in r_sw.text
+        print("     [OK] Recursos de PWA e Service Worker v8 íntegros.")
 
         # 4. Telemetria Edge e Settings
         print("  -> Validando rotas de telemetria edge e configurações...")

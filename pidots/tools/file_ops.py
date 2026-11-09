@@ -137,12 +137,16 @@ class FileManager:
                     for f in files:
                         full_p = os.path.join(root, f)
                         rel_p = os.path.relpath(full_p, target_dir)
-                        stat = os.stat(full_p)
-                        file_list.append({
-                            "path": rel_p,
-                            "size_bytes": stat.st_size,
-                            "modified_at": datetime.fromtimestamp(stat.st_mtime).isoformat()
-                        })
+                        try:
+                            stat = os.lstat(full_p)
+                            mod_iso = datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat()
+                            file_list.append({
+                                "path": rel_p,
+                                "size_bytes": stat.st_size,
+                                "modified_at": mod_iso
+                            })
+                        except OSError as os_err:
+                            logger.debug("Falha ao obter stat de '%s': %s", full_p, os_err)
                 return file_list
 
             file_list = await asyncio.to_thread(_list_sync)

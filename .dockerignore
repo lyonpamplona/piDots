@@ -21,6 +21,8 @@ env/
 data/*
 !data/locales/
 !data/locales/*.json
+!data/packs/
+!data/packs/*.json
 !data/changelog.json
 *.db
 *.db-wal

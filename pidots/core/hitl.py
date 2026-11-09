@@ -7,6 +7,7 @@ import re
 import uuid
 import json
 import logging
+import asyncio
 from datetime import datetime, timezone, timedelta
 from ..config import settings
 from ..storage.db import get_db
@@ -15,21 +16,25 @@ logger = logging.getLogger("pidots.hitl")
 
 # Comandos shell que exigem aprovação obrigatória do operador
 DANGEROUS_COMMAND_PATTERNS = [
-    r"\brm\s+-[rf]+",            # remoção recursiva forçada
-    r"\bmkfs\b",                 # formatação de disco
-    r"\bdd\s+if=",               # sobrescrita de blocos
-    r"\bchmod\s+[0-7]{3,4}\b",   # alteração arbitrária de permissão
-    r"\bchown\b",                # mudança de proprietário
-    r"\bsudo\b",                 # privilégios de superusuário
-    r"\bcurl\b.*\|\s*bash",      # execução direta de script da internet
-    r"\bwget\b.*\|\s*bash",
-    r"\bkillall\b",              # finalização de processos do sistema
-    r"\bshutdown\b|\breboot\b",  # desligamento da máquina
+    r"\brm\s+-[rf]+",                                # remoção recursiva forçada
+    r"\bmkfs\b",                                     # formatação de disco
+    r"\bdd\s+(?:if|of)=",                            # leitura ou sobrescrita direta de blocos
+    r"\bchmod\s+(?:-[a-zA-Z]*R\s+)?[0-7]{3,4}\b",   # alteração arbitrária de permissão recursiva
+    r"\bchmod\s+(?:-[a-zA-Z]*R\s+)?777\b",
+    r"\bchown\b",                                    # mudança de proprietário
+    r"\bsudo\b",                                     # privilégios de superusuário
+    r"\bcurl\b.*\|\s*(?:bash|sh|zsh)",               # execução direta de script da internet
+    r"\bwget\b.*\|\s*(?:bash|sh|zsh)",
+    r"\bkillall\b|\bpkill\b",                        # finalização de processos do sistema
+    r"\bshutdown\b|\breboot\b|\binit\s+[06]\b",      # desligamento da máquina
+    r">\s*/dev/(?:sd[a-z]|nvme|mmcblk)",             # escrita direta em dispositivos de bloco
 ]
 
 
 class HITLManager:
     """Gerencia a máquina de estados de aprovações humanas."""
+
+    _background_tasks: set[asyncio.Task] = set()
 
     @staticmethod
     def requires_approval(action_type: str, payload: str) -> tuple[bool, str]:
@@ -66,13 +71,15 @@ class HITLManager:
         action_type: str,
         payload: str
     ) -> bool:
-        """Verifica se a mesma ação já foi homologada pelo operador humano para este Dot/Thread."""
+        """Verifica se a mesma ação já foi homologada pelo operador humano para este Dot/Thread e ainda não expirou."""
         async with get_db() as db:
             if thread_id:
                 cursor = await db.execute(
                     """
                     SELECT id FROM hitl_approvals
-                    WHERE dot_id = ? AND thread_id = ? AND action_type = ? AND payload = ? AND status = 'APPROVED'
+                    WHERE dot_id = ? AND thread_id = ? AND action_type = ? AND payload = ?
+                      AND status = 'APPROVED'
+                      AND (expires_at IS NULL OR datetime(expires_at) > datetime('now'))
                     LIMIT 1
                     """,
                     (dot_id, thread_id, action_type, payload)
@@ -81,7 +88,9 @@ class HITLManager:
                 cursor = await db.execute(
                     """
                     SELECT id FROM hitl_approvals
-                    WHERE dot_id = ? AND action_type = ? AND payload = ? AND status = 'APPROVED'
+                    WHERE dot_id = ? AND action_type = ? AND payload = ?
+                      AND status = 'APPROVED'
+                      AND (expires_at IS NULL OR datetime(expires_at) > datetime('now'))
                     LIMIT 1
                     """,
                     (dot_id, action_type, payload)
@@ -89,8 +98,9 @@ class HITLManager:
             row = await cursor.fetchone()
             return row is not None
 
-    @staticmethod
+    @classmethod
     async def create_approval_request(
+        cls,
         dot_id: str,
         thread_id: str | None,
         action_type: str,
@@ -123,11 +133,10 @@ class HITLManager:
             await db.commit()
         logger.info("Solicitação HITL criada [%s] para Dot %s: %s (%s, Expira em: %s)", approval_id, dot_id, action_type, risk_level, expires_at)
 
-        # Dispara notificação não-bloqueante para canais remotos (Webhook / Telegram)
+        # Dispara notificação não-bloqueante para canais remotos (Webhook / Telegram / WhatsApp)
         try:
             from .notifier import HITLNotifier
-            import asyncio
-            asyncio.create_task(
+            task = asyncio.create_task(
                 HITLNotifier.notify_approval_requested(
                     approval_id=approval_id,
                     dot_id=dot_id,
@@ -136,6 +145,8 @@ class HITLManager:
                     risk_level=risk_level
                 )
             )
+            cls._background_tasks.add(task)
+            task.add_done_callback(cls._background_tasks.discard)
         except Exception as e:
             logger.debug("Falha ao agendar tarefa de notificação HITL: %s", e)
 
@@ -260,6 +271,7 @@ class HITLManager:
         """
         Executa no sandbox isolado do Dot a ferramenta cujos argumentos foram congelados
         e homologados em uma solicitação HITL com status 'APPROVED' (aplicando modified_args se editado pelo operador).
+        Aplica transição atômica de status para 'EXECUTED' para evitar execuções concorrentes duplicadas.
         Registra o recibo de saída na thread associada e em tool_runs.
         """
         async with get_db() as db:
@@ -277,6 +289,15 @@ class HITLManager:
             thread_id = row["thread_id"]
             action_type = row["action_type"]
             raw_payload = row["payload"] or "{}"
+
+            # Transição atômica para evitar execução duplicada concorrente
+            upd_cursor = await db.execute(
+                "UPDATE hitl_approvals SET status = 'EXECUTED', resolved_at = CURRENT_TIMESTAMP WHERE id = ? AND status = 'APPROVED'",
+                (approval_id,)
+            )
+            if upd_cursor.rowcount == 0:
+                return {"executed": False, "error": "Ação já foi executada ou seu status foi alterado concorrentemente."}
+            await db.commit()
 
         try:
             args = json.loads(raw_payload)
@@ -308,6 +329,17 @@ class HITLManager:
                         args = {"command": modified_args.strip()}
                 except Exception:
                     args = {"command": modified_args.strip()}
+
+            # Atualiza o payload com os argumentos homologados pós-edição
+            try:
+                async with get_db() as db:
+                    await db.execute(
+                        "UPDATE hitl_approvals SET payload = ? WHERE id = ?",
+                        (json.dumps(args, ensure_ascii=False), approval_id)
+                    )
+                    await db.commit()
+            except Exception as upd_err:
+                logger.debug("Falha ao registrar payload editado pós-HITL: %s", upd_err)
 
         from ..tools.registry import registry as default_tool_registry
         if tool_name not in default_tool_registry._handlers:

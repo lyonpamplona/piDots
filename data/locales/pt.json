@@ -33,6 +33,7 @@
     "chat_title": "TELETIPO // FEED DE COMANDOS E AGENTES",
     "canvas_title": "PRANCHETA DE TRABALHO // LIVE CANVAS",
     "input_placeholder": "Digite uma instrução ou mencione @dot (Enter envia)...",
+    "input_aria": "Entrada de instrução do operador",
     "send_btn": "Enviar",
     "welcome_system": "[sistema] nó piDots online. Banco SQLite WAL pronto. Motor ativo (RAM RSS: 52 MB).",
     "welcome_agent": "Ambiente pronto. A pasta /workspace está montada e os sensores do silício estão estáveis. Envie um comando no terminal, chame especialistas com @coder ou aperte F1 para o manual técnico."
@@ -196,6 +197,9 @@
     "btn_clear": "Limpar",
     "sim_chips_lbl": "COMANDOS:",
     "sim_input_placeholder": "Envie um comando ou /slash (ex: /telemetry, /coagents)...",
+    "sim_input_aria": "Comando do simulador",
+    "slider_agents_aria": "Quantidade de agentes",
+    "slider_cost_aria": "Custo mensal por agente em nuvem",
     "btn_send": "Disparar",
     "sec3_tag": "DADOS DE ENGENHARIA DE SILÍCIO",
     "sec3_title": "Medições de hardware auditáveis em runtime real",
@@ -227,6 +231,7 @@
     "footer_report": "Relatório Técnico",
     "drawer_title": "MANUAL TÉCNICO // 14 PASSOS",
     "btn_close": "Fechar",
-    "drawer_search_placeholder": "Filtrar tópicos do manual..."
+    "drawer_search_placeholder": "Filtrar tópicos do manual...",
+    "drawer_search_aria": "Filtrar tópicos do manual"
   }
 }

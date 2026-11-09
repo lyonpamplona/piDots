@@ -48,11 +48,16 @@ class ThreadRouter:
 
         valid_dots: list[str] = []
         async with get_db() as db:
+            placeholders = ",".join("?" for _ in mentions)
+            cursor = await db.execute(
+                f"SELECT id FROM dots WHERE id IN ({placeholders}) AND is_active = 1",
+                tuple(mentions)
+            )
+            rows = await cursor.fetchall()
+            active_ids = {r["id"] for r in rows}
             for dot_cand in mentions:
-                cursor = await db.execute("SELECT id FROM dots WHERE id = ? AND is_active = 1", (dot_cand,))
-                row = await cursor.fetchone()
-                if row:
-                    valid_dots.append(row["id"])
+                if dot_cand in active_ids and dot_cand not in valid_dots:
+                    valid_dots.append(dot_cand)
 
         if valid_dots:
             # O primeiro dot mencionado torna-se o destinatário primário
@@ -197,10 +202,10 @@ class MultiBotOrchestrator:
         worker_response = ""
 
         # Thread de trabalho isolada para o worker para não interferir no histórico pai
-        isolated_thread_id = f"subtask-{handoff_id[:8]}"
+        isolated_thread_id = f"subtask-{handoff_id}"
         async with get_db() as db:
             await db.execute(
-                "INSERT INTO threads (id, dot_id, title, status) VALUES (?, ?, ?, 'running')",
+                "INSERT OR REPLACE INTO threads (id, dot_id, title, status) VALUES (?, ?, ?, 'running')",
                 (isolated_thread_id, target_dot_id, f"Subtarefa de {source_dot_id}: {task_goal[:30]}")
             )
             await db.commit()

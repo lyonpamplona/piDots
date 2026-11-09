@@ -127,7 +127,7 @@ class HITLNotifier:
         # 3. Disparo de Mensagem no WhatsApp (Evolution API)
         evo_url = getattr(settings, "evolution_api_url", None)
         evo_token = getattr(settings, "evolution_api_key", None)
-        evo_target = getattr(settings, "telegram_chat_id", None)  # ou número destino configurado
+        evo_target = getattr(settings, "whatsapp_target_number", None) or getattr(settings, "telegram_chat_id", None)
         if evo_url and evo_token and evo_target:
             try:
                 evo_instance = getattr(settings, "evolution_instance", "pidots")
@@ -145,8 +145,8 @@ class HITLNotifier:
                 try:
                     resp = await client.post(
                         wa_url,
-                        json={"number": evo_target, "text": wa_text},
-                        headers={"apikey": evo_token}
+                        json={"number": str(evo_target), "text": wa_text},
+                        headers={"apikey": evo_token, "Content-Type": "application/json"}
                     )
                     results["whatsapp_sent"] = resp.status_code in (200, 201)
                 finally:
@@ -154,6 +154,75 @@ class HITLNotifier:
                         await client.aclose()
             except Exception as e:
                 logger.debug("Falha no envio WhatsApp HITL: %s", str(e))
+
+        return results
+
+    @classmethod
+    async def notify_system_alert(
+        cls,
+        title: str,
+        message: str,
+        severity: str = "WARNING",
+        http_client: httpx.AsyncClient | None = None
+    ) -> dict[str, Any]:
+        """
+        Dispara alerta informativo do sistema ou hardware (sem botões de aprovação HITL).
+        Utilizado por gatilhos de borda (térmico, memória RAM, disco MicroSD).
+        """
+        results = {
+            "webhook_sent": False,
+            "telegram_sent": False,
+            "whatsapp_sent": False,
+            "errors": []
+        }
+
+        # Telegram informativo
+        if settings.telegram_bot_token and settings.telegram_chat_id:
+            try:
+                text = (
+                    f"[{severity} // ALERTA DE SISTEMA]\n"
+                    f"Título: {title}\n"
+                    f"Detalhes: {message}\n"
+                    f"Horário: {datetime.now(timezone.utc).strftime('%H:%M:%S UTC')}"
+                )
+                tg_url = f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendMessage"
+                tg_payload = {
+                    "chat_id": settings.telegram_chat_id,
+                    "text": text
+                }
+                client = http_client or httpx.AsyncClient(timeout=5.0)
+                try:
+                    resp = await client.post(tg_url, json=tg_payload)
+                    results["telegram_sent"] = resp.status_code == 200
+                finally:
+                    if not http_client:
+                        await client.aclose()
+            except Exception as e:
+                results["errors"].append(f"Telegram alert error: {e}")
+
+        # Webhook informativo
+        if settings.webhook_notification_url:
+            try:
+                webhook_payload = {
+                    "event": "system_hardware_alert",
+                    "title": title,
+                    "message": message,
+                    "severity": severity,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+                client = http_client or httpx.AsyncClient(timeout=5.0)
+                try:
+                    resp = await client.post(
+                        settings.webhook_notification_url,
+                        json=webhook_payload,
+                        headers={"Content-Type": "application/json"}
+                    )
+                    results["webhook_sent"] = resp.status_code in (200, 201, 202, 204)
+                finally:
+                    if not http_client:
+                        await client.aclose()
+            except Exception as e:
+                results["errors"].append(f"Webhook alert error: {e}")
 
         return results
 

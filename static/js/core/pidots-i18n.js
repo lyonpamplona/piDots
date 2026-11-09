@@ -121,7 +121,10 @@
                 const el = textNodes[i];
                 const key = el.getAttribute('data-i18n');
                 if (key) {
-                    el.textContent = PiDotsI18n.t(key);
+                    const val = PiDotsI18n.t(key);
+                    if (val && val !== key) {
+                        el.textContent = val;
+                    }
                 }
             }
 
@@ -131,7 +134,10 @@
                 const el = htmlNodes[i];
                 const key = el.getAttribute('data-i18n-html');
                 if (key) {
-                    el.innerHTML = PiDotsI18n.t(key);
+                    const val = PiDotsI18n.t(key);
+                    if (val && val !== key) {
+                        el.innerHTML = val;
+                    }
                 }
             }
 
@@ -141,7 +147,10 @@
                 const el = placeholderNodes[i];
                 const key = el.getAttribute('data-i18n-placeholder');
                 if (key) {
-                    el.setAttribute('placeholder', PiDotsI18n.t(key));
+                    const val = PiDotsI18n.t(key);
+                    if (val && val !== key) {
+                        el.setAttribute('placeholder', val);
+                    }
                 }
             }
 
@@ -151,7 +160,10 @@
                 const el = titleNodes[i];
                 const key = el.getAttribute('data-i18n-title');
                 if (key) {
-                    el.setAttribute('title', PiDotsI18n.t(key));
+                    const val = PiDotsI18n.t(key);
+                    if (val && val !== key) {
+                        el.setAttribute('title', val);
+                    }
                 }
             }
 
@@ -161,7 +173,10 @@
                 const el = ariaNodes[i];
                 const key = el.getAttribute('data-i18n-aria');
                 if (key) {
-                    el.setAttribute('aria-label', PiDotsI18n.t(key));
+                    const val = PiDotsI18n.t(key);
+                    if (val && val !== key) {
+                        el.setAttribute('aria-label', val);
+                    }
                 }
             }
 

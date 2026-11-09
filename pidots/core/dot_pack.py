@@ -136,12 +136,25 @@ class DotPackManager:
         if fmt != DOT_PACK_FORMAT:
             return {"success": False, "error": f"Formato inválido '{fmt}'. Esperado '{DOT_PACK_FORMAT}'."}
 
-        dot_info = pack_data.get("dot", {})
-        if not dot_info.get("name"):
+        dot_info = pack_data.get("dot")
+        if not isinstance(dot_info, dict) or not dot_info.get("name"):
             return {"success": False, "error": "Campo 'name' obrigatório no manifesto do Dot."}
 
         core_mem = pack_data.get("core_memory", {})
+        if not isinstance(core_mem, dict):
+            return {"success": False, "error": "Campo 'core_memory' deve ser um dicionário."}
+
         archival_list = pack_data.get("archival_memories", [])
+        if not isinstance(archival_list, list):
+            return {"success": False, "error": "Campo 'archival_memories' deve ser uma lista."}
+
+        # Valida teto de tamanho para blocos de memória primária
+        for b_name, b_val in core_mem.items():
+            if len(str(b_val)) > 4000:
+                return {
+                    "success": False,
+                    "error": f"Bloco de memória primária '{b_name}' excede o teto seguro de 4000 caracteres."
+                }
 
         # 1. Validação Criptográfica de Integridade SHA-256 (se presente no manifesto)
         claimed_checksum = pack_data.get("sha256_checksum")
@@ -200,6 +213,15 @@ class DotPackManager:
         os.makedirs(workspace_path, exist_ok=True)
 
         async with get_db() as db:
+            # Protege os membros nativos vitais do Core Squad contra sobrescrita maliciosa ou acidental
+            cur_core = await db.execute("SELECT is_core FROM dots WHERE id = ?", (target_dot_id,))
+            core_row = await cur_core.fetchone()
+            if core_row and core_row["is_core"] == 1:
+                return {
+                    "success": False,
+                    "error": f"O Dot '{target_dot_id}' é um integrante nativo do Core Squad e não pode ser sobrescrito por um pacote externo."
+                }
+
             # 1. Cadastra ou atualiza o Dot
             await db.execute(
                 """

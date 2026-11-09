@@ -420,9 +420,17 @@ async def _apply_schema_migrations(db: aiosqlite.Connection) -> None:
         END;
     """)
     try:
-        await db.execute("INSERT INTO archival_memories_fts(archival_memories_fts) VALUES('rebuild');")
+        cur_fts = await db.execute("SELECT COUNT(*) AS c FROM archival_memories_fts;")
+        fts_row = await cur_fts.fetchone()
+        fts_count = fts_row["c"] if fts_row else 0
+        cur_mem = await db.execute("SELECT COUNT(*) AS c FROM archival_memories;")
+        mem_row = await cur_mem.fetchone()
+        mem_count = mem_row["c"] if mem_row else 0
+        if fts_count == 0 and mem_count > 0:
+            await db.execute("INSERT INTO archival_memories_fts(archival_memories_fts) VALUES('rebuild');")
+            logger.info("Índice FTS5 sincronizado via rebuild condicional.")
     except Exception as e:
-        logger.debug("Rebuild FTS5 ignorado ou sem registros: %s", e)
+        logger.debug("Verificação/Rebuild FTS5 ignorado: %s", e)
 
     await db.commit()
 
@@ -532,16 +540,21 @@ async def init_edge_database(db_path: str | None = None) -> None:
             core_squad
         )
 
-        # Atualizacao idempotente dos Core Dots com novos prompts de artesao de software
+        # Atualizacao idempotente dos Core Dots preservando personalizações do usuário
         for dot in core_squad:
-            await db.execute(
-                """
-                UPDATE dots
-                SET role = ?, system_prompt = ?
-                WHERE id = ? AND is_core = 1;
-                """,
-                (dot[2], dot[3], dot[0])
-            )
+            cur_existing = await db.execute("SELECT system_prompt FROM dots WHERE id = ?", (dot[0],))
+            existing_row = await cur_existing.fetchone()
+            if existing_row:
+                # Só atualiza se o prompt existente estiver vazio ou com o valor placeholder legado
+                if not existing_row["system_prompt"] or "Assistente técnico." in existing_row["system_prompt"]:
+                    await db.execute(
+                        """
+                        UPDATE dots
+                        SET role = ?, system_prompt = ?
+                        WHERE id = ? AND is_core = 1;
+                        """,
+                        (dot[2], dot[3], dot[0])
+                    )
 
         # Sincronizacao idempotente dos Core Dots com o modelo ativo configurado no .env
         await db.execute(

@@ -4,11 +4,13 @@ Rotas REST para Gerenciamento de Tasks Agendadas, Shared Spaces e Workspaces do 
 
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
+from croniter import croniter
 
 from ..storage.db import get_db
 from ..storage.spaces_manager import SpacesManager
 from ..storage.vector_store import VectorStore
 from ..core.scheduler import EdgeScheduler, execute_proactive_task
+from .deps import get_ai_provider
 
 router = APIRouter(tags=["Tasks & Spaces"])
 
@@ -23,6 +25,7 @@ class SaveDocumentPayload(BaseModel):
 class VectorSearchPayload(BaseModel):
     query: str
     top_k: int = 3
+    dot_id: str | None = None
 
 
 class CreateTaskPayload(BaseModel):
@@ -48,9 +51,9 @@ async def list_spaces(dot_id: str | None = None):
 
 
 @router.get("/api/spaces/search")
-async def search_spaces_get(query: str, top_k: int = 3):
+async def search_spaces_get(query: str, top_k: int = 3, dot_id: str | None = None):
     """Executa busca semântica KNN vetorial via GET nos documentos dos Spaces."""
-    return await VectorStore.search(query=query, top_k=top_k)
+    return await VectorStore.search(query=query, top_k=top_k, dot_id=dot_id)
 
 
 @router.get("/api/spaces/{space_id}")
@@ -81,22 +84,17 @@ async def save_space_doc(payload: SaveDocumentPayload):
 
 @router.delete("/api/spaces/{space_id}")
 async def delete_space_doc(space_id: str):
-    """Remove um documento versionado e suas revisões do banco SQLite WAL."""
-    async with get_db() as db:
-        cursor = await db.execute("SELECT id, filename FROM spaces WHERE id = ?", (space_id,))
-        row = await cursor.fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Documento não encontrado.")
-        await db.execute("DELETE FROM space_revisions WHERE space_id = ?", (space_id,))
-        await db.execute("DELETE FROM spaces WHERE id = ?", (space_id,))
-        await db.commit()
-    return {"status": "deleted", "space_id": space_id, "filename": row["filename"]}
+    """Remove um documento versionado, suas revisões e embeddings do banco SQLite WAL."""
+    res = await SpacesManager.delete_document(space_id)
+    if not res.get("success"):
+        raise HTTPException(status_code=404, detail="Documento não encontrado.")
+    return res
 
 
 @router.post("/api/spaces/search")
 async def search_spaces(payload: VectorSearchPayload):
     """Executa busca semântica KNN vetorial nos documentos dos Spaces."""
-    return await VectorStore.search(query=payload.query, top_k=payload.top_k)
+    return await VectorStore.search(query=payload.query, top_k=payload.top_k, dot_id=payload.dot_id)
 
 
 @router.get("/api/spaces/{space_id}/download")
@@ -165,7 +163,7 @@ async def run_scheduled_task_now(task_id: str, request: Request):
     if EdgeScheduler.is_running(task_id):
         return {"id": task_id, "status": "already_running", "task_name": task_dict["task_name"]}
 
-    ai_provider = getattr(request.app.state, "ai_provider", None)
+    ai_provider = get_ai_provider(request)
     await execute_proactive_task(task=task_dict, ai_provider=ai_provider)
 
     async with get_db() as db:
@@ -200,13 +198,21 @@ async def update_scheduled_task(task_id: str, payload: UpdateTaskPayload):
         new_prompt = payload.action_prompt.strip() if payload.action_prompt else row["action_prompt"]
         new_name = payload.task_name.strip() if payload.task_name else row["task_name"]
 
+        if not croniter.is_valid(new_cron):
+            raise HTTPException(status_code=400, detail=f"Expressão cron inválida: '{new_cron}'.")
+
+        next_run_dt = EdgeScheduler.calculate_next_run(new_cron)
+        next_run_iso = next_run_dt.isoformat()
+
+        # Se reativada ou alterada, reseta contagem de falhas do circuit breaker
         await db.execute(
             """
             UPDATE scheduled_tasks
-            SET is_active = ?, cron_expr = ?, action_prompt = ?, task_name = ?
+            SET is_active = ?, cron_expr = ?, action_prompt = ?, task_name = ?,
+                next_run_at = ?, consecutive_failures = 0, backoff_until = NULL
             WHERE id = ?
             """,
-            (new_active, new_cron, new_prompt, new_name, task_id)
+            (new_active, new_cron, new_prompt, new_name, next_run_iso, task_id)
         )
         await db.commit()
 
@@ -215,6 +221,7 @@ async def update_scheduled_task(task_id: str, payload: UpdateTaskPayload):
         "task_name": new_name,
         "is_active": bool(new_active),
         "cron_expr": new_cron,
+        "next_run_at": next_run_iso,
         "status": "updated"
     }
 

@@ -38,6 +38,40 @@ class TerminalSandbox:
             except Exception as kill_err:
                 logger.debug("Falha ao interromper processo após timeout: %s", kill_err)
 
+    @staticmethod
+    async def _read_stream_limited(stream: asyncio.StreamReader | None, max_bytes: int = 50000) -> bytes:
+        """Lê um stream de processo até o teto estrito em bytes para evitar esgotamento de RAM (OOM)."""
+        if stream is None:
+            return b""
+        buf = bytearray()
+        try:
+            while len(buf) < max_bytes:
+                chunk = await stream.read(min(4096, max_bytes - len(buf)))
+                if not chunk:
+                    break
+                buf.extend(chunk)
+            # Drena e descarta o restante do stream sem alocar buffers gigantes na memória
+            while True:
+                discard = await stream.read(8192)
+                if not discard:
+                    break
+        except Exception:
+            pass
+        return bytes(buf)
+
+    @classmethod
+    async def _communicate_limited(
+        cls,
+        proc: asyncio.subprocess.Process,
+        max_bytes: int = 50000
+    ) -> tuple[bytes, bytes]:
+        """Lê stdout e stderr simultaneamente respeitando o teto de alocação de memória."""
+        stdout_task = asyncio.create_task(cls._read_stream_limited(proc.stdout, max_bytes))
+        stderr_task = asyncio.create_task(cls._read_stream_limited(proc.stderr, max_bytes))
+        stdout_b, stderr_b = await asyncio.gather(stdout_task, stderr_task)
+        await proc.wait()
+        return stdout_b, stderr_b
+
     @classmethod
     async def _safe_terminate(cls, proc: asyncio.subprocess.Process | None) -> None:
         """Encerra a arvore de processos e colhe o processo pai evitando zumbis defunct."""
@@ -103,6 +137,7 @@ class TerminalSandbox:
                 "--proc", "/proc",
                 "--bind", workspace_dir, "/workspace",
                 "--chdir", "/workspace",
+                "--setenv", "HOME", "/workspace",
                 "--tmpfs", "/tmp",
                 "--unshare-pid",
                 "bash", "-c", command
@@ -122,7 +157,7 @@ class TerminalSandbox:
                     env=sanitized_env,
                     start_new_session=True
                 )
-                stdout_b, stderr_b = await asyncio.wait_for(bwrap_proc.communicate(), timeout=timeout_seconds)
+                stdout_b, stderr_b = await asyncio.wait_for(cls._communicate_limited(bwrap_proc), timeout=timeout_seconds)
                 # Se rodou com código 0 ou erro do comando interno, registra sucesso do bwrap
                 if bwrap_is_working(bwrap_proc.returncode, stderr_b):
                     execution_method = "bubblewrap"
@@ -183,7 +218,7 @@ class TerminalSandbox:
                 env=sanitized_env,
                 start_new_session=True
             )
-            stdout_b, stderr_b = await asyncio.wait_for(proc.communicate(), timeout=timeout_seconds)
+            stdout_b, stderr_b = await asyncio.wait_for(cls._communicate_limited(proc), timeout=timeout_seconds)
             exit_code = proc.returncode
         except asyncio.TimeoutError:
             await cls._safe_terminate(proc)

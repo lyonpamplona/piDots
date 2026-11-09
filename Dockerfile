@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Cria usuário não-root para execução segura do container
 RUN useradd -u 1000 -m -s /bin/bash pidots && \
-    mkdir -p /app/data/locales /app/data/backups /app/workspaces /app/static /app/pages && \
+    mkdir -p /app/data/locales /app/data/backups /app/data/packs /app/workspaces /app/static /app/pages && \
     chown -R pidots:pidots /app
 
 # Copia código fonte da aplicação, páginas modulares, ativos estáticos e dicionários i18n
@@ -34,6 +34,7 @@ COPY --chown=pidots:pidots pidots/ /app/pidots/
 COPY --chown=pidots:pidots static/ /app/static/
 COPY --chown=pidots:pidots pages/ /app/pages/
 COPY --chown=pidots:pidots data/locales/ /app/data/locales/
+COPY --chown=pidots:pidots data/packs/ /app/data/packs/
 COPY --chown=pidots:pidots data/changelog.json /app/data/changelog.json
 
 USER pidots

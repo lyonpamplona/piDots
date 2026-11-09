@@ -332,7 +332,9 @@
                     if (btn) {
                         btn.style.display = 'inline-flex';
                         btn.onclick = () => {
-                            alert('Instalacao no iOS Safari:\n1. Toque no botao Compartilhar (icone de quadrado com seta para cima)\n2. Selecione "Adicionar a Tela de Inicio"');
+                            if (window.PixelSystem && typeof PixelSystem.toast === 'function') {
+                                PixelSystem.toast('Instalacao no iOS Safari: Toque em Compartilhar e selecione "Adicionar a Tela de Inicio".', 'info', 6000);
+                            }
                         };
                     }
                 }

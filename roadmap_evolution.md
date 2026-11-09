@@ -105,9 +105,41 @@ todas as entregas abaixo ja estao implementadas no codigo-fonte e validadas pela
 
 ---
 
-## 8. homologacao e status dos testes
+## 8. fase 22 — saneamento integral e auditoria egm review (48 pontas soltas) [concluida]
 
-todas as entregas das fases 16 a 21 e o design system pixel paper ui foram verificados e aprovados:
+- [x] **eixo 1: saneamento do nucleo, agent engine, conselho, planner e provedor llm (19 itens):**
+  * descarte de conexões de provedores temporários (`self._owns_provider`) via `finally` em `pidots/core/agent.py`.
+  * regex restrita em cors e sanitização de path traversal em `StaticPageManager._resolve_file` (`pidots/main.py`).
+  * isolamento estrito de reflexões (`<thought>`) da resposta pública do operador em `agent.py`.
+  * otimização de consultas sqlite de alvos de dots eliminando padrões n+1 em `orchestrator.py`.
+  * reabertura segura de metas e escape de atributos xml em `planner.py`.
+  * proteção de sondagem concorrente em `half_open` no disjuntor do provedor llm (`openai_client.py`).
+- [x] **eixo 2: seguranca hitl, gateway, scheduler, hardware e tools (13 itens):**
+  * transição atômica de status para `executed` em `hitl.py` eliminando riscos de replay attack.
+  * ampliação do filtro `dangerous_command_patterns` cobrindo chamadas destrutivas a blocos e permissões.
+  * substituição de leituras ilimitadas por buffers controlados em streams de subprocessos em `terminal.py`.
+  * injeção compulsória e anti-spoofing de identificadores de sessão em ferramentas (`registry.py`).
+  * alinhamento de limiares térmicos em 78.0c com histerese e supressão de alarmes duplicados.
+  * buffers ampliados e descarte de notificações json-rpc assíncronas no cliente mcp.
+- [x] **eixo 3: api rest e storage sqlite (10 itens):**
+  * despacho e execução atômica de comandos aprovados em tokens assinados e webhooks (`routes_hitl.py` e `routes_webhooks.py`).
+  * exclusão limpa de registros vinculados (aprovações e metas) ao deletar threads em `routes_threads.py`.
+  * validação de expressões cron via `croniter.is_valid` e recálculo seguro no endpoint de tarefas (`routes_tasks.py`).
+  * validação prévia de existência de dots em rotas de memória retornando http 404 em vez de 500.
+  * rebuild sob demanda do índice fts5 apenas quando a tabela virtual estiver vazia com base populada.
+- [x] **eixo 4: frontend spa, slash commands, html, i18n e infraestrutura (11 itens):**
+  * catálogo consolidado e calibrado em exatamente 35 comandos slash em `slash-commands.js`.
+  * normalização robusta de atributos de arquivos em `pidots-api.js` e seletor da barra ascii wal.
+  * sincronização exata de 205 chaves bilíngues em `pt.json` e `en.json` com atributos de acessibilidade (aria).
+  * inclusão do roteador cross-surface no manifesto e service worker pwa com cache v8.
+  * replicação de cabeçalhos de segurança (`nosniff`, `sameorigin`, `strict-origin`) em todas as portas do nginx.
+  * inclusão dos pacotes de agentes nativos (`data/packs/`) na imagem docker e liberação no `.dockerignore`.
+
+---
+
+## 9. homologacao e status dos testes
+
+todas as entregas das fases 16 a 22 e o design system pixel paper ui foram verificados e aprovados:
 * **fases 16-19:** `scripts/test_phase16_19_roadmap_evolution.py` (4/4 suítes aprovadas, 100% de sucesso).
 * **fase 20 (nginx multi-porta):** `scripts/test_phase20_port_decoupling_nginx.py` (100% de êxito).
 * **fase 21 (ai teammate openbot):**
@@ -115,6 +147,10 @@ todas as entregas das fases 16 a 21 e o design system pixel paper ui foram verif
   - fase 2 (prompts coworker e sqlite wal): `scripts/test_phase2_coworker_prompts_and_identity.py` (100% aprovado).
   - fase 3 (card interativo de diagnóstico): `scripts/test_phase3_error_diagnostic_card.js` (100% aprovado).
   - fase 4 (live team chain e default responder): `scripts/test_phase4_live_team_chain.py` (100% aprovado).
+* **fase 22 (saneamento egm review 48 pontas soltas):**
+  - validação das 5 portas http pós-rebuild: 8000, 8081, 8082, 8083, 8088 com http 200 ok.
+  - paridade de 205 chaves de internacionalização pt/en validadas com zero omissões.
+  - subagentes especializados de revisão confirmando 100% de conformidade técnica e zero pontas soltas.
 * **roteador cross-surface:** `scripts/test_cross_surface_router.js` (100% de êxito via node.js).
 * **pixel paper ui (fases 1-4):** `scripts/test_pixel_paper_phase4_global_homologation.py` (100% aprovado).
 * **regressão global:** suítes `test_phase15_llm_failover.py` e `test_phase4_opendots_homologation.py` validadas com 100% de êxito.

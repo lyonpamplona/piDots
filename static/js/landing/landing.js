@@ -610,13 +610,6 @@
             }, 1100);
         }
 
-        // Helper de Alta Performance: Anexo Atômico sem Reflow Destrutivo
-        function appendSimLine(container, html) {
-            if (container) {
-                container.insertAdjacentHTML('beforeend', html);
-            }
-        }
-
         // Simulacao da Arena: Conselho Tripartite com Pool de Timers
         function runCouncilDemoSimulation() {
             playHapticMechanicalClick();

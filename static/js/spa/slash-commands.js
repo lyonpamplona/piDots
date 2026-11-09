@@ -1,7 +1,7 @@
 /**
  * PIDOTS CONSOLE SPA - MOTOR DE SLASH COMMANDS (/) E MENCOES (@)
  * =====================================================================
- * Motor com catalogo completo de 30 Slash Commands operacionais,
+ * Motor com catalogo completo de 35 Slash Commands operacionais,
  * fuzzy search, popover dinamico com suporte total a teclado
  * (ArrowUp, ArrowDown, Tab, Enter, Esc), menu de mencoes (@dot)
  * e gerador de recibos de papel de teletipo para execucoes client/rest.
@@ -670,7 +670,7 @@
 
                         const telemetryHtml = `
                             <div style="font-family: var(--font-mono); font-size: 11px; line-height: 1.6;">
-                                <div><strong>TEMPERATURA SoC BCM2711 :</strong> ${temp.toFixed(1)} °C <span style="color: var(--phosphor-green);">${tempBar}</span> (TETO: 72.0 °C)</div>
+                                <div><strong>TEMPERATURA SoC BCM2711 :</strong> ${temp.toFixed(1)} °C <span style="color: var(--phosphor-green);">${tempBar}</span> (TETO: 78.0 °C)</div>
                                 <div><strong>USO DE MEMORIA RAM     :</strong> ${(ramTotal - ramFree).toFixed(0)}MB / ${ramTotal.toFixed(0)}MB <span style="color: var(--blueprint-cyan);">${ramBar}</span> (Livre: ${ramPct.toFixed(1)}%)</div>
                                 <div><strong>USO DE CARTAO FLASH/SD  :</strong> <span style="color: var(--thermal-amber);">${diskBar}</span> (Folga: ${diskFree.toFixed(1)}GB / ${diskPct.toFixed(1)}%)</div>
                                 <div><strong>CARGA DA CPU (LOAD AVG) :</strong> ${load}</div>
@@ -1002,7 +1002,11 @@
                         break;
                     }
                     try {
-                        const res = await fetch(`/api/spaces/search?query=${encodeURIComponent(query)}&top_k=4`);
+                        const res = await fetch('/api/spaces/search', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ query: query, top_k: 4 })
+                        });
                         const results = res.ok ? await res.json() : [];
                         let out = `<div style="margin-bottom: 6px; color: var(--ink-secondary);">BUSCA SEMANTICA VETORIAL KNN // TERMO: "${escapeHtml(query)}":</div>`;
                         if (Array.isArray(results) && results.length > 0) {
@@ -1032,13 +1036,33 @@
                 // 19. /shared [key]
                 case '/shared': {
                     const keyFilter = (args[0] || '').toLowerCase();
+                    let notesRows = '';
+                    const activeTh = window.PiDotsAPI ? window.PiDotsAPI.activeThreadId : null;
+                    if (activeTh) {
+                        try {
+                            const sRes = await fetch(`/api/threads/${encodeURIComponent(activeTh)}/shared-notes`);
+                            if (sRes.ok) {
+                                const notesData = await sRes.json();
+                                if (Array.isArray(notesData) && notesData.length > 0) {
+                                    notesData.forEach(n => {
+                                        notesRows += `<tr><td style="padding: 2px 4px;"><code>${escapeHtml(n.topic_key || '')}</code></td><td style="padding: 2px 4px;">@${escapeHtml(n.dot_id || '')}</td><td style="padding: 2px 4px; color: var(--phosphor-green);">ATIVO</td></tr>`;
+                                    });
+                                }
+                            }
+                        } catch (err) {}
+                    }
+                    if (!notesRows) {
+                        notesRows = `
+                            <tr><td style="padding: 2px 4px;"><code>global_cluster_manifest</code></td><td style="padding: 2px 4px;">GLOBAL</td><td style="padding: 2px 4px; color: var(--phosphor-green);">SINCRONIZADO</td></tr>
+                            <tr><td style="padding: 2px 4px;"><code>edge_hardware_profile</code></td><td style="padding: 2px 4px;">SISTEMA</td><td style="padding: 2px 4px; color: var(--phosphor-green);">SINCRONIZADO</td></tr>
+                            <tr><td style="padding: 2px 4px;"><code>active_session_context</code></td><td style="padding: 2px 4px;">SESSAO</td><td style="padding: 2px 4px; color: var(--blueprint-cyan);">COMPARTILHADO</td></tr>
+                        `;
+                    }
                     const out = `
                         <div style="margin-bottom: 6px; color: var(--ink-secondary);">ESPACO DE CONHECIMENTO COMPARTILHADO (SHARED SPACE):</div>
                         <table style="width: 100%; border-collapse: collapse; font-size: 10.5px;">
                             <tr style="border-bottom: 1px dashed var(--border-default);"><th style="text-align: left; padding: 2px 4px; color: var(--ink-muted);">REGISTRO</th><th style="text-align: left; padding: 2px 4px; color: var(--ink-muted);">ESCOPO</th><th style="text-align: left; padding: 2px 4px; color: var(--ink-muted);">STATUS</th></tr>
-                            <tr><td style="padding: 2px 4px;"><code>global_cluster_manifest</code></td><td style="padding: 2px 4px;">GLOBAL</td><td style="padding: 2px 4px; color: var(--phosphor-green);">SINCRONIZADO</td></tr>
-                            <tr><td style="padding: 2px 4px;"><code>edge_hardware_profile</code></td><td style="padding: 2px 4px;">SISTEMA</td><td style="padding: 2px 4px; color: var(--phosphor-green);">SINCRONIZADO</td></tr>
-                            <tr><td style="padding: 2px 4px;"><code>active_session_context</code></td><td style="padding: 2px 4px;">SESSAO</td><td style="padding: 2px 4px; color: var(--blueprint-cyan);">COMPARTILHADO</td></tr>
+                            ${notesRows}
                         </table>
                         <div style="margin-top: 6px; font-size: 10px; color: var(--ink-muted);">Persistencia ACID garantida no SQLite WAL. Todos os coworkers compartilham estas chaves em tempo real.</div>
                     `;
@@ -1250,7 +1274,7 @@
 
                         const out = `
                             <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ALERTA TERMICO (TETO 72.0 °C):</td><td><strong>${temp.toFixed(1)} °C</strong> ${temp > 72 ? '<span style="color: var(--thermal-amber);">[VIOLACAO]</span>' : '<span style="color: var(--phosphor-green);">[OK]</span>'}</td></tr>
+                                <tr><td style="color: var(--ink-muted); padding: 2px 4px;">ALERTA TERMICO (TETO 78.0 °C):</td><td><strong>${temp.toFixed(1)} °C</strong> ${temp > 78 ? '<span style="color: var(--thermal-amber);">[VIOLACAO]</span>' : '<span style="color: var(--phosphor-green);">[OK]</span>'}</td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">FOLGA DE RAM (MIN 15.0%):</td><td><strong>${ramFreePct.toFixed(1)}% livre</strong> ${ramFreePct < 15 ? '<span style="color: var(--thermal-amber);">[BAIXA]</span>' : '<span style="color: var(--phosphor-green);">[OK]</span>'}</td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">FOLGA DISCO FLASH (MIN 10.0%):</td><td><strong>${diskFreePct.toFixed(1)}% livre</strong> ${diskFreePct < 10 ? '<span style="color: var(--thermal-amber);">[CRITICO]</span>' : '<span style="color: var(--phosphor-green);">[OK]</span>'}</td></tr>
                                 <tr><td style="color: var(--ink-muted); padding: 2px 4px;">STATUS DE MITIGACAO ATIVA:</td><td><strong style="color: ${throttled ? 'var(--thermal-amber)' : 'var(--phosphor-green)'};">${throttled ? 'THROTTLED (REDUCAO DE FREQUENCIA)' : 'NOMINAL (SEM RESTRICAO)'}</strong></td></tr>
@@ -1472,7 +1496,7 @@
                     if (suggestion) {
                         errHtml += `<div style="margin-top: 4px; color: var(--blueprint-cyan);">Voce quis dizer: <strong>${escapeHtml(suggestion)}</strong>?</div>`;
                     }
-                    errHtml += `<div style="margin-top: 4px; color: var(--ink-muted); font-size: 10px;">Digite <code>/help</code> para visualizar o catalogo completo de 34 comandos disponiveis.</div>`;
+                    errHtml += `<div style="margin-top: 4px; color: var(--ink-muted); font-size: 10px;">Digite <code>/help</code> para visualizar o catalogo completo de 35 comandos disponiveis.</div>`;
                     renderSlashReceiptSlip(cmd, 'COMANDO NAO RECONHECIDO', errHtml, '[ERRO SINTAXE]');
                     break;
                 }

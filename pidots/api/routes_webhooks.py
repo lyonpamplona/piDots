@@ -89,6 +89,10 @@ async def handle_telegram_webhook(dot_id: str, request: Request):
                         approved=approved,
                         notes="Resolvido via Telegram Callback Interativo (HMAC-SHA256 validado)"
                     )
+                    exec_res = None
+                    if approved:
+                        exec_res = await HITLManager.execute_approved_action(approval_id)
+
                     status_text = "HOMOLOGADA" if approved else "BLOQUEADA"
                     # Responde ao Telegram se o token do bot estiver configurado
                     http_client = get_http_client(request)
@@ -102,7 +106,8 @@ async def handle_telegram_webhook(dot_id: str, request: Request):
                         "status": "hitl_resolved",
                         "approval_id": approval_id,
                         "approved": approved,
-                        "resolved_success": success
+                        "resolved_success": success,
+                        "execution_result": exec_res
                     }
                 else:
                     return {
@@ -190,15 +195,22 @@ async def handle_whatsapp_webhook(dot_id: str, request: Request):
                     approved=approved,
                     notes="Resolvido via WhatsApp Mensageria (HMAC-SHA256 validado)"
                 )
+                exec_res = None
+                if approved:
+                    exec_res = await HITLManager.execute_approved_action(approval_id)
+
                 verdict_txt = "HOMOLOGADA" if approved else "BLOQUEADA"
                 reply_txt = f"[GOVERNANCA HITL]: Solicitacao '{approval_id}' foi {verdict_txt} com sucesso."
+                if approved and exec_res and exec_res.get("executed"):
+                    reply_txt += f" Execucao concluida ({exec_res.get('duration_ms', 0)}ms)."
                 http_client = get_http_client(request)
                 await MessagingGateway.dispatch_outgoing_message("whatsapp", remote_jid, reply_txt, http_client)
                 return {
                     "status": "hitl_resolved",
                     "approval_id": approval_id,
                     "approved": approved,
-                    "resolved_success": success
+                    "resolved_success": success,
+                    "execution_result": exec_res
                 }
 
     unified_msg = UnifiedIncomingMessage(

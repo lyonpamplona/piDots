@@ -58,6 +58,12 @@ class Settings(BaseSettings):
         description="Timeout máximo por requisição HTTP para inferência"
     )
 
+    # CORS e Segurança de Rede
+    cors_allowed_origin_regex: str = Field(
+        default=r"^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|.*\.ts\.net|.*\.trycloudflare\.com)(:\d+)?$",
+        description="Regex de origens autorizadas pelo middleware CORS"
+    )
+
     # Provedor de IA Secundário (Failover Opcional e Desativado por Padrão)
     ai_fallback_url: str | None = Field(
         default=None,
@@ -150,6 +156,10 @@ class Settings(BaseSettings):
         default="pidots",
         description="Identificador da instancia na Evolution API para envio de mensagens WhatsApp"
     )
+    whatsapp_target_number: str | None = Field(
+        default=None,
+        description="Número de telefone / JID de destino para mensagens e alertas HITL no WhatsApp"
+    )
 
     # Governança Criptográfica HITL via Mensageria (Fase 15)
     hitl_hmac_secret: str = Field(
@@ -205,9 +215,9 @@ class Settings(BaseSettings):
         if model is not None:
             self.ai_model = model
         if max_retries is not None:
-            self.ai_max_retries = max_retries
+            self.ai_max_retries = max(1, max_retries)
         if timeout_seconds is not None:
-            self.ai_timeout_seconds = timeout_seconds
+            self.ai_timeout_seconds = max(1.0, timeout_seconds)
         if fallback_url is not None:
             self.ai_fallback_url = fallback_url.rstrip("/") if fallback_url.strip() else None
         if fallback_api_key is not None:
@@ -225,7 +235,8 @@ class Settings(BaseSettings):
         telegram_token: str | None = None,
         telegram_chat_id: str | None = None,
         evolution_url: str | None = None,
-        evolution_key: str | None = None
+        evolution_key: str | None = None,
+        whatsapp_number: str | None = None
     ) -> None:
         """Atualiza os canais de notificação em memória dinamicamente."""
         if webhook_url is not None:
@@ -238,6 +249,8 @@ class Settings(BaseSettings):
             self.evolution_api_url = evolution_url.strip()
         if evolution_key is not None:
             self.evolution_api_key = evolution_key.strip()
+        if whatsapp_number is not None:
+            self.whatsapp_target_number = whatsapp_number.strip() if whatsapp_number.strip() else None
 
 
 settings = Settings()

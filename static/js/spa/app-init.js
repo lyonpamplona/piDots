@@ -61,10 +61,16 @@
                     if (data.reachable || data.status === 'ok') {
                         PixelSystem.toast(`Provedor online (${data.latency_ms || 0} ms) · Modelo: ${data.model || payload.model}`, 'success');
                     } else {
-                        PixelSystem.toast(`Aviso do provedor: ${data.detail || 'Verifique URL/Chave'}`, 'warning');
+                        const warnMsg = data.message || data.detail || 'Verifique URL e credenciais';
+                        PixelSystem.toast(`Aviso do provedor: ${warnMsg}`, 'warning');
                     }
                 } else {
-                    PixelSystem.toast(`Falha no teste: servidor retornou status ${res.status}`, 'danger');
+                    let errDetail = `servidor retornou status ${res.status}`;
+                    try {
+                        const errJson = await res.json();
+                        if (errJson.message || errJson.detail) errDetail = errJson.message || errJson.detail;
+                    } catch (_) {}
+                    PixelSystem.toast(`Falha no teste: ${errDetail}`, 'danger');
                 }
             } catch (err) {
                 PixelSystem.toast(`Erro ao conectar ao servidor: ${err.message}`, 'danger');

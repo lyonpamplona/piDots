@@ -65,41 +65,32 @@ class ToolRegistry:
             else:
                 arguments = dict(arguments)
 
-            # Injeta argumentos contextuais conforme a ferramenta
+            # Injeta argumentos contextuais autenticados com sobreposição incondicional (anti-spoofing)
             if name in (
                 "execute_shell_command", "execute_and_verify", "workspace_read_file", "workspace_write_file", "workspace_list_files",
-                "core_memory_append", "core_memory_replace", "archival_memory_insert", "archival_memory_search"
+                "core_memory_append", "core_memory_replace", "archival_memory_insert", "archival_memory_search", "edge_maintenance_run"
             ):
-                if "dot_id" not in arguments:
-                    arguments["dot_id"] = dot_id
-                if name in ("execute_shell_command", "execute_and_verify") and "thread_id" not in arguments and thread_id:
+                arguments["dot_id"] = dot_id
+                if thread_id and name in ("execute_shell_command", "execute_and_verify"):
                     arguments["thread_id"] = thread_id
             elif name == "recall_memory_search":
-                if "thread_id" not in arguments and thread_id:
+                if thread_id:
                     arguments["thread_id"] = thread_id
             elif name in ("plan_get_status", "plan_create", "shared_space_write", "shared_space_read"):
-                if "dot_id" not in arguments:
-                    arguments["dot_id"] = dot_id
-                if "thread_id" not in arguments and thread_id:
+                arguments["dot_id"] = dot_id
+                if thread_id:
                     arguments["thread_id"] = thread_id
-            elif name == "delegate_task":
+            elif name in ("delegate_task", "handoff_to_dot"):
                 arguments["source_dot_id"] = dot_id
-                if "thread_id" not in arguments and thread_id:
+                if thread_id:
                     arguments["thread_id"] = thread_id
                 if "provider" not in arguments and provider:
                     arguments["provider"] = provider
             elif name == "run_council_debate":
-                if "thread_id" not in arguments and thread_id:
+                if thread_id:
                     arguments["thread_id"] = thread_id
                 if "provider" not in arguments and provider:
                     arguments["provider"] = provider
-            elif name == "handoff_to_dot":
-                arguments["source_dot_id"] = dot_id
-                if "thread_id" not in arguments and thread_id:
-                    arguments["thread_id"] = thread_id
-            elif name == "edge_maintenance_run":
-                if "dot_id" not in arguments:
-                    arguments["dot_id"] = dot_id
 
             # Filtra argumentos alucinados se a função não aceitar **kwargs arbitrários
             sig = inspect.signature(handler)
@@ -698,7 +689,7 @@ class ToolRegistry:
                         "properties": {
                             "thermal_limit_celsius": {
                                 "type": "number",
-                                "description": "Teto customizado de temperatura em °C para avaliação (opcional, padrão do sistema: 72.0°C)."
+                                "description": "Teto customizado de temperatura em °C para avaliação (opcional, padrão do sistema: 78.0°C)."
                             },
                             "disk_min_free_percent": {
                                 "type": "number",

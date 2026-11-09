@@ -94,6 +94,7 @@ class DotAgent:
         tool_registry: ToolRegistry | None = None
     ) -> None:
         self.dot_id = dot_id
+        self._owns_provider = provider is None
         if provider is None:
             from ..providers.openai_client import OpenAIUniversalProvider
             self.provider = OpenAIUniversalProvider()
@@ -233,6 +234,7 @@ class DotAgent:
                     self.dot_id, (user_message or "")[:40]
                 )
             else:
+                dot_arch = dot_info.get("archetype") or DOT_ID_TO_ARCHETYPE.get(self.dot_id, "general")
                 allowed_tools_raw = dot_info.get("allowed_tools_json")
                 allowed_tools = None
                 if allowed_tools_raw:
@@ -246,7 +248,6 @@ class DotAgent:
                 # Fallback inteligente: se allowed_tools_json for nulo ou lista vazia,
                 # aplica o catálogo canônico do arquétipo do Dot, evitando injeção das 23 ferramentas
                 if not allowed_tools:
-                    dot_arch = dot_info.get("archetype") or DOT_ID_TO_ARCHETYPE.get(self.dot_id, "general")
                     allowed_tools = ARCHETYPE_DOMAINS.get(dot_arch, ARCHETYPE_DOMAINS.get("general", []))
 
                 tool_defs = self.tools.get_tool_definitions(allowed_tools)
@@ -300,10 +301,10 @@ class DotAgent:
                             async with get_db() as db:
                                 await db.execute(
                                     "UPDATE dots SET model = ? WHERE id = ?",
-                                    (self.provider.default_model, self.dot_id)
+                                    (provider_default_model, self.dot_id)
                                 )
                                 await db.commit()
-                            dot_info["model"] = self.provider.default_model
+                            dot_info["model"] = provider_default_model
                         except Exception:
                             # Se mesmo com default_model falhar, segue para tratamento normal
                             err_msg = str(endp_err)
@@ -434,7 +435,6 @@ class DotAgent:
                 tool_calls = msg.get("tool_calls", [])
 
                 if content:
-                    final_response_text += content
                     yield {
                         "event": "thought:delta",
                         "data": {"run_id": run_id, "content_chunk": content}
@@ -715,6 +715,7 @@ class DotAgent:
                     continue
 
                 # Caso 2: Resposta finalizada sem ferramentas
+                final_response_text = content
                 break
 
             # 3. Salva resposta final do assistente no banco SQLite WAL
@@ -744,6 +745,11 @@ class DotAgent:
         finally:
             if not is_hitl:
                 await self._update_thread_status(thread_id, "idle")
+            if getattr(self, "_owns_provider", False) and hasattr(self.provider, "aclose"):
+                try:
+                    await self.provider.aclose()
+                except Exception:
+                    pass
 
     async def _load_context(
         self,
@@ -797,7 +803,7 @@ class DotAgent:
         # Injeção de Core Memory estruturada (Padrão MemGPT / Letta)
         core_memory_xml = await MemoryManager.format_core_memory_prompt(
             dot_id=self.dot_id,
-            default_persona=dot_info["system_prompt"]
+            default_persona=f"{dot_info.get('name', self.dot_id)}: {dot_info.get('role', 'Especialista')}"
         )
 
         # Injeção de Plano Ativo (Two-Stage Planning com Checkpoints)
@@ -833,9 +839,8 @@ class DotAgent:
             "e 'shared_space_read' para ler notas da bancada."
         )
 
-        messages: list[dict[str, Any]] = [
-            {"role": "system", "content": system_content}
-        ]
+        # Montagem do histórico bruto a partir do SQLite
+        raw_entries: list[dict[str, Any]] = []
         for r in rows:
             entry: dict[str, Any] = {"role": r["role"], "content": r["content"] or ""}
             if r["tool_calls_json"]:
@@ -855,6 +860,46 @@ class DotAgent:
                     if not str(entry["content"]).startswith(prefix):
                         entry["content"] = f"{prefix}{entry['content']}"
 
-            messages.append(entry)
+            raw_entries.append(entry)
 
-        return dot_info, messages
+        # 1. Descarta mensagens 'tool' no topo da janela caso a chamada do assistente tenha ficado fora do LIMIT
+        while raw_entries and raw_entries[0]["role"] == "tool":
+            raw_entries.pop(0)
+
+        # 2. Garante o pareamento estrito de Function Calling: toda tool_call de assistant deve ter resposta tool
+        sanitized_messages: list[dict[str, Any]] = [
+            {"role": "system", "content": system_content}
+        ]
+        idx = 0
+        while idx < len(raw_entries):
+            current = raw_entries[idx]
+            sanitized_messages.append(current)
+
+            if current.get("role") == "assistant" and current.get("tool_calls"):
+                expected_call_ids = [
+                    call["id"] for call in current["tool_calls"]
+                    if isinstance(call, dict) and "id" in call
+                ]
+                j = idx + 1
+                found_call_ids: set[str] = set()
+                while j < len(raw_entries) and raw_entries[j].get("role") == "tool":
+                    tid = raw_entries[j].get("tool_call_id")
+                    if tid in expected_call_ids:
+                        found_call_ids.add(tid)
+                    sanitized_messages.append(raw_entries[j])
+                    j += 1
+
+                # Injeta resposta sintética caso alguma tool_call tenha sido interrompida (ex.: parada HITL)
+                for missing_id in expected_call_ids:
+                    if missing_id not in found_call_ids:
+                        sanitized_messages.append({
+                            "role": "tool",
+                            "tool_call_id": missing_id,
+                            "content": "[Execucao retida na governanca HITL ou interrompida antes do retorno da ferramenta]"
+                        })
+                idx = j
+                continue
+
+            idx += 1
+
+        return dot_info, sanitized_messages

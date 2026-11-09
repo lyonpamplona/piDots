@@ -57,10 +57,11 @@ class OpenAIUniversalProvider:
         self.base_url = (base_url or settings.ai_base_url).rstrip("/")
         self.api_key = api_key or settings.ai_api_key
         self.default_model = default_model or settings.ai_model
-        self.max_retries = settings.ai_max_retries
+        self.max_retries = max(1, settings.ai_max_retries)
         self.timeout = settings.ai_timeout_seconds
         self._external_client = http_client
         self._internal_client: httpx.AsyncClient | None = None
+        self._half_open_probe_in_flight: bool = False
 
         # Parâmetros de failover secundário opcional
         raw_fallback_url = fallback_url or settings.ai_fallback_url
@@ -112,6 +113,7 @@ class OpenAIUniversalProvider:
         self.circuit_state = CIRCUIT_STATE_CLOSED
         self.consecutive_failures = 0
         self.circuit_opened_at = None
+        self._half_open_probe_in_flight = False
 
     async def chat_completion(
         self,
@@ -126,12 +128,12 @@ class OpenAIUniversalProvider:
         """
         current_state = self.check_circuit_state()
 
-        # Se o circuito do primário estiver OPEN e houver fallback configurado, desvia imediatamente sem timeout
-        if current_state == CIRCUIT_STATE_OPEN and self.fallback_url:
+        # Se o circuito do primário estiver OPEN ou se for HALF_OPEN com probe já em andamento, desvia se houver fallback
+        if (current_state == CIRCUIT_STATE_OPEN or (current_state == CIRCUIT_STATE_HALF_OPEN and self._half_open_probe_in_flight)) and self.fallback_url:
             logger.warning(
-                "Circuit Breaker primário OPEN (%d falhas consecutivas). "
+                "Circuit Breaker primário %s (probe em voo: %s, %d falhas consecutivas). "
                 "Despachando requisição diretamente para o provedor secundário de failover: %s",
-                self.consecutive_failures, self.fallback_url
+                current_state, self._half_open_probe_in_flight, self.consecutive_failures, self.fallback_url
             )
             return await self._execute_fallback(
                 messages=messages,
@@ -140,6 +142,9 @@ class OpenAIUniversalProvider:
                 temperature=temperature,
                 max_tokens=max_tokens
             )
+
+        if current_state == CIRCUIT_STATE_HALF_OPEN:
+            self._half_open_probe_in_flight = True
 
         # Tenta executar no provedor primário
         primary_exception: Exception | None = None
@@ -158,21 +163,31 @@ class OpenAIUniversalProvider:
                 self.reset_circuit()
             else:
                 self.consecutive_failures = 0
+                self._half_open_probe_in_flight = False
 
             return result
 
         except (ProviderTransientError, httpx.TransportError, httpx.TimeoutException) as transient_err:
             primary_exception = transient_err
-            self.consecutive_failures += 1
-
-            if self.consecutive_failures >= self.circuit_breaker_threshold:
+            if current_state == CIRCUIT_STATE_HALF_OPEN:
+                # Falha no teste canário: retorna imediatamente para OPEN com janela renovada
                 self.circuit_state = CIRCUIT_STATE_OPEN
                 self.circuit_opened_at = time.time()
+                self._half_open_probe_in_flight = False
                 logger.warning(
-                    "Provedor primário atingiu %d falhas consecutivas. "
-                    "Circuit Breaker transicionou para OPEN (cooldown de %.1fs).",
-                    self.consecutive_failures, self.circuit_breaker_cooldown
+                    "Falha no teste canário HALF_OPEN (%s). Circuit Breaker forçado de volta para OPEN.",
+                    str(transient_err)
                 )
+            else:
+                self.consecutive_failures += 1
+                if self.consecutive_failures >= self.circuit_breaker_threshold:
+                    self.circuit_state = CIRCUIT_STATE_OPEN
+                    self.circuit_opened_at = time.time()
+                    logger.warning(
+                        "Provedor primário atingiu %d falhas consecutivas. "
+                        "Circuit Breaker transicionou para OPEN (cooldown de %.1fs).",
+                        self.consecutive_failures, self.circuit_breaker_cooldown
+                    )
 
             # Se houver fallback configurado, executa o failover transparente
             if self.fallback_url:
@@ -198,6 +213,9 @@ class OpenAIUniversalProvider:
 
             # Caso não haja fallback configurado, repassa a exceção normalmente
             raise primary_exception
+        finally:
+            if current_state == CIRCUIT_STATE_HALF_OPEN and self.circuit_state != CIRCUIT_STATE_HALF_OPEN:
+                self._half_open_probe_in_flight = False
 
     async def _execute_primary(
         self,
@@ -338,6 +356,11 @@ class OpenAIUniversalProvider:
 
                 if response.status_code in (401, 403):
                     raise ProviderAuthError(f"Autenticação recusada no provedor de failover (HTTP {response.status_code})")
+
+                if response.status_code in (400, 404):
+                    raise ProviderEndpointError(
+                        f"Endpoint ou modelo não encontrado no provedor secundário de failover (HTTP {response.status_code}): {response.text[:200]}"
+                    )
 
                 if attempt == fallback_retries - 1:
                     raise ProviderTransientError(f"Provedor de failover retornou HTTP {response.status_code}: {response.text[:200]}")

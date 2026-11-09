@@ -76,14 +76,13 @@ class SpacesManager:
                 diff_summary = "".join(diff_lines) if diff_lines else "Sem alterações textuais."
 
                 # Atualiza documento principal
-                now = datetime.now(timezone.utc).isoformat()
                 await db.execute(
                     """
                     UPDATE spaces
-                    SET content = ?, version = ?, title = ?, updated_at = ?
+                    SET content = ?, version = ?, title = ?, updated_at = CURRENT_TIMESTAMP
                     WHERE id = ?
                     """,
-                    (content, new_version, doc_title, now, space_id)
+                    (content, new_version, doc_title, space_id)
                 )
 
                 # Salva nova revisão no histórico
@@ -135,6 +134,29 @@ class SpacesManager:
             "version": new_version,
             "diff_summary": diff_summary,
             "status": "success"
+        }
+
+    @classmethod
+    async def delete_document(cls, space_id: str) -> dict[str, Any]:
+        """Remove atomicamente um documento versionado, suas revisões e seus embeddings vetoriais."""
+        async with get_db() as db:
+            cursor = await db.execute("SELECT id, dot_id, filename FROM spaces WHERE id = ?", (space_id,))
+            row = await cursor.fetchone()
+            if not row:
+                return {"success": False, "error": "Documento não encontrado."}
+
+            doc_info = dict(row)
+            await db.execute("DELETE FROM space_revisions WHERE space_id = ?", (space_id,))
+            await db.execute("DELETE FROM document_embeddings WHERE space_id = ?", (space_id,))
+            await db.execute("DELETE FROM spaces WHERE id = ?", (space_id,))
+            await db.commit()
+
+        return {
+            "success": True,
+            "status": "deleted",
+            "space_id": space_id,
+            "filename": doc_info["filename"],
+            "dot_id": doc_info["dot_id"]
         }
 
     @classmethod

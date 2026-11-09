@@ -232,6 +232,12 @@ class TwoStagePlanner:
                     "UPDATE goals SET status = 'FAILED', completed_at = CURRENT_TIMESTAMP WHERE id = ?",
                     (goal_id,)
                 )
+            else:
+                # Reabre o goal caso algum marco tenha retornado para IN_PROGRESS ou PENDING
+                await db.execute(
+                    "UPDATE goals SET status = 'IN_PROGRESS', completed_at = NULL WHERE id = ? AND status IN ('COMPLETED', 'FAILED')",
+                    (goal_id,)
+                )
 
             await db.commit()
 
@@ -250,19 +256,24 @@ class TwoStagePlanner:
         """
         Formata o plano ativo em bloco estruturado XML para injeção in-context no DotAgent.
         """
+        import html
         plan = await cls.get_plan_status(thread_id=thread_id, dot_id=dot_id)
         if not plan.get("found"):
             return ""
 
+        escaped_goal_title = html.escape(str(plan.get("title", "")), quote=True)
         lines = [
             "<execution_plan>",
-            f"  <goal id=\"{plan['goal_id']}\" title=\"{plan['title']}\" progress=\"{plan['progress_pct']}%\">",
+            f"  <goal id=\"{plan['goal_id']}\" title=\"{escaped_goal_title}\" progress=\"{plan['progress_pct']}%\">",
             "    <milestones>"
         ]
         for m in plan.get("milestones", []):
-            evid = f" evidence=\"{m['evidence_summary']}\"" if m.get("evidence_summary") else ""
+            evid_str = html.escape(str(m.get("evidence_summary", "")), quote=True)
+            evid = f' evidence="{evid_str}"' if evid_str else ""
+            m_title = html.escape(str(m.get("title", "")))
+            m_crit = html.escape(str(m.get("acceptance_criteria", "")))
             lines.append(
-                f"      <step order=\"{m['order_index']}\" id=\"{m['id']}\" status=\"{m['status']}\"{evid}>{m['title']} (Critério: {m['acceptance_criteria']})</step>"
+                f"      <step order=\"{m['order_index']}\" id=\"{m['id']}\" status=\"{m['status']}\"{evid}>{m_title} (Critério: {m_crit})</step>"
             )
         lines.append("    </milestones>")
         lines.append("  </goal>")

@@ -346,34 +346,49 @@ async def disconnect_mcp_server(server_name: str):
 
 @router.post("/api/edge/settings/test-provider")
 @router.post("/api/settings/ai/test")
-async def test_ai_provider_connection(request: Request):
-    """Realiza um diagnóstico de conectividade e estado do Circuit Breaker do provedor LLM configurado."""
-    provider = getattr(request.app.state, "ai_provider", None)
-    circuit_state = getattr(provider, "circuit_state", "CLOSED") if provider else "CLOSED"
-    consecutive_failures = getattr(provider, "consecutive_failures", 0) if provider else 0
+async def test_ai_provider_connection(request: Request, payload: AISettingsUpdatePayload | None = None):
+    """Realiza um diagnóstico de conectividade e estado do Circuit Breaker do provedor LLM configurado ou fornecido no payload."""
+    test_base_url = (payload.base_url.strip() if payload and payload.base_url else settings.ai_base_url).rstrip("/")
+    test_api_key = payload.api_key.strip() if payload and payload.api_key else settings.ai_api_key
+    test_model = payload.model.strip() if payload and payload.model else settings.ai_model
+
+    default_provider = getattr(request.app.state, "ai_provider", None)
+    circuit_state = getattr(default_provider, "circuit_state", "CLOSED") if default_provider else "CLOSED"
+    consecutive_failures = getattr(default_provider, "consecutive_failures", 0) if default_provider else 0
 
     start_ts = time.perf_counter()
-    if not settings.ai_api_key or settings.ai_api_key in ("sua_chave_aqui", "placeholder"):
+    if not test_api_key or test_api_key in ("sua_chave_aqui", "placeholder"):
         return {
             "status": "auth_required",
             "reachable": False,
             "latency_ms": 0,
-            "base_url": settings.ai_base_url,
-            "model": settings.ai_model,
+            "base_url": test_base_url,
+            "model": test_model,
             "circuit_state": circuit_state,
             "consecutive_failures": consecutive_failures,
-            "message": "Chave AI_API_KEY com valor placeholder ou não configurada."
+            "message": "Chave de API com valor placeholder ou não configurada."
         }
 
+    temp_provider = None
     try:
-        if provider is None:
-            provider = OpenAIUniversalProvider(
-                base_url=settings.ai_base_url,
-                api_key=settings.ai_api_key,
-                default_model=settings.ai_model
+        # Se os dados testados diferem do default ativo, cria provider canário temporário
+        if payload and (payload.base_url or payload.api_key or payload.model):
+            temp_provider = OpenAIUniversalProvider(
+                base_url=test_base_url,
+                api_key=test_api_key,
+                default_model=test_model
             )
-        resp = await provider.chat_completion(
+            target_provider = temp_provider
+        else:
+            target_provider = default_provider or OpenAIUniversalProvider(
+                base_url=test_base_url,
+                api_key=test_api_key,
+                default_model=test_model
+            )
+
+        resp = await target_provider.chat_completion(
             messages=[{"role": "user", "content": "Responda apenas: OK"}],
+            model=test_model,
             temperature=0.0
         )
         latency_ms = round((time.perf_counter() - start_ts) * 1000, 1)
@@ -382,10 +397,10 @@ async def test_ai_provider_connection(request: Request):
             "status": "ok",
             "reachable": True,
             "latency_ms": latency_ms,
-            "base_url": settings.ai_base_url,
-            "model": settings.ai_model,
-            "circuit_state": getattr(provider, "circuit_state", "CLOSED"),
-            "consecutive_failures": getattr(provider, "consecutive_failures", 0),
+            "base_url": test_base_url,
+            "model": test_model,
+            "circuit_state": getattr(target_provider, "circuit_state", "CLOSED"),
+            "consecutive_failures": getattr(target_provider, "consecutive_failures", 0),
             "sample_reply": content[:80]
         }
     except Exception as exc:
@@ -394,12 +409,18 @@ async def test_ai_provider_connection(request: Request):
             "status": "error",
             "reachable": False,
             "latency_ms": latency_ms,
-            "base_url": settings.ai_base_url,
-            "model": settings.ai_model,
-            "circuit_state": getattr(provider, "circuit_state", "CLOSED"),
-            "consecutive_failures": getattr(provider, "consecutive_failures", 0),
+            "base_url": test_base_url,
+            "model": test_model,
+            "circuit_state": circuit_state,
+            "consecutive_failures": consecutive_failures,
             "message": str(exc)[:240]
         }
+    finally:
+        if temp_provider and hasattr(temp_provider, "aclose"):
+            try:
+                await temp_provider.aclose()
+            except Exception:
+                pass
 
 
 @router.post("/api/edge/maintenance")

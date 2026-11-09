@@ -33,6 +33,7 @@
     "chat_title": "TELETYPE FEED // COMMANDS & AGENTS",
     "canvas_title": "WORKBENCH // LIVE CANVAS",
     "input_placeholder": "Type an instruction or mention @dot (Enter sends)...",
+    "input_aria": "Operator instruction input",
     "send_btn": "Send",
     "welcome_system": "[system] piDots node online. SQLite WAL database ready. Engine active (RSS RAM: 52 MB).",
     "welcome_agent": "Environment ready. Folder /workspace is mounted and silicon sensors are stable. Send a command in the terminal, summon specialists with @coder, or press F1 for the tech manual."
@@ -196,6 +197,9 @@
     "btn_clear": "Clear",
     "sim_chips_lbl": "COMMANDS:",
     "sim_input_placeholder": "Type command or /slash (e.g., /telemetry, /coagents)...",
+    "sim_input_aria": "Simulator command input",
+    "slider_agents_aria": "Number of agents",
+    "slider_cost_aria": "Monthly cloud cost per agent",
     "btn_send": "Execute",
     "sec3_tag": "SILICON ENGINEERING METRICS",
     "sec3_title": "Auditable hardware metrics captured in real runtime",
@@ -227,6 +231,7 @@
     "footer_report": "Technical Report",
     "drawer_title": "TECH MANUAL // 14 STEPS",
     "btn_close": "Close",
-    "drawer_search_placeholder": "Filter manual topics..."
+    "drawer_search_placeholder": "Filter manual topics...",
+    "drawer_search_aria": "Filter manual topics"
   }
 }

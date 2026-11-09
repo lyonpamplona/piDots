@@ -97,7 +97,14 @@ async def _hitl_resolve_cmd(approval_id: str, approve: bool, notes: str) -> None
     success = await HITLManager.resolve_approval(approval_id, approve, notes)
     if success:
         action_verb = "aprovada" if approve else "rejeitada"
-        dest = "comando despachado para o sandbox" if approve else "execução cancelada"
+        if approve:
+            exec_res = await HITLManager.execute_approved_action(approval_id)
+            if exec_res.get("executed"):
+                dest = f"comando executado no sandbox (exit code {exec_res.get('exit_code', 0)})"
+            else:
+                dest = f"ordem aprovada, mas execução retornou erro: {exec_res.get('error', 'desconhecido')}"
+        else:
+            dest = "execução cancelada pelo operador"
         print(f"ordem {approval_id} {action_verb}: {dest}.")
     else:
         print(f"falha: ordem {approval_id} não encontrada ou já resolvida.")

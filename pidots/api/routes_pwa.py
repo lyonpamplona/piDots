@@ -228,7 +228,7 @@ async def get_pwa_manifest():
 async def get_service_worker():
     """Retorna o Service Worker com ciclo de vida controlado, cache resiliente e suporte offline."""
     sw_code = """
-const CACHE_NAME = 'pidots-cache-v7';
+const CACHE_NAME = 'pidots-cache-v8';
 const CORE_STATIC_ASSETS = [
     '/app',
     '/',
@@ -252,6 +252,7 @@ const CORE_STATIC_ASSETS = [
     '/static/css/docs.css',
     '/static/css/relatorio.css',
     '/static/js/core/scroll-lock.js',
+    '/static/js/core/cross-surface-router.js',
     '/static/js/core/pixel-system.js',
     '/static/js/core/pidots-i18n.js',
     '/static/js/spa/pidots-api.js',

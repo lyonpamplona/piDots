@@ -129,6 +129,8 @@ class EdgeHardwareTriggers:
     _simulated_temp: float | None = None
     _simulated_disk_free_percent: float | None = None
     _simulated_ram_free_percent: float | None = None
+    _last_alert_timestamp: float = 0.0
+    _alert_cooldown_seconds: float = 300.0  # Cooldown de 5 minutos contra spam de notificações de hardware
 
     @classmethod
     def set_simulation(
@@ -473,16 +475,20 @@ class EdgeHardwareTriggers:
                     logger.error("Falha ao despertar @dot-supervisor em trigger fisico: %s", str(wake_err))
 
             if notify_hitl:
-                from .notifier import HITLNotifier
-                try:
-                    await HITLNotifier.notify_approval_requested(
-                        approval_id=f"edge-hw-{datetime.now(timezone.utc).strftime('%H%M%S')}",
-                        dot_id="system-monitor",
-                        action_type="hardware_trigger_alert",
-                        risk_level=report["status"],
-                        payload=f"Status: {report['status']} | Eventos: {events_summary}"
-                    )
-                except Exception as e:
-                    logger.error("Falha ao despachar notificação de hardware trigger: %s", str(e))
+                import time
+                now_ts = time.time()
+                if now_ts - cls._last_alert_timestamp >= cls._alert_cooldown_seconds:
+                    from .notifier import HITLNotifier
+                    try:
+                        await HITLNotifier.notify_system_alert(
+                            title=f"Hardware Edge ({report['status']})",
+                            message=events_summary,
+                            severity=report["status"]
+                        )
+                        cls._last_alert_timestamp = now_ts
+                    except Exception as e:
+                        logger.error("Falha ao despachar notificação de sistema para alerta de hardware: %s", str(e))
+                else:
+                    logger.debug("Alerta de hardware suprimido por cooldown ativo (%.1fs restantes).", cls._alert_cooldown_seconds - (now_ts - cls._last_alert_timestamp))
 
         return report

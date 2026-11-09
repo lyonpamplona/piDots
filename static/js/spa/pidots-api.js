@@ -204,10 +204,8 @@
                 }
 
                 if (data.database && data.database.mode) {
-                    const walEl = document.querySelector('.telemetry-chip.desktop-only .chip-value');
-                    if (walEl) walEl.textContent = `${data.database.mode} (ATIVO)`;
-                    const asciiWalEl = document.getElementById('sidebarAsciiWal');
-                    if (asciiWalEl) asciiWalEl.textContent = `${String(data.database.mode).toUpperCase()} OK`;
+                    const walEl = document.getElementById('sidebarAsciiWal') || document.querySelector('.telemetry-chip.desktop-only .chip-value');
+                    if (walEl) walEl.textContent = `${String(data.database.mode).toUpperCase()} OK`;
                 }
                 return true;
             } catch (e) {
@@ -1531,9 +1529,10 @@
             }
             container.innerHTML = items.map(it => {
                 const tagsStr = Array.isArray(it.tags) ? it.tags.join(', ') : (it.tags || 'fato');
+                const scoreBadge = (it.relevance_score != null || it.score != null) ? `<span style="color: var(--phosphor-green); font-size: 8px;"> [Score: ${((it.relevance_score ?? it.score) * 100).toFixed(0)}%]</span>` : '';
                 return `
                 <div style="background: var(--paper-surface-recessed); border: 1px solid var(--border-subtle); padding: 4px 6px; font-size: 9.5px;">
-                    <div style="color: var(--ink-main);">${safeEscape(String(it.content || '').slice(0, 120))}</div>
+                    <div style="color: var(--ink-main);">${safeEscape(String(it.content || '').slice(0, 120))}${scoreBadge}</div>
                     <div style="color: var(--ink-muted); font-size: 8px; margin-top: 2px;">${safeEscape(tagsStr)} | ${safeEscape(String(it.created_at || '').slice(0, 16))}</div>
                 </div>
                 `;
@@ -1670,7 +1669,11 @@
                     return;
                 }
                 box.innerHTML = `<span style="font-family: var(--font-pixel); font-size: 7px; color: var(--thermal-amber);">/WORKSPACE:</span>` +
-                    files.map(f => `<span class="pixel-btn" style="padding: 1px 5px; font-size: 9px; cursor: pointer;" onclick="PiDotsAPI.inspectWorkspaceFile('${safeEscape(f.path)}')">${safeEscape(f.path)} (${f.size_bytes}B)</span>`).join('');
+                    files.map(f => {
+                        const filePath = f.path || f.filename || f.name || 'arquivo';
+                        const fileSize = f.size_bytes ?? f.size ?? 0;
+                        return `<span class="pixel-btn" style="padding: 1px 5px; font-size: 9px; cursor: pointer;" onclick="PiDotsAPI.inspectWorkspaceFile('${safeEscape(filePath)}')">${safeEscape(filePath)} (${fileSize}B)</span>`;
+                    }).join('');
             } catch (e) {
                 console.warn('Erro ao listar arquivos do Dot Computer:', e);
             }

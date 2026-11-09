@@ -175,8 +175,8 @@ class EdgeScheduler:
                         task_id
                     )
                 )
-            elif status == "AUTH_REQUIRED":
-                # Backoff fixo de 10 minutos para dar tempo ao operador configurar a chave sem poluir o loop
+            elif status in ("AUTH_REQUIRED", "AWAITING_HITL"):
+                # Backoff fixo de 10 minutos para dar tempo ao operador configurar a chave ou homologar a ação sem poluir o loop
                 backoff_until = (now + timedelta(minutes=10)).isoformat()
                 await db.execute(
                     """
@@ -297,6 +297,10 @@ async def execute_proactive_task(
             status = "FAILED"
             summary = f"Falha no ciclo do agente: {error_msg}" if error_msg else "Falha na inferência do agente."
             logger.warning("Tarefa proativa '%s' falhou no ciclo cognitivo: %s", task["task_name"], summary)
+        elif finish_status == "awaiting_hitl":
+            status = "AWAITING_HITL"
+            summary = "Ação de alto risco interceptada pela governança HITL. Aguardando homologação do operador humano."
+            logger.info("Tarefa proativa '%s' pausada aguardando homologação HITL.", task["task_name"])
         elif "HEARTBEAT_OK" in final_response.strip():
             status = "SILENT"
             summary = "Condição operacional normal. Nenhuma notificação emitida."
@@ -306,17 +310,15 @@ async def execute_proactive_task(
             summary = final_response[:400] if final_response else "Execução concluída sem texto."
             logger.info("Tarefa proativa '%s' detectou evento e emitiu conclusão.", task["task_name"])
 
-            # Despacho externo se canal configurado
+            # Despacho externo informativo se canal configurado
             channel_type = task.get("target_channel_type")
             channel_id = task.get("target_channel_id")
             if channel_type and channel_type in ("webhook", "telegram") and channel_id:
                 from .notifier import HITLNotifier
-                await HITLNotifier.notify_approval_requested(
-                    approval_id=f"heartbeat-{task_id[:8]}",
-                    dot_id=dot_id,
-                    action_type="proactive_alert",
-                    risk_level="MEDIUM",
-                    payload=f"Tarefa: {task['task_name']} | Relatório: {final_response}"
+                await HITLNotifier.notify_system_alert(
+                    title=f"Tarefa Proativa: {task['task_name']}",
+                    message=f"Relatório do agente @{dot_id}:\n{final_response}",
+                    severity="INFO"
                 )
 
     except Exception as e:

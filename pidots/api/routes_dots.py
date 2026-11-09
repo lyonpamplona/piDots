@@ -312,6 +312,10 @@ async def update_dot_core_memory_section(dot_id: str, section: str, payload: Upd
         raise HTTPException(status_code=400, detail=f"Conteúdo excede o limite de {DEFAULT_MAX_CHARS} caracteres.")
 
     async with get_db() as db:
+        cur_check = await db.execute("SELECT id FROM dots WHERE id = ?", (dot_id,))
+        if not await cur_check.fetchone():
+            raise HTTPException(status_code=404, detail=f"Dot '{dot_id}' não encontrado.")
+
         await db.execute(
             """
             INSERT INTO agent_core_memory_blocks (id, dot_id, block_name, content, max_chars, updated_at)
@@ -336,6 +340,11 @@ async def update_dot_core_memory_section(dot_id: str, section: str, payload: Upd
 @router.post("/api/dots/{dot_id}/memory/archival")
 async def create_dot_archival_memory(dot_id: str, payload: CreateArchivalMemoryPayload):
     """Insere um novo registro na Archival Memory (com deduplicação semântica 64D)."""
+    async with get_db() as db:
+        cur_check = await db.execute("SELECT id FROM dots WHERE id = ?", (dot_id,))
+        if not await cur_check.fetchone():
+            raise HTTPException(status_code=404, detail=f"Dot '{dot_id}' não encontrado.")
+
     res = await MemoryManager.insert_archival_memory(
         dot_id=dot_id,
         content=payload.content,

@@ -118,7 +118,7 @@ async def create_thread(payload: CreateThreadPayload):
 
 @router.delete("/api/threads/{thread_id}")
 async def delete_thread(thread_id: str):
-    """Remove uma thread e todas as suas mensagens associadas do SQLite WAL."""
+    """Remove uma thread e todas as suas mensagens associadas, notas, aprovações HITL e planos do SQLite WAL."""
     async with get_db() as db:
         cursor = await db.execute("SELECT id FROM threads WHERE id = ?", (thread_id,))
         if not await cursor.fetchone():
@@ -126,6 +126,8 @@ async def delete_thread(thread_id: str):
         await db.execute("DELETE FROM messages WHERE thread_id = ?", (thread_id,))
         await db.execute("DELETE FROM thread_shared_notes WHERE thread_id = ?", (thread_id,))
         await db.execute("DELETE FROM agent_handoffs WHERE thread_id = ?", (thread_id,))
+        await db.execute("DELETE FROM hitl_approvals WHERE thread_id = ?", (thread_id,))
+        await db.execute("DELETE FROM goals WHERE thread_id = ?", (thread_id,))
         await db.execute("DELETE FROM threads WHERE id = ?", (thread_id,))
         await db.commit()
     return {"status": "deleted", "thread_id": thread_id}
@@ -347,7 +349,7 @@ async def run_thread_stream(thread_id: str, payload: RunPayload, request: Reques
         current_title = row["title"] or ""
 
         # Atualiza título da thread automaticamente se ainda estiver com nome genérico
-        if payload.message and current_title in ("Nova Sessão", "Sessão Inicial de Comando", "") or current_title.startswith("Thread "):
+        if payload.message and (current_title in ("Nova Sessão", "Sessão Inicial de Comando", "") or current_title.startswith("Thread ")):
             clean_title = re.sub(r"\s+", " ", (payload.message or "").strip())[:52]
             if clean_title:
                 await db.execute("UPDATE threads SET title = ? WHERE id = ?", (clean_title, thread_id))

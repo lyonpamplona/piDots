@@ -121,10 +121,16 @@ async def handle_hitl_webhook_callback(payload: WebhookCallbackPayload):
     )
     if not success:
         raise HTTPException(status_code=404, detail="Solicitação HITL não encontrada ou já resolvida.")
+
+    execution_result = None
+    if payload.approved:
+        execution_result = await HITLManager.execute_approved_action(payload.approval_id)
+
     return {
         "status": "success",
         "approval_id": payload.approval_id,
-        "resolved_state": "APPROVED" if payload.approved else "REJECTED"
+        "resolved_state": "APPROVED" if payload.approved else "REJECTED",
+        "execution_result": execution_result
     }
 
 
@@ -153,8 +159,13 @@ async def resolve_hitl_signed(payload: SignedResolutionPayload):
     if not success:
         raise HTTPException(status_code=404, detail="Solicitação HITL não encontrada ou já resolvida.")
 
+    execution_result = None
+    if approved:
+        execution_result = await HITLManager.execute_approved_action(payload.approval_id)
+
     return {
         "status": "success",
         "approval_id": payload.approval_id,
-        "resolved_state": "APPROVED" if approved else "REJECTED"
+        "resolved_state": "APPROVED" if approved else "REJECTED",
+        "execution_result": execution_result
     }

@@ -153,9 +153,17 @@ class MessagingGateway:
                     logger.debug("Tentativa de envio Telegram sem token configurado.")
                     return False
                 url = f"https://api.telegram.org/bot{token}/sendMessage"
-                payload = {"chat_id": target_id, "text": text}
-                resp = await client.post(url, json=payload)
-                return resp.status_code == 200
+                # Chunking em fatias de até 4000 caracteres para respeitar o limite estrito de 4096 bytes da Telegram Bot API
+                max_tg_chunk = 4000
+                chunks = [text[i:i + max_tg_chunk] for i in range(0, len(text), max_tg_chunk)] if text else [""]
+                all_ok = True
+                for chunk in chunks:
+                    payload = {"chat_id": target_id, "text": chunk}
+                    resp = await client.post(url, json=payload)
+                    if resp.status_code != 200:
+                        all_ok = False
+                        logger.warning("Falha ao despachar chunk Telegram para %s: HTTP %d", target_id, resp.status_code)
+                return all_ok
 
             elif channel_type == "whatsapp":
                 evo_url = getattr(settings, "evolution_api_url", "http://host.docker.internal:8080")
@@ -198,6 +206,7 @@ class ChannelOrchestrator:
 
     MAX_HOPS = 3
     _background_tasks: set[asyncio.Task] = set()
+    _channel_dot_locks: dict[tuple[str, str], asyncio.Lock] = {}
 
     @classmethod
     async def cancel_pending_tasks(cls) -> None:
@@ -308,64 +317,71 @@ class ChannelOrchestrator:
         hop_count: int,
         ai_provider: OpenAIUniversalProvider
     ) -> None:
-        """Executa o ciclo do Dot no contexto da sala temática."""
+        """Executa o ciclo do Dot no contexto da sala temática com isolamento por Lock."""
         logger.info("Executando Dot '%s' no canal '%s' (Salto %d)", dot_id, channel_id, hop_count)
 
-        async with get_db() as db:
-            cursor = await db.execute(
-                """
-                SELECT author_type, author_id, content FROM channel_messages
-                WHERE channel_id = ?
-                ORDER BY created_at DESC, rowid DESC LIMIT 8
-                """,
-                (channel_id,)
-            )
-            history_rows = await cursor.fetchall()
+        lock_key = (channel_id, dot_id)
+        if lock_key not in cls._channel_dot_locks:
+            cls._channel_dot_locks[lock_key] = asyncio.Lock()
 
-        history_context = "\n".join(
-            [f"[{r['author_type'].upper()} - {r['author_id']}]: {r['content']}" for r in reversed(history_rows)]
-        )
-
-        prompt_with_context = (
-            f"Você está colaborando na sala temática #{channel_id}.\n"
-            f"Histórico recente da conversa:\n{history_context}\n\n"
-            f"Mensagem recebida:\n{trigger_msg}\n\n"
-            "DIRETRIZES DE RESPOSTA:\n"
-            "1. Responda de forma direta e técnica.\n"
-            "2. Se você precisar que outro Dot atue na sequência, mencione-o explicitamente no formato @nome_do_dot.\n"
-            "3. Se você não tiver nada relevante a acrescentar, responda estritamente 'NO_ACTION'."
-        )
-
-        channel_thread_id = f"channel-{channel_id}-{dot_id}"
-        async with get_db() as db:
-            await db.execute(
-                """
-                INSERT OR IGNORE INTO threads (id, dot_id, title, status)
-                VALUES (?, ?, ?, 'idle')
-                """,
-                (channel_thread_id, dot_id, f"Canal #{channel_id}")
-            )
-            await db.commit()
-
-        agent = DotAgent(dot_id=dot_id, provider=ai_provider)
-        final_answer = ""
-        run_status = "completed"
-
-        try:
-            async for event in agent.run_thread(thread_id=channel_thread_id, user_message=prompt_with_context):
-                if event["event"] == "run:finished":
-                    event_data = event.get("data", {})
-                    run_status = event_data.get("status", "completed")
-                    final_answer = event_data.get("final_response", "")
-
-            if run_status == "completed" and final_answer and "NO_ACTION" not in final_answer.strip():
-                await cls.post_message_to_channel(
-                    channel_id=channel_id,
-                    author_type="dot",
-                    author_id=dot_id,
-                    content=final_answer,
-                    hop_count=hop_count,
-                    ai_provider=ai_provider
+        async with cls._channel_dot_locks[lock_key]:
+            async with get_db() as db:
+                cursor = await db.execute(
+                    """
+                    SELECT author_type, author_id, content FROM channel_messages
+                    WHERE channel_id = ?
+                    ORDER BY created_at DESC, rowid DESC LIMIT 8
+                    """,
+                    (channel_id,)
                 )
-        except Exception as e:
-            logger.error("Erro no processamento do Dot %s no canal %s: %s", dot_id, channel_id, str(e), exc_info=True)
+                history_rows = await cursor.fetchall()
+
+            # Evita duplicar a trigger_msg no histórico caso ela seja a mensagem mais recente gravada
+            filtered_rows = [r for r in reversed(history_rows) if r["content"] != trigger_msg]
+            history_context = "\n".join(
+                [f"[{r['author_type'].upper()} - {r['author_id']}]: {r['content']}" for r in filtered_rows]
+            )
+
+            prompt_with_context = (
+                f"Você está colaborando na sala temática #{channel_id}.\n"
+                f"Histórico recente da conversa:\n{history_context}\n\n"
+                f"Mensagem recebida:\n{trigger_msg}\n\n"
+                "DIRETRIZES DE RESPOSTA:\n"
+                "1. Responda de forma direta e técnica.\n"
+                "2. Se você precisar que outro Dot atue na sequência, mencione-o explicitamente no formato @nome_do_dot.\n"
+                "3. Se você não tiver nada relevante a acrescentar, responda estritamente 'NO_ACTION'."
+            )
+
+            channel_thread_id = f"channel-{channel_id}-{dot_id}"
+            async with get_db() as db:
+                await db.execute(
+                    """
+                    INSERT OR IGNORE INTO threads (id, dot_id, title, status)
+                    VALUES (?, ?, ?, 'idle')
+                    """,
+                    (channel_thread_id, dot_id, f"Canal #{channel_id}")
+                )
+                await db.commit()
+
+            agent = DotAgent(dot_id=dot_id, provider=ai_provider)
+            final_answer = ""
+            run_status = "completed"
+
+            try:
+                async for event in agent.run_thread(thread_id=channel_thread_id, user_message=prompt_with_context):
+                    if event["event"] == "run:finished":
+                        event_data = event.get("data", {})
+                        run_status = event_data.get("status", "completed")
+                        final_answer = event_data.get("final_response", "")
+
+                if run_status == "completed" and final_answer and "NO_ACTION" not in final_answer.strip():
+                    await cls.post_message_to_channel(
+                        channel_id=channel_id,
+                        author_type="dot",
+                        author_id=dot_id,
+                        content=final_answer,
+                        hop_count=hop_count,
+                        ai_provider=ai_provider
+                    )
+            except Exception as e:
+                logger.error("Erro no processamento do Dot %s no canal %s: %s", dot_id, channel_id, str(e), exc_info=True)

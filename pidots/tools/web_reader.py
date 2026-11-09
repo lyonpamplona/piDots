@@ -63,15 +63,6 @@ class WebReader:
         if parsed.scheme.lower() not in ("http", "https") or not parsed.netloc:
             return {"error": f"URL inválida ou esquema não suportado: '{url}'"}
 
-        hostname = parsed.hostname or ""
-        if not hostname:
-            return {"error": f"Hostname ausente na URL: '{url}'"}
-
-        # Verificação rigorosa anti-SSRF fora da thread de eventos
-        is_safe, ssrf_err = await asyncio.to_thread(_is_safe_host, hostname)
-        if not is_safe:
-            return {"url": url, "error": ssrf_err}
-
         current_url = url
         headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux aarch64; rv:130.0) Gecko/20100101 Firefox/130.0 (piDots/1.5)",
